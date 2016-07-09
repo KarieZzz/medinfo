@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <style>
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+            /* The html and body elements cannot have any padding or margin. */
+        }
+        /* Wrapper for page content to push down footer */
+        #wrap {
+            min-height: 100%;
+            height: auto;
+
+        }
+        #widgets-content-wrap {
+            position: absolute;
+            width:100%;
+            height: 100%;
+            /* Pad bottom by footer height */
+            padding: 20px 0 0 0;
+        }
+    </style>
+    <title id="Description">Выбор отчетных документов для просмотра и редактирования</title>
+    <!-- Bootstrap core CSS -->
+    <link href="{{ asset('/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
+    <!-- jQWidgets CSS -->
+    <link href="{{ asset('/jqwidgets/styles/jqx.base.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('/jqwidgets/styles/jqx.bootstrap.css') }}" rel="stylesheet" type="text/css" />
+    @stack('loadcss')
+</head>
+
+<body>
+
+<!-- Wrap all page content here -->
+<div id="wrap">
+    @include('jqxdatainput.top')
+    <!-- Begin page content -->
+    <div class="container-fluid" style="margin-top: 20px">
+    </div>
+    <div id="widgets-content-wrap" style="visibility: hidden">
+        @yield('content')
+    </div>
+    @include('jqxdatainput.windows')
+    @include('jqxdatainput.notifications')
+</div>
+
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="{{ asset('/plugins/jquery/jquery-1.12.4.min.js') }}" type="text/javascript" ></script>
+<script src="{{ asset('/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
+<!-- jQWidgets JavaScript files -->
+<script src="{{ asset('/jqwidgets/jqxcore.js') }}"></script>
+@stack('loadjsscripts')
+<script type="text/javascript">
+    var theme = 'bootstrap';
+    $(document).ready(function () {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $("#widgets-content-wrap").css("visibility", "visible");
+    });
+</script>
+@yield('inlinejs')
+</body>
+</html>
