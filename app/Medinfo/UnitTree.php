@@ -50,6 +50,18 @@ class UnitTree
         return $units;
     }
 
+    public static function getParents($ou_id)
+    {
+        $parent_query = "select parent_id from mo_hierarchy where id = $ou_id";
+        $res = \DB::selectOne($parent_query);
+        $units = array();
+        if ($res->parent_id !== null) {
+            $units[] = $res->parent_id;
+            $units = array_merge($units, self::getParents($res->parent_id));
+        }
+        return $units;
+    }
+
     public function setHtmlTree()
     {
         $this->tree = '';

@@ -11,4 +11,9 @@ class Unit extends Model
     protected $fillable = [
         'parent_id', 'unit_code', 'inn', 'node_type', 'report', 'aggregate', 'unit_name', 'blocked',
     ];
+
+    public function workerScope()
+    {
+        return $this->hasMany('App\WorkerScope', 'ou_id', 'id');
+    }
 }

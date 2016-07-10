@@ -229,6 +229,7 @@
         var mo_tree_url = 'admin/fetch_mo_tree/';
         var docsource_url = 'datainput/fetchdocuments?';
         var docmessages_url = 'datainput/fetchmessages?';
+        var changestate_url = 'datainput/changestate';
         var docmessagesend_url = 'datainput/sendmessage';
         var docauditions_url = 'datainput/fetchauditions?';
         var aggrsource_url = 'datainput/fetchaggregates?';
@@ -257,11 +258,6 @@
             audit_correct: 2,
             audit_incorrect: 3
         };
-        var localizationobj = {};
-        localizationobj.thousandsseparator = " ";
-        localizationobj.emptydatastring = "Нет данных";
-        localizationobj.loadtext = "Загрузка..";
-        localizationobj.filtershowrowstring = "Показать строки где:";
         datasources();
         $("#mainSplitter").jqxSplitter(
                 {

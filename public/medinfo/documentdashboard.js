@@ -130,6 +130,15 @@ var formStatusclass = function (row, columnfield, value, rowdata) {
         return 'declinedStatus';
     }
 };
+var getLocalization = function() {
+    var localizationobj = {};
+    localizationobj.thousandsseparator = " ";
+    localizationobj.emptydatastring = "Нет данных";
+    localizationobj.loadtext = "Загрузка..";
+    localizationobj.filtershowrowstring = "Показать строки где:";
+    localizationobj.filtersearchstring = "Поиск:";
+    return localizationobj;
+};
 // фильтр для быстрого поиска по наименованию учреждения - первичные документы
 var mo_name_filter = function (needle) {
     var rowFilterGroup = new $.jqx.filter();
@@ -464,6 +473,7 @@ var initmotree = function() {
             selectionMode: "singleRow",
             filterable: true,
             filterMode: "simple",
+            localization: getLocalization(),
             columnsResize: true,
             ready: function()
             {
@@ -627,7 +637,7 @@ var initdocumentstabs = function() {
             columnsresize: true,
             showtoolbar: true,
             rendertoolbar: rendertoolbar,
-            localization: localizationobj,
+            localization: getLocalization(),
             columns: [
                 { text: '№', datafield: 'id', width: '5%', cellclassname: filledFormclass },
                 { text: 'Код МО', datafield: 'unit_code', width: 100 },
@@ -713,7 +723,7 @@ var initdocumentstabs = function() {
             columnsresize: true,
             showtoolbar: true,
             rendertoolbar: renderaggregatetoolbar,
-            localization: localizationobj,
+            localization: getLocalization(),
             columns: [
                 { text: '№', datafield: 'id', width: '5%' },
                 { text: 'Код Территории/МО', datafield: 'unit_code', width: 100 },
@@ -796,15 +806,17 @@ var initpopupwindows = function() {
         if (statelabels[selected_state] == current_document_state ) {
             return false;
         }
-        var data = "document=" + row_id + "&state=" + selected_state + "&message=" + message;
+        var data = "&document=" + row_id + "&state=" + selected_state + "&message=" + message;
         $.ajax({
             dataType: 'json',
-            url: 'change_state.php',
+            url: changestate_url,
+            method: "POST",
             data: data,
             success: function (data, status, xhr) {
-                if (data.responce.status_changed == 1) {
-                    $("#currentInfoMessage").text("Статус документа изменен");
+                if (data.status_changed == 1) {
+                    $("#currentInfoMessage").text("Статус документа изменен. Новый статус: \"" + statelabels[data.new_status] + '"');
                     $("#infoNotification").jqxNotification("open");
+                    $('#Documents').jqxGrid('selectrow', rowindex);
                 }
                 else {
                     $("#currentError").text("Статус не изменен!");
@@ -820,7 +832,6 @@ var initpopupwindows = function() {
         });
         rowdata.state = statelabels[selected_state]
         $('#Documents').jqxGrid('updaterow', row_id, rowdata);
-        $('#Documents').jqxGrid('selectrow', rowindex);
         $("#changeStateWindow").jqxWindow('hide');
     });
     $("#changeAuditStateWindow").jqxWindow({
@@ -959,20 +970,10 @@ var initpopupwindows = function() {
             data: data,
             success: function (data, status, xhr) {
                 var m = '';
-                if (data.responce.message_sent == 1) {
+                if (data.message_sent == 1) {
                     $("#currentInfoMessage").text("Сообщение сохранено");
                     $("#infoNotification").jqxNotification("open");
                     $('#Documents').jqxGrid('selectrow', rowindex);
-                }
-                else {
-                    if (data.responce.error == 401) {
-                        m = "Сообщение не сохранено. Пользователь не авторизован";
-                    }
-                    else {
-                        m = "Сообщение/Комментарий не сохранены. Обратитесть к администратору.";
-                    }
-                    $("#currentError").text(m);
-                    $("#serverErrorNotification").jqxNotification("open");
                 }
             },
             error: function (xhr, status, errorThrown) {

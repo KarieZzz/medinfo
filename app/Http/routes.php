@@ -72,8 +72,9 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('datainput', 'StatDataInput@index' );
     Route::get('datainput/fetchdocuments', 'StatDataInput@fetchdocuments');
     Route::get('datainput/fetchaggregates', 'StatDataInput@fetchaggregates');
-    Route::get('datainput/fetchmessages', 'StatDataInput@fetchmessages');
-    Route::get('datainput/fetchauditions', 'StatDataInput@fetchauditions');
-    Route::post('datainput/sendmessage', 'StatDataInput@sendMessage');
+    Route::get('datainput/fetchmessages', 'StatDataInput\DocumentMessageController@fetchMessages');
+    Route::get('datainput/fetchauditions', 'StatDataInput\DocumentAuditionController@fetchAuditions');
+    Route::post('datainput/sendmessage', 'StatDataInput\DocumentMessageController@sendMessage');
+    Route::post('datainput/changestate', 'StatDataInput\DocumentStateController@changeState');
 
 });
