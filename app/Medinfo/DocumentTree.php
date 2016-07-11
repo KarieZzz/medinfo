@@ -6,7 +6,7 @@
  * Time: 15:15
  */
 
-namespace app\Medinfo;
+namespace App\Medinfo;
 use DB;
 
 

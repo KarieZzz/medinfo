@@ -76,5 +76,7 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('datainput/fetchauditions', 'StatDataInput\DocumentAuditionController@fetchAuditions');
     Route::post('datainput/sendmessage', 'StatDataInput\DocumentMessageController@sendMessage');
     Route::post('datainput/changestate', 'StatDataInput\DocumentStateController@changeState');
+    Route::post('datainput/changeaudition', 'StatDataInput\DocumentAuditionController@changeAudition');
+
 
 });

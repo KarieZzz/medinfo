@@ -6,7 +6,7 @@
  * Time: 10:05
  */
 
-namespace app\Medinfo;
+namespace App\Medinfo;
 
 
 class PeriodMM

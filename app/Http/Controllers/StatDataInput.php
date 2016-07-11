@@ -49,7 +49,6 @@ class StatDataInput extends Controller
         $forms = explode(",", $request->forms);
         $periods = explode(",", $request->periods);
         $scopes = compact('top_node', 'states', 'forms', 'periods');
-        //$scopes_ = array('top_node' => $top_node, 'states' => $states, 'forms' => $forms, 'periods' => $periods );
         $d = new DocumentTree($scopes);
         $data = $d->get_documents();
         return $data;

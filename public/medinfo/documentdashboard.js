@@ -177,25 +177,24 @@ var rendertoolbar = function (toolbar) {
                 return false;
             }
             var radiostates = $('.auditstateradio');
-            radiostates.each(function() {
-                $(this).jqxRadioButton('disable');
-                $(this).jqxRadioButton('uncheck');
-                $("#SaveAuditState").jqxButton({disabled: true });
-            });
+            radiostates.jqxRadioButton('uncheck');
+            //radiostates.each(function() {
+                //$(this).jqxRadioButton('disable');
+                //$(this).jqxRadioButton('uncheck');
+                //$("#SaveAuditState").jqxButton({disabled: true });
+            //});
             $.each(current_document_audits, function(key, value) {
                 if (value.auditor_id == current_user_id) {
-                    $("#SaveAuditState").jqxButton({disabled: false });
-                    radiostates.each(function() {
-                        $(this).jqxRadioButton('enable');
-                    });
+                    //$("#SaveAuditState").jqxButton({disabled: false });
+                    //radiostates.jqxRadioButton('enable');
                     switch (value.state_id) {
-                        case '1' :
+                        case 1 :
                             $("#noaudit").jqxRadioButton('check');
                             break;
-                        case '2':
+                        case 2:
                             $("#audit_correct").jqxRadioButton('check');
                             break;
-                        case '3':
+                        case 3:
                             $("#audit_incorrect").jqxRadioButton('check');
                             break;
                     }
@@ -214,7 +213,9 @@ var rendertoolbar = function (toolbar) {
     container.append(input1);
     container.append(input2);
     container.append(input3);
-    container.append(input4);
+    if (current_user_role != 2) {
+        container.append(input4);
+    }
     if (audit_permission) {
         container.append(input5);
         input5.jqxButton({ theme: theme });
@@ -677,15 +678,15 @@ var initdocumentstabs = function() {
         });
 
         var aurl = docauditions_url + 'document=' + row.id;
+        current_document_audits = [];
         $.getJSON( aurl, function( data ) {
             if (data.responce == 0) {
                 $("#DocumentAuditions").html("Нет проверяющих для данного документа");
             }
             else {
                 var items = [];
-                current_document_audits = [];
                 $.each( data, function( key, val ) {
-                    current_document_audits.push({ auditor_id: val.id, state_id: val.state_id});
+                    current_document_audits.push({ auditor_id: val.worker.id, state_id: val.state_id});
                     var audit_class = '';
                     switch (val.state_id) {
                         case 1:
@@ -698,14 +699,12 @@ var initdocumentstabs = function() {
                             audit_class = 'invalid';
                             break;
                     }
-
                     var d = val.created_at ? val.created_at : '';
                     items.push("<tr class='"+ audit_class +"'><td style='width: 50%'>" + val.created_at + "<br /> " + val.worker.description + "</td><td>" + val.dicauditstate.name + "</td></tr>");
                 });
                 $("#DocumentAuditions").html("<table class='control_result' style='width: 100%'>" + items.join( "" ) + "</table>");
             }
         });
-
     });
     $('#Documents').on('rowdoubleclick', function (event)
     {
@@ -814,8 +813,10 @@ var initpopupwindows = function() {
             data: data,
             success: function (data, status, xhr) {
                 if (data.status_changed == 1) {
-                    $("#currentInfoMessage").text("Статус документа изменен. Новый статус: \"" + statelabels[data.new_status] + '"');
+                    $("#currentInfoMessage").html("Статус документа изменен. <br /> Новый статус: \"" + statelabels[data.new_status] + '"');
                     $("#infoNotification").jqxNotification("open");
+                    rowdata.state = statelabels[data.new_status];
+                    $('#Documents').jqxGrid('updaterow', row_id, rowdata);
                     $('#Documents').jqxGrid('selectrow', rowindex);
                 }
                 else {
@@ -830,8 +831,6 @@ var initpopupwindows = function() {
                 $("#serverErrorNotification").jqxNotification("open");
             }
         });
-        rowdata.state = statelabels[selected_state]
-        $('#Documents').jqxGrid('updaterow', row_id, rowdata);
         $("#changeStateWindow").jqxWindow('hide');
     });
     $("#changeAuditStateWindow").jqxWindow({
@@ -847,7 +846,12 @@ var initpopupwindows = function() {
     $("#noaudit").jqxRadioButton({ width: 250, height: 25, theme: theme });
     $("#audit_incorrect").jqxRadioButton({ width: 250, height: 25, theme: theme });
     $("#audit_correct").jqxRadioButton({ width: 250, height: 25, theme: theme });
-    $('#auditChangeMessage').jqxTextArea({ placeHolder: 'Оставьте свой комментарий к смене статуса документа', height: 100, width: 400, minLength: 1 });
+    $('#auditChangeMessage').jqxTextArea({
+        placeHolder: 'Оставьте свои замечания по заполнению отчетного документа',
+        height: 100,
+        width: 400,
+        minLength: 1
+    });
     $("#SaveAuditState").jqxButton({ theme: theme });
     $("#CancelAuditStateChanging").jqxButton({ theme: theme });
     $("#SaveAuditState").click(function () {
@@ -867,14 +871,15 @@ var initpopupwindows = function() {
                 selected_state = $(this).attr('id');
             }
         });
-        var data = "document=" + row_id + "&auditstate=" + selected_state + "&message=" + message;
+        var data = "&document=" + row_id + "&auditstate=" + selected_state + "&message=" + message;
         if (audit_state_ids[selected_state] != old_state) {
             $.ajax({
                 dataType: 'json',
-                url: 'change_audit_state.php',
+                url: changeaudition_url,
+                method: 'POST',
                 data: data,
                 success: function (data, status, xhr) {
-                    if (data.responce.audit_status_changed == 1) {
+                    if (data.audit_status_changed == 1) {
                         $("#currentInfoMessage").text("Статус проверки документа изменен");
                         $("#infoNotification").jqxNotification("open");
                         $('#Documents').jqxGrid('selectrow', rowindex);

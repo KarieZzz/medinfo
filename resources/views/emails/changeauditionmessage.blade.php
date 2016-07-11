@@ -1,5 +1,5 @@
-Статус документа <a href="http://medinfo.miac-io.ru/formdashboard/{{ $document->id }}">№{{ $document->id }} по Форме №{{ $form->form_code }}</a>
-изменен на "{{ $newlabel }}"
+Проведена проверка документа <a href="http://medinfo.miac-io.ru/formdashboard/{{ $document->id }}">№{{ $document->id }} по Форме №{{ $form->form_code }}</a>.
+Статус проверки: "{{ $newlabel }}".
 <p>Учреждение: {{ $current_unit->unit_name }}</p>
-<p>Исполнитель: {{ $worker->description }}</p>
-<p>Комментарий исполнителя: {{ $remark }} </p>
+<p>Эксперт: {{ $worker->description }}</p>
+<p>Замечания эксперта: {{ $remark }} </p>

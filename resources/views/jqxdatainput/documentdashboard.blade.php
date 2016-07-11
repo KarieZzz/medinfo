@@ -223,13 +223,14 @@
         var current_top_level_node = '{{ is_null($worker_scope) ? 'null' : $worker_scope }}';
         var current_user_role = '{{ $worker->role }}';
         var current_user_id = '{{ $worker->id }}';
-        var audit_permission = '{{ $audit_permission ? 'true' : 'false' }}';
+        var audit_permission = {{ $audit_permission ? 'true' : 'false' }};
         var periods = ['{{ $period_id }}'];
         var disabled_states = [{!! $disabled_states !!}];
         var mo_tree_url = 'admin/fetch_mo_tree/';
         var docsource_url = 'datainput/fetchdocuments?';
         var docmessages_url = 'datainput/fetchmessages?';
         var changestate_url = 'datainput/changestate';
+        var changeaudition_url = 'datainput/changeaudition';
         var docmessagesend_url = 'datainput/sendmessage';
         var docauditions_url = 'datainput/fetchauditions?';
         var aggrsource_url = 'datainput/fetchaggregates?';
