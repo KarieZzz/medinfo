@@ -15,4 +15,10 @@ class Form extends Model
         'form_code', 'form_name', 'file_name', 'medstat_code', 'medinfo_id',
     ];
 
+    public function tables()
+    {
+        return $this->hasMany('App\Table');
+    }
+
+
 }

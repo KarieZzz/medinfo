@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use App\Worker;
+//use App\Worker;
 use App\Unit;
 use App\Medinfo\UnitTree;
 use App\Document;

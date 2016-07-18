@@ -48,7 +48,6 @@
     <div id="widgets-content-wrap" style="visibility: hidden">
         @yield('content')
     </div>
-    @include('jqxdatainput.windows')
     @include('jqxdatainput.notifications')
 </div>
 

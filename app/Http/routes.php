@@ -69,6 +69,7 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('workerlogin', 'Auth\DatainputAuthController@getLogin' );
     Route::get('workerlogout', 'Auth\DatainputAuthController@logout' );
     Route::post('workerlogin', 'Auth\DatainputAuthController@login' );
+    // Рабочий стол - Первичные и сводные отчеты, сообщения, проверки и экспорт в эксель
     Route::get('datainput', 'StatDataInput@index' );
     Route::get('datainput/fetchdocuments', 'StatDataInput@fetchdocuments');
     Route::get('datainput/fetchaggregates', 'StatDataInput@fetchaggregates');
@@ -77,6 +78,10 @@ Route::group(['middleware' => ['web']], function () {
     Route::post('datainput/sendmessage', 'StatDataInput\DocumentMessageController@sendMessage');
     Route::post('datainput/changestate', 'StatDataInput\DocumentStateController@changeState');
     Route::post('datainput/changeaudition', 'StatDataInput\DocumentAuditionController@changeAudition');
-
+    // Рабочий стол - Первичный отчетный документ, ввод данных, контроль, журнал изменений
+    Route::get('datainput/formdashboard/{id}', 'StatDataInput\FormDashboardController@index');
+    Route::get('datainput/fetchvalues/{document}/{table}', 'StatDataInput\FormDashboardController@fetchValues');
+    Route::post('datainput/savevalue/{document}/{table}', 'StatDataInput\FormDashboardController@saveValue');
+    Route::get('datainput/formtest/{id}', 'StatDataInput\FormDashboardController@formtest');
 
 });

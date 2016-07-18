@@ -241,6 +241,7 @@ return [
         '3' => "'performed', 'prepared', 'approved'",
         '4' => "'performed', 'prepared'",
     ],
+    'control_disabled' => false,
     'miac_emails' => 'nuv@miac-io.ru,zhsa@miac-io.ru',
     'director_emails' => 'aiz@miac-io.ru,shameev@miac-io.ru,evb@miac-io.ru',
 ];

@@ -19,7 +19,7 @@ class CreatePrimaryStatdataTable extends Migration
             $table->integer('table_id')->index();
             $table->integer('row_id')->index();
             $table->integer('col_id')->index();
-            $table->decimal('value', 17,3);
+            $table->decimal('value', 17,3)->nullable();
             $table->timestamps();
         });
     }

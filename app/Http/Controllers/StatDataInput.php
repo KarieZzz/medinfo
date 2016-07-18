@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 use App\Http\Requests;
-use App\Worker;
+//use App\Worker;
 use App\WorkerScope;
 use App\Medinfo\PeriodMM;
 use App\Medinfo\UnitTree;
@@ -22,9 +22,8 @@ class StatDataInput extends Controller
 
     public function index()
     {
-        $worker_id = Auth::guard('datainput')->user()->id;
-        $worker = Worker::find($worker_id);
-        $worker_scope = WorkerScope::where('worker_id', $worker_id)->first()->ou_id;
+        $worker = Auth::guard('datainput')->user();
+        $worker_scope = WorkerScope::where('worker_id', $worker->id)->first()->ou_id;
         $permission = $worker->permission;
         $period = new PeriodMM(config('app.default_period'));
         $period_id = $period->getTableName();
@@ -32,7 +31,6 @@ class StatDataInput extends Controller
         if (!is_null($worker_scope)) {
             $mo_tree = UnitTree::getSimpleTree();
         }
-
         if ($permission & config('app.permission.permission_audit_document')) {
             $audit_permission = true;
         }

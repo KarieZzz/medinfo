@@ -184,6 +184,7 @@
             </div>
         </div>
     </div>
+    @include('jqxdatainput.windows')
 @endsection
 
 @push('loadcss')
@@ -234,7 +235,7 @@
         var docmessagesend_url = 'datainput/sendmessage';
         var docauditions_url = 'datainput/fetchauditions?';
         var aggrsource_url = 'datainput/fetchaggregates?';
-        var edit_form_url = 'form_dashboard.php?';
+        var edit_form_url = 'datainput/formdashboard';
         var edit_aggregate_url = 'aggregate_dashboard.php?';
         var export_form_url = 'export_form_to_excel.php?';
         var checkedform = ['f30','f17','f12','f14','f14дс','f16','f57','f1-РБ','f15','f16-вн','f13','f31','f32','f32_вкл','f19','f1-ДЕТИ','f10','f11','f36','f36-ПЛ','f37','f9','f34','f7','f35','f8','f33','f7-Т','f39','f41', 'f53','f55','f56','f61','f70'];

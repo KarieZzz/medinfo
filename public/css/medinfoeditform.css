@@ -1,0 +1,43 @@
+.valid {
+    color: black\9;
+    background-color: #b0ffaf\9;
+}
+.yellow {
+    color: black\9;
+    background-color: yellow\9;
+}
+.invalid {
+    color: black\9;
+    background-color: #ffa3a8 \9;
+}
+
+.valid:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected), .jqx-widget .green:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected) {
+    color: black;
+    background-color: #b0ffaf;
+}
+.yellow:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected), .jqx-widget .yellow:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected) {
+    color: black;
+    background-color: yellow;
+}
+.invalid:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected), .jqx-widget .red:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected) {
+    color: black;
+    background-color: #ffa3a8;
+}
+.editedRow {
+    font-style: italic;
+    font-weight: bold ;
+}
+.showrule {
+    font-size: 0.8em;
+}
+.control_result {
+    border: 1px solid #ddd;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+.control_result td { border: 1px solid #ddd; }
+.equality { background-color: #57ff53; }
+.approximate { background-color: #a8ff96; }
+.moderate { background-color: #f5ff9b; }
+.significant { background-color: #ffa3a8; }
+.not_editable {background-color: #e7eef8;; }

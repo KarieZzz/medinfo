@@ -256,7 +256,7 @@ var rendertoolbar = function (toolbar) {
         var rowindex = $('#Documents').jqxGrid('getselectedrowindex');
         var document_id = $('#Documents').jqxGrid('getrowid', rowindex);
         if (rowindex !== -1) {
-            var editWindow = window.open(edit_form_url+'document='+document_id);
+            var editWindow = window.open(edit_form_url + '/' + document_id);
         }
     });
     input4.click(function () {
@@ -681,7 +681,7 @@ var initdocumentstabs = function() {
         current_document_audits = [];
         $.getJSON( aurl, function( data ) {
             if (data.responce == 0) {
-                $("#DocumentAuditions").html("Нет проверяющих для данного документа");
+                $("#DocumentAuditions").html("Нет результатов проверки данного отчетного документа");
             }
             else {
                 var items = [];
@@ -711,7 +711,7 @@ var initdocumentstabs = function() {
         var args = event.args;
         var rowindex = args.rowindex;
         var document_id = $('#Documents').jqxGrid('getrowid', rowindex);
-        var editWindow = window.open(edit_form_url+'document='+document_id);
+        var editWindow = window.open(edit_form_url + '/' + document_id);
     });
     $("#Aggregates").jqxGrid(
         {

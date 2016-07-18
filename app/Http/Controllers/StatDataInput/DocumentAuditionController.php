@@ -39,7 +39,6 @@ class DocumentAuditionController extends Controller
         $form = Form::find($document->form_id);
         $current_unit = Unit::find($document->ou_id);
         $worker = Auth::guard('datainput')->user();
-        $emails = array();
         $miac_emails = explode(",", config('app.miac_emails'));
         $director_emails = explode(",", config('app.director_emails'));
         $parents = UnitTree::getParents($current_unit->id);
@@ -67,7 +66,7 @@ class DocumentAuditionController extends Controller
             // TODO: Записать событие в журнал
         } else {
             $data['audit_status_changed'] = 0;
-            $data['comment'] = "Нет прав для измения статуса проверки документа";
+            $data['comment'] = "Нет прав для изменения статуса проверки документа";
         }
         return $data;
     }

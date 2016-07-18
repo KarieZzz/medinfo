@@ -27,7 +27,7 @@ class Worker extends Model
 
     public function worker_scopes()
     {
-        return $this->hasOne('worker_scopes', 'worker_id', 'id');
+        return $this->hasOne('App\WorkerScope');
     }
 
     /**
