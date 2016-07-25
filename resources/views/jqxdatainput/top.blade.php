@@ -1,24 +1,19 @@
 <!-- Fixed navbar -->
-<style>
-    #navBar
-    {
-        background: transparent !important;
-        border: none;
-        box-shadow: none;
-        -webkit-box-shadow: none;
-    }
-    .navbar
-    {
-        min-height: 35px !important;
-    }
-</style>
-    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-        <div class="col-md-4">
-            @yield('title')
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="col-md-5">
+                <div class="navbar-header">
+                    @yield('title')
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="navbar-header">
+                    <h5><span class="glyphicon glyphicon-user"></span> {{ Auth::guard('datainput')->user()->description }}</h5>
+                </div>
+            </div>
+            <ul class="nav navbar-nav pull-right">
+                <li><a href="/workerlogout"> <span class="glyphicon glyphicon-log-out"></span> Завершить работу</a></li>
+            </ul>
         </div>
-        <div class="col-md-4">
-            Пользователь: {{ Auth::guard('datainput')->user()->description }}
-        </div>
-        <div class="pull-right"><a href="workerlogout" class="btn btn-default btn-flat">Завершить работу</a></div>
-    </div>
+    </nav>
 

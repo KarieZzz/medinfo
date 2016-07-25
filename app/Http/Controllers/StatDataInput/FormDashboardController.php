@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\StatDataInput;
 
-use App\Worker;
+//use App\Worker;
 use Carbon\Carbon;
 use Illuminate\Auth\GenericUser;
 use Illuminate\Http\Request;
@@ -19,10 +19,9 @@ use App\Table;
 use App\NECells;
 use App\Cell;
 use App\ValuechangingLog;
-use PhpParser\Comment\Doc;
 
 
-class FormDashboardController extends Controller
+class FormDashboardController extends DashboardController
 {
     //
     public function __construct()
@@ -54,56 +53,6 @@ class FormDashboardController extends Controller
         ));
     }
 
-    /**
-     * @param int $permission
-     * @param int $document_state
-     * @return bool
-     */
-    protected function isEditPermission(int $permission, int $document_state)
-    {
-        switch (true) {
-            case (($permission & config('app.permission.permission_edit_report')) && ($document_state == 2 || $document_state == 16)) :
-                $edit_permission = true;
-                break;
-            case (($permission & config('app.permission.permission_edit_prepared_report')) && $document_state == 4) :
-                $edit_permission = true;
-                break;
-            case (($permission & config('app.permission.permission_edit_accepted_report')) && $document_state == 8) :
-                $edit_permission = true;
-                break;
-            case (($permission & config('app.permission.permission_edit_approved_report')) && $document_state == 32) :
-                $edit_permission = true;
-                break;
-            default:
-                $edit_permission = false;
-        }
-        return $edit_permission;
-    }
-
-    /**
-     * @param int $document
-     * @return array
-     */
-    protected function getEditedTables(int $document)
-    {
-/*        $editedtables = \DB::table('primary_statdata')
-            ->join('documents', 'documents.id' ,'=', 'primary_statdata.doc_id')
-            ->leftJoin('tables', 'tables.id', '=', 'primary_statdata.table_id')
-            ->where('documents.id', $document)
-            ->where('tables.deleted', 0)
-            ->groupBy('primary_statdata.table_id', 'tables.table_code')
-            ->select('primary_statdata.table_id', 'tables.table_code')
-            ->get();*/
-        $editedtables = \DB::table('primary_statdata')
-            ->join('documents', 'documents.id' ,'=', 'primary_statdata.doc_id')
-            ->leftJoin('tables', 'tables.id', '=', 'primary_statdata.table_id')
-            ->where('documents.id', $document)
-            ->where('tables.deleted', 0)
-            ->groupBy('primary_statdata.table_id')
-            ->pluck('primary_statdata.table_id');
-        return $editedtables;
-    }
-
     //Описательная информация для построения гридов динамически
     // возвращается json объект в формате для jqxgrid
     /**
@@ -113,10 +62,6 @@ class FormDashboardController extends Controller
      */
     protected function composeDataForTablesRendering(Form $form, array $editedtables)
     {
-        //$tables = $form->tables->where('deleted', 0);
-/*        $tables = $form->load(['tables' => function($query) {
-            $query->orderBy('table_code', 'asc');
-        }]);*/
         $tables = Table::where('form_id', $form->id)->where('deleted', 0)->orderBy('table_code')->get();
         $forformtable = array();
         $datafortables = array();
@@ -156,6 +101,7 @@ class FormDashboardController extends Controller
                         'filtertype' => 'number',
                         'cellclassname' => 'cellclass',
                         'cellbeginedit' => 'cellbeginedit',
+                        'validation' => "e = function (cell, value) { if (value < 0) { return { result: false, message: 'Допускаются только положительные значения' }; } return true;};",
                         'createeditor' => "e = function(row, cellvalue, editor) { editor.jqxNumberInput({ digits: $number_count, decimalDigits: $decimal_count, min: 0, spinButtons: true, groupSeparator: '', inputMode: 'simple' })};"
                     );
                     $column_groups_arr[] = array(
@@ -203,7 +149,7 @@ class FormDashboardController extends Controller
     public function fetchValues(int $document, int $table)
     {
         $t = Table::find($table);
-        $rows = $t->rows->where('deleted', 0);
+        $rows = $t->rows->where('deleted', 0)->sortBy('row_index');
         $cols = $t->columns->where('deleted', 0);
         $data = array();
         $i=0;
@@ -274,9 +220,7 @@ class FormDashboardController extends Controller
                 $result = $cell->save();
                 if ($result) {
                     $data['cell_affected'] = true;
-                    //$cell_adr = 'O' . $ou . 'F' . $f . 'T' . $t . 'R' . $row . 'C' . $col . 'P' . $p ;
                     //$cell_adr = 'O' . $ou . 'F' . $f . 'T' . $table . 'R' . $row . 'C' . $col . 'P' . $p ;
-                    // TODO: сделать журнализацию изменений значений ячеек
                     $log = [
                         'worker_id' => $worker->id,
                         'oldvalue' => $casted_old_value,
@@ -291,7 +235,6 @@ class FormDashboardController extends Controller
                         'occured_at' => Carbon::now()
                     ];
                     $event = ValuechangingLog::create($log);
-                    //$event_id = Log::storeCellValueChangeEvent($cell_adr, $doc_id, $user->user_id, $casted_old_value, $casted_new_value);
                     $data['event_id'] = $event->id;
                     // TODO: Решить нужно ли контролировать значения по мере изменения ячеек
                     //$v = new ValidateCellByMi($cell_adr);
@@ -313,6 +256,19 @@ class FormDashboardController extends Controller
             $data['comment'] = "Отсутствуют права для изменения данных в этом документе";
         }
         return $data;
+    }
+
+    public function fullValueChangeLog($document)
+    {
+        $document = Document::find($document);
+        $form = Form::find($document->form_id);
+        $current_unit = Unit::find($document->ou_id);
+        $period = PeriodMM::getPeriodFromId($document->period_id);
+        $values = ValuechangingLog::where('d', $document->id)->orderBy('occured_at', 'desc')
+            ->with('worker')
+            ->with('table')
+            ->get();
+        return view('jqxdatainput.fullvaluelog', compact('values', 'document', 'form', 'current_unit', 'period'));
     }
 
     public function formtest(Request $request)

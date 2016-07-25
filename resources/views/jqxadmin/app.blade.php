@@ -27,6 +27,14 @@
             /* Pad bottom by footer height */
             padding: 0 0 120px;
         }
+        #alertmessage {
+            position: absolute;
+            display: table;
+            left: 50%;
+            width:600px;
+            height: 30px;
+            z-index: 10000;
+        }
     </style>
     <title id="Description">Админ-страница (Bootstrap и jQWidgets дизайн)</title>
 
@@ -40,6 +48,7 @@
 <body>
 
 <!-- Wrap all page content here -->
+<div id="alertmessage" class="col-md-4 "></div>
 <div id="wrap">
     @include('jqxadmin.navbar')
     <!-- Begin page content -->
@@ -52,7 +61,6 @@
         @yield('content')
     </div>
 </div>
-
 
 <!-- Bootstrap core JavaScript
 ================================================== -->

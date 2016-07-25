@@ -3,13 +3,11 @@
 @section('title')
 <h5>
     Форма №<span class="text-info">{{ $form->form_code  }} </span>
-    <span class="glyphicon glyphicon-map-marker"></span> <span class="text-info">{{ $current_unit->unit_name }} </span>
+    <span class="glyphicon glyphicon-check"></span> <span class="text-info">{{ $current_unit->unit_name }} </span>
     <span class="glyphicon glyphicon-calendar"></span> <span class="text-info">{{ $period->getYear() }} </span>
-    <span class="glyphicon glyphicon-star"></span> <span class="text-info">{{ $statelabel }} </span>
     <span class="glyphicon glyphicon-edit"></span> <span class="text-info">{{ $editmode }} </span>
 </h5>
 @endsection
-@section('headertitle', 'Просмотр/редактирование отчетного документа')
 
 @section('content')
     <div id="formEditLayout">

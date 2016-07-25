@@ -25,12 +25,13 @@
             width:100%;
             height: 100%;
             /* Pad bottom by footer height */
-            padding: 20px 0 0 0;
+            padding: 30px 0 0 0;
         }
     </style>
-    <title id="Description">Выбор отчетных документов для просмотра и редактирования</title>
+    <title id="Description">@yield('headertitle')</title>
     <!-- Bootstrap core CSS -->
     <link href="{{ asset('/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
+    <!-- <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"> -->
     <!-- jQWidgets CSS -->
     <link href="{{ asset('/jqwidgets/styles/jqx.base.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('/jqwidgets/styles/jqx.bootstrap.css') }}" rel="stylesheet" type="text/css" />
@@ -59,6 +60,7 @@
 <script src="{{ asset('/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
 <!-- jQWidgets JavaScript files -->
 <script src="{{ asset('/jqwidgets/jqxcore.js') }}"></script>
+<script src="{{ asset('/medinfo/dashboard.js') }}"></script>
 @stack('loadjsscripts')
 <script type="text/javascript">
     var theme = 'bootstrap';

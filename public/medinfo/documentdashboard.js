@@ -55,7 +55,13 @@ var datasources = function() {
         root: 'data'
     }
     mo_dataAdapter = new $.jqx.dataAdapter(mo_source);
-    dataAdapter = new $.jqx.dataAdapter(docsource);
+    dataAdapter = new $.jqx.dataAdapter(docsource, {
+        loadError: function(jqXHR, status, error) {
+            if (jqXHR.status == 401) {
+                raiseError(jqXHR, 'Пользователь не авторизован');
+            }
+        }
+    });
     aggregate_report_table = new $.jqx.dataAdapter(aggregate_source);
 };
 var checkformfilter = function() {
@@ -129,15 +135,6 @@ var formStatusclass = function (row, columnfield, value, rowdata) {
     } else if (value == statelabels.declined) {
         return 'declinedStatus';
     }
-};
-var getLocalization = function() {
-    var localizationobj = {};
-    localizationobj.thousandsseparator = " ";
-    localizationobj.emptydatastring = "Нет данных";
-    localizationobj.loadtext = "Загрузка..";
-    localizationobj.filtershowrowstring = "Показать строки где:";
-    localizationobj.filtersearchstring = "Поиск:";
-    return localizationobj;
 };
 // фильтр для быстрого поиска по наименованию учреждения - первичные документы
 var mo_name_filter = function (needle) {
@@ -413,7 +410,7 @@ var renderaggregatetoolbar = function(toolbar) {
         var rowindex = $('#Aggregates').jqxGrid('getselectedrowindex');
         var document_id = $('#Aggregates').jqxGrid('getrowid', rowindex);
         if (rowindex !== -1) {
-            var editWindow = window.open(edit_aggregate_url+'aggregate='+document_id);
+            var editWindow = window.open(edit_aggregate_url+'/'+document_id);
         }
     });
     input4.click(function () {
@@ -474,7 +471,7 @@ var initmotree = function() {
             selectionMode: "singleRow",
             filterable: true,
             filterMode: "simple",
-            localization: getLocalization(),
+            localization: localize(),
             columnsResize: true,
             ready: function()
             {
@@ -633,18 +630,18 @@ var initdocumentstabs = function() {
         {
             width: '100%',
             height: '100%',
-            theme: theme,
             source: dataAdapter,
+            localization: localize(),
+            theme: theme,
             columnsresize: true,
             showtoolbar: true,
             rendertoolbar: rendertoolbar,
-            localization: getLocalization(),
             columns: [
                 { text: '№', datafield: 'id', width: '5%', cellclassname: filledFormclass },
-                { text: 'Код МО', datafield: 'unit_code', width: 100 },
+                { text: 'Код МО', datafield: 'unit_code', width: 70 },
                 { text: 'Наименование МО', datafield: 'unit_name', width: '25%' },
-                { text: 'Код формы', datafield: 'form_code', width: 100 },
-                { text: 'Наименование формы', datafield: 'form_name', width: '25%' },
+                { text: 'Код формы', datafield: 'form_code', width: 80 },
+                { text: 'Наименование формы', datafield: 'form_name', width: '20%' },
                 { text: 'Период', datafield: 'period', width: 120 },
                 { text: 'Статус', datafield: 'state', width: 120, cellclassname: formStatusclass },
                 { text: 'Данные', datafield: 'filled', columntype: 'checkbox', width: 120 }
@@ -722,7 +719,7 @@ var initdocumentstabs = function() {
             columnsresize: true,
             showtoolbar: true,
             rendertoolbar: renderaggregatetoolbar,
-            localization: getLocalization(),
+            localization: localize(),
             columns: [
                 { text: '№', datafield: 'id', width: '5%' },
                 { text: 'Код Территории/МО', datafield: 'unit_code', width: 100 },
@@ -738,7 +735,7 @@ var initdocumentstabs = function() {
         var args = event.args;
         var rowindex = args.rowindex;
         var document_id = $('#Aggregates').jqxGrid('getrowid', rowindex);
-        var editWindow = window.open(edit_aggregate_url+'aggregate='+document_id);
+        var editWindow = window.open(edit_aggregate_url + '/' + document_id);
     });
 }
 var initdocumentproperties = function() {
@@ -998,15 +995,5 @@ var initpopupwindows = function() {
         cancelButton: $("#CancelMessage"),
         theme: theme,
         modalOpacity: 0.01
-    });
-}
-var initnotifications = function() {
-    $("#serverErrorNotification").jqxNotification({
-        width: 250, position: "top-right", opacity: 0.9,
-        autoOpen: false, animationOpenDelay: 800, autoClose: false, template: "error"
-    });
-    $("#infoNotification").jqxNotification({
-        width: 250, position: "top-right", opacity: 0.9,
-        autoOpen: false, animationOpenDelay: 800, autoClose: true, autoCloseDelay: 3000, template: "info"
     });
 }

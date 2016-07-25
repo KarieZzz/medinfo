@@ -59,11 +59,13 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('admin/workers', 'Admin\WorkerAdmin@index' );
     Route::get('admin/fetch_workers', 'Admin\WorkerAdmin@fetch_workers');
     Route::get('admin/fetch_mo_tree/{parent}', 'Admin\MOAdminController@fetch_mo_hierarchy');
-    //Route::get('admin/fetch_mo_tree', 'Admin\WorkerAdmin@fetch_mo_hierarchy');
     Route::get('admin/fetch_worker_scopes/{id}', 'Admin\WorkerAdmin@fetch_worker_scopes');
     Route::post('admin/workers/create', 'Admin\WorkerAdmin@worker_store');
     Route::patch('admin/workers/update', 'Admin\WorkerAdmin@worker_update');
     Route::patch('admin/workers/updateuserscope', 'Admin\WorkerAdmin@worker_scope_update');
+    // Менеджер отчетных документов
+    Route::get('admin/documents', 'Admin\DocumentAdminController@index');
+    Route::get('admin/fetchdocuments/{unit}', 'Admin\DocumentAdminController@fetchDocuments');
 
     // Ввод и корректировка статданных
     Route::get('workerlogin', 'Auth\DatainputAuthController@getLogin' );
@@ -82,6 +84,10 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('datainput/formdashboard/{id}', 'StatDataInput\FormDashboardController@index');
     Route::get('datainput/fetchvalues/{document}/{table}', 'StatDataInput\FormDashboardController@fetchValues');
     Route::post('datainput/savevalue/{document}/{table}', 'StatDataInput\FormDashboardController@saveValue');
-    Route::get('datainput/formtest/{id}', 'StatDataInput\FormDashboardController@formtest');
+    Route::get('datainput/valuechangelog/{document}', 'StatDataInput\FormDashboardController@fullValueChangeLog');
+    // Рабочий стол для сводных документов
+    Route::get('datainput/aggregatedashboard/{id}', 'StatDataInput\AggregatesDashboardController@index');
+
+    //Route::get('datainput/formtest/{id}', 'StatDataInput\FormDashboardController@formtest');
 
 });

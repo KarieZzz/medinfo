@@ -11,4 +11,24 @@ class ValuechangingLog extends Model
     protected $fillable = [ 'worker_id', 'oldvalue', 'newvalue', 'd', 'o', 'f', 't', 'r', 'c', 'p', 'occured_at' ];
     public $timestamps = false;
     protected $dates = ['occured_at'];
+
+    public function worker()
+    {
+        return $this->belongsTo('App\Worker');
+    }
+
+    public function table()
+    {
+        return $this->belongsTo('App\Table', 't');
+    }
+
+    public function row()
+    {
+        return $this->belongsTo('App\Row', 'r');
+    }
+
+    public function column()
+    {
+        return $this->belongsTo('App\Column', 'c');
+    }
 }

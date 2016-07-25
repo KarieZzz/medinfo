@@ -14,6 +14,7 @@ class CreateDocumentsTable extends Migration
     {
         Schema::create('documents', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('dtype')->default(1)->index();
             $table->integer('ou_id')->index();
             $table->char('period_id', 8)->index();
             $table->integer('form_id')->index();
@@ -22,7 +23,7 @@ class CreateDocumentsTable extends Migration
             $table->timestamp('state_changed_at')->nullable()->index();
             $table->softDeletes();
             $table->timestamps();
-            $table->unique(['ou_id', 'period_id', 'form_id']);
+            $table->unique(['dtype', 'ou_id', 'period_id', 'form_id']);
         });
     }
 

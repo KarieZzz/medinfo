@@ -13,7 +13,7 @@ var cellclass = function (row, columnfield, value, rowdata) {
     var not_editable = '';
     for (var i = 0; i < not_editable_cells.length; i++) {
         if (not_editable_cells[i].t == current_table &&  not_editable_cells[i].r == rowdata.id && not_editable_cells[i].c == columnfield) {
-            not_editable = 'not_editable';
+            not_editable = 'jqx-grid-cell-pinned jqx-grid-cell-pinned-bootstrap';
         }
     }
     if (marking_mode == 'control') {
@@ -359,16 +359,6 @@ var rendertoolbar = function(toolbar) {
         });
     });
 };
-var initnotifications = function() {
-    $("#serverErrorNotification").jqxNotification({
-        width: 250, position: "top-right", opacity: 0.9,
-        autoOpen: false, animationOpenDelay: 800, autoClose: false, template: "error"
-    });
-    $("#infoNotification").jqxNotification({
-        width: 250, position: "top-right", opacity: 0.9,
-        autoOpen: false, animationOpenDelay: 800, autoClose: true, autoCloseDelay: 3000, template: "info"
-    });
-};
 var initdatasources = function() {
     form_table_source = {
         dataType: "json",
@@ -496,23 +486,12 @@ var initfilters = function() {
     }
 };
 var initdatagrid = function() {
-    $("#DataGrid").bind('bindingcomplete', function () {
-        var localizationobj = {};
-        thousandsseparator = " ";
-        filtershowrowstring = "Показать строки где:";
-        emptydatastring = "Нет данных";
-        loadtext = "Загрузка..";
-        localizationobj.thousandsseparator = thousandsseparator;
-        localizationobj.emptydatastring = emptydatastring;
-        localizationobj.loadtext = loadtext;
-        localizationobj.filtershowrowstring = filtershowrowstring;
-        $("#DataGrid").jqxGrid('localizestrings', localizationobj);
-    });
     $("#DataGrid").jqxGrid(
         {
             width: '99%',
             height: '99%',
             source: dataAdapter,
+            localization: localize(),
             selectionmode: 'singlecell',
             theme: theme,
             editable: edit_permission,
@@ -669,7 +648,7 @@ var initlayout = function() {
                         initContent: function () {
                             $("#openFullChangeLog").jqxButton({ theme: theme, disabled: control_disabled });
                             $("#openFullChangeLog").click(function () {
-                                var dataExportWindow = window.open(full_log_url);
+                                var dataExportWindow = window.open(valuechangelog_url);
                             });
                         }
                     }]

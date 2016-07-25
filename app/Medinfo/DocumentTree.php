@@ -24,6 +24,7 @@ class DocumentTree
     {
         if (is_array($scopes)) {
             $this->top_node = $scopes['top_node'];
+            // TODO: Переделать в "правильную" обработку исключений средствами фреймворка
             if ($this->top_node == 'null') {
                 throw new Exception("Не определен перечень доступа к медицинским организациям");
             }
@@ -115,24 +116,19 @@ class DocumentTree
             if (count($this->scopes) > 0 ) {
                 $scopes = implode(" ", $this->scopes);
             }
-            $doc_query = "SELECT DISTINCT ON(u.unit_code, f.form_code) d.id, u.unit_code, u.unit_name, f.form_code, f.form_name, s.name state, p.name period,
-            CASE  WHEN (SELECT sum(v.value) FROM primary_statdata v where d.id = v.doc_id) > 0 THEN 1 ELSE 0 END filled
+            $doc_query = "SELECT DISTINCT ON(u.unit_code, f.form_code) d.id, u.unit_code, u.unit_name, f.form_code,
+              f.form_name, s.name state, p.name period, t.name doctype,
+              CASE WHEN (SELECT sum(v.value) FROM statdata v where d.id = v.doc_id) > 0 THEN 1 ELSE 0 END filled
               FROM documents d
                 JOIN forms f on d.form_id = f.id
                 JOIN mo_hierarchy u on d.ou_id = u.id
                 JOIN dic_document_states s on d.state = CAST(s.code AS numeric)
+                JOIN dic_document_types t on d.dtype = CAST(t.code AS numeric)
                 JOIN dic_periods p on d.period_id = p.code
-              WHERE 1=1 $unit_scope $scopes
-              GROUP BY d.id, u.unit_code, u.unit_name, f.form_code, f.form_name, s.name, p.name
+              WHERE d.dtype = 1 $unit_scope $scopes
+              GROUP BY d.id, u.unit_code, u.unit_name, f.form_code, f.form_name, s.name, p.name, t.name
               ORDER BY u.unit_code, f.form_code, d.period_id;";
-            //echo $doc_query;
-            $res = DB::select($doc_query);
-            $this->documents = $res;
-            /*$i = 0;
-            while ($r = $res->fetch_assoc()) {
-                $this->documents[$i] = $r;
-                $i++;
-            }*/
+            $this->documents = DB::select($doc_query);
             return $this->documents;
         }
         else {
@@ -142,7 +138,7 @@ class DocumentTree
 
     public function get_aggregates()
     {
-        $aggregates = array();
+        //$aggregates = array();
         if (count($this->o_units) > 0) {
             $unit_scope = '';
             if ($this->top_node !== '0') {
@@ -171,11 +167,11 @@ class DocumentTree
             group by d.doc_id
             ORDER BY u.unit_code, f.form_code, d.period_id";*/
             $doc_query = "SELECT d.id, u.unit_code, u.unit_name, f.form_code, f.form_name, p.name period, d.updated_at
-              FROM aggregates d
+              FROM documents d
               left join forms f on d.form_id = f.id
               left join mo_hierarchy u on d.ou_id = u.id
               join dic_periods p on d.period_id = p.code
-              where 1=1 $unit_scope $scopes ORDER BY u.unit_code, f.form_code, d.period_id";
+              where d.dtype = 2 $unit_scope $scopes ORDER BY u.unit_code, f.form_code, d.period_id";
             //echo $doc_query;
             $res = DB::select($doc_query);
             return $res;
@@ -185,7 +181,7 @@ class DocumentTree
         }
     }
 
-    public function get_filled_documents()
+/*    public function get_filled_documents()
     {
         foreach ($this->periods as $period) {
             $edited_documents = array();
@@ -199,5 +195,5 @@ class DocumentTree
                 $edited_documents[] = $row[0];
             }
         }
-    }
+    }*/
 }

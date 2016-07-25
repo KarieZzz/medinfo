@@ -17,7 +17,12 @@
             <div style="visibility: hidden;" id="navBar" >
                 <ul>
                     <li><a href="/admin">Home</a></li>
-                    <li><a href="/datainput">Ввод и корректировка данных</a></li>
+                    <li>
+                        <a href="#">Данные</a>
+                        <ul style="width: 250px;">
+                            <li><a href="/datainput">Ввод и корректировка</a></li>
+                        </ul>
+                    </li>
                     <li>
                         <a href="#">Пользователи</a>
                         <ul style="width: 250px;">
@@ -35,9 +40,9 @@
                             <li><a href="/admin/noteditablecells">Закрещенные ячейки</a></li>
                         </ul>
                     </li>
+                    <li><a href="/admin/documents">Документы</a></li>
                 </ul>
             </div><!--/.nav-collapse -->
         </div>
-        <div id="alertmessage" class="col-md-4"></div>
     </div>
 

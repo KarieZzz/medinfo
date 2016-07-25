@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePrimaryStatdataTable extends Migration
+class CreateStatdataTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreatePrimaryStatdataTable extends Migration
     public function up()
     {
         //
-        Schema::create('primary_statdata', function (Blueprint $table) {
+        Schema::create('statdata', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('doc_id')->index();
             $table->integer('table_id')->index();
@@ -32,6 +32,6 @@ class CreatePrimaryStatdataTable extends Migration
     public function down()
     {
         //
-        Schema::drop('primary_statdata');
+        Schema::drop('statdata');
     }
 }
