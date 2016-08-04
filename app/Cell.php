@@ -20,4 +20,5 @@ class Cell extends Model
             ->where('row_id', $row)
             ->where('col_id', $column);
     }
+
 }

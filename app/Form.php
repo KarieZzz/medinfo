@@ -12,13 +12,12 @@ class Form extends Model
      * @var array
      */
     protected $fillable = [
-        'form_code', 'form_name', 'file_name', 'medstat_code', 'medinfo_id',
+        'form_code', 'form_name', 'form_index', 'file_name', 'medstat_code', 'medinfo_id',
     ];
 
     public function tables()
     {
         return $this->hasMany('App\Table');
     }
-
 
 }

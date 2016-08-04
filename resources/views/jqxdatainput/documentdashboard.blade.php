@@ -25,122 +25,20 @@
                     </ul>
                     <div>
                         <div id="formcheckboxesPanel">
-                            <div id="formecheckboxs">
-                                <input id="allForms" type="button" value="Выбрать все" />
-                                <input id="noForms" type="button" value="Снять выбор" />
-                                <div style="margin-top: 15px">
-                                    <div id='f30' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>30</span></div>
-                                    <div id='f17' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>17</span></div>
-                                    <div id='f12' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>12</span></div>
-                                    <div id='f14' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>14</span></div>
-                                    <div id='f14дс' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>14дс</span></div>
-                                    <div id='f16-вн' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>16-вн</span></div>
-                                    <div id='f57' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>57</span></div>
-                                    <div id='f1-РБ' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>1-РБ</span></div>
-                                    <div id='f15' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>15</span></div>
-                                    <div id='f16' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>16</span></div>
-                                    <hr style="clear: both" />
-                                    <div id='f13' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>13</span></div>
-                                    <div id='f31' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>31</span></div>
-                                    <div id='f32' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>32</span></div>
-                                    <div id='f32_вкл' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>32_вкл</span></div>
-                                    <div id='f19' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>19</span></div>
-                                    <div id='f1-ДЕТИ' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>1-Дети</span></div>
-                                    <hr style="clear: both" />
-                                    <div id='f10' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>10</span></div>
-                                    <div id='f11' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>11</span></div>
-                                    <div id='f36' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>36</span></div>
-                                    <div id='f36-ПЛ' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>36-ПЛ</span></div>
-                                    <div id='f37' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>37</span></div>
-                                    <hr style="clear: both" />
-                                    <div id='f9' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>9</span></div>
-                                    <div id='f34' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>34</span></div>
-                                    <hr style="clear: both" />
-                                    <div id='f7-Т' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>7-Т</span></div>
-                                    <div id='f39' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>39</span></div>
-                                    <div id='f41' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>41</span></div>
-                                    <div id='f53' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>53</span></div>
-                                    <div id='f55' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>55</span></div>
-                                    <div id='f56' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>56</span></div>
-                                    <div id='f61' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>61</span></div>
-                                    <div id='f70' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>70</span></div>
-                                    <hr style="clear: both" />
-                                    <div id='f7' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>7</span></div>
-                                    <div id='f35' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>35</span></div>
-                                    <hr style="clear: both" />
-                                    <div id='f8' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>8</span></div>
-                                    <div id='f33' class="formbox" style='margin-left: 10px;float: left; font-size: 0.9em'>
-                                        <span>33</span></div>
-                                    <hr style="clear: both" />
-                                </div>
+                            <div id="formsListbox" style="float: left; margin-right: 30px"></div>
+                            <div id="selectedFormBox">
+                                <div id="checkAllForms"><span>Выбрать все формы</span></div>
                             </div>
                         </div>
                     </div>
                     <div>
                         <div id="statecheckboxs" class="jqx-hideborder  jqx-hidescrollbars">
-                            <input id="allStates" type="button" value="Выбрать все" />
-                            <input id="noStates" type="button" value="Снять выбор" />
-                            <div style="margin-top: 15px">
-                                <div id='st2' class="statebox" style='margin-left: 10px'>
-                                    <span>Выполняется</span></div>
-                                <div id='st4' class="statebox" style='margin-left: 10px'>
-                                    <span>Подготовлен к проверке</span></div>
-                                <div id='st8' class="statebox" style='margin-left: 10px'>
-                                    <span>Принят</span></div>
-                                <div id='st16' class="statebox" style='margin-left: 10px'>
-                                    <span>Возвращен на доработку</span></div>
-                                <div id='st32' class="statebox" style='margin-left: 10px'>
-                                    <span>Утвежден</span></div>
-                            </div>
+                            <div id="statesListbox" style="float: left; margin-right: 30px"></div>
+                            <div id="checkAllStates"><span>Выбрать все статусы</span></div>
                         </div>
                     </div>
                     <div>
-                        <div id="periodcheckboxes" class="jqx-hideborder  jqx-hidescrollbars">
-                            <input id="allPeriods" type="button" value="Выбрать все" />
-                            <input id="noPeriods" type="button" value="Снять выбор" />
-                            <div style="margin-top: 15px">
-                                <div id='pl02345j0' class="periodbox" style='margin-left: 10px'>
-                                    <span>2013</span></div>
-                                <div id='pl02345k0' class="periodbox" style='margin-left: 10px'>
-                                    <span>2014</span></div>
-                                <div id='pl02345l0' class="periodbox" style='margin-left: 10px'>
-                                    <span>2015</span></div>
-                            </div>
-                        </div>
+                        <div id="periodsListbox" style="margin: 10px"></div>
                     </div>
                 </div>
             </div>
@@ -226,7 +124,7 @@
         var current_user_role = '{{ $worker->role }}';
         var current_user_id = '{{ $worker->id }}';
         var audit_permission = {{ $audit_permission ? 'true' : 'false' }};
-        var periods = ['{{ $period_id }}'];
+        var periods = {!! $periods !!};
         var disabled_states = [{!! $disabled_states !!}];
         var mo_tree_url = 'admin/fetch_mo_tree/';
         var docsource_url = 'datainput/fetchdocuments?';
@@ -239,9 +137,13 @@
         var edit_form_url = 'datainput/formdashboard';
         var edit_aggregate_url = 'datainput/aggregatedashboard';
         var export_form_url = 'export_form_to_excel.php?';
-        var checkedform = ['f30','f17','f12','f14','f14дс','f16','f57','f1-РБ','f15','f16-вн','f13','f31','f32','f32_вкл','f19','f1-ДЕТИ','f10','f11','f36','f36-ПЛ','f37','f9','f34','f7','f35','f8','f33','f7-Т','f39','f41', 'f53','f55','f56','f61','f70'];
-        var checkedstates = ['st2', 'st4', 'st8', 'st16', 'st32'];
-        var checkedperiods = ['pl02345l0'];
+        var forms = {!! $forms  !!};
+        var states = {!! $states !!};
+        var checkedforms = {!! $form_ids !!};
+        var checkedstates = {!! $state_ids !!};
+        //var checkedform = ['f30','f17','f12','f14','f14дс','f16','f57','f1-РБ','f15','f16-вн','f13','f31','f32','f32_вкл','f19','f1-ДЕТИ','f10','f11','f36','f36-ПЛ','f37','f9','f34','f7','f35','f8','f33','f7-Т','f39','f41', 'f53','f55','f56','f61','f70'];
+        //var checkedstates = ['st2', 'st4', 'st8', 'st16', 'st32'];
+        var checkedperiods = [{{ $period_ids }}];
         var current_document_form_code;
         var current_document_form_name;
         var current_document_ou_name;

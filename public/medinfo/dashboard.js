@@ -5,6 +5,13 @@ var raiseError = function(xhr, comment) {
     $("#currentError").text(comment +  ' (' + xhr.status + ' ' + xhr.statusText + ')');
     $("#serverErrorNotification").jqxNotification("open");
 };
+var raiseInfo = function(comment) {
+    if (typeof comment == 'undefined') {
+        comment = 'Текст информационного сообщения по умолчанию ';
+    }
+    $("#currentInfoMessage").text(comment);
+    $("#infoNotification").jqxNotification("open");
+};
 var localize = function() {
     var localizationobj = {};
     localizationobj.thousandsseparator = " ";

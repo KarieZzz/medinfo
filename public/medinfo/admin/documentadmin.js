@@ -2,6 +2,11 @@
  * Created by shameev on 28.06.2016.
  */
 // Инициализация источников данных для таблиц
+var docroute = function () {
+    var route = '&ou=' + current_top_level_node +  '&dtypes=' + checkeddtypes.join();
+    route += '&states='+ checkedstates.join() +'&forms=' + checkedforms.join() + '&periods=' + checkedperiods.join()
+    return route;
+};
 var datasources = function() {
     var mo_source =
     {
@@ -34,7 +39,7 @@ var datasources = function() {
             { name: 'filled', type: 'bool' }
         ],
         id: 'id',
-        url: docsource_url+'&ou='+current_top_level_node+'&states='+checkedstates.join()+'&forms='+checkedform.join()+'&periods='+checkedperiods.join(),
+        url: docsource_url + docroute(),
         root: null
     };
     mo_dataAdapter = new $.jqx.dataAdapter(mo_source);
@@ -47,51 +52,83 @@ var datasources = function() {
     });
 };
 var checkformfilter = function() {
-    var checkformboxes = $('.formbox');
-    checkedform = [];
-    checkformboxes.each(function() {
-        if ($(this).jqxCheckBox('checked')) {
-            checkedform.push($(this).attr('id'));
-        }
-    });
+    checkedforms = [];
+    var checkedItems = $("#formsListbox").jqxListBox('getCheckedItems');
+    var formcount = checkedItems.length;
+    for (i=0; i < formcount; i++) {
+        checkedforms.push(checkedItems[i].value);
+    }
 };
 var checkstatefilter = function() {
-    var checkboxes = $('.statebox');
     checkedstates = [];
-    var i = 0;
-    checkboxes.each(function() {
-        if ($(this).jqxCheckBox('checked')) {
-            checkedstates.push($(this).attr('id'));
-        }
-        i++;
-    });
+    var checkedItems = $("#statesListbox").jqxListBox('getCheckedItems');
+    var statecount = checkedItems.length;
+    for (i=0; i < statecount; i++) {
+        checkedstates.push(checkedItems[i].value);
+    }
 };
 var checkperiodfilter = function() {
-    var checkboxes = $('.periodbox');
     checkedperiods = [];
-    var i = 0;
-    checkboxes.each(function() {
-        if ($(this).jqxCheckBox('checked')) {
-            checkedperiods.push($(this).attr('id'));
-        }
-        i++;
-    });
+    var checkedItems = $("#periodsListbox").jqxListBox('getCheckedItems');
+    var periodcount = checkedItems.length;
+    for (i=0; i < periodcount; i++) {
+        checkedperiods.push(checkedItems[i].value);
+    }
 };
+var checkdtypefilter = function() {
+    checkeddtypes = [];
+    var checkedItems = $("#dtypesListbox").jqxListBox('getCheckedItems');
+    var typecount = checkedItems.length;
+    for (i=0; i < typecount; i++) {
+        checkeddtypes.push(checkedItems[i].value);
+    }
+};
+// Возвращает массив с идентификаторами выделенных документов
+var getselecteddocuments = function () {
+    var rowindexes = $('#documentList').jqxGrid('getselectedrowindexes');
+    indexes_length =  rowindexes.length;
+    var row_ids = [];
+    for (i = 0; i < indexes_length; i++) {
+        row_ids.push($('#documentList').jqxGrid('getrowid', rowindexes[i]));
+    }
+    return row_ids;
+};
+
 // обновление таблиц первичных и сводных документов в зависимости от выделенных форм, периодов, статусов документов
 var updatedocumenttable = function() {
     var old_doc_url = docsource.url;
-    var states = checkedstates.join();
-    var forms = checkedform.join();
-    var periods = checkedperiods.join();
-    var new_filter =  '&ou=' +current_top_level_node +'&states='+states+'&forms='+forms+'&periods=' + periods;
-    var new_doc_url = docsource_url + new_filter;
+    var new_doc_url = docsource_url + docroute();
     if (new_doc_url != old_doc_url) {
         docsource.url = new_doc_url;
         $('#documentList').jqxGrid('clearselection');
         $('#documentList').jqxGrid('updatebounddata');
     }
 };
-// Рендеринг панели инструментов для таблицы первичных документов
+
+// Инициализация разбивки рабочего стола на области
+var initsplitters = function() {
+    $("#mainSplitter").jqxSplitter(
+        {
+            width: '100%',
+            height: '100%',
+            theme: theme,
+            panels:
+                [
+                    { size: '40%', min: '10%'},
+                    { size: '60%', min: '10%'}
+                ]
+        }
+    );
+    $('#leftPanel').jqxSplitter({
+        width: '100%',
+        height: '100%',
+        theme: theme,
+        orientation: 'horizontal',
+        panels: [{ size: '50%', min: 100, collapsible: false }, { min: '100px', collapsible: true}]
+    });
+};
+
+// инициализация дерева медицинских организаций/территорий
 var initmotree = function() {
     $("#moTreeContainer").jqxPanel({width: '100%', height: '100%'});
     $("#moTree").jqxTreeGrid(
@@ -134,84 +171,148 @@ var initmotree = function() {
             return true;
         });
 };
+
+// инициализация источников данных для предустановленных фильтров
+var initfilterdatasources = function() {
+    var forms_source =
+    {
+        datatype: "json",
+        datafields: [
+            { name: 'id' },
+            { name: 'form_code' }
+        ],
+        id: 'id',
+        localdata: forms
+    };
+    var states_source =
+    {
+        datatype: "array",
+        datafields: [
+            { name: 'code' },
+            { name: 'name' }
+        ],
+        id: 'code',
+        localdata: states
+    };
+    var periods_source =
+    {
+        datatype: "json",
+        datafields: [
+            { name: 'id' },
+            { name: 'name' }
+        ],
+        id: 'id',
+        localdata: periods
+    };
+    var dtypes_source =
+    {
+        datatype: "array",
+        datafields: [
+            { name: 'code' },
+            { name: 'name' }
+        ],
+        id: 'code',
+        localdata: dtypes
+    };
+    formsDataAdapter = new $.jqx.dataAdapter(forms_source);
+    statesDataAdapter = new $.jqx.dataAdapter(states_source);
+    changestateDA =  new $.jqx.dataAdapter(states_source);
+    periodsDataAdapter = new $.jqx.dataAdapter(periods_source);
+    dtypesDataAdapter = new $.jqx.dataAdapter(dtypes_source);
+};
+
+// инициализация вкладок-фильтров с элементами управления
 var initfiltertabs = function() {
     $("#filtertabs").jqxTabs({  height: '100%', width: '100%', theme: theme });
-    $("#allForms").jqxButton({theme: theme});
-    $('#allForms').click(function () {
-        var checkboxes = $('.formbox');
-        checkboxes.each(function() {
-            $(this).jqxCheckBox('check');
-        });
+    $("#formsListbox").jqxListBox({
+        theme: theme,
+        source: formsDataAdapter,
+        displayMember: 'form_code',
+        valueMember: 'id',
+        checkboxes: true,
+        filterable:true,
+        filterPlaceHolder: 'Фильтр',
+        width: 150,
+        height: 290
+    });
+    $("#formsListbox").jqxListBox('checkAll');
+    $("#formsListbox").on('click', function () {
         checkformfilter();
         updatedocumenttable();
     });
-    $("#noForms").jqxButton({theme: theme});
-    $('#noForms').click(function () {
-        var checkboxes = $('.formbox');
-        checkboxes.each(function() {
-            $(this).jqxCheckBox('uncheck');
-        });
+    $("#checkAllForms").jqxCheckBox({ width: 170, height: 20, theme: theme, checked: true});
+    $('#checkAllForms').on('checked', function (event) {
+        $("#formsListbox").jqxListBox('checkAll');
         checkformfilter();
         updatedocumenttable();
     });
-    $(".formbox").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $('.formbox').on('click', function (event) {
+    $('#checkAllForms').on('unchecked', function (event) {
+        $("#formsListbox").jqxListBox('uncheckAll');
         checkformfilter();
         updatedocumenttable();
     });
-    $("#allStates").jqxButton({theme: theme});
-    $('#allStates').click(function () {
-        var checkboxes = $('.statebox');
-        checkboxes.each(function() {
-            $(this).jqxCheckBox('check');
-        });
-        checkstatefilter();
-        updatedocumenttable();
-    });
-    $("#noStates").jqxButton({theme: theme});
-    $('#noStates').click(function () {
-        var checkboxes = $('.statebox');
-        checkboxes.each(function() {
-            $(this).jqxCheckBox('uncheck');
-        });
-        checkstatefilter();
-        updatedocumenttable();
-    });
-    $("#formcheckboxesPanel").jqxPanel({ width: '100%', height: '98%'});
 
-    $(".statebox").jqxCheckBox({ width: 120, height: 25, theme: theme, enableContainerClick: false, checked: true});
-    $('.statebox').on('click', function (event) {
+    $("#statesListbox").jqxListBox({
+        theme: theme,
+        source: statesDataAdapter,
+        displayMember: 'name',
+        valueMember: 'code',
+        checkboxes: true,
+        width: 230,
+        height: 200
+    });
+    $("#statesListbox").jqxListBox('checkAll');
+    $("#statesListbox").on('click', function () {
         checkstatefilter();
         updatedocumenttable();
     });
-    $(".periodbox").jqxCheckBox({ width: 120, height: 25, enableContainerClick: false, theme: theme });
-    $("#pl02345l0").jqxCheckBox('checked', true);
-/*    $("#pl02345j0").jqxCheckBox({ width: 120, height: 25, enableContainerClick: false, theme: theme });
-    $("#pl02345k0").jqxCheckBox({ width: 190, height: 25, enableContainerClick: false, theme: theme});
-    $("#pl02345l0").jqxCheckBox({ width: 120, height: 25, enableContainerClick: false, theme: theme, checked: true});*/
-    $('.periodbox').on('click', function (event) {
+    $("#checkAllStates").jqxCheckBox({ width: 170, height: 20, theme: theme, checked: true});
+    $('#checkAllStates').on('checked', function (event) {
+        $("#statesListbox").jqxListBox('checkAll');
+        checkstatefilter();
+        updatedocumenttable();
+    });
+    $('#checkAllStates').on('unchecked', function (event) {
+        $("#statesListbox").jqxListBox('uncheckAll');
+        checkstatefilter();
+        updatedocumenttable();
+    });
+
+    $("#periodsListbox").jqxListBox({
+        theme: theme,
+        source: periodsDataAdapter,
+        displayMember: 'name',
+        valueMember: 'id',
+        checkboxes: true,
+        width: 230,
+        height: 200
+    });
+    var item = $("#periodsListbox").jqxListBox('getItem', 0) ;
+    $("#periodsListbox").jqxListBox('checkItem', item );
+    $("#periodsListbox").on('click', function () {
         checkperiodfilter();
         updatedocumenttable();
     });
-    $("#allPeriods").jqxButton({theme: theme});
-    $('#allPeriods').click(function () {
-        var checkboxes = $('.periodbox');
-        checkboxes.each(function() {
-            $(this).jqxCheckBox('check');
-        });
-        checkperiodfilter();
+
+    $("#dtypesListbox").jqxListBox({
+        theme: theme,
+        source: dtypesDataAdapter,
+        displayMember: 'name',
+        valueMember: 'code',
+        checkboxes: true,
+        width: 230,
+        height: 200
+    });
+    $("#dtypesListbox").jqxListBox('checkAll');
+    $("#dtypesListbox").on('click', function () {
+        checkdtypefilter();
         updatedocumenttable();
     });
-    $("#noPeriods").jqxButton({theme: theme});
-    $('#noPeriods').click(function () {
-        var checkboxes = $('.periodbox');
-        checkboxes.each(function() {
-            $(this).jqxCheckBox('uncheck');
-        });
-        checkperiodfilter();
-        updatedocumenttable();
-    });
-}
+};
+//var pitem = $("#periodsListbox").jqxListBox('getItemByValue', "Годовой. 2015.");
+
+
+// инициализация таблицы-перечня отчетных документов
 var initdocumentslist = function() {
     $("#documentList").jqxGrid(
         {
@@ -222,7 +323,7 @@ var initdocumentslist = function() {
             columnsresize: true,
             selectionmode: 'checkbox',
             columns: [
-                { text: '№', datafield: 'id', width: '60px' },
+                { text: '№', datafield: 'id', width: '60px', cellsrenderer: linkrenderer },
                 { text: 'Тип', datafield: 'doctype' , width: '100px'},
                 { text: 'МО', datafield: 'unit_name', width: '400px' },
                 { text: 'Период', datafield: 'period', width: '100px' },
@@ -231,6 +332,117 @@ var initdocumentslist = function() {
                 { text: 'Данные', datafield: 'filled', columntype: 'checkbox', width: 100 }
             ]
         });
+};
+
+var initdocumentactions = function() {
+    $("#changeStates").jqxButton({ theme: theme});
+    $("#changeStates").click(function() {
+        var row_ids = noselected_error("Не выбрано ни одного документа для смены статуса");
+        if (!row_ids) {
+            return false;
+        }
+        var selectedstate = $("#statesDropdownList").jqxDropDownList('getSelectedItem');
+        if (!selectedstate) {
+            raiseError("Не выбран статус документа для изменения");
+            return false;
+        }
+        var data = "documents=" + row_ids + '&state=' + selectedstate.value;
+        var confirm_text = 'Подтвердите смену статуса у документов №№ ' + row_ids + '. \n';
+        confirm_text += 'Выбранный статус "' + selectedstate.label + '". \n';
+        if (!confirm(confirm_text)) {
+            return false;
+        }
+        $.ajax({
+            dataType: 'json',
+            url: changestate_url,
+            method: "PATCH",
+            data: data,
+            success: function (data, status, xhr) {
+                if (data.state_changed == 1) {
+                    raiseInfo(data.comment + ' Количество измененных документов ' + data.affected_documents + '.');
+                }
+                $('#documentList').jqxGrid('clearselection');
+                $('#documentList').jqxGrid('updatebounddata');
+            },
+            error: function (xhr, status, errorThrown) {
+                var error_text = "Ошибка сохранения данных на сервере. " + xhr.status + ' (' + xhr.statusText + ') - ' + status + ". Обратитесь к администратору.";
+                raiseError(error_text);
+            }
+        });
+    });
+    $("#deleteDocuments").jqxButton({ theme: theme });
+    $("#deleteDocuments").click(function () {
+        var row_ids = noselected_error("Не выбрано ни одного документа для удаления");
+        if (!row_ids) {
+            return false;
+        }
+        var data = "documents=" + row_ids;
+        var confirm_text = 'Подтвердите удаление документов №№ ' + row_ids + '. \n';
+        confirm_text += 'Документы будут удалены вместе со всеми введенными в них статданными без возможности восстановления!';
+        if (!confirm(confirm_text)) {
+            return false;
+        }
+        $.ajax({
+            dataType: 'json',
+            url: deletedocuments_url,
+            method: "DELETE",
+            data: data,
+            success: function (data, status, xhr) {
+                if (data.documents_deleted == 1) {
+                    raiseInfo(data.comment);
+                }
+                $('#documentList').jqxGrid('clearselection');
+                $('#documentList').jqxGrid('updatebounddata');
+            },
+            error: function (xhr, status, errorThrown) {
+                var error_text = "Ошибка сохранения данных на сервере. " + xhr.status + ' (' + xhr.statusText + ') - ' + status + ". Обратитесь к администратору.";
+                raiseError(error_text);
+            }
+        });
+    });
+    $("#eraseData").jqxButton ({ theme: theme});
+    $("#eraseData").click(function () {
+        var row_ids = noselected_error("Не выбрано ни одного документа для удаления статданных");
+        if (!row_ids) {
+            return false;
+        }
+        var data = "documents=" + row_ids;
+        var confirm_text = 'Подтвердите удаление статданных из документов №№ ' + row_ids + '. \n';
+        confirm_text += 'Данные будут потеряны без возможности дальнейшего восстановления!';
+        if (!confirm(confirm_text)) {
+            return false;
+        }
+        $.ajax({
+            dataType: 'json',
+            url: erasedocuments_url,
+            method: "PATCH",
+            data: data,
+            success: function (data, status, xhr) {
+                if (data.statdata_erased == 1) {
+                    raiseInfo(data.comment);
+                }
+                $('#documentList').jqxGrid('clearselection');
+                $('#documentList').jqxGrid('updatebounddata');
+            },
+            error: function (xhr, status, errorThrown) {
+                var error_text = "Ошибка сохранения данных на сервере. " + xhr.status + ' (' + xhr.statusText + ') - ' + status + ". Обратитесь к администратору.";
+                raiseError(error_text);
+            }
+        });
+    });
+};
+var linkrenderer = function (row, column, value) {
+    var html = "<div class='jqx-grid-cell-left-align' style='margin-top: 6px'>";
+    html += "<a href='/datainput/formdashboard/" + value + "' target='_blank' title='Открыть для редактирования'>" + value + "</a></div>";
+    return html;
+};
+var noselected_error = function(message) {
+    var row_ids = getselecteddocuments();
+    if (row_ids.length == 0) {
+        raiseError(message);
+        return false;
+    }
+    return row_ids;
 };
 var initpopupwindows = function() {
     $("#changeStateWindow").jqxWindow({
@@ -460,4 +672,28 @@ var initpopupwindows = function() {
         theme: theme,
         modalOpacity: 0.01
     });
-}
+};
+var initnotifications = function() {
+    $("#serverErrorNotification").jqxNotification({
+        width: 250, position: "top-right", opacity: 0.9,
+        autoOpen: false, animationOpenDelay: 800, autoClose: false, template: "error"
+    });
+    $("#infoNotification").jqxNotification({
+        width: 250, position: "top-right", opacity: 0.9,
+        autoOpen: false, animationOpenDelay: 800, autoClose: true, autoCloseDelay: 3000, template: "info"
+    });
+};
+var raiseError = function(comment) {
+    if (typeof comment == 'undefined') {
+        comment = 'Ошибка получения данных ';
+    }
+    $("#currentError").text(comment);
+    $("#serverErrorNotification").jqxNotification("open");
+};
+var raiseInfo = function(comment) {
+    if (typeof comment == 'undefined') {
+        comment = 'Текст информационного сообщения по умолчанию ';
+    }
+    $("#currentInfoMessage").text(comment);
+    $("#infoNotification").jqxNotification("open");
+};

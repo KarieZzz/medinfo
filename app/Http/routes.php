@@ -65,7 +65,10 @@ Route::group(['middleware' => ['web']], function () {
     Route::patch('admin/workers/updateuserscope', 'Admin\WorkerAdmin@worker_scope_update');
     // Менеджер отчетных документов
     Route::get('admin/documents', 'Admin\DocumentAdminController@index');
-    Route::get('admin/fetchdocuments/{unit}', 'Admin\DocumentAdminController@fetchDocuments');
+    Route::get('admin/fetchdocuments', 'Admin\DocumentAdminController@fetchDocuments');
+    Route::delete('admin/deletedocuments', 'Admin\DocumentAdminController@deleteDocuments');
+    Route::patch('admin/erasedocuments', 'Admin\DocumentAdminController@eraseStatData');
+    Route::patch('admin/documentstatechange', 'Admin\DocumentAdminController@changeState');
 
     // Ввод и корректировка статданных
     Route::get('workerlogin', 'Auth\DatainputAuthController@getLogin' );

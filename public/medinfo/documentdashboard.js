@@ -35,7 +35,7 @@ var datasources = function() {
             { name: 'filled', type: 'bool' }
         ],
         id: 'id',
-        url: docsource_url+'&ou='+current_top_level_node+'&states='+checkedstates.join()+'&forms='+checkedform.join()+'&periods='+checkedperiods.join(),
+        url: docsource_url+'&ou='+current_top_level_node+'&states='+checkedstates.join()+'&forms='+checkedforms.join()+'&periods='+checkedperiods.join(),
         root: 'data'
     };
     aggregate_source =
@@ -51,7 +51,7 @@ var datasources = function() {
             {name: 'updated_at', type: 'string'}
         ],
         id: 'id',
-        url: aggrsource_url + '&ou=' + current_top_level_node + '&forms=' + checkedform.join()+'&periods='+checkedperiods.join(),
+        url: aggrsource_url + '&ou=' + current_top_level_node + '&forms=' + checkedforms.join()+'&periods='+checkedperiods.join(),
         root: 'data'
     }
     mo_dataAdapter = new $.jqx.dataAdapter(mo_source);
@@ -65,42 +65,35 @@ var datasources = function() {
     aggregate_report_table = new $.jqx.dataAdapter(aggregate_source);
 };
 var checkformfilter = function() {
-    var checkformboxes = $('.formbox');
-    checkedform = [];
-    checkformboxes.each(function() {
-        if ($(this).jqxCheckBox('checked')) {
-            checkedform.push($(this).attr('id'));
-        }
-    });
+    checkedforms = [];
+    var checkedItems = $("#formsListbox").jqxListBox('getCheckedItems');
+    var formcount = checkedItems.length;
+    for (i=0; i < formcount; i++) {
+        checkedforms.push(checkedItems[i].value);
+    }
 };
 var checkstatefilter = function() {
-    var checkboxes = $('.statebox');
     checkedstates = [];
-    var i = 0;
-    checkboxes.each(function() {
-        if ($(this).jqxCheckBox('checked')) {
-            checkedstates.push($(this).attr('id'));
-        }
-        i++;
-    });
+    var checkedItems = $("#statesListbox").jqxListBox('getCheckedItems');
+    var statecount = checkedItems.length;
+    for (i=0; i < statecount; i++) {
+        checkedstates.push(checkedItems[i].value);
+    }
 };
 var checkperiodfilter = function() {
-    var checkboxes = $('.periodbox');
     checkedperiods = [];
-    var i = 0;
-    checkboxes.each(function() {
-        if ($(this).jqxCheckBox('checked')) {
-            checkedperiods.push($(this).attr('id'));
-        }
-        i++;
-    });
+    var checkedItems = $("#periodsListbox").jqxListBox('getCheckedItems');
+    var periodcount = checkedItems.length;
+    for (i=0; i < periodcount; i++) {
+        checkedperiods.push(checkedItems[i].value);
+    }
 };
 // обновление таблиц первичных и сводных документов в зависимости от выделенных форм, периодов, статусов документов
 var updatedocumenttable = function() {
     var old_doc_url = docsource.url;
     var old_aggr_url = aggregate_source.url;
     var states = checkedstates.join();
-    var forms = checkedform.join();
+    var forms = checkedforms.join();
     var periods = checkedperiods.join();
     var new_filter =  '&ou=' +current_top_level_node +'&states='+states+'&forms='+forms+'&periods=' + periods;
     var new_doc_url = docsource_url + new_filter;
@@ -146,7 +139,7 @@ var mo_name_filter = function (needle) {
     rowFilterGroup.addfilter(filter_or_operator, nameRecordFilter);
     $("#Documents").jqxGrid('addfilter', 'unit_name', rowFilterGroup);
     $("#Documents").jqxGrid('applyfilters');
-}
+};
 // фильтр для быстрого поиска по наименованию учреждения/территории - сводные документы
 var mo_name_aggrfilter = function (needle) {
     var rowFilterGroup = new $.jqx.filter();
@@ -157,7 +150,7 @@ var mo_name_aggrfilter = function (needle) {
     rowFilterGroup.addfilter(filter_or_operator, nameRecordFilter);
     $("#Aggregates").jqxGrid('addfilter', 'unit_name', rowFilterGroup);
     $("#Aggregates").jqxGrid('applyfilters');
-}
+};
 // Рендеринг панели инструментов для таблицы первичных документов
 var rendertoolbar = function (toolbar) {
     var me = this;
@@ -315,7 +308,7 @@ var rendertoolbar = function (toolbar) {
      });*/
     refresh_list.click(function () {
         var states = checkedstates.join();
-        var forms = checkedform.join();
+        var forms = checkedforms.join();
         var periods = checkedperiods.join();
         var new_filter =  '&ou=' +current_top_level_node +'&states='+states+'&forms='+forms+'&periods=' + periods;
         var new_doc_url = docsource_url + new_filter;
@@ -324,7 +317,7 @@ var rendertoolbar = function (toolbar) {
         $("#DocumentMessages").html('');
         $("#DocumentAuditions").html('');
     });
-}
+};
 // Рендеринг панели инструментов для таблицы сводных документов
 var renderaggregatetoolbar = function(toolbar) {
     var me = this;
@@ -459,7 +452,7 @@ var renderaggregatetoolbar = function(toolbar) {
             var editWindow = window.open(export_form_url+'aggregate='+document_id);
         }
     });
-}
+};
 // Инициализация дерева Территорий/Медицинских организаций
 var initmotree = function() {
     $("#moTree").jqxTreeGrid(
@@ -506,124 +499,112 @@ var initmotree = function() {
         }
     );
 };
+// инициализация вкладок-фильтров с элементами управления
 var initfiltertabs = function() {
     $("#filtertabs").jqxTabs({  height: '100%', width: '100%', theme: theme });
-    $("#allForms").jqxButton({theme: theme});
-    $('#allForms').click(function () {
-        var checkboxes = $('.formbox');
-        checkboxes.each(function() {
-            $(this).jqxCheckBox('check');
-        });
+    var forms_source =
+    {
+        datatype: "json",
+        datafields: [
+            { name: 'id' },
+            { name: 'form_code' }
+        ],
+        id: 'id',
+        localdata: forms
+    };
+    formsDataAdapter = new $.jqx.dataAdapter(forms_source);
+    $("#formsListbox").jqxListBox({
+        theme: theme,
+        source: formsDataAdapter,
+        displayMember: 'form_code',
+        valueMember: 'id',
+        checkboxes: true,
+        filterable:true,
+        filterPlaceHolder: 'Фильтр',
+        width: 150,
+        height: 370
+    });
+    $("#formsListbox").jqxListBox('checkAll');
+    $("#formsListbox").on('click', function () {
         checkformfilter();
         updatedocumenttable();
     });
-    $("#noForms").jqxButton({theme: theme});
-    $('#noForms').click(function () {
-        var checkboxes = $('.formbox');
-        checkboxes.each(function() {
-            $(this).jqxCheckBox('uncheck');
-        });
-        checkformfilter();
+    $("#checkAllForms").jqxCheckBox({ width: 170, height: 20, theme: theme, checked: true});
+    $('#checkAllForms').on('checked', function (event) {
+        $("#formsListbox").jqxListBox('checkAll');
+        checkformfilter($("#formsListbox").jqxListBox('getCheckedItems'));
         updatedocumenttable();
     });
-    $(".formbox").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-/*    $("#f30").jqxCheckBox({ width: 70, height: 20,  enableContainerClick: false, checked: true, theme: theme});
-    $("#f17").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f12").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f14").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f14дс").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f16-вн").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f57").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f1-РБ").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f15").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f16").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f13").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f31").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f32").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f32_вкл").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f19").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f1-ДЕТИ").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f10").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f11").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f36").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f36-ПЛ").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f37").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f9").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f34").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f7").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f35").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f8").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f33").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f7-Т").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f39").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f41").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f53").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f55").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f56").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f61").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});
-    $("#f70").jqxCheckBox({ width: 70, height: 20, enableContainerClick: false, theme: theme, checked: true});*/
-    $('.formbox').on('click', function (event) {
-        checkformfilter();
+    $('#checkAllForms').on('unchecked', function (event) {
+        $("#formsListbox").jqxListBox('uncheckAll');
+        checkformfilter($("#formsListbox").jqxListBox('getCheckedItems'));
         updatedocumenttable();
     });
-    $("#allStates").jqxButton({theme: theme});
-    $('#allStates').click(function () {
-        var checkboxes = $('.statebox');
-        checkboxes.each(function() {
-            $(this).jqxCheckBox('check');
-        });
+    var states_source =
+    {
+        datatype: "array",
+        datafields: [
+            { name: 'code' },
+            { name: 'name' }
+        ],
+        id: 'code',
+        localdata: states
+    };
+    statesDataAdapter = new $.jqx.dataAdapter(states_source);
+    $("#statesListbox").jqxListBox({
+        theme: theme,
+        source: statesDataAdapter,
+        displayMember: 'name',
+        valueMember: 'code',
+        checkboxes: true,
+        width: 230,
+        height: 200
+    });
+    $("#statesListbox").jqxListBox('checkAll');
+    $("#statesListbox").on('click', function () {
         checkstatefilter();
         updatedocumenttable();
     });
-    $("#noStates").jqxButton({theme: theme});
-    $('#noStates').click(function () {
-        var checkboxes = $('.statebox');
-        checkboxes.each(function() {
-            $(this).jqxCheckBox('uncheck');
-        });
+    $("#checkAllStates").jqxCheckBox({ width: 170, height: 20, theme: theme, checked: true});
+    $('#checkAllStates').on('checked', function (event) {
+        $("#statesListbox").jqxListBox('checkAll');
+        checkstatefilter();
+        updatedocumenttable();
+    });
+    $('#checkAllStates').on('unchecked', function (event) {
+        $("#statesListbox").jqxListBox('uncheckAll');
         checkstatefilter();
         updatedocumenttable();
     });
     $("#formcheckboxesPanel").jqxPanel({ width: '100%', height: '98%'});
+    var periods_source =
+    {
+        datatype: "json",
+        datafields: [
+            { name: 'id' },
+            { name: 'name' }
+        ],
+        id: 'id',
+        localdata: periods
+    };
+    periodsDataAdapter = new $.jqx.dataAdapter(periods_source);
+    $("#periodsListbox").jqxListBox({
+        theme: theme,
+        source: periodsDataAdapter,
+        displayMember: 'name',
+        valueMember: 'id',
+        checkboxes: true,
+        width: 230,
+        height: 200
+    });
+    var item = $("#periodsListbox").jqxListBox('getItem', 0) ;
+    $("#periodsListbox").jqxListBox('checkItem', item );
+    $("#periodsListbox").on('click', function () {
+        checkperiodfilter();
+        updatedocumenttable();
+    });
 
-    $(".statebox").jqxCheckBox({ width: 120, height: 25, theme: theme, enableContainerClick: false, checked: true});
-/*    $("#st2").jqxCheckBox({ width: 120, height: 25, theme: theme, enableContainerClick: false, checked: true});
-    $("#st4").jqxCheckBox({ width: 190, height: 25, theme: theme, enableContainerClick: false, checked: true});
-    $("#st8").jqxCheckBox({ width: 120, height: 25, theme: theme, enableContainerClick: false, checked: true});
-    $("#st16").jqxCheckBox({ width: 120, height: 25, theme: theme, enableContainerClick: false, checked: true});
-    $("#st32").jqxCheckBox({ width: 120, height: 25, theme: theme, enableContainerClick: false, checked: true});*/
-    $('.statebox').on('click', function (event) {
-        checkstatefilter();
-        updatedocumenttable();
-    });
-    $(".periodbox").jqxCheckBox({ width: 120, height: 25, enableContainerClick: false, theme: theme });
-    $("#pl02345l0").jqxCheckBox('checked', true);
-/*    $("#pl02345j0").jqxCheckBox({ width: 120, height: 25, enableContainerClick: false, theme: theme });
-    $("#pl02345k0").jqxCheckBox({ width: 190, height: 25, enableContainerClick: false, theme: theme});
-    $("#pl02345l0").jqxCheckBox({ width: 120, height: 25, enableContainerClick: false, theme: theme, checked: true});*/
-    $('.periodbox').on('click', function (event) {
-        checkperiodfilter();
-        updatedocumenttable();
-    });
-    $("#allPeriods").jqxButton({theme: theme});
-    $('#allPeriods').click(function () {
-        var checkboxes = $('.periodbox');
-        checkboxes.each(function() {
-            $(this).jqxCheckBox('check');
-        });
-        checkperiodfilter();
-        updatedocumenttable();
-    });
-    $("#noPeriods").jqxButton({theme: theme});
-    $('#noPeriods').click(function () {
-        var checkboxes = $('.periodbox');
-        checkboxes.each(function() {
-            $(this).jqxCheckBox('uncheck');
-        });
-        checkperiodfilter();
-        updatedocumenttable();
-    });
-}
+};
 var initdocumentstabs = function() {
     $("#documenttabs").jqxTabs({  height: '100%', width: '100%', theme: theme });
     $("#Documents").jqxGrid(
@@ -737,7 +718,7 @@ var initdocumentstabs = function() {
         var document_id = $('#Aggregates').jqxGrid('getrowid', rowindex);
         var editWindow = window.open(edit_aggregate_url + '/' + document_id);
     });
-}
+};
 var initdocumentproperties = function() {
     $('#DocumentPropertiesSplitter').jqxSplitter({
         width: '100%',
@@ -767,7 +748,7 @@ var initdocumentproperties = function() {
         pWindow.document.write(print_style + link_to_print + header + $("#DocumentAuditions").html());
     });
     $("#auditExpander").jqxExpander({toggleMode: 'none', showArrow: false, width: "100%", height: "100%", theme: theme  });
-}
+};
 var initpopupwindows = function() {
     $("#changeStateWindow").jqxWindow({
         width: 430,
@@ -996,4 +977,4 @@ var initpopupwindows = function() {
         theme: theme,
         modalOpacity: 0.01
     });
-}
+};

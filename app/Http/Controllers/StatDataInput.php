@@ -11,6 +11,9 @@ use App\WorkerScope;
 use App\Medinfo\PeriodMM;
 use App\Medinfo\UnitTree;
 use App\Medinfo\DocumentTree;
+use App\Period;
+use App\Form;
+use App\DicDocumentState;
 
 class StatDataInput extends Controller
 {
@@ -25,8 +28,8 @@ class StatDataInput extends Controller
         $worker = Auth::guard('datainput')->user();
         $worker_scope = WorkerScope::where('worker_id', $worker->id)->first()->ou_id;
         $permission = $worker->permission;
-        $period = new PeriodMM(config('app.default_period'));
-        $period_id = $period->getTableName();
+        //$period = new PeriodMM(config('app.default_period'));
+        //$period_id = $period->getTableName();
         $disabled_states = config('app.disabled_states.' . $worker->role);
         if (!is_null($worker_scope)) {
             $mo_tree = UnitTree::getSimpleTree();
@@ -37,16 +40,24 @@ class StatDataInput extends Controller
         else {
             $audit_permission = false;
         }
-        return view('jqxdatainput.documentdashboard', compact('mo_tree', 'worker', 'worker_scope', 'period_id', 'disabled_states', 'audit_permission'));
+        $forms = Form::orderBy('form_index', 'desc')->get(['id', 'form_code']);
+        $form_ids = $forms->pluck('id');
+        $states = DicDocumentState::all(['code', 'name']);
+        $state_ids = $states->pluck('code');
+        $periods = Period::orderBy('begin_date', 'desc')->get(['id', 'name']);
+        $period_ids = $periods[0]->id;
+        return view('jqxdatainput.documentdashboard', compact('mo_tree', 'worker', 'worker_scope', 'periods', 'period_ids',
+            'disabled_states', 'audit_permission', 'forms', 'form_ids', 'states', 'state_ids'));
     }
 
     public function fetchdocuments(Request $request)
     {
         $top_node = $request->ou;
+        $dtypes[] = 1;
         $states = explode(",", $request->states);
         $forms = explode(",", $request->forms);
         $periods = explode(",", $request->periods);
-        $scopes = compact('top_node', 'states', 'forms', 'periods');
+        $scopes = compact('top_node', 'dtypes', 'states', 'forms', 'periods');
         $d = new DocumentTree($scopes);
         $data = $d->get_documents();
         return $data;
@@ -55,10 +66,11 @@ class StatDataInput extends Controller
     public function fetchaggregates(Request $request)
     {
         $top_node = $request->ou;
+        $dtypes[] = 2;
         $states = array();
         $forms = explode(",", $request->forms);
         $periods = explode(",", $request->periods);
-        $scopes = compact('top_node', 'states', 'forms', 'periods');
+        $scopes = compact('top_node', 'dtypes', 'states', 'forms', 'periods');
         $d = new DocumentTree($scopes);
         $data = $d->get_aggregates();
         return $data;

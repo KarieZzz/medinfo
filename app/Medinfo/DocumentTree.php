@@ -17,6 +17,7 @@ class DocumentTree
     private $states = array();
     private $forms = array();
     private $periods = array();
+    private $dtypes = array();
     private $scopes = array();
     private $documents = array();
 
@@ -37,7 +38,9 @@ class DocumentTree
             if (isset($scopes['periods'])) {
                 $this->periods = $scopes['periods'];
             }
-
+            if (isset ($scopes['dtypes'])) {
+                $this->dtypes = $scopes['dtypes'];
+            }
         }
         else {
             echo("Не определены условия выборки документов");
@@ -48,25 +51,30 @@ class DocumentTree
     }
 
     public function setScopes() {
-        $s = array();
-        $f = array();
-        $p = array();
-        foreach($this->states as $state) {
+        //$s = array();
+        //$f = array();
+        //$p = array();
+/*        foreach($this->states as $state) {
             $s[] = substr($state, 2);
-        }
-        foreach($this->forms as $form) {
+        }*/
+/*        foreach($this->forms as $form) {
             $f[] = substr($form, 1);
-        }
+        }*/
         foreach($this->periods as $period) {
             $p[] = substr($period, 1);
         }
-        if (count($s) > 0 ) {
-            $this->scopes[] = 'and d.state in (' . implode(",", $s) . ')';
+        if (count($this->dtypes) > 0 ) {
+            $this->scopes[] = !empty(implode(",", $this->dtypes)) ?  ' and d.dtype in (' . implode(",", $this->dtypes) . ')' : ' and d.type = 0 ';
         }
-        if (count($f) > 0 ) {
-            $this->scopes[] = "and f.form_code in ('" . implode("','", $f) . "')";
+        if (count($this->states) > 0 ) {
+            $this->scopes[] = !empty(implode(",", $this->states)) ? ' and d.state in (' . implode(",", $this->states) . ')' : ' and d.state = 0';
         }
-        $this->scopes[] = "and d.period_id in ('" . implode("','", $p) . "')";
+        if (count($this->forms) > 0 ) {
+            $this->scopes[] = !empty(implode(",", $this->forms)) ?  ' and f.id in (' . implode(",", $this->forms) . ')' : ' and f.id = 0 ';
+        }
+        if (count($this->periods) > 0 ) {
+            $this->scopes[] = !empty(implode(",", $this->periods)) ?  ' and d.period_id in (' . implode(",", $this->periods) . ')' : ' and d.period_id = 0 ';
+        }
     }
 
     public function get_descendants()
@@ -116,7 +124,7 @@ class DocumentTree
             if (count($this->scopes) > 0 ) {
                 $scopes = implode(" ", $this->scopes);
             }
-            $doc_query = "SELECT DISTINCT ON(u.unit_code, f.form_code) d.id, u.unit_code, u.unit_name, f.form_code,
+            $doc_query = "SELECT d.id, u.unit_code, u.unit_name, f.form_code,
               f.form_name, s.name state, p.name period, t.name doctype,
               CASE WHEN (SELECT sum(v.value) FROM statdata v where d.id = v.doc_id) > 0 THEN 1 ELSE 0 END filled
               FROM documents d
@@ -124,10 +132,11 @@ class DocumentTree
                 JOIN mo_hierarchy u on d.ou_id = u.id
                 JOIN dic_document_states s on d.state = CAST(s.code AS numeric)
                 JOIN dic_document_types t on d.dtype = CAST(t.code AS numeric)
-                JOIN dic_periods p on d.period_id = p.code
-              WHERE d.dtype = 1 $unit_scope $scopes
+                JOIN periods p on d.period_id = p.id
+              WHERE 1=1 $unit_scope $scopes
               GROUP BY d.id, u.unit_code, u.unit_name, f.form_code, f.form_name, s.name, p.name, t.name
               ORDER BY u.unit_code, f.form_code, d.period_id;";
+            //echo $doc_query;
             $this->documents = DB::select($doc_query);
             return $this->documents;
         }
@@ -170,9 +179,9 @@ class DocumentTree
               FROM documents d
               left join forms f on d.form_id = f.id
               left join mo_hierarchy u on d.ou_id = u.id
-              join dic_periods p on d.period_id = p.code
-              where d.dtype = 2 $unit_scope $scopes ORDER BY u.unit_code, f.form_code, d.period_id";
-            //echo $doc_query;
+              join periods p on d.period_id = p.id
+              where 1=1 $unit_scope $scopes ORDER BY u.unit_code, f.form_code, d.period_id";
+            //dd($doc_query);
             $res = DB::select($doc_query);
             return $res;
         }
