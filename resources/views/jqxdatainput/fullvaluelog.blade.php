@@ -16,7 +16,7 @@
 <body>
 <div class="container">
     <h3>Протокол изменений документа № {{ $document->id }}</h3>
-    <h4>Медицинская организация: {{ $current_unit->unit_name }}. Форма {{ $form->form_code  }}. Период: {{ $period->getYear() }}. </h4>
+    <h4>Медицинская организация: {{ $current_unit->unit_name }}. Форма {{ $form->form_code  }}. Период: {{ $period->name }} </h4>
     <div id="documentLog">
         <table class="table table-bordered table-condensed">
             <tr>

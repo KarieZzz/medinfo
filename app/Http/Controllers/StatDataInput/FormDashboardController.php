@@ -7,15 +7,12 @@ use Carbon\Carbon;
 use Illuminate\Auth\GenericUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
 use App\Http\Requests;
-use App\Http\Controllers\Controller;
-
+//use App\Http\Controllers\Controller;
 use App\Unit;
 use App\Period;
 use App\Form;
-use App\Medinfo\PeriodMM;
-
+//use App\Medinfo\PeriodMM;
 use App\Document;
 use App\Table;
 use App\NECells;
@@ -264,7 +261,7 @@ class FormDashboardController extends DashboardController
         $document = Document::find($document);
         $form = Form::find($document->form_id);
         $current_unit = Unit::find($document->ou_id);
-        $period = PeriodMM::getPeriodFromId($document->period_id);
+        $period = Period::find($document->period_id);
         $values = ValuechangingLog::where('d', $document->id)->orderBy('occured_at', 'desc')
             ->with('worker')
             ->with('table')
