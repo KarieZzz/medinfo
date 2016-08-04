@@ -60,9 +60,9 @@ class DocumentTree
 /*        foreach($this->forms as $form) {
             $f[] = substr($form, 1);
         }*/
-        foreach($this->periods as $period) {
+/*        foreach($this->periods as $period) {
             $p[] = substr($period, 1);
-        }
+        }*/
         if (count($this->dtypes) > 0 ) {
             $this->scopes[] = !empty(implode(",", $this->dtypes)) ?  ' and d.dtype in (' . implode(",", $this->dtypes) . ')' : ' and d.type = 0 ';
         }

@@ -12,8 +12,10 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 use App\Unit;
+use App\Period;
 use App\Form;
 use App\Medinfo\PeriodMM;
+
 use App\Document;
 use App\Table;
 use App\NECells;
@@ -38,8 +40,7 @@ class FormDashboardController extends DashboardController
         $current_unit = Unit::find($document->ou_id);
         $editpermission = $this->isEditPermission($worker->permission, $document->state);
         $editpermission ? $editmode = 'Редактирование' : $editmode = 'Только чтение';
-        $period_id = $document->period_id;
-        $period = PeriodMM::getPeriodFromId($period_id);
+        $period = Period::find($document->period_id);
         $editedtables = $this->getEditedTables($document->id);
         $noteditablecells = NECells::where('f', $form->id)->select('t', 'r', 'c')->get();
         $renderingtabledata = $this->composeDataForTablesRendering($form, $editedtables);
