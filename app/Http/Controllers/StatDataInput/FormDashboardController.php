@@ -18,7 +18,7 @@ use App\Table;
 use App\NECells;
 use App\Cell;
 use App\ValuechangingLog;
-
+use App\Medinfo\TableControlMM;
 
 class FormDashboardController extends DashboardController
 {
@@ -79,7 +79,7 @@ class FormDashboardController extends DashboardController
             );
             $column_groups_arr = array();
 
-            $cols = $table->columns->where('deleted', 0);
+            $cols = $table->columns->where('deleted', 0)->sortBy('column_index');
             foreach ($cols as $col) {
                 $datafields_arr[] = array('name'  => $col->id);
                 $width = $col->medinfo_size * 10;
@@ -139,7 +139,7 @@ class FormDashboardController extends DashboardController
     protected function getLastState(GenericUser $worker, Document $document, Form $form)
     {
         $laststate = array();
-        $current_table = $form->tables->where('deleted', 0)->first();
+        $current_table = $form->tables->where('deleted', 0)->sortBy('table_code')->first();
         $laststate['currenttable'] = $current_table->id;
         return $laststate;
     }
@@ -148,7 +148,7 @@ class FormDashboardController extends DashboardController
     {
         $t = Table::find($table);
         $rows = $t->rows->where('deleted', 0)->sortBy('row_index');
-        $cols = $t->columns->where('deleted', 0);
+        $cols = $t->columns->where('deleted', 0)->sortBy('column_index');
         $data = array();
         $i=0;
         foreach ($rows as $r) {
@@ -156,13 +156,13 @@ class FormDashboardController extends DashboardController
             $row['id'] = $r->id;
             foreach($cols as $col) {
                 $contentType = $col->getMedinfoContentType();
-                if ( $contentType == 'header') {
+                if ($contentType == 'header') {
                     if ($col->column_index == 1) {
                         $row[$col->id] = $r->row_name;
                     } elseif ($col->column_index == 2) {
                         $row[$col->id] = $r->row_code;
                     }
-                } elseif ( $contentType == 'data') {
+                } elseif ($contentType == 'data') {
                     if ($c = Cell::OfDTRC($document, $t->id, $r->id, $col->id)->first()) {
                         $row[$col->id] = is_null($c->value) ? '' : number_format($c->value, $col->decimal_count, '.', '') ;
                     }
@@ -267,6 +267,12 @@ class FormDashboardController extends DashboardController
             ->with('table')
             ->get();
         return view('jqxdatainput.fullvaluelog', compact('values', 'document', 'form', 'current_unit', 'period'));
+    }
+
+    public function tableControl(int $document, int $table)
+    {
+        $control = new TableControlMM($document, $table);
+        return $control->newIntableControl();
     }
 
     public function formtest(Request $request)

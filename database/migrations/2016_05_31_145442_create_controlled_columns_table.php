@@ -14,10 +14,10 @@ class CreateControlledColumnsTable extends Migration
     {
         Schema::create('controlled_columns', function (Blueprint $table) {
             $table->integer('rec_id')->primary();
-            $table->integer('ol4_')->index();
-            $table->integer('ol4')->index();
-            $table->integer('fr');
-            $table->integer('fk');
+            $table->integer('controlled')->index();
+            $table->integer('controlling')->index();
+            $table->integer('boolean_sign');
+            $table->integer('number_sign');
             $table->timestamp('sync');
         });
     }

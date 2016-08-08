@@ -26,31 +26,8 @@
 
 Route::group(['middleware' => ['web']], function () {
     Route::auth();
-    Route::get('/', function () {
-        return view('welcome');
-    });
-
-    Route::get('users', function () {
-        return view('users');
-    });
-
-    Route::get('logs/accesslog', 'AccessLogController@index');
-    Route::get('logs/accesslog/{event}', 'AccessLogController@show');
-
-    // Структура отчетов
-    // Формы
-    Route::get('structure/forms', 'StructureFormController@index');
-    Route::get('structure/editform/{form}', 'StructureFormController@edit');
-    Route::patch('structure/updateform/{form}', 'StructureFormController@update');
-    Route::get('structure/newform', 'StructureFormController@newform');
-    Route::post('structure/newform', 'StructureFormController@store');
-
-    Route::get('structure/testquery', 'StructureFormController@testQuery');
-
-    // Строки
-    Route::get('structure/rows', 'StructureRowController@showrows');
-    Route::get('structure/editrow/{row}', 'StructureRowController@editrow');
-    Route::patch('structure/updaterow/{row}', 'StructureRowController@updaterow');
+    // Маршрут по умолчанию - ввод данных
+    Route::get('/', 'StatDataInput@index' );
 
     // Шаблоны на осноые jQWidgets для администрирования
     Route::get('admin', function () {
@@ -90,7 +67,28 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('datainput/valuechangelog/{document}', 'StatDataInput\FormDashboardController@fullValueChangeLog');
     // Рабочий стол для сводных документов
     Route::get('datainput/aggregatedashboard/{id}', 'StatDataInput\AggregatesDashboardController@index');
-
+    Route::get('datainput/tablecontrol/{document}/{table}', 'StatDataInput\FormDashboardController@tableControl');
     //Route::get('datainput/formtest/{id}', 'StatDataInput\FormDashboardController@formtest');
-
 });
+
+// Эксперименты с шаблоном AdminLTE
+Route::get('adminlte', function () {
+    return view('welcome');
+});
+Route::get('adminlte/users', function () {
+    return view('users');
+});
+Route::get('adminlte/logs/accesslog', 'AccessLogController@index');
+Route::get('adminlte/logs/accesslog/{event}', 'AccessLogController@show');
+// Структура отчетов
+// Формы
+Route::get('adminlte/structure/forms', 'StructureFormController@index');
+Route::get('adminlte/structure/editform/{form}', 'StructureFormController@edit');
+Route::patch('adminlte/structure/updateform/{form}', 'StructureFormController@update');
+Route::get('adminlte/structure/newform', 'StructureFormController@newform');
+Route::post('adminlte/structure/newform', 'StructureFormController@store');
+Route::get('adminlte/structure/testquery', 'StructureFormController@testQuery');
+// Строки
+Route::get('adminlte/structure/rows', 'StructureRowController@showrows');
+Route::get('adminlte/structure/editrow/{row}', 'StructureRowController@editrow');
+Route::patch('adminlte/structure/updaterow/{row}', 'StructureRowController@updaterow');

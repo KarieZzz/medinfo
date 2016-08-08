@@ -29,4 +29,10 @@ class Column extends Model
         }
         return $contentType;
     }
+
+    public function scopeOfDataType($query)
+    {
+        return $query->where('medinfo_type', 4);
+    }
+
 }

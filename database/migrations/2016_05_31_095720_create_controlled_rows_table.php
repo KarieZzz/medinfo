@@ -13,14 +13,13 @@ class CreateControlledRowsTable extends Migration
     public function up()
     {
         Schema::create('controlled_rows', function (Blueprint $table) {
-            $table->integer('nl1');
-            $table->integer('nl2')->index();
-            $table->integer('ol3')->index();
-            $table->integer('ol5');
-            $table->integer('fmk');
-            $table->integer('rl1235')->index();
+            $table->integer('form_id')->index();
+            $table->integer('table_id')->index();
+            $table->integer('row_id')->index();
+            $table->integer('control_scope')->index();
+            $table->integer('relation')->index();
             $table->timestamp('sync');
-            $table->primary(['nl1', 'nl2', 'ol3', 'ol5', 'fmk']);
+            $table->primary(['form_id', 'table_id', 'row_id', 'relation']);
         });
     }
 

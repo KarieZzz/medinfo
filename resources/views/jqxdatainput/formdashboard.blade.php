@@ -122,9 +122,11 @@
         var current_edited_cell = {};
         var source_url = "/datainput/fetchvalues/" + doc_id + "/";
         var savevalue_url = "/datainput/savevalue/" + doc_id + "/";
+        var validate_table_url = "/datainput/tablecontrol/" + doc_id + "/";
         var medstat_control_url = "medstat_control_protocol.php?document=" + doc_id;
         var valuechangelog_url = "/datainput/valuechangelog/" + doc_id;
-        initdatasources()
+        var smallloadergif =  "<img src='{{ asset('/jqwidgets/styles/images/loader-small.gif') }}' />";
+        initdatasources();
         //console.log(tablesource);
         initnotifications();
         inittablelist();

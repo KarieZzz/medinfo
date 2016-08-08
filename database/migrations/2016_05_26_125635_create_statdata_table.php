@@ -21,6 +21,7 @@ class CreateStatdataTable extends Migration
             $table->integer('col_id')->index();
             $table->decimal('value', 17,3)->nullable();
             $table->timestamps();
+            $table->unique(['doc_id', 'row_id', 'col_id']);
         });
     }
 

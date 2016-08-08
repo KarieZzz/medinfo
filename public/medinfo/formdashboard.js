@@ -59,7 +59,7 @@ var checkform = function () {
         url: validate_form_url,
         data: data,
         beforeSend: function( xhr ) {
-            loader = "Выполнение проверки и загрузка протокола контроля <img src='plugins/jqwidgets/styles/images/loader-small.gif' />";
+            loader = "Выполнение проверки и загрузка протокола контроля" + smallloadergif;
             $('#formprotocol').html(loader);
         },
         success: function (data, status, xhr) {
@@ -130,12 +130,12 @@ var checktable = function () {
     var data ="";
     $.ajax({
         dataType: "json",
-        url: validate_table_url + '&table=' + current_table,
+        url: validate_table_url + current_table,
         data: data,
         beforeSend: function( xhr ) {
             $("#tableprotocol").html('');
             $("#cellvalidationprotocol").html('');
-            loader = "Выполнение проверки и загрузка протокола контроля <img src='plugins/jqwidgets/styles/images/loader-small.gif' />";
+            loader = "Выполнение проверки и загрузка протокола контроля" + smallloadergif;
             $('#tableprotocol').html(loader);
             invalidCells.length = 0; // TODO: Обнулять только текущую таблицу перед заполнением
             marking_mode = 'control';

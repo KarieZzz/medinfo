@@ -3,7 +3,7 @@
 @section('content')
 	<div class="login-box">
 		<div class="register-logo">
-			<a href="/"><b>Medinfo</b>DataInput</a>
+			<a href="/"><b>Medinfo</b>ВводДанных</a>
 		</div>
 		<div class="login-box-body">
 			@if (count($errors) > 0)

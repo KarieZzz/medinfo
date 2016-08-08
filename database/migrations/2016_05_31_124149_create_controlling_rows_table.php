@@ -13,15 +13,14 @@ class CreateControllingRowsTable extends Migration
     public function up()
     {
         Schema::create('controlling_rows', function (Blueprint $table) {
-            $table->integer('rl1235')->index();
-            $table->integer('nl1')->index();
-            $table->integer('nl2')->index();
-            $table->integer('ol3')->index();
-            $table->integer('ol5')->index();
-            $table->integer('plf')->index();
-            $table->integer('clf');
+            $table->integer('relation')->index();
+            $table->integer('form_id')->index();
+            $table->integer('table_id')->index();
+            $table->integer('row_id')->index();
+            $table->integer('first_col')->index();
+            $table->integer('count_col')->index();
             $table->timestamp('sync');
-            $table->primary(['rl1235', 'nl1', 'nl2', 'ol3']);
+            $table->primary(['relation', 'form_id', 'table_id', 'row_id']);
         });
     }
 
