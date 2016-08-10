@@ -67,6 +67,7 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('datainput/valuechangelog/{document}', 'StatDataInput\FormDashboardController@fullValueChangeLog');
     // Рабочий стол для сводных документов
     Route::get('datainput/aggregatedashboard/{id}', 'StatDataInput\AggregatesDashboardController@index');
+    Route::get('datainput/formcontrol/{document}', 'StatDataInput\FormDashboardController@formControl');
     Route::get('datainput/tablecontrol/{document}/{table}', 'StatDataInput\FormDashboardController@tableControl');
     //Route::get('datainput/formtest/{id}', 'StatDataInput\FormDashboardController@formtest');
 });

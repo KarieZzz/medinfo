@@ -272,7 +272,27 @@ class FormDashboardController extends DashboardController
     public function tableControl(int $document, int $table)
     {
         $control = new TableControlMM($document, $table);
-        return $control->newIntableControl();
+        return $control->takeAllBatchControls();
+        //return $control->InFormRowControl();
+        //return $control->InReportRowControl();
+        //return $control->ColumnControl();
+    }
+
+    public function formControl(int $document)
+    {
+        $form_protocol = [];
+        $form_id = Document::find($document)->form_id;
+        $tables = \DB::table('tables')
+            ->where('form_id', $form_id)
+            ->where('deleted', 0)
+            ->where('medinfo_id', '<>', 0)
+            ->orderBy('table_code')->get();
+        foreach ($tables as $table) {
+            $control = new TableControlMM($document, $table->id);
+            $form_protocol[$table->id] = $control->takeAllBatchControls();
+        }
+
+        return $form_protocol;
     }
 
     public function formtest(Request $request)

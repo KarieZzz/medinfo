@@ -19,6 +19,7 @@ class CreateControllingRowsTable extends Migration
             $table->integer('row_id')->index();
             $table->integer('first_col')->index();
             $table->integer('count_col')->index();
+            $table->integer('rec_id')->index();
             $table->timestamp('sync');
             $table->primary(['relation', 'form_id', 'table_id', 'row_id']);
         });
