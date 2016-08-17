@@ -249,9 +249,10 @@ class FormDashboardController extends DashboardController
             }
         }
         else {
-            $data['cell_affected'] = false;
-            $data['error'] = 1001;
-            $data['comment'] = "Отсутствуют права для изменения данных в этом документе";
+            abort(1001, "Отсутствуют права для изменения данных в этом документе");
+            //$data['cell_affected'] = false;
+            //$data['error'] = 1001;
+            //$data['comment'] = "Отсутствуют права для изменения данных в этом документе";
         }
         return $data;
     }
@@ -271,11 +272,15 @@ class FormDashboardController extends DashboardController
 
     public function tableControl(int $document, int $table)
     {
-        $control = new TableControlMM($document, $table);
-        return $control->takeAllBatchControls();
-        //return $control->InFormRowControl();
-        //return $control->InReportRowControl();
-        //return $control->ColumnControl();
+        if (TableControlMM::tableContainsData($document, $table)) {
+            $control = new TableControlMM($document, $table);
+            return $control->takeAllBatchControls();
+            //return $control->InFormRowControl();
+            //return $control->InReportRowControl();
+            //return $control->ColumnControl();
+        }
+        $control['nodata'] = true;
+        return $control;
     }
 
     public function formControl(int $document)
@@ -288,10 +293,11 @@ class FormDashboardController extends DashboardController
             ->where('medinfo_id', '<>', 0)
             ->orderBy('table_code')->get();
         foreach ($tables as $table) {
-            $control = new TableControlMM($document, $table->id);
-            $form_protocol[$table->id] = $control->takeAllBatchControls();
+            if (TableControlMM::tableContainsData($document, $table->id)) {
+                $control = new TableControlMM($document, $table->id);
+                $form_protocol[$table->id] = $control->takeAllBatchControls();
+            }
         }
-
         return $form_protocol;
     }
 

@@ -46,7 +46,7 @@ var datasources = function() {
     dataAdapter = new $.jqx.dataAdapter(docsource, {
         loadError: function(jqXHR, status, error) {
             if (jqXHR.status == 401) {
-                raiseError(jqXHR, 'Пользователь не авторизован');
+                raiseError('Пользователь не авторизован');
             }
         }
     });

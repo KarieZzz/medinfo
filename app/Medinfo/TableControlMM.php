@@ -9,6 +9,7 @@
 namespace App\Medinfo;
 
 use App\Document;
+use App\ControlCashe;
 use App\Form;
 use App\Column;
 use App\Table;
@@ -23,14 +24,15 @@ class TableControlMM
     public $table;
     public $rows;
     public $columns;
-    public $period;
+    //public $period;
     //public $protocol;
     //public $batchprotocol;
     //public $count_of_checked_rows;
-    public $protocol_cashed = 1;
+    //public $protocol_cashed = 1;
     public $protocol_updated_at = null;
     public $data_updated_at;
     private $force_reload = false;
+    private $value_cashe;
     //private $table_correct = true;
     //public $data_source = 'statdata';
     //public $doc_source = 'documents';
@@ -57,7 +59,6 @@ class TableControlMM
             ->where('deleted', 0)
             ->where('medinfo_id', '<>', 0)
             ->orderBy('row_index')->get();
-        //dd($this->rows);
         // Для контроля выбираем только графы с данными
         $this->columns = \DB::table('columns')
             ->where('table_id', $this->table->id)
@@ -65,25 +66,24 @@ class TableControlMM
             ->where('medinfo_type', 4)
             ->where('medinfo_id', '<>', 0)
             ->orderBy('column_index')->get();
-        //dd($this->columns);
     }
 
-    public function setDocumentId($document_id = null)
+/*    public function setDocumentId($document_id = null)
     {
         $this->doc_id = $document_id;
-    }
+    }*/
     // Идентификатор таблицы из Мединфо
-    public function setTableMId($mid)
+/*    public function setTableMId($mid)
     {
         $this->table_mid = $mid;
-    }
+    }*/
 
-    public function setPeriodId($period_id)
+/*    public function setPeriodId($period_id)
     {
         $this->period = $period_id;
-    }
+    }*/
 
-    public function tableCheck()
+/*    public function tableCheck()
     {
         if (!$this->tableContainsData()) {
             $this->protocol = null;
@@ -107,18 +107,18 @@ class TableControlMM
             }
             return $this->count_of_checked_rows;
         }
-    }
+    }*/
 
     public function setForceReload($state = false)
     {
         $this->force_reload = $state;
     }
 
-    public function checkRelevance()
+    private function CashedProtocolActual()
     {
-        $this->dataUpdatedAt();
-        $this->protocolUpdatedAt();
-        return $this->protocol_updated_at > $this->data_updated_at;
+        $updated_at =  $this->dataUpdatedAt();
+        $cahed_at = $this->protocolCashedAt();
+        return $cahed_at->gt($updated_at);
     }
 
 /*    public function createProtocol()
@@ -196,13 +196,60 @@ class TableControlMM
         return $validation_protocol;
     }
 
+    private function casheValues()
+    {
+        $q = "SELECT r.id row_id, c.id col_id, v.value FROM rows r
+	      JOIN columns c ON r.table_id = c.table_id
+          JOIN statdata v ON v.row_id = r.id AND v.col_id = c.id
+          WHERE r.table_id = 10 AND v.doc_id = 7011";
+        $this->value_cashe = collect(\DB::select($q));
+    }
+
+    private function getValue(int $row, int $column)
+    {
+        $cell = $this->value_cashe->where('row_id', $row)->where('col_id', $column);
+        if (count($cell) == 0) {
+            return 0;
+        } else {
+            return floatval($cell->first()->value);
+        }
+    }
+
     public function takeAllBatchControls()
     {
-        $protocol['intable'] = $this->InTableRowControl();
-        $protocol['inform'] = $this->InFormRowControl();
-        $protocol['inreport'] = $this->InReportRowControl();
-        $protocol['columns'] = $this->ColumnControl();
-        return $protocol;
+        if ($this->CashedProtocolActual() && !$this->force_reload) {
+            $protocol = $this->loadProtocol();
+            //$protocol['cashed'] = true;
+            //dd($protocol);
+            return $protocol;
+        } else {
+            $protocol['intable'] = $this->InTableRowControl();
+            $protocol['inform'] = $this->InFormRowControl();
+            $protocol['inreport'] = $this->InReportRowControl();
+            $protocol['columns'] = $this->ColumnControl();
+            $protocol['table_id'] = $this->table->id;
+            $protocol['cashed'] = false;
+            if ( $protocol['intable']['no_rules']
+                && $protocol['inform']['no_rules']
+                && $protocol['inreport']['no_rules']
+                && $protocol['columns']['no_rules'] )
+            {
+                $protocol['no_rules'] = true;
+            } else {
+                $protocol['no_rules'] = false;
+            }
+            if ( $protocol['intable']['valid']
+                && $protocol['inform']['valid']
+                && $protocol['inreport']['valid']
+                && $protocol['columns']['valid'] )
+            {
+                $protocol['valid'] = true;
+            } else {
+                $protocol['valid'] = false;
+            }
+            $this->cashProtocol($protocol);
+            return $protocol;
+        }
     }
 
 /*    public function createEmptyProtocol()
@@ -230,22 +277,32 @@ class TableControlMM
         $this->batchprotocol = $arr;
         return $this->batchprotocol;
     }*/
-
     public function InTableRowControl() {
         $ctype_id = 1; // Внутритабличный контроль
-        $protocol = [];
+        $protocol['valid'] = true;
         // Итерация по контролируемым строкам с типом контроля "вт.к."
         $rules = $this->getRules($ctype_id);
+        if (!$rules) {
+            $protocol['no_rules'] = true;
+            $protocol['valid'] = true;
+            return $protocol;
+        } else {
+            $protocol['no_rules'] = false;
+        }
         $i = 0;
         foreach ($rules as $rule) {
+            $protocol[$i]['valid'] = true;
             // Итерация по столбцам текущей таблицы и выполнение правила к каждому из них
             foreach ($this->columns as $column) {
                 $crows = $this->getControllingRows($ctype_id, $rule->relation, $column->medinfo_id);
                 // Итерация по столбцам, включенным в текущее правило контроля ("корреспонденция граф") - при наличии правила
                 if (count($crows) > 0) {
                     $protocol[$i][$column->column_index] = $this->getRowProtocol($ctype_id, $rule, $column, $crows);
+                    $protocol[$i]['valid'] = $protocol[$i]['valid'] && $protocol[$i][$column->column_index]['valid'];
                 }
             }
+            $protocol[$i]['row_id'] = $rule->row_id;
+            $protocol['valid'] = $protocol['valid'] && $protocol[$i]['valid'];
             $i++;
         }
         return $protocol;
@@ -254,19 +311,30 @@ class TableControlMM
     public function InFormRowControl()
     {
         $ctype_id = 2; // Внутриформенный контроль
-        $protocol = [];
+        $protocol['valid'] = true;
         // Итерация по контролируемым строкам с типом контроля "вф.к."
         $rules = $this->getRules($ctype_id);
+        if (!$rules) {
+            $protocol['no_rules'] = true;
+            $protocol['valid'] = true;
+            return $protocol;
+        } else {
+            $protocol['no_rules'] = false;
+        }
         $i = 0;
         foreach ($rules as $rule) {
+            $protocol[$i]['valid'] = true;
             // Итерация по столбцам текущей таблицы и выполнение правила к каждому из них
             foreach ($this->columns as $column) {
                 $crows = $this->getControllingRows($ctype_id, $rule->relation, $column->medinfo_id);
                 // Итерация по столбцам, включенным в текущее правило контроля ("корреспонденция граф") - при наличии правила
                 if (count($crows) > 0) {
                     $protocol[$i][$column->column_index] = $this->getRowProtocol($ctype_id, $rule, $column, $crows);
+                    $protocol[$i]['valid'] = $protocol[$i]['valid'] && $protocol[$i][$column->column_index]['valid'];
                 }
             }
+            $protocol[$i]['row_id'] = $rule->row_id;
+            $protocol['valid'] = $protocol['valid'] && $protocol[$i]['valid'];
             $i++;
         }
         return $protocol;
@@ -275,19 +343,30 @@ class TableControlMM
     public function InReportRowControl()
     {
         $rule_type = 3; // Межформенный контроль
-        $protocol = [];
+        $protocol['valid'] = true;
         // Итерация по контролируемым строкам с типом контроля "вф.к."
         $rules = $this->getRules($rule_type);
+        if (!$rules) {
+            $protocol['no_rules'] = true;
+            $protocol['valid'] = true;
+            return $protocol;
+        } else {
+            $protocol['no_rules'] = false;
+        }
         $i = 0;
         foreach ($rules as $rule) {
+            $protocol[$i]['valid'] = true;
             // Итерация по столбцам текущей таблицы и выполнение правила к каждому из них
             foreach ($this->columns as $column) {
                 $crows = $this->getControllingRows($rule_type, $rule->relation, $column->medinfo_id);
                 // Итерация по столбцам, включенным в текущее правило контроля ("корреспонденция граф") - при наличии правила
                 if (count($crows) > 0) {
                     $protocol[$i][$column->column_index] = $this->getRowProtocol($rule_type, $rule, $column, $crows);
+                    $protocol[$i]['valid'] = $protocol[$i]['valid'] && $protocol[$i][$column->column_index]['valid'];
                 }
             }
+            $protocol[$i]['row_id'] = $rule->row_id;
+            $protocol['valid'] = $protocol['valid'] && $protocol[$i]['valid'];
             $i++;
         }
         return $protocol;
@@ -296,12 +375,15 @@ class TableControlMM
     public function ColumnControl()
     {
         $rule_type = 4;
-        $protocol = [];
+        $row_protocol['valid'] = true;
         $q_rule = "SELECT relation FROM controlled_rows WHERE table_id = {$this->table->id} AND control_scope = $rule_type";
         //dd($q_rule);
         $rule = \DB::selectOne($q_rule);
         if (!$rule) {
-            return $protocol;
+            $row_protocol['no_rules'] = true;
+            return $row_protocol;
+        } else {
+            $row_protocol['no_rules'] = false;
         }
         $q_columns_range = "SELECT first_col, first_col+count_col last_col FROM controlling_rows WHERE rec_id = {$rule->relation}";
         //echo $q_columns_range;
@@ -310,16 +392,18 @@ class TableControlMM
           JOIN columns ON columns.medinfo_id = ccols.controlling AND columns.table_id = {$this->table->id}
           WHERE ccols.rec_id >= {$columns_range->first_col} AND ccols.rec_id < {$columns_range->last_col}";
         $ccols = collect(\DB::select($q_columns));
-        $row_protocol = [];
+        $row_protocol['valid'] = true;
         $i = 0;
         foreach ($this->rows as $row) {
-            //echo $row->row_code . '<br>';
+            $row_protocol[$i]['valid'] = true;
             foreach ($this->columns as $column) {
-                $column_protocol = [];
+                //$column_protocol = [];
                 $controlled = $ccols->where('controlled', $column->medinfo_id);
                 if (count($controlled) > 0) {
-                    //var_dump($controlled->pluck('controlling'));
+                    $column_id = $column->id;
                     $cell = Cell::OfDTRC($this->doc_id, $this->table->id, $row->id, $column->id)->first();
+                    //$left_part_value = $this->getValue($row->id, $column->id);
+
                     if (!is_null($cell)) {
                         $left_part_value = floatval($cell->value);
                     } else {
@@ -342,16 +426,26 @@ class TableControlMM
                     }
                     $right_part_formula .= ' )';
                     $deviation = $left_part_value - $right_part_value;
+                    $valid =
                     $column_protocol = compact('left_part_value', 'left_part_formula', 'right_part_value', 'right_part_formula',
-                        'boolean_sign', 'boolean_readable', 'deviation' );
-                    $column_protocol['chekout_result'] = $this->chekoutRule($column_protocol);
+                        'boolean_sign', 'boolean_readable', 'deviation', 'column_id');
+                    $column_protocol['valid'] = $this->chekoutRule($column_protocol);
                     $row_protocol[$i][] = $column_protocol;
+                    $row_protocol[$i]['valid'] = $row_protocol[$i]['valid'] && $column_protocol['valid'];
                 }
             }
+            $row_protocol[$i]['row_id'] = $row->id;
+            $row_protocol['valid'] = $row_protocol['valid'] && $row_protocol[$i]['valid'];
             $i++;
         }
 
         return $row_protocol;
+    }
+
+    public function inRowControl()
+    {
+
+
     }
 
     private function getRules(int $rule_type)
@@ -365,22 +459,22 @@ class TableControlMM
 
     private function getRowProtocol(int $rule_type, $rule, $column, $crows)
     {
-        $cell = Cell::OfDTRC($this->doc_id, $this->table->id, $rule->row_id, $column->id)->first();
-        if (!is_null($cell)) {
-            $row_protocol['left_part_value'] = floatval($cell->value);
+        $lcell = Cell::OfDTRC($this->doc_id, $this->table->id, $rule->row_id, $column->id)->first();
+        if (!is_null($lcell)) {
+            $row_protocol['left_part_value'] = floatval($lcell->value);
         } else {
             $row_protocol['left_part_value'] = 0;
         }
         $row_protocol['left_part_formula'] = $this->getIntoText($rule_type) . 'строка ' . $rule->row_code . ' (' . $rule->row_name . '),'
-            . ' графа ' . $column->column_index . '(' . $column->column_name . ')';
+            . ' графа ' . $column->column_index . ' (' . $column->column_name . ')';
         $right_part_value = 0;
         $right_part_formula = '( ';
         foreach ($crows as $crow) {
             $row_protocol['boolean_sign'] = self::$boolean_sign[$crow->boolean_sign];
             $row_protocol['boolean_readable'] = self::$boolean_readable[self::$boolean_sign[$crow->boolean_sign]];
-            $cell = Cell::OfDTRC($this->doc_id, $crow->table_id, $crow->row_id, $crow->col_id)->first();
-            if (!is_null($cell)) {
-                $right_part_value += floatval(self::$number_sign[$crow->number_sign] . $cell->value);
+            $rcell = Cell::OfDTRC($this->doc_id, $crow->table_id, $crow->row_id, $crow->col_id)->first();
+            if (!is_null($rcell)) {
+                $right_part_value += floatval(self::$number_sign[$crow->number_sign] . $rcell->value);
             }
 
             $right_part_formula .= $this->getRightPart($rule_type, $crow);
@@ -388,7 +482,8 @@ class TableControlMM
         $row_protocol['right_part_value'] = $right_part_value;
         $row_protocol['right_part_formula'] = $right_part_formula . ' )';
         $row_protocol['deviation'] = $row_protocol['left_part_value'] - $right_part_value;
-        $row_protocol['chekout_result'] = $this->chekoutRule($row_protocol);
+        $row_protocol['column_id'] = $column->id;
+        $row_protocol['valid'] = $this->chekoutRule($row_protocol);
         return $row_protocol;
     }
 
@@ -451,6 +546,9 @@ class TableControlMM
                 $f_sign = '<>';
                 $t_sign = '<>';
                 break;
+            default:
+                return null;
+                break;
         }
         $q_crows = "SELECT r.row_id, columns.id col_id, r.table_id,
                   forms.form_code, tables.table_code, rows.row_code, columns.column_index,
@@ -469,24 +567,30 @@ class TableControlMM
 
     private function chekoutRule(array $condition)
     {
+        $lp = $condition['left_part_value'];
+        $rp = $condition['right_part_value'];
+        // Если обе части выражения равны нулю - пропускаем проверку.
+        if ($lp == 0 && $rp == 0) {
+            return true;
+        }
         switch ($condition['boolean_sign']) {
             case '==' :
-                $result = $condition['left_part_value'] == $condition['right_part_value'];
+                $result = $lp == $rp;
                 break;
             case '>' :
-                $result = $condition['left_part_value'] > $condition['right_part_value'];
+                $result = $lp >$rp;
                 break;
             case '>=' :
-                $result = $condition['left_part_value'] >= $condition['right_part_value'];
+                $result = $lp >= $rp;
                 break;
             case '<' :
-                $result = $condition['left_part_value'] < $condition['right_part_value'];
+                $result = $lp < $rp;
                 break;
             case '<=' :
-            $result = $condition['left_part_value'] <= $condition['right_part_value'];
+            $result = $lp <= $rp;
             break;
             case '^' :
-                $result = ($condition['left_part_value'] && $condition['right_part_value']) || (!$condition['left_part_value'] && !$condition['right_part_value']);
+                $result = ($lp && $rp) || (!$lp && !$rp);
                 break;
             default:
                 $result = false;
@@ -661,7 +765,7 @@ class TableControlMM
         return $protocol;
     }*/
 
-    public function batchColumnControl() {
+/*    public function batchColumnControl() {
         $ctype = 'кгр';
         $ctype_id = 4;
         if (!$this->doc_id) {
@@ -715,7 +819,7 @@ class TableControlMM
         }
         $this->set_row_protocol($protocol, $ctype);
         return $protocol;
-    }
+    }*/
 
     private function set_row_protocol($protocol, $ctype)
     {
@@ -787,79 +891,60 @@ class TableControlMM
         }
     }
 
-    // TODO: Рассмотреть есть ли вообще нужда в кэшировании результатов проверки. Если есть то хранить ли результата в БД или использовать встроенные
-    // в фреймфорк механизмы кэширования?
-    public function cashProtocol($v, $version = null)
+    public function cashProtocol($protocol)
     {
-        $to_store = serialize($v);
-        if (!$this->table || !$this->ou_id || !$this->period) {
-            throw new Exception("Не указан идентификатор учреждения и/или таблицы для сохранения протокола контроля");
-        }
-        $q = "INSERT INTO mi_table_control (doc_id, table_id, protocol , version )
-                VALUES ('{$this->doc_id}', '{$this->table->table_id}', '{$to_store}', '{$version}')
-                ON DUPLICATE KEY UPDATE protocol='{$to_store}', version = '{$version}'";
-
-        $q_exec = \DB::selectOne($q);
-        //$this->control_id = $this->dba->insert_id;
-        return $q_exec;
+        $protocol['cashed'] = true;
+        $to_store = serialize($protocol);
+        $ccashe = ControlCashe::firstOrCreate(['doc_id' => $this->doc_id, 'table_id' => $this->table->id]);
+        $ccashe->control_cashe = $to_store;
+        $ccashe->cashed_at = Carbon::now();
+        $ccashe->save();
+        return true;
     }
 
     public function loadProtocol()
     {
-        if (!$this->table || !$this->ou_id || !$this->period) {
-            throw new Exception("Недостаточно данных для получения протокола контроля таблицы");
-        }
-        $q = "SELECT protocol FROM mi_table_control WHERE doc_id = {$this->doc_id} AND table_id = {$this->table->id}";
-        $q_exec = \DB::selectOne($q);
-        $validation_protocol = unserialize($q_exec->protocol);
-        $this->protocol = json_encode($validation_protocol);
-        return $this->protocol;
+        return unserialize(ControlCashe::OfDocumentTable($this->doc_id, $this->table->id)->first(['control_cashe'])->control_cashe);
     }
 
-    public function protocolUpdatedAt()
+    public function protocolCashedAt()
     {
-        if (!$this->table || !$this->ou_id || !$this->period) {
-            throw new Exception("Не указан идентификатор таблицы для получения даты и времени сохранения протокола контроля");
+        $protocol = ControlCashe::OfDocumentTable($this->doc_id, $this->table->id)->first(['cashed_at']);
+        if ($protocol) {
+            return $protocol->cashed_at;
+        } else {
+            // Возвращаем объект с заведомо старой датой
+            return Carbon::create(1900, 1, 1);
         }
-        $q = "SELECT updated_at FROM mi_table_control WHERE doc_id = {$this->doc_id} AND table_id = {$this->table->id}";
-        //echo $q;
-        $q_exec = \DB::selectOne($q);
-        $this->protocol_updated_at = new Carbon($q_exec->updated_at);
-        return $this->protocol_updated_at;
+
     }
 
     public function dataUpdatedAt()
     {
-        if (!$this->table_mid || !$this->ou_id || !$this->period) {
+        if (!$this->doc_id || !$this->table->id) {
             throw new Exception("Не указан идентификатор таблицы для получения даты и времени сохранения данных");
         }
         $q = "SELECT MAX(updated_at) latest_edited FROM statdata WHERE doc_id = {$this->doc_id} AND table_id = {$this->table->id}";
-        $q_exec = \DB::selectOne($q);
-        $this->data_updated_at = new Carbon($q_exec->latest_edited);
-        return $this->data_updated_at;
+        $updated_at = \DB::selectOne($q)->latest_edited;
+        if ($updated_at) {
+            return new Carbon($updated_at);
+        } else {
+            // Возвращаем объект с заведомо старой датой
+            return Carbon::create(1900, 1, 1);
+        }
     }
 
-    public function tableContainsData()
+    public static function tableContainsData(int $document, int $table)
     {
-        if (!$this->doc_id || !$this->table) {
+        if (!$document || !$table) {
             throw new Exception("Не указан идентификатор документа/таблицы для проверки наличия данных");
         }
-        $q = "SELECT SUM(value) sum_of_values FROM statdata WHERE doc_id = {$this->doc_id} AND table_id = {$this->table->id}";
+        $q = "SELECT SUM(value) sum_of_values FROM statdata WHERE doc_id = $document AND table_id = $table";
         $res = \DB::selectOne($q);
         if ($res->sum_of_values > 0 ) {
             return true;
         } else {
             return false;
         }
-    }
-
-    public function getProtocol()
-    {
-        return array_values($this->batchprotocol);
-    }
-
-    public function tableCorrect()
-    {
-        return $this->table_correct;
     }
 }

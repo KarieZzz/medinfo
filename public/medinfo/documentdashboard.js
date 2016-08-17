@@ -58,7 +58,7 @@ var datasources = function() {
     dataAdapter = new $.jqx.dataAdapter(docsource, {
         loadError: function(jqXHR, status, error) {
             if (jqXHR.status == 401) {
-                raiseError(jqXHR, 'Пользователь не авторизован');
+                raiseError('Пользователь не авторизован', jqXHR);
             }
         }
     });
@@ -727,7 +727,6 @@ var initdocumentproperties = function() {
         orientation: 'vertical',
         panels: [{ size: '70%', min: 100, collapsible: false }, { min: '100px', collapsible: true}]
     });
-
     $("#messagesExpander").jqxExpander({toggleMode: 'none', showArrow: false, width: "100%", height: "100%", theme: theme  });
     $("#openMessagesListWindow").on('click', function(event) {
         var print_style = "<style>.printlist { font-size: 0.8em; } .control_result { border: 1px solid #7f7f7f; width: 400;";

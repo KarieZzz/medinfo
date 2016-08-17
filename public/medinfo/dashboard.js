@@ -1,8 +1,13 @@
-var raiseError = function(xhr, comment) {
+var raiseError = function(comment, xhr) {
     if (typeof comment == 'undefined') {
-        comment = 'Ошибка получения данных ';
+        var comment = 'Ошибка получения данных ';
     }
-    $("#currentError").text(comment +  ' (' + xhr.status + ' ' + xhr.statusText + ')');
+    if (typeof xhr != 'undefined') {
+        var add_inf = ' (Код ошибки ' + xhr.status + ')';
+    } else {
+        var add_inf = '';
+    }
+    $("#currentError").text(comment + add_inf);
     $("#serverErrorNotification").jqxNotification("open");
 };
 var raiseInfo = function(comment) {

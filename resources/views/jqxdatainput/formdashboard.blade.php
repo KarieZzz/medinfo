@@ -33,11 +33,18 @@
         <div data-container="TableEditPanel">
             <div id="DataGrid"></div>
         </div>
-        <div data-container="TableControlPanel">
-            <input id="checktable" type="button" value="Выполнить проверку таблицы" />
-            <input id="compareprevperiod" type="button" value="Сравнить с предыдущим периодом" />
-            <div id="protocolloader"></div>
-            <div id="tableprotocol"></div>
+        <div data-container="TableControlPanel" id="TableControlPanel">
+            <div style="padding: 4px" id="ProtocolToolbar">
+                <input style="float: left" id="checktable" type="button" value="Выполнить проверку таблицы" />
+                <input style="float: left" id="compareprevperiod" type="button" value="Сравнить с предыдущим периодом" />
+                <div style="padding: 4px" id="extrabuttons">
+                    <div id="showallrule" class="extrabutton" style="float: left"><span>Показать только ошибки</span></div>
+                    <a id="togglecontrolscreen" style="margin-left: 2px;" target="_blank"><span class='glyphicon glyphicon-fullscreen'></span></a>
+                </div>
+            </div>
+            <div style="clear: both"></div>
+            <div style="display: none" id="protocolloader"><h5>Выполнение проверки и загрузка протокола контроля <img src='/jqwidgets/styles/images/loader-small.gif' /></h5></div>
+            <div style='width: 100%;height: 90%' id="tableprotocol"></div>
         </div>
         <div data-container="CellControlPanel">
             <div id="cellvalidationprotocol">Изменений в текущем сеансе не было</div>
@@ -75,7 +82,9 @@
 <script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxtooltip.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxnotification.js') }}"></script>
+<script src="{{ asset('/jqwidgets/jqxnavigationbar.js') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
+<script src="{{ asset('/plugins/fullscreen/jquery.fullscreen.js') }}"></script>
 <script src="{{ asset('/medinfo/formdashboard.js') }}"></script>
 @endpush
 
@@ -114,6 +123,7 @@
         var current_row_name_datafield = data_for_tables[current_table].columns[1].dataField;
         var current_row_number_datafield = data_for_tables[current_table].columns[2].dataField;
         var protocol_control_created = false;
+        var invalidTables = [];
         var editedCells = [];
         var invalidCells = [];
         var comparedCells = [];
@@ -123,14 +133,15 @@
         var source_url = "/datainput/fetchvalues/" + doc_id + "/";
         var savevalue_url = "/datainput/savevalue/" + doc_id + "/";
         var validate_table_url = "/datainput/tablecontrol/" + doc_id + "/";
+        var validate_form_url = "/datainput/formcontrol/" + doc_id;
         var medstat_control_url = "medstat_control_protocol.php?document=" + doc_id;
         var valuechangelog_url = "/datainput/valuechangelog/" + doc_id;
-        var smallloadergif =  "<img src='{{ asset('/jqwidgets/styles/images/loader-small.gif') }}' />";
         initdatasources();
-        //console.log(tablesource);
         initnotifications();
         inittablelist();
         initlayout();
         $('#formEditLayout').jqxLayout({ theme: theme, width: '99%', height: '99%', layout: layout });
+        initextarbuttons();
+        firefullscreenevent();
     </script>
 @endsection

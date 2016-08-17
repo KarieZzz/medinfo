@@ -27,15 +27,21 @@
     font-style: italic;
     font-weight: bold ;
 }
+.invalidTable {
+    background: url(/jqwidgets/styles/images/wavyline.gif) repeat-x 80% 80%;
+}
 .showrule {
-    font-size: 0.8em;
+    font-size: 0.9em;
 }
 .control_result {
     border: 1px solid #ddd;
     border-collapse: collapse;
     margin-bottom: 10px;
 }
-.control_result td { border: 1px solid #ddd; }
+.control_result td {
+    border: 1px solid #ddd;
+    padding: 2px;
+}
 .equality { background-color: #57ff53; }
 .approximate { background-color: #a8ff96; }
 .moderate { background-color: #f5ff9b; }
