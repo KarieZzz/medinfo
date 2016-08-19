@@ -8,7 +8,7 @@
 }
 .invalid {
     color: black\9;
-    background-color: #ffa3a8 \9;
+    background-color: #ffc8c8 \9;
 }
 
 .valid:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected), .jqx-widget .green:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected) {
@@ -21,7 +21,7 @@
 }
 .invalid:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected), .jqx-widget .red:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected) {
     color: black;
-    background-color: #ffa3a8;
+    background-color: #ffc8c8;
 }
 .editedRow {
     font-style: italic;
@@ -33,17 +33,26 @@
 .showrule {
     font-size: 0.9em;
 }
-.control_result {
-    border: 1px solid #ddd;
+.control-result {
+    border: 1px solid #c4c4c4;
     border-collapse: collapse;
     margin-bottom: 10px;
+    width: 600px;
+    text-align: center;
 }
-.control_result td {
-    border: 1px solid #ddd;
+.control-result td {
+    border: 1px solid #c4c4c4;
     padding: 2px;
+}
+.tableprotocol-header {
+    margin: 10px;
+    font-size: 1.1em;
+}
+.tableprotocol-header:hover {
+    text-decoration: underline;
 }
 .equality { background-color: #57ff53; }
 .approximate { background-color: #a8ff96; }
 .moderate { background-color: #f5ff9b; }
-.significant { background-color: #ffa3a8; }
+.significant { background-color: #ffc8c8; }
 .not_editable {background-color: #e7eef8;; }

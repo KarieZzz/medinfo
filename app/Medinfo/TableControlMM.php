@@ -429,6 +429,7 @@ class TableControlMM
                     $valid =
                     $column_protocol = compact('left_part_value', 'left_part_formula', 'right_part_value', 'right_part_formula',
                         'boolean_sign', 'boolean_readable', 'deviation', 'column_id');
+                    $column_protocol['row_id'] = $row->id;
                     $column_protocol['valid'] = $this->chekoutRule($column_protocol);
                     $row_protocol[$i][] = $column_protocol;
                     $row_protocol[$i]['valid'] = $row_protocol[$i]['valid'] && $column_protocol['valid'];
@@ -482,6 +483,7 @@ class TableControlMM
         $row_protocol['right_part_value'] = $right_part_value;
         $row_protocol['right_part_formula'] = $right_part_formula . ' )';
         $row_protocol['deviation'] = $row_protocol['left_part_value'] - $right_part_value;
+        $row_protocol['row_id'] = $rule->row_id;
         $row_protocol['column_id'] = $column->id;
         $row_protocol['valid'] = $this->chekoutRule($row_protocol);
         return $row_protocol;

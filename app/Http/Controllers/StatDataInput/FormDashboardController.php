@@ -274,18 +274,20 @@ class FormDashboardController extends DashboardController
     {
         if (TableControlMM::tableContainsData($document, $table)) {
             $control = new TableControlMM($document, $table);
-            return $control->takeAllBatchControls();
-            //return $control->InFormRowControl();
-            //return $control->InReportRowControl();
-            //return $control->ColumnControl();
+
+            $table_protocol = $control->takeAllBatchControls();
+            $table_protocol['no_data'] = false;
+            return $table_protocol;
         }
-        $control['nodata'] = true;
-        return $control;
+        $table_protocol['no_data'] = true;
+        return $table_protocol;
     }
 
     public function formControl(int $document)
     {
         $form_protocol = [];
+        $form_protocol['valid'] = true;
+        $form_protocol['no_data'] = true;
         $form_id = Document::find($document)->form_id;
         $tables = \DB::table('tables')
             ->where('form_id', $form_id)
@@ -296,6 +298,8 @@ class FormDashboardController extends DashboardController
             if (TableControlMM::tableContainsData($document, $table->id)) {
                 $control = new TableControlMM($document, $table->id);
                 $form_protocol[$table->id] = $control->takeAllBatchControls();
+                $form_protocol['valid'] = $form_protocol['valid'] && $form_protocol[$table->id]['valid'];
+                $form_protocol['no_data'] = $form_protocol['no_data'] && false;
             }
         }
         return $form_protocol;

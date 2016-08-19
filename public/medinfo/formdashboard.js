@@ -40,8 +40,8 @@ var cellclass = function (row, columnfield, value, rowdata) {
                 class_by_edited_row = "editedRow";
             }
         }
-        $.each(invalidCells, function(key, value) {
-            if (value.t == current_table && value.r == rowdata.id && value.c == columnfield) {
+        $.each(invalidCells[current_table], function(key, value) {
+            if (value.r == rowdata.id && value.c == columnfield) {
                 class_by_value = 'invalid';
             }
         });
@@ -68,12 +68,12 @@ var cellclass = function (row, columnfield, value, rowdata) {
 var tooltiprenderer = function (element) {
     $(element).jqxTooltip({position: 'mouse', content: $(element).text() });
 };
-
+// Пометка/снятие пометки волнистой чертой неверных таблиц
 var markTableInvalid = function (id) {
     if ($.inArray(id, invalidTables) == -1) {
         invalidTables.push(id);
     }
-    $("#formTables").jqxDataTable('render');
+    //$("#formTables").jqxDataTable('render');
     //console.log(invalidTables);
 };
 var markTableValid = function (id) {
@@ -81,17 +81,18 @@ var markTableValid = function (id) {
     if (index !== -1) {
         delete invalidTables[index];
     }
-    $("#formTables").jqxDataTable('render');
+    //("#formTables").jqxDataTable('render');
     //console.log(invalidTables);
     //console.log(index);
 };
-
-var renderProtocol = function (container, protocol_by_type, header_text) {
-    var header = $("<div class='rule_header'>" + header_text + " " + "</div>");
-    var content = $("<div class='rule_content'></div>");
+// Вывод в читаемом виде контроля строки/столбца
+var renderRowProtocol = function (container, table_id, protocol_by_type, header_text) {
+    var header = $("<div class='rule-header'>" + header_text + " " + "</div>");
+    var content = $("<div class='rule-content'></div>");
     var r = 0;
     var i = 0;
-    var info = $("<div class='bg-info'>Правила контроля не заданы</div>");
+    var info = $("<div class='rule-comment bg-info'> - правила контроля не заданы</div>");
+    //console.log(protocol_by_type);
     if (!protocol_by_type.no_rules) {
         info = $("<table style='margin: 5px;'></table>");
         $.each(protocol_by_type, function(row_index, row_protocol) {
@@ -100,24 +101,28 @@ var renderProtocol = function (container, protocol_by_type, header_text) {
                     if ( typeof column_protocol.valid !='undefined' ) {
                         var row = $("<tr class='control-row'></tr>");
                         var column = $("<td></td>");
+                        var valid = '';
+                        column_protocol.valid ? valid = 'верно' : valid = 'не верно';
                         var rule = $("<div class='showrule'><span class='text-info'><strong>" + column_protocol.left_part_formula + "</strong></span> <em>" + column_protocol.boolean_readable
                             + "</em> <span class='text-info'>" +column_protocol.right_part_formula +"</span></div>");
-                        var t = "<table class='control_result'><tr><td>Значение</td>";
+                        var t = "<table class='control-result'><tr><td>Значение</td>";
                         t += "<td>Знак сравнения</td><td>Контрольная сумма</td><td>Отклонение</td>";
                         t += "<td>Результат контроля</td></tr>";
-                        t += "<tr style='text-align: center'><td>" + column_protocol.left_part_value + "</td><td>" + column_protocol.boolean_readable + "</td>";
+                        t += "<tr><td>" + column_protocol.left_part_value + "</td><td>" + column_protocol.boolean_readable + "</td>";
                         t += "<td>" + column_protocol.right_part_value + "</td>";
-                        t += "<td>"+column_protocol.deviation + "</td><td class='check'>" + column_protocol.valid + "</td></tr></table>";
+                        t += "<td>"+column_protocol.deviation + "</td><td class='check'>" + valid + "</td></tr></table>";
                         var explanation = $(t);
                         column.append(rule);
                         column.append(explanation);
                         row.append(column);
                         info.append(row);
                         if (!column_protocol.valid) {
-                            explanation.addClass('bg-danger');
+                            invalidCells[table_id].push({r: row_protocol.row_id, c: column_protocol.column_id});
+                            explanation.addClass('invalid');
                             i++;
                         } else {
-                            row.addClass('hidden control-valid');
+                            row.addClass('control-valid');
+                            row.hide();
                             explanation.addClass('bg-success');
                         }
                         r++;
@@ -134,16 +139,28 @@ var renderProtocol = function (container, protocol_by_type, header_text) {
     container.append(content);
     return info;
 };
+// Вывод в читаемом виде контроля таблицы
+var renderTableProtocol = function (table_id, data) {
+    var container;
+    var protocol_wrapper = $("<div class='tableprotocol-content'></div>");
+    container = $("<div></div>");
+    renderRowProtocol(container, table_id, data.intable, 'Результаты внутритабличного контроля строк');
+    renderRowProtocol(container, table_id, data.inform, 'Результаты внутриформенного контроля строк');
+    renderRowProtocol(container, table_id, data.inreport, 'Результаты межформенного контроля строк');
+    renderRowProtocol(container, table_id, data.columns, 'Результаты контроля граф');
+    protocol_wrapper.append(container);
+    return protocol_wrapper;
+};
 // Инициализация дополнительных кнопок на панели инструментов контроля таблицы
 var initextarbuttons = function () {
     $("#extrabuttons").hide();
     //var showall = $("#showallrule") ;
     $("#showallrule").jqxCheckBox({ theme: theme, checked: true });
     $("#showallrule").on('checked', function (event) {
-        $(".control-valid").addClass('hidden');
+        $(".control-valid").hide();
     });
     $("#showallrule").on('unchecked', function (event) {
-        $(".control-row").removeClass('hidden');
+        $(".control-row").show();
     });
     $("#togglecontrolscreen").jqxToggleButton({ theme: theme });
     $("#togglecontrolscreen").on('click', function () {
@@ -154,68 +171,117 @@ var initextarbuttons = function () {
         else $.fullscreen.exit();
         return false;
     });
+    $('#printtableprotocol').jqxButton({ theme: theme });
+    $("#expandprotocolrow").jqxToggleButton({ theme: theme });
 };
 
+// поиск в протоколе контроля по id строки и столбца
+function searchprotocol(source, column_id, row_id) {
+    var results;
+    results = $.map(source, function(value, index) {
+        if(typeof value == 'object') {
+            if (value.column_id == column_id && value.row_id == row_id) {
+                return value;
+            } else {
+                return search(value, column_id, row_id);
+            }
+        }
+    });
+    return results;
+}
+// Контроль формы - вывод протокола контроля на страницу и для печати
 var checkform = function () {
-    var data ="";
+    var data;
     $.ajax({
         dataType: "json",
         url: validate_form_url,
         data: data,
         beforeSend: function( xhr ) {
-            loader = "Выполнение проверки и загрузка протокола контроля" + smallloadergif;
-            $('#formprotocol').html(loader);
+            $('#formprotocolloader').show();
+            $("#formprotocol").html('');
         },
         success: function (data, status, xhr) {
-            $("#currentInfoMessage").text("Протокол контроля формы загружен");
-            $("#infoNotification").jqxNotification("open");
-            var list = '<div id="formvalidation">';
-            var invalidtables = 0;
-            $.each(data.protocol, function(table_id, tablecontrol) {
-                if (!tablecontrol.tablecorrect) {
-                    invalidtables++;
-                    list += '<div>Таблица ' + tablecontrol.tablecode + '</div>';
-                    list += '<div>';
-                    $.each(tablecontrol.tableprotocol, function(row_id, rowcontrols) {
-                        if (!rowcontrols.row_correct) {
-                            list += "<div id='" + rowcontrols.row_id + "'>Строка №" + rowcontrols.row_number + '</div><hr />';
-                            $.each(rowcontrols.columns, function(col_id, columncontrol) {
-                                if (!columncontrol.column_correct) {
-                                    list += '<div><b>Графа №'+ columncontrol.column_index +'.</b></div>';
-                                    $.each(columncontrol.column_protocols, function(ctype, controlcontent) {
-                                        if (controlcontent.result !== true) {
-                                            list += "<span class='showrule' style='white-space: normal'>" + controlcontent.rule + "</span>";
-                                            list += "<table class='control_result invalid'><tr><td>Значение</td>";
-                                            list += "<td>Знак сравнения</td><td>Контрольная сумма</td><td>Отклонение</td></tr>";
-                                            list += "<tr style='text-align: center'><td>"+controlcontent.left_part+"</td><td>"+controlcontent.boolean_readable+"</td>";
-                                            list += "<td>"+controlcontent.right_part_value+"</td>";
-                                            list += "<td>"+controlcontent.deviation+"</td></tr></table>";
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                    });
-                    list += '</div>';
+            var formprotocol = $("#formprotocol");
+            var protocol_wrapper = $("<div></div>");
+            raiseInfo("Протокол контроля формы загружен");
+            $('#formprotocolloader').hide();
+            invalidCells.length = 0;
+            invalidTables.length = 0;
+            var now = new Date();
+            var timestamp = now.toLocaleString();
+            if  (data.nodata) {
+                formprotocol.html("<div class='alert alert-info'>"+ timestamp+" Проверяемая форма не содержит данных</div>");
+                return true;
+            }
+            else if (data.no_rules) {
+                formprotocol.html("<div class='alert alert-info'>"+ timestamp+" Для данной формы не заданы правила контроля</div>");
+                return true;
+            }
+            else if (data.valid) {
+                formprotocol.html("<div class='alert alert-success'>" + timestamp + " При проверке формы ошибок не выявлено</div>");
+                return true;
+            }
+            $.each(data, function(table_id, tablecontrol) {
+                if (typeof tablecontrol == 'object') {
+                    if (!tablecontrol.valid) {
+                        invalidCells[table_id] = [];
+                        markTableInvalid(table_id);
+                        var header_text = "(" + data_for_tables[table_id].tablecode + ") " + data_for_tables[table_id].tablename;
+                        var theader = $("<div class='tableprotocol-header text-info'><span class='glyph glyphicon-plus'></span>" + header_text + " " + "</div>");
+                        var tcontent = renderTableProtocol(table_id, tablecontrol);
+                        tcontent.hide();
+                        //tcontent.append(r.firstChild);
+                        protocol_wrapper.append(theader);
+                        protocol_wrapper.append(tcontent);
+                    }
                 }
             });
-            list += '</div>';
-            if (invalidtables == 0) {
-                list ="<p style='background-color: #b0ffaf;'> Ошибок не обнаружено </p>";
-                $('#formprotocol').html(list);
-            } else {
-                newwindow_link ="<a href='#' id='printformprotocol'>Открыть протокол в новом окне (распечатать)</a>";
-                formprotocolheader ="<a href='#' onclick='window.print()'>Распечатать</a>";
-                formprotocolheader +="<p>Протокол контроля формы № "+ form_code +": \"" + form_name +"\" </p>";
-                formprotocolheader +="<p>Учреждение: " + ou_code + " " + ou_name + "</p>";
-                note ="<p style='background-color: #ffa3a8;'> При проверке обнаружены ошибки по следующим таблицам: </p>";
-                $('#formprotocol').html(newwindow_link + note + list);
-                $("#formvalidation").jqxNavigationBar({
+            formprotocol.append(protocol_wrapper);
+            formprotocol.jqxPanel({ autoUpdate: true, width: '99%', height: '90%'});
+/*            protocol_wrapper.jqxNavigationBar({
+                width: 'auto',
+                arrowPosition: 'left',
+                expandMode: 'multiple',
+                theme: theme
+            });*/
+            //console.log($("#formprotocol").find(".tableprotocol-content"));
+            $("#formprotocol .tableprotocol-header").click(function() {
+                $(this).next().toggle();
+                var glyph = $(this.firstChild);
+                if (glyph.hasClass('glyphicon-plus')) {
+                    glyph.removeClass('glyphicon-plus');
+                    glyph.addClass('glyphicon-minus');
+                } else {
+                    glyph.addClass('glyphicon-plus');
+                    glyph.removeClass('glyphicon-minus');
+                }
+            });
+            $("#formprotocol .rule-valid").hide();
+            $("#formprotocol .tableprotocol-content").each( function() {
+                //consol.log(this.firstChild);
+                $(this.firstChild).jqxNavigationBar({
                     width: 'auto',
                     arrowPosition: 'left',
                     expandMode: 'multiple',
                     theme: theme
                 });
+            });
+
+
+
+            if (!data.valid) {
+
+                newwindow_link ="<a href='#' id='printformprotocol'>Открыть протокол в новом окне (распечатать)</a>";
+                formprotocolheader ="<a href='#' onclick='window.print()'>Распечатать</a>";
+                formprotocolheader +="<p>Протокол контроля формы № "+ form_code +": \"" + form_name +"\" </p>";
+                formprotocolheader +="<p>Учреждение: " + ou_code + " " + ou_name + "</p>";
+                note ="<p style='background-color: #ffa3a8;'> При проверке обнаружены ошибки по следующим таблицам: </p>";
+/*                $("#formvalidation").jqxNavigationBar({
+                    width: 'auto',
+                    arrowPosition: 'left',
+                    expandMode: 'multiple',
+                    theme: theme
+                });*/
                 $('#printformprotocol').click(function () {
                     print_style = "<style>.showrule { font-size: 0.8em; } .control_result { border: 1px solid #7f7f7f; width: 400;";
                     print_style += "border-collapse: collapse; margin-bottom: 10px; } .control_result td { border: 1px solid #7f7f7f; } </style>";
@@ -223,6 +289,8 @@ var checkform = function () {
                     pWindow.document.write(print_style + formprotocolheader + list);
                 });
             }
+            $("#formTables").jqxDataTable('render');
+            //$('#DataGrid').jqxGrid('render');
         }
     }).fail(function() {
         $('#formprotocol').html('');
@@ -230,33 +298,36 @@ var checkform = function () {
     });
 };
 
-var checktable = function () {
+var checktable = function (table_id) {
     var data ="";
     $.ajax({
         dataType: "json",
-        url: validate_table_url + current_table,
+        url: validate_table_url + table_id,
         data: data,
         beforeSend: function( xhr ) {
             $("#tableprotocol").html('');
             //$("#cellvalidationprotocol").html('');
             $('#protocolloader').show();
             $('#showallrule').jqxCheckBox('check');
-            invalidCells.length = 0; // TODO: Обнулять только текущую таблицу перед заполнением
+            //invalidCells.length = 0; // TODO: Обнулять только текущую таблицу перед заполнением
             marking_mode = 'control';
             $('#DataGrid').jqxGrid('render');
         },
         success: function (data, status, xhr) {
-            $('#protocolloader').hide();
+            var protocol_wrapper;
+            var header;
+            var printable;
             var tableprotocol = $("#tableprotocol");
-            var protocol_wrapper = $("<div></div>");
             var now = new Date();
             var timestamp = now.toLocaleString();
             var cashed = "";
+            invalidCells[table_id] = [];
+            $('#protocolloader').hide();
             if (data.cashed) {
                 cashed = "(сохраненная версия)";
             }
             raiseInfo("Протокол контроля таблицы загружен");
-            if  (data.nodata) {
+            if  (data.no_data) {
                 tableprotocol.html("<div class='alert alert-info'>"+ timestamp+" Проверяемая таблица не содержит данных</div>");
             }
             else if (data.no_rules) {
@@ -267,110 +338,46 @@ var checktable = function () {
                 tableprotocol.html("<div class='alert alert-success'>" + timestamp + " При проверке таблицы ошибок не выявлено" + " " + cashed + "</div>");
             }
             else {
-                var header= $("<div class='alert alert-danger'>" + timestamp + " При проверке таблицы выявлены ошибки " + " " + cashed + "</div>");
+                header = $("<div class='alert alert-danger'>" + timestamp + " При проверке таблицы выявлены ошибки " + " " + cashed + "</div>");
                 markTableInvalid(data.table_id);
                 $("#extrabuttons").show();
-                var container = $("<div></div>");
-                var intable = renderProtocol(container, data.intable, 'Результаты внутритабличного контроля');
-                var inform = renderProtocol(container, data.inform, 'Результаты внутриформенного контроля');
-                var inreport = renderProtocol(container, data.inreport, 'Результаты межформенного контроля');
-                var columncontrol = renderProtocol(container, data.columns, 'Результаты контроля граф');
-                protocol_wrapper.append(header);
-                protocol_wrapper.append(container);
-                protocol_wrapper.jqxPanel({ autoUpdate: true, width: '99%', height: '98%'});
-                container.jqxNavigationBar({
+                protocol_wrapper = renderTableProtocol(table_id, data);
+                //console.log(protocol_wrapper[0].firstChild.children);
+                printable = protocol_wrapper.clone();
+                $(protocol_wrapper[0].firstChild).jqxNavigationBar({
                     width: 'auto',
                     arrowPosition: 'left',
                     expandMode: 'multiple',
                     theme: theme
                 });
+                protocol_wrapper.jqxPanel({ autoUpdate: true, width: '99%', height: '99%'});
+                tableprotocol.append(header);
                 tableprotocol.append(protocol_wrapper);
-/*                protocolheader ="<a href='#' onclick='window.print()'>Распечатать</a>";
-                protocolheader +="<p>Протокол контроля таблицы " + data_for_tables[current_table].tablecode + " \""+ data_for_tables[current_table].tablename;
-                protocolheader += "\" формы № "+ form_code + "</p>";
-                protocolheader +="<p>Учреждение: " + ou_code + " " + ou_name + "</p>";
-                table_protocol_comment = "<div>Дата и время проведения проверки: " + timestamp + " "+ cashed + "</div>";
-                var list = '';
-                var incorrect_rows = [];
-                var rules = [];
-                $.each(data.protocol, function(row, result) {
-                    if (!result.row_correct) {
-                        incorrect_rows.push(result.row_number);
-                    }
-                    row_protocol = "<div>Строка "+result.row_number + "</div><div>";
-                    $.each(result.columns, function(col, content) {
-                        if (!content.column_correct) {
-                            col_protocol = [];
-                            $.each(content.column_protocols, function(rule, rule_result) {
-                                if (!rule_result.result) {
-                                    control_table_class = 'invalid';
-                                    invalidCells.push({t: current_table, r: result.row_id, c: col});
-                                    result_string = 'Не верно';
-                                } else {
-                                    control_table_class = 'valid';
-                                    result_string = 'Верно';
-                                }
-                                col_text = "<div class='showrule'>" + rule_result.rule + "</div>";
-                                col_text += "<table class='control_result "+ control_table_class + "'><tr><td>Значение</td>";
-                                col_text += "<td>Знак сравнения</td><td>Контрольная сумма</td><td>Отклонение</td>";
-                                col_text += "<td>Результат контроля</td></tr>";
-                                col_text += "<tr style='text-align: center'><td>"+rule_result.left_part+"</td><td>"+rule_result.boolean_readable+"</td>";
-                                col_text += "<td>"+rule_result.right_part_value+"</td>";
-                                col_text += "<td>"+rule_result.deviation+"</td><td>"+ result_string +"</td></tr></table>";
-                                if (show_table_errors_only) {
-                                    if (!rule_result.result) {
-                                        col_protocol.push(col_text);
-                                    }
-                                }
-                                else {
-                                    col_protocol.push(col_text);
-                                }
-                            });
-                            if (col_protocol.length > 0) {
-                                row_protocol += '<b>Графа ' + content.column_index + '</b></br>' + col_protocol.join("");
-                            }
-                        }
-                    });
-                    row_protocol +='</div>';
-                    if (show_table_errors_only) {
-                        if (!result.row_correct) {
-                            rules.push(row_protocol);
-                        }
-                    }
-                    else {
-                        rules.push(row_protocol);
-                    }
-                });
-                note ="<p class='alert alert-success'> При проверке таблицы ошибок не обнаружено </p>";
-                if (rules.length > 0 ) {
-                    if (incorrect_rows.length > 0) {
-                        note = "<a href='#' id='printtableprotocol'>Открыть в новом окне (распечатать)</a>";
-                        note +="<p style='background-color: #ffa3a8;'> При проверке обнаружены ошибки по следующим строкам: " + incorrect_rows.join(", ") + "</p>";
-                    }
-                    list = "<div id=\"tablevalidation\">";
-                    list += rules.join('');
-                    list += '</div>';
-                    $("#tableprotocol").html(table_protocol_comment + note + list);
-                    $("#tablevalidation").jqxNavigationBar({
-                        width: 'auto',
-                        arrowPosition: 'left',
-                        expandMode: 'multiple',
-                        theme: theme
-                    });
-                    $('#tablevalidation').jqxNavigationBar('render');
+                if ($("#showallrule").jqxCheckBox('checked'))  {
+                    $(".control-valid").hide();
+                } else {
+                    $(".control-valid").show();
                 }
-                else {
-                    $("#tableprotocol").html(table_protocol_comment + note);
-                }*/
+                var printprotocolheader ="<a href='#' onclick='window.print()'>Распечатать</a>";
+                printprotocolheader +="<h2>Протокол контроля таблицы " + data_for_tables[table_id].tablecode + " \""+ data_for_tables[table_id].tablename;
+                printprotocolheader += "\" формы № "+ form_code + "</h2>";
+                printprotocolheader +="<h4>Учреждение: " + ou_code + " " + ou_name + "</h4>";
+                table_protocol_comment = "<div>Дата и время проведения проверки: " + timestamp + " "+ cashed + "</div>";
+                $('#printtableprotocol').click(function () {
+                    print_style = "<style>.badge { background-color: #cbcbcb }";
+                    print_style += ".rule-comment { text-indent: 20px; font-style: italic }";
+                    print_style += ".rule-header { border-bottom: 1px solid; margin-top: 10px}";
+                    print_style += ".showrule { font-size: 0.8em; }";
+                    print_style += ".control-result { border: 1px solid #7f7f7f; border-collapse: collapse; margin-bottom: 10px; width: 600px; text-align: center; }";
+                    print_style += ".control-result td { border: 1px solid #7f7f7f; }";
+                    print_style += "</style>";
+                    var pWindow = window.open("", "ProtocolWindow", "width=900, height=600, scrollbars=yes");
+                    pWindow.document.write(print_style + printprotocolheader + printable.html());
+                });
+                protocol_control_created = true;
             }
-/*            $('#DataGrid').jqxGrid('render');
-            $('#printtableprotocol').click(function () {
-                print_style = "<style>.showrule { font-size: 0.8em; } .control_result { border: 1px solid #7f7f7f; ";
-                print_style += "border-collapse: collapse; margin-bottom: 10px; } .control_result td { border: 1px solid #7f7f7f; }</style>";
-                var pWindow = window.open("", "ProtocolWindow", "width=900, height=600, scrollbars=yes");
-                pWindow.document.write(print_style + protocolheader + list);
-            });
-            protocol_control_created = true;*/
+            $("#formTables").jqxDataTable('render');
+            $('#DataGrid').jqxGrid('render');
         }
     }).fail(function() {
         $("#tableprotocol").html('');
@@ -591,13 +598,13 @@ var inittablelist = function() {
 var initcheckformtab = function() {
     $("#checkform").jqxButton({ theme: theme, disabled: control_disabled });
     $("#checkform").click(function () { checkform() });
-    $("#dataexport").jqxButton({ theme: theme });
+/*    $("#dataexport").jqxButton({ theme: theme });
     $("#dataexport").click(function () {
         var dataExportWindow = window.open(export_data_url);
-    });
+    });*/
     if (current_user_role == 3 || current_user_role == 4 ) {
-        var vfk = $("<input id='medstatcontrol' type='button' value='Контроль Медстат (ВФ)'/>");
-        var mfk = $("<input id='medstatcontrol' type='button' value='Контроль Медстат (МФ)'/>");
+        var vfk = $("<input id='medstatcontrol' type='button' value='Контроль МC(ВФ)'/>");
+        var mfk = $("<input id='medstatcontrol' type='button' value='Контроль МC(МФ)'/>");
         $("#form_control_toolbar").append(vfk);
         vfk.jqxButton({ theme: theme });
         vfk.click(function () {
@@ -706,7 +713,7 @@ var initdatagrid = function() {
                             + ", г." + colindex + ". (" + oldvalue +
                             " >> " + value + ").</br>");
                         editedCells.push({ t: current_table, r: rowBoundIndex, c: colid});
-                        if (data.valid === false) {
+/*                        if (data.valid === false) {
                             current_edited_cell.valid = false;
                         }
                         else {
@@ -747,9 +754,10 @@ var initdatagrid = function() {
                             if ($("#showrule"+j).text().length > 300) {
                                 $("#showrule"+j).jqxPanel({ width: '100%', height: 50, theme: theme});
                             }
-                        }
+                        }*/
                         if (protocol_control_created) {
-                            $("#protocolcomment").html("<span class='invalid'>Неактуален (в таблице произведены изменения после его формирования)</span>");
+                            $("#tableprotocol").prepend("<span class='text-danger'>Протокол неактуален (в таблице произведены изменения после его формирования)</span>");
+                            //$("#protocolcomment").html();
                         }
                     }
                 }
@@ -837,14 +845,14 @@ var initlayout = function() {
                     contentContainer: 'TableControlPanel',
                     initContent: function () {
                         $("#checktable").jqxButton({ theme: theme, disabled: control_disabled });
-                        $("#checktable").click(checktable);
+                        $("#checktable").click( function() { checktable(current_table) });
                         $("#compareprevperiod").jqxButton({ theme: theme });
                         $("#compareprevperiod").click(compare_with_prev);
 
                     }
                 },{
                     type: 'layoutPanel',
-                    title: 'Контроль последней изменной ячейки',
+                    title: 'Контроль ячейки',
                     contentContainer: 'CellControlPanel',
                 }]
             }]

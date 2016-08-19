@@ -19,9 +19,10 @@
         </div>
         <div data-container="FormControlPanel" id="fcp">
             <div id="form_control_toolbar">
-                <input id="checkform" type="button" value="Выполнить проверку формы" />
-                <input id="dataexport" type="button" value="Экспорт данных" />
+                {{--<input id="dataexport" type="button" value="Экспорт данных" />--}}
+                <input id="checkform" type="button" value="Контроль МИ" />
             </div>
+            <div style="display: none" id="formprotocolloader"><h5>Выполнение проверки и загрузка протокола контроля <img src='/jqwidgets/styles/images/loader-small.gif' /></h5></div>
             <div id="formprotocol"></div>
         </div>
         <div data-container="ValueChangeLogPanel">
@@ -40,6 +41,8 @@
                 <div style="padding: 4px" id="extrabuttons">
                     <div id="showallrule" class="extrabutton" style="float: left"><span>Показать только ошибки</span></div>
                     <a id="togglecontrolscreen" style="margin-left: 2px;" target="_blank"><span class='glyphicon glyphicon-fullscreen'></span></a>
+                    <a id='printtableprotocol' style="margin-left: 2px;" target="_blank" ><span class='glyphicon glyphicon-print'></span></a>
+                    <a id='expandprotocolrow' style="margin-left: 2px;" target="_blank" title="Развернуть"><span class='glyphicon glyphicon-folder-close'></span></a>
                 </div>
             </div>
             <div style="clear: both"></div>
@@ -47,7 +50,7 @@
             <div style='width: 100%;height: 90%' id="tableprotocol"></div>
         </div>
         <div data-container="CellControlPanel">
-            <div id="cellvalidationprotocol">Изменений в текущем сеансе не было</div>
+            <div id="cellvalidationprotocol"></div>
         </div>
     </div>
 @endsection
@@ -140,7 +143,7 @@
         initnotifications();
         inittablelist();
         initlayout();
-        $('#formEditLayout').jqxLayout({ theme: theme, width: '99%', height: '99%', layout: layout });
+        $('#formEditLayout').jqxLayout({ theme: theme, width: '99%', height: '98%', layout: layout });
         initextarbuttons();
         firefullscreenevent();
     </script>
