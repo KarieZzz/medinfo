@@ -136,7 +136,7 @@
         var aggrsource_url = 'datainput/fetchaggregates?';
         var edit_form_url = 'datainput/formdashboard';
         var edit_aggregate_url = 'datainput/aggregatedashboard';
-        var export_form_url = 'export_form_to_excel.php?';
+        var export_form_url = "/datainput/formexport/";
         var forms = {!! $forms  !!};
         var states = {!! $states !!};
         var checkedforms = {!! $form_ids !!};

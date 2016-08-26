@@ -33,6 +33,7 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('admin', function () {
         return view('jqxadmin.home');
     });
+    // Менеджер пользователей - исполнителей
     Route::get('admin/workers', 'Admin\WorkerAdmin@index' );
     Route::get('admin/fetch_workers', 'Admin\WorkerAdmin@fetch_workers');
     Route::get('admin/fetch_mo_tree/{parent}', 'Admin\MOAdminController@fetch_mo_hierarchy');
@@ -40,6 +41,7 @@ Route::group(['middleware' => ['web']], function () {
     Route::post('admin/workers/create', 'Admin\WorkerAdmin@worker_store');
     Route::patch('admin/workers/update', 'Admin\WorkerAdmin@worker_update');
     Route::patch('admin/workers/updateuserscope', 'Admin\WorkerAdmin@worker_scope_update');
+
     // Менеджер отчетных документов
     Route::get('admin/documents', 'Admin\DocumentAdminController@index');
     Route::get('admin/fetchdocuments', 'Admin\DocumentAdminController@fetchDocuments');
@@ -51,6 +53,7 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('workerlogin', 'Auth\DatainputAuthController@getLogin' );
     Route::get('workerlogout', 'Auth\DatainputAuthController@logout' );
     Route::post('workerlogin', 'Auth\DatainputAuthController@login' );
+
     // Рабочий стол - Первичные и сводные отчеты, сообщения, проверки и экспорт в эксель
     Route::get('datainput', 'StatDataInput@index' );
     Route::get('datainput/fetchdocuments', 'StatDataInput@fetchdocuments');
@@ -60,11 +63,16 @@ Route::group(['middleware' => ['web']], function () {
     Route::post('datainput/sendmessage', 'StatDataInput\DocumentMessageController@sendMessage');
     Route::post('datainput/changestate', 'StatDataInput\DocumentStateController@changeState');
     Route::post('datainput/changeaudition', 'StatDataInput\DocumentAuditionController@changeAudition');
+
     // Рабочий стол - Первичный отчетный документ, ввод данных, контроль, журнал изменений
     Route::get('datainput/formdashboard/{id}', 'StatDataInput\FormDashboardController@index');
     Route::get('datainput/fetchvalues/{document}/{table}', 'StatDataInput\FormDashboardController@fetchValues');
     Route::post('datainput/savevalue/{document}/{table}', 'StatDataInput\FormDashboardController@saveValue');
     Route::get('datainput/valuechangelog/{document}', 'StatDataInput\FormDashboardController@fullValueChangeLog');
+    // Эспорт данных в Эксель и заполнение печатных форм-шаблонов
+    Route::get('datainput/formexport/{document}', 'StatDataInput\ExcelExportController@formExport');
+    Route::get('datainput/tableexport/{document}/{table}', 'StatDataInput\ExcelExportController@dataTableExport');
+
     // Рабочий стол для сводных документов
     Route::get('datainput/aggregatedashboard/{id}', 'StatDataInput\AggregatesDashboardController@index');
     Route::get('datainput/formcontrol/{document}', 'StatDataInput\FormDashboardController@formControl');

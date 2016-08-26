@@ -195,7 +195,7 @@ var rendertoolbar = function (toolbar) {
             $("#changeAuditStateWindow").jqxWindow('open');
         });
     }
-    var excel_export = $("<input id='ExcelExport' type='button' value='Экспортировать в эксель' />");
+    var excel_export = $("<a id='excelexport' style='margin-left: 2px;' target='_blank'><span class='glyphicon glyphicon-export'></span></a>");
     var excel_file = $("<input id='ExcelFile' type='button' value='Сформировать документ' />");
     var message_input = $("<input id='NewMessage' type='button' value='Комментарий' />");
     var refresh_list = $("<input id='RefreshList' type='button' value='Обновить список' />");
@@ -296,7 +296,7 @@ var rendertoolbar = function (toolbar) {
         var rowindex = $('#Documents').jqxGrid('getselectedrowindex');
         var document_id = $('#Documents').jqxGrid('getrowid', rowindex);
         if (rowindex !== -1) {
-            var editWindow = window.open(export_form_url+'document='+document_id);
+            window.open(export_form_url + document_id);
         }
     });
     /*                excel_file.click(function () {

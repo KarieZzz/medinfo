@@ -78,7 +78,6 @@ class FormDashboardController extends DashboardController
                 'pinned' => true
             );
             $column_groups_arr = array();
-
             $cols = $table->columns->where('deleted', 0)->sortBy('column_index');
             foreach ($cols as $col) {
                 $datafields_arr[] = array('name'  => $col->id);
@@ -128,7 +127,6 @@ class FormDashboardController extends DashboardController
             $datafortables[$table->id]['columngroups'] = $column_groups_arr;
         }
         $datafortables_json = addslashes(json_encode($datafortables));
-
         $composedata['tablelist'] = $forformtable;
         $composedata['tablecompose'] = $datafortables_json;
         //$composedata['tablecompose'] = $datafortables;
@@ -164,7 +162,8 @@ class FormDashboardController extends DashboardController
                     }
                 } elseif ($contentType == 'data') {
                     if ($c = Cell::OfDTRC($document, $t->id, $r->id, $col->id)->first()) {
-                        $row[$col->id] = is_null($c->value) ? '' : number_format($c->value, $col->decimal_count, '.', '') ;
+                        //$row[$col->id] = is_null($c->value) ? '' : number_format($c->value, $col->decimal_count, '.', '') ;
+                        $row[$col->id] = is_null($c->value) ? null : number_format($c->value, $col->decimal_count, '.', '');
                     }
                 }
                 //elseif ( $contentType == 'comment') {
@@ -296,9 +295,10 @@ class FormDashboardController extends DashboardController
             ->orderBy('table_code')->get();
         foreach ($tables as $table) {
             if (TableControlMM::tableContainsData($document, $table->id)) {
+                $offset = $table->table_code;
                 $control = new TableControlMM($document, $table->id);
-                $form_protocol[$table->id] = $control->takeAllBatchControls();
-                $form_protocol['valid'] = $form_protocol['valid'] && $form_protocol[$table->id]['valid'];
+                $form_protocol[$offset] = $control->takeAllBatchControls();
+                $form_protocol['valid'] = $form_protocol['valid'] && $form_protocol[$offset]['valid'];
                 $form_protocol['no_data'] = $form_protocol['no_data'] && false;
             }
         }

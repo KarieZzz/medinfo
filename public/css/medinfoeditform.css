@@ -51,8 +51,16 @@
 .tableprotocol-header:hover {
     text-decoration: underline;
 }
+.tableprotocol-content {
+    margin-left: 20px;
+    padding-right: 20px;
+    font-size: 0.9em;
+}
+
 .equality { background-color: #57ff53; }
 .approximate { background-color: #a8ff96; }
 .moderate { background-color: #f5ff9b; }
 .significant { background-color: #ffc8c8; }
-.not_editable {background-color: #e7eef8;; }
+.not_editable {background-color: #e7eef8; }
+
+#full-screen-warning-container{display:none!important}

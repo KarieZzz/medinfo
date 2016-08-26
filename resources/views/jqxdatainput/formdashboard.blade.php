@@ -14,14 +14,22 @@
 @section('content')
     <div id="formEditLayout">
         <div data-container="FormPanel">
-            <div id="formTables" class="no-border">
+            <div id="flist" style="width: 100%; height: 100%">
+                <div id="formTables" class="no-border"></div>
             </div>
         </div>
         <div data-container="FormControlPanel" id="fcp">
-            <div id="form_control_toolbar">
+            <div id="formControlToolbar" style="padding: 4px;">
                 {{--<input id="dataexport" type="button" value="Экспорт данных" />--}}
-                <input id="checkform" type="button" value="Контроль МИ" />
+                <input id="checkform" style="float: left" type="button" value="Контроль МИ" />
+                <div style="padding: 4px; display: none" id="fc_extrabuttons">
+                    <div id="showallfcrule" class="extrabutton" style="float: left"><span>Показать только ошибки</span></div>
+                    <a id="toggle_formcontrolscreen" style="margin-left: 2px;" target="_blank"><span class='glyphicon glyphicon-fullscreen'></span></a>
+                    <a id='printformprotocol' style="margin-left: 2px;" target="_blank" ><span class='glyphicon glyphicon-print'></span></a>
+                </div>
             </div>
+            <div style="clear: both"></div>
+            <div style="display: none" class="inactual-protocol"><span class='text-danger'>Протокол неактуален (в форме произведены изменения после его формирования)</span></div>
             <div style="display: none" id="formprotocolloader"><h5>Выполнение проверки и загрузка протокола контроля <img src='/jqwidgets/styles/images/loader-small.gif' /></h5></div>
             <div id="formprotocol"></div>
         </div>
@@ -36,8 +44,9 @@
         </div>
         <div data-container="TableControlPanel" id="TableControlPanel">
             <div style="padding: 4px" id="ProtocolToolbar">
-                <input style="float: left" id="checktable" type="button" value="Выполнить проверку таблицы" />
+                <input style="float: left" id="checktable" type="button" value="Контроль таблицы" />
                 <input style="float: left" id="compareprevperiod" type="button" value="Сравнить с предыдущим периодом" />
+                {{--<a href="#" onClick="DoFullScrene()">Full Screen Mode</a>--}}
                 <div style="padding: 4px" id="extrabuttons">
                     <div id="showallrule" class="extrabutton" style="float: left"><span>Показать только ошибки</span></div>
                     <a id="togglecontrolscreen" style="margin-left: 2px;" target="_blank"><span class='glyphicon glyphicon-fullscreen'></span></a>
@@ -47,22 +56,24 @@
             </div>
             <div style="clear: both"></div>
             <div style="display: none" id="protocolloader"><h5>Выполнение проверки и загрузка протокола контроля <img src='/jqwidgets/styles/images/loader-small.gif' /></h5></div>
+            <div style="display: none" class="inactual-protocol"><span class='text-danger'>Протокол неактуален (в таблице произведены изменения после его формирования)</span></div>
             <div style='width: 100%;height: 90%' id="tableprotocol"></div>
         </div>
         <div data-container="CellControlPanel">
-            <div id="cellvalidationprotocol"></div>
+            <div id="cellprotocol"></div>
         </div>
     </div>
 @endsection
 
 @push('loadcss')
 <link href="{{ asset('/css/medinfoeditform.css') }}" rel="stylesheet" type="text/css" />
-@endpush
+@endpush('loadcss')
 
 @push('loadjsscripts')
 <script src="{{ asset('/jqwidgets/jqxtabs.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxsplitter.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxdata.js') }}"></script>
+<script src="{{ asset('/jqwidgets/jqxdata.export.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxlayout.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxribbon.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxpanel.js') }}"></script>
@@ -81,6 +92,7 @@
 <script src="{{ asset('/jqwidgets/jqxgrid.columnsresize.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxgrid.selection.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxgrid.edit.js') }}"></script>
+<script src="{{ asset('/jqwidgets/jqxgrid.export.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxtooltip.js') }}"></script>
@@ -89,7 +101,7 @@
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
 <script src="{{ asset('/plugins/fullscreen/jquery.fullscreen.js') }}"></script>
 <script src="{{ asset('/medinfo/formdashboard.js') }}"></script>
-@endpush
+@endpush('loadjsscripts')
 
 @section('inlinejs')
     @parent
@@ -112,10 +124,10 @@
                 if (typeof properties.cellclassname !== 'undefined' )
                     properties.cellclassname = cellclass;
                 //var row, cellvalue, editor;
-                    properties.createeditor =  eval(properties.createeditor);
-                    properties.validation =  eval(properties.validation);
-                    properties.cellbeginedit = cellbeginedit;
-                });
+                properties.createeditor =  eval(properties.createeditor);
+                properties.validation =  eval(properties.validation);
+                properties.cellbeginedit = cellbeginedit;
+            });
             $.each(content.columngroups, function(group, properties) {
                 if (typeof properties.rendered !== 'undefined' )
                     properties.rendered = tooltiprenderer;
@@ -133,17 +145,21 @@
         var show_table_errors_only = true;
         var marking_mode = 'control';
         var current_edited_cell = {};
+        // JSON объект - протокол контроля формы
+        var current_protocol_source;
         var source_url = "/datainput/fetchvalues/" + doc_id + "/";
         var savevalue_url = "/datainput/savevalue/" + doc_id + "/";
         var validate_table_url = "/datainput/tablecontrol/" + doc_id + "/";
         var validate_form_url = "/datainput/formcontrol/" + doc_id;
         var medstat_control_url = "medstat_control_protocol.php?document=" + doc_id;
         var valuechangelog_url = "/datainput/valuechangelog/" + doc_id;
+        var tableexport_url = "/datainput/tableexport/" + doc_id + "/";
         initdatasources();
         initnotifications();
         inittablelist();
         initlayout();
         $('#formEditLayout').jqxLayout({ theme: theme, width: '99%', height: '98%', layout: layout });
+        init_fc_extarbuttons();
         initextarbuttons();
         firefullscreenevent();
     </script>
