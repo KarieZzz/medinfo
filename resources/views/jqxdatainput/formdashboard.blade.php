@@ -3,10 +3,10 @@
 @section('title')
 <h5>
     Форма №<span class="text-info">{{ $form->form_code  }} </span>
-    <span class="glyphicon glyphicon-map-marker"></span> <span class="text-info">{{ $current_unit->unit_name }} </span>
-    <span class="glyphicon glyphicon-calendar"></span> <span class="text-info">{{ $period->name }} </span>
-    <span class="glyphicon glyphicon-star"></span> <span class="text-info">{{ $statelabel }} </span>
-    <span class="glyphicon glyphicon-edit"></span> <span class="text-info">{{ $editmode }} </span>
+    <i class="fa fa-hospital-o fa-lg"></i> <span class="text-info">{{ $current_unit->unit_name }} </span>
+    <i class="fa fa-calendar-o fa-lg"></i> <span class="text-info">{{ $period->name }} </span>
+    <i class="fa fa-star fa-lg"></i> <span class="text-info">{{ $statelabel }} </span>
+    <i class="fa fa-edit fa-lg"></i> <span class="text-info">{{ $editmode }} </span>
 </h5>
 @endsection
 @section('headertitle', 'Просмотр/редактирование отчетного документа')

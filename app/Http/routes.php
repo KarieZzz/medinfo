@@ -69,6 +69,7 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('datainput/fetchvalues/{document}/{table}', 'StatDataInput\FormDashboardController@fetchValues');
     Route::post('datainput/savevalue/{document}/{table}', 'StatDataInput\FormDashboardController@saveValue');
     Route::get('datainput/valuechangelog/{document}', 'StatDataInput\FormDashboardController@fullValueChangeLog');
+
     // Эспорт данных в Эксель и заполнение печатных форм-шаблонов
     Route::get('datainput/formexport/{document}', 'StatDataInput\ExcelExportController@formExport');
     Route::get('datainput/tableexport/{document}/{table}', 'StatDataInput\ExcelExportController@dataTableExport');

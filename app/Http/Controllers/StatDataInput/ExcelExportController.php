@@ -14,8 +14,9 @@ class ExcelExportController extends Controller
     public function formExport(int $document)
     {
         $excel = new ExcelExport($document);
-        $excel->fillTables();
-        $excel->output_to_web();
+        //$excel->fillTables();
+        $output = $excel->output();
+        return response()->download($output['storage_path'], $output['file_name'], $output['headers']);
     }
 
     public function dataTableExport(int $document, int $table)
@@ -25,15 +26,14 @@ class ExcelExportController extends Controller
         //dd($time);
         //dd($directories);
         //Storage::disk('local')->put('file.txt', 'Contents');
-        //$templ = asset('');
         //$ex_file = Excel::create('Table', function($excel) use($document) {
 
         //$path = storage_path('app/templates/excel/s30.xlsx');
         //$objReader = PHPExcel_IOFactory::createReader('Excel2007');
         //$_phpexcel = $objReader->load($path);
         $excel = new ExcelExport($document);
-        $excel->fillTables();
-        $excel->output_to_web();
+        //$excel->fillTables();
+        $excel->output();
         //$ex_file = Excel::load($path);
         //$ex_file = Excel::load($path, function($reader) use($document) {
 /*            $excel->setTitle('Данные таблицы ' . ' документа №' . $document)

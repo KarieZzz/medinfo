@@ -36,6 +36,11 @@ class CeLLIterator
         //dd($this->_all_cells);
     }
 
+    public static function create($table)
+    {
+        return new CeLLIterator($table);
+    }
+
     public function setDataOnlyCells($state = false)
     {
         $this->data_only_cells = $state;

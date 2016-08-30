@@ -19,6 +19,7 @@ use Carbon\Carbon;
 class TableControlMM
 {
     public $doc_id;
+    public $document;
     public $form;
     public $table;
     public $rows;
@@ -40,7 +41,8 @@ class TableControlMM
             throw new Exception("Для выполнения контроля по таблице необходимо указать Id таблицы");
         }
         $this->doc_id = $doc_id;
-        $this->form = Form::find(Document::find($doc_id)->form_id);
+        $this->document = Document::find($doc_id);
+        $this->form = Form::find($this->document->form_id);
         $this->table = Table::find($table_id);
         $this->rows = \DB::table('rows')
             ->where('table_id', $this->table->id)
@@ -133,12 +135,14 @@ class TableControlMM
             $protocol['intable'] = $this->InTableRowControl();
             $protocol['inform'] = $this->InFormRowControl();
             $protocol['inreport'] = $this->InReportRowControl();
+            $protocol['inrow'] = $this->InRowControl();
             $protocol['columns'] = $this->ColumnControl();
             $protocol['table_id'] = $this->table->id;
             $protocol['cashed'] = false;
             if ( $protocol['intable']['no_rules']
                 && $protocol['inform']['no_rules']
                 && $protocol['inreport']['no_rules']
+                && $protocol['inrow']['no_rules']
                 && $protocol['columns']['no_rules'] )
             {
                 $protocol['no_rules'] = true;
@@ -148,6 +152,7 @@ class TableControlMM
             if ( $protocol['intable']['valid']
                 && $protocol['inform']['valid']
                 && $protocol['inreport']['valid']
+                && $protocol['inrow']['valid']
                 && $protocol['columns']['valid'] )
             {
                 $protocol['valid'] = true;
@@ -308,7 +313,7 @@ class TableControlMM
                     }
                     $right_part_formula .= ' )';
                     $deviation = $left_part_value - $right_part_value;
-                    $valid =
+                    //$valid =
                     $column_protocol = compact('left_part_value', 'left_part_formula', 'right_part_value', 'right_part_formula',
                         'boolean_sign', 'boolean_readable', 'deviation', 'column_id');
                     $column_protocol['row_id'] = $row->id;
@@ -321,14 +326,70 @@ class TableControlMM
             $row_protocol['valid'] = $row_protocol['valid'] && $row_protocol[$i]['valid'];
             $i++;
         }
-
         return $row_protocol;
     }
 
     public function inRowControl()
     {
+        $rule_type = 5;
+        $row_protocol['valid'] = true;
+        $rules = $this->getRules($rule_type);
+        if (!$rules) {
+            $row_protocol['no_rules'] = true;
+            return $row_protocol;
+        } else {
+            $row_protocol['no_rules'] = false;
+        }
+        $i = 0;
+        foreach ($rules as $rule) {
+            $row_protocol[$i]['valid'] = true;
+            $q_columns_range = "SELECT first_col, first_col+count_col last_col FROM controlling_rows WHERE rec_id = {$rule->relation}";
+            $columns_range = \DB::selectOne($q_columns_range);
 
+            $q_columns = "SELECT ccols.controlled, columns.id controlling, columns.column_index, ccols.boolean_sign, ccols.number_sign FROM controlled_columns ccols
+              JOIN columns ON columns.medinfo_id = ccols.controlling AND columns.table_id = {$this->table->id}
+              WHERE ccols.rec_id >= {$columns_range->first_col} AND ccols.rec_id < {$columns_range->last_col}";
+            $ccols = collect(\DB::select($q_columns));
 
+            foreach ($this->columns as $column) {
+                //$column_protocol = [];
+                $controlled = $ccols->where('controlled', $column->medinfo_id);
+                if (count($controlled) > 0) {
+                    $column_id = $column->id;
+                    $cell = Cell::OfDTRC($this->doc_id, $this->table->id, $rule->row_id, $column->id)->first();
+
+                    if (!is_null($cell)) {
+                        $left_part_value = round(floatval($cell->value), 3);
+                    } else {
+                        $left_part_value = 0;
+                    }
+                    $left_part_formula = $this->getIntoText($rule_type) . 'строка ' . $rule->row_code . ' (' . $rule->row_name . '),'
+                        . ' г.' . $column->column_index . '(' . $column->column_name . ')';
+                    $right_part_value = 0;
+                    $right_part_formula = '(';
+                    foreach ($controlled  as $ccell) {
+                        //var_dump($ccell);
+                        $boolean_sign = self::$boolean_sign[$ccell->boolean_sign];
+                        $boolean_readable = self::$boolean_readable[self::$boolean_sign[$ccell->boolean_sign]];
+                        $cell = Cell::OfDTRC($this->doc_id, $this->table->id, $rule->row_id, $ccell->controlling)->first();
+                        if (!is_null($cell)) {
+                            $right_part_value += round(floatval(self::$number_sign[$ccell->number_sign] . $cell->value), 3);
+                        }
+                        $right_part_formula .= ' ' . self::$number_sign[$ccell->number_sign] . 'г.' . $ccell->column_index;
+                    }
+                    $right_part_formula .= ' )';
+                    $deviation = $left_part_value - $right_part_value;
+                    $column_protocol = compact('left_part_value', 'left_part_formula', 'right_part_value', 'right_part_formula',
+                        'boolean_sign', 'boolean_readable', 'deviation', 'column_id');
+                    $column_protocol['row_id'] = $rule->row_id;
+                    $column_protocol['valid'] = $this->chekoutRule($column_protocol);
+                    $row_protocol[$i][] = $column_protocol;
+                    $row_protocol[$i]['valid'] = $row_protocol[$i]['valid'] && $column_protocol['valid'];
+                }
+            }
+            $i++;
+        }
+        return $row_protocol;
     }
 
     private function getRules(int $rule_type)
@@ -344,7 +405,8 @@ class TableControlMM
     {
         $lcell = Cell::OfDTRC($this->doc_id, $this->table->id, $rule->row_id, $column->id)->first();
         if (!is_null($lcell)) {
-            $row_protocol['left_part_value'] = floatval($lcell->value);
+            $decimal = $column->decimal_count;
+            $row_protocol['left_part_value'] = $decimal > 0 ?  round(floatval($lcell->value), $decimal) : intval($lcell->value);
         } else {
             $row_protocol['left_part_value'] = 0;
         }
@@ -353,13 +415,28 @@ class TableControlMM
         $right_part_value = 0;
         $right_part_formula = '( ';
         foreach ($crows as $crow) {
+            $controlling_document_id = $this->doc_id;
             $row_protocol['boolean_sign'] = self::$boolean_sign[$crow->boolean_sign];
             $row_protocol['boolean_readable'] = self::$boolean_readable[self::$boolean_sign[$crow->boolean_sign]];
-            $rcell = Cell::OfDTRC($this->doc_id, $crow->table_id, $crow->row_id, $crow->col_id)->first();
-            if (!is_null($rcell)) {
-                $right_part_value += floatval(self::$number_sign[$crow->number_sign] . $rcell->value);
+            // В случае межформенного контроля получаем id "контролирующего" документа
+            if ($rule_type == 3) {
+                $controlling_document = Document::OfUPF($this->document->ou_id, $this->document->period_id, $crow->form_id)->first();
+                if (is_null($controlling_document)) {
+                    $right_part_value = 0;
+                    $right_part_formula .= ' Контролирующий документ не существует (' . self::$number_sign[$crow->number_sign] . 'ф.'
+                        . $crow->form_code . ',' . $crow->table_code . ')';
+                    continue;
+                } else {
+                    $controlling_document_id = $controlling_document->id;
+                }
             }
 
+            $rcell = Cell::OfDTRC($controlling_document_id, $crow->table_id, $crow->row_id, $crow->col_id)->first();
+            if (!is_null($rcell)) {
+                $decimal = $crow->decimal_count;
+                $right_part_value += $decimal > 0 ? round(floatval(self::$number_sign[$crow->number_sign] . $rcell->value), 3) : intval(self::$number_sign[$crow->number_sign] . $rcell->value);
+                //$right_part_value += round(floatval(self::$number_sign[$crow->number_sign] . $rcell->value), 3);
+            }
             $right_part_formula .= $this->getRightPart($rule_type, $crow);
         }
         $row_protocol['right_part_value'] = $right_part_value;
@@ -385,6 +462,9 @@ class TableControlMM
                 break;
             case 4:
                 $intro = 'Контроль граф (типовая методика): ';
+                break;
+            case 5:
+                $intro = 'Контроль внутри строки: ';
                 break;
             default:
                 $intro = "Неизвестный тип контроля";
@@ -434,8 +514,8 @@ class TableControlMM
                 return null;
                 break;
         }
-        $q_crows = "SELECT r.row_id, columns.id col_id, r.table_id,
-                  forms.form_code, tables.table_code, rows.row_code, columns.column_index,
+        $q_crows = "SELECT r.row_id, columns.id col_id, r.table_id, r.form_id,
+                  forms.form_code, tables.table_code, rows.row_code, columns.column_index, columns.decimal_count,
                   c.boolean_sign, c.number_sign
                   FROM controlling_rows r
                   JOIN controlled_columns c ON c.rec_id >= r.first_col AND c.rec_id < r.first_col + r.count_col
@@ -453,16 +533,17 @@ class TableControlMM
     {
         $lp = $condition['left_part_value'];
         $rp = $condition['right_part_value'];
+        $delta = 0.0001;
         // Если обе части выражения равны нулю - пропускаем проверку.
         if ($lp == 0 && $rp == 0) {
             return true;
         }
         switch ($condition['boolean_sign']) {
             case '==' :
-                $result = $lp == $rp;
+                $result = abs($lp - $rp) < $delta ? true : false;
                 break;
             case '>' :
-                $result = $lp >$rp;
+                $result = $lp > $rp;
                 break;
             case '>=' :
                 $result = $lp >= $rp;

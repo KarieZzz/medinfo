@@ -62,6 +62,17 @@ return [
             'bucket' => 'your-bucket',
         ],
 
+        'template_cache' => [
+            'driver' => 'local',
+            'root' => storage_path('app/templates/cache'),
+        ],
+
+        'excel_exports' => [
+            'driver' => 'local',
+            'root' => storage_path('app/exports/excel'),
+            'visibility' => 'public',
+        ],
+
     ],
 
 ];

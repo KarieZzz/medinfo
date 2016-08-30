@@ -157,8 +157,7 @@ var rendertoolbar = function (toolbar) {
     var container = $("<div style='margin: 5px;'></div>");
     var input1 = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='searchField' type='text' style='height: 23px; float: left; width: 150px;' />");
     var input2 = $("<input id='clearfilters' type='button' value='Очистить фильтр'/>");
-    var input3 = $("<input id='EditForm' type='button' value='Редактировать форму' />");
-    var input4 = $("<input id='ChangeStatus' type='button' value='Статус отчета' />");
+
     if (audit_permission) {
         var input5 = $("<input id='ChangeAudutStatus' type='button' value='Проверка отчета' />");
         input5.click(function () {
@@ -195,21 +194,28 @@ var rendertoolbar = function (toolbar) {
             $("#changeAuditStateWindow").jqxWindow('open');
         });
     }
-    var excel_export = $("<a id='excelexport' style='margin-left: 2px;' target='_blank'><span class='glyphicon glyphicon-export'></span></a>");
-    var excel_file = $("<input id='ExcelFile' type='button' value='Сформировать документ' />");
-    var message_input = $("<input id='NewMessage' type='button' value='Комментарий' />");
-    var refresh_list = $("<input id='RefreshList' type='button' value='Обновить список' />");
+
+    var editform = $("<i style='margin-left: 2px;height: 14px' class='fa fa-edit fa-lg' title='Редактировать форму' />");
+    var excel_export = $("<i style='margin-left: 2px;height: 14px' class='fa fa-file-excel-o fa-lg' title='Экспортировать документ в MS Excel'></i>");
+    //var excel_file = $("<input id='ExcelFile' type='button' value='Сформировать документ' />");
+    //var message_input = $("<input id='newMessage' type='button' value='Комментарий' />");
+    var message_input = $("<i style='margin-left: 2px;height: 14px' class='fa fa-sticky-note-o fa-lg' title='Сообщение/комментарий к документу'></i>");
+    //var refresh_list = $("<input id='RefreshList' type='button' value='Обновить список' />");
+    var refresh_list = $("<i style='margin-left: 2px;height: 14px' class='fa fa-refresh fa-lg' title='Обновить список'></i>");
+    var changestatus = $("<input id='ChangeStatus' type='button' value='Статус отчета' />");
+
     toolbar.append(container);
     container.append(input1);
     container.append(input2);
-    container.append(input3);
+
     if (current_user_role != 2) {
-        container.append(input4);
+        container.append(changestatus);
     }
     if (audit_permission) {
         container.append(input5);
         input5.jqxButton({ theme: theme });
     }
+    container.append(editform);
     container.append(message_input);
     container.append(excel_export);
     //container.append(excel_file);
@@ -218,10 +224,10 @@ var rendertoolbar = function (toolbar) {
     input1.addClass('jqx-rc-all-' + theme);
     input1.jqxInput({ width: 200, placeHolder: "Медицинская организация" });
     input2.jqxButton({ theme: theme });
-    input3.jqxButton({ theme: theme });
-    input4.jqxButton({ theme: theme });
+    editform.jqxButton({ theme: theme });
+    changestatus.jqxButton({ theme: theme });
     excel_export.jqxButton({ theme: theme });
-    excel_file.jqxButton({ theme: theme });
+    //excel_file.jqxButton({ theme: theme });
     message_input.jqxButton({ theme: theme });
     refresh_list.jqxButton({ theme: theme });
     var oldVal = "";
@@ -242,14 +248,14 @@ var rendertoolbar = function (toolbar) {
         }
     });
     input2.click(function () { $("#Documents").jqxGrid('clearfilters'); input1.val('');});
-    input3.click(function () {
+    editform.click(function () {
         var rowindex = $('#Documents').jqxGrid('getselectedrowindex');
         var document_id = $('#Documents').jqxGrid('getrowid', rowindex);
         if (rowindex !== -1) {
             var editWindow = window.open(edit_form_url + '/' + document_id);
         }
     });
-    input4.click(function () {
+    changestatus.click(function () {
         var rowindex = $('#Documents').jqxGrid('getselectedrowindex');
         var this_document_state ='';
         if (rowindex == -1) {
@@ -472,8 +478,8 @@ var initmotree = function() {
                 $("#moTree").jqxTreeGrid('expandRow', 0);
             },
             columns: [
-                { text: 'Код', dataField: 'unit_code', width: 100 },
-                { text: 'Наименование', dataField: 'unit_name', width: 540 }
+                { text: 'Код', dataField: 'unit_code', width: 120 },
+                { text: 'Наименование', dataField: 'unit_name', width: 545 }
             ]
         });
     $('#moTree').on('filter',

@@ -167,12 +167,12 @@
         $("#mainSplitter").jqxSplitter(
                 {
                     width: '99%',
-                    height: '98%',
+                    height: '96%',
                     theme: theme,
                     panels:
                             [
-                                { size: "30%", min: "10%"},
-                                { size: '70%', min: "30%"}
+                                { size: "35%", min: "10%"},
+                                { size: '65%', min: "30%"}
                             ]
                 }
         );
@@ -187,7 +187,7 @@
         initfiltertabs();
         $('#DocumentPanelSplitter').jqxSplitter({
             width: '100%',
-            height: '95%',
+            height: '93%',
             theme: theme,
             orientation: 'horizontal',
             panels: [{ size: '50%', min: 100, collapsible: false }, { min: '100px', collapsible: true}]

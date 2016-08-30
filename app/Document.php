@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Document extends Model
 {
@@ -30,5 +31,24 @@ class Document extends Model
     public function scopeAggregate($query)
     {
         return $query->where('dtype', 2);
+    }
+    public function scopeOfUPF($query, $ou, $period, $form)
+    {
+        return $query
+            ->where('ou_id', $ou)
+            ->where('period_id', $period)
+            ->where('form_id', $form);
+    }
+
+    public static function dataUpdatedAt(int $document)
+    {
+        $q = "SELECT MAX(updated_at) latest_edited FROM statdata WHERE doc_id = $document";
+        $updated_at = \DB::selectOne($q)->latest_edited;
+        if ($updated_at) {
+            return new Carbon($updated_at);
+        } else {
+            // Возвращаем объект с заведомо старой датой
+            return Carbon::create(1900, 1, 1);
+        }
     }
 }

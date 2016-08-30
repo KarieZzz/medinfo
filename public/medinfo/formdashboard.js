@@ -157,6 +157,7 @@ var renderTableProtocol = function (table_id, data) {
     renderRowProtocol(container, table_id, data.intable, 'Результаты внутритабличного контроля строк');
     renderRowProtocol(container, table_id, data.inform, 'Результаты внутриформенного контроля строк');
     renderRowProtocol(container, table_id, data.inreport, 'Результаты межформенного контроля строк');
+    renderRowProtocol(container, table_id, data.inrow, 'Результаты контроля внутри строки');
     renderRowProtocol(container, table_id, data.columns, 'Результаты контроля граф');
     protocol_wrapper.append(container);
     return protocol_wrapper;
@@ -328,8 +329,13 @@ var checkform = function () {
             $("#formTables").jqxDataTable('refresh');
             $('#DataGrid').jqxGrid('refresh');
         }
-    }).fail(function() {
+    }).fail(function(jqXHR, textStatus, errorThrown) {
         $('#formprotocol').html('');
+        $('#formprotocolloader').hide();
+        if (jqXHR.status == 401) {
+            raiseError('Пользователь не авторизован.', jqXHR );
+            return false;
+        }
         raiseError("Ошибка получения протокола контроля с сервера.");
     });
 };
@@ -391,7 +397,7 @@ var checktable = function (table_id) {
                     expandMode: 'multiple',
                     theme: theme
                 });
-                protocol_wrapper.jqxPanel({ autoUpdate: true, width: '99%', height: '99%'});
+                protocol_wrapper.jqxPanel({ autoUpdate: true, width: '98%', height: '95%'});
                 tableprotocol.append(header);
                 tableprotocol.append(protocol_wrapper);
                 if ($("#showallrule").jqxCheckBox('checked'))  {
@@ -422,8 +428,13 @@ var checktable = function (table_id) {
             $("#formTables").jqxDataTable('refresh');
             $('#DataGrid').jqxGrid('refresh');
         }
-    }).fail(function() {
+    }).fail(function(jqXHR, textStatus, errorThrown) {
         $("#tableprotocol").html('');
+        $('#formprotocolloader').hide();
+        if (jqXHR.status == 401) {
+            raiseError('Пользователь не авторизован.', jqXHR );
+            return false;
+        }
         raiseError("Ошибка получения протокола контроля с сервера.");
     });
 };
@@ -767,13 +778,10 @@ var initdatagrid = function() {
             success: function (data, status, xhr) {
                 if (data.error == 401) {
                     raiseError("Данные не сохранены. Пользователь не авторизован!");
-                    //$("#currentError").text("Данные не сохранены. Пользователь не авторизован!");
-                    //$("#serverErrorNotification").jqxNotification("open");
                 }
                 else if (data.error == 1001) {
                     raiseError("Данные не сохранены. Отсутствуют права на изменение данных в этом документе");
-                    //$("#currentError").text("Данные не сохранены. Отсутствуют права на изменение данных в этом документе");
-                    //$("#serverErrorNotification").jqxNotification("open");
+
                 }
                 else {
                     if (data.cell_affected) {
