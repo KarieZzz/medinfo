@@ -53,14 +53,4 @@ class ExcelExportController extends Controller
         //$this->output_to_web($_phpexcel);
     }
 
-    public function output_to_web($excel)
-    {
-        $objWriter = PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
-        ob_end_clean();
-        //ini_set('zlib.output_compression','Off');
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="s30.xlsx');
-        header('Cache-Control: max-age=0');
-        $objWriter->save('php://output');
-    }
 }
