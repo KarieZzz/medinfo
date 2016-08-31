@@ -41,6 +41,7 @@
                         </ul>
                     </li>
                     <li><a href="/admin/documents">Документы</a></li>
+                    @yield('local_actions')
                 </ul>
             </div><!--/.nav-collapse -->
         </div>

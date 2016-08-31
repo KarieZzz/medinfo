@@ -1,6 +1,6 @@
 @extends('jqxadmin.app')
 
-@section('title', '<h2>Администратор пользователей - исполнителей отчетов</h2>')
+@section('title', '<h2>Администрирование: пользователи - исполнители отчетов</h2>')
 
 @section('content')
 <div id="mainSplitter" >

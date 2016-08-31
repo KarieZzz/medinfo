@@ -105,12 +105,49 @@ var updatedocumenttable = function() {
     }
 };
 
+// Инициализация панели инструкментов
+var initnewdocumentwindow = function () {
+    var newdoc_form = $('#newForm').jqxWindow({
+        width: 550,
+        height: 400,
+        resizable: false,
+        autoOpen: false,
+        cancelButton: $('#cancelButton'),
+        position: { x: 300, y: 130 },
+        initContent: function () {
+            //$('#searchTextButton').jqxButton({ width: '80px', disabled: true });
+            //$('#cancelButton').jqxButton({ width: '80px', disabled: false });
+            //$('#matchCaseCheckBox').jqxCheckBox({ width: '150px' });
+        }
+    });
+    $("#selectForm").jqxDropDownList({
+        theme: theme,
+        source: formsDataAdapter,
+        displayMember: "form_code",
+        valueMember: "id",
+        placeHolder: "Выберите форму:",
+        //selectedIndex: 2,
+        width: 250,
+        height: 25
+    });
+    $("#selectState").jqxDropDownList({
+        theme: theme,
+        source: changestateDA,
+        displayMember: "name",
+        valueMember: "code",
+        placeHolder: "Выберите статус:",
+        selectedIndex: 0,
+        width: 250,
+        height: 25
+    });
+
+};
 // Инициализация разбивки рабочего стола на области
 var initsplitters = function() {
     $("#mainSplitter").jqxSplitter(
         {
             width: '100%',
-            height: '100%',
+            height: '95%',
             theme: theme,
             panels:
                 [
@@ -121,13 +158,27 @@ var initsplitters = function() {
     );
     $('#leftPanel').jqxSplitter({
         width: '100%',
-        height: '100%',
+        height: '95%',
         theme: theme,
         orientation: 'horizontal',
         panels: [{ size: '50%', min: 100, collapsible: false }, { min: '100px', collapsible: true}]
     });
 };
-
+// Рендеринг панели инструментов для выделенных территорий/учреждений
+//var rendermotreetoolbar = function(toolbar) {
+var rendermotreetoolbar = function() {
+    var toolbar = $("#filtermoTree");
+    var container = $("<div style='display: none' id='buttonplus'></div>");
+    var newdoc_form = $('#newForm');
+    var newdocument = $("<i style='height: 14px' class='fa fa-wpforms fa-lg' title='Новый документ'></i>");
+    newdocument.jqxButton({ theme: theme });
+    container.append(newdocument);
+    //var newdocument = $("#newdocument");
+    newdocument.on('click', function() {
+        newdoc_form.jqxWindow('open');
+    });
+    toolbar.append(container);
+};
 // инициализация дерева медицинских организаций/территорий
 var initmotree = function() {
     $("#moTreeContainer").jqxPanel({width: '100%', height: '100%'});
@@ -138,12 +189,17 @@ var initmotree = function() {
             theme: theme,
             source: mo_dataAdapter,
             selectionMode: "singleRow",
+            localization: localize(),
+            //rendertoolbar: rendermotreetoolbar,
             filterable: true,
             filterMode: "simple",
             columnsResize: true,
             checkboxes: true,
             hierarchicalCheckboxes: true,
+            //showToolbar: true,
             ready: function () {
+                //$("#moTree").jqxTreeGrid({ showToolbar: false });
+                rendermotreetoolbar();
                 $("#moTree").jqxTreeGrid('expandRow', 0);
             },
             columns: [
@@ -151,6 +207,7 @@ var initmotree = function() {
                 {text: 'Наименование', dataField: 'unit_name'}
             ]
         });
+
     $('#moTree').on('filter',
         function (event) {
             var args = event.args;
@@ -158,18 +215,33 @@ var initmotree = function() {
             $('#moTree').jqxTreeGrid('expandAll');
         }
     );
-    $('#moTree').on('rowSelect',
-        function (event) {
-            var args = event.args;
-            var key = args.key;
-            var new_top_level_node = key;
-            if (new_top_level_node == current_top_level_node) {
-                return false;
-            }
-            current_top_level_node = key;
-            updatedocumenttable();
-            return true;
-        });
+    $('#moTree').on('rowSelect', function (event) {
+        var args = event.args;
+        var key = args.key;
+        var new_top_level_node = key;
+        if (new_top_level_node == current_top_level_node) {
+            return false;
+        }
+        current_top_level_node = key;
+        updatedocumenttable();
+        return true;
+    });
+    $('#moTree').on('rowCheck', function (event) {
+        //$(this).jqxTreeGrid({ showToolbar: true });
+        $("#buttonplus").show();
+    });
+    $('#moTree').on('rowUncheck', function (event) {
+        var checked = $(this).jqxTreeGrid('getCheckedRows');
+        if (checked.length > 0) {
+            //$(this).jqxTreeGrid({ showToolbar: true });
+            $("#buttonplus").show();
+        } else {
+            //$(this).jqxTreeGrid({ showToolbar: false });
+            $("#buttonplus").hide();
+        }
+
+    });
+
 };
 
 // инициализация источников данных для предустановленных фильтров
@@ -444,7 +516,7 @@ var noselected_error = function(message) {
     }
     return row_ids;
 };
-var initpopupwindows = function() {
+/*var initpopupwindows = function() {
     $("#changeStateWindow").jqxWindow({
         width: 430,
         height: 360,
@@ -672,7 +744,7 @@ var initpopupwindows = function() {
         theme: theme,
         modalOpacity: 0.01
     });
-};
+};*/
 var initnotifications = function() {
     $("#serverErrorNotification").jqxNotification({
         width: 250, position: "top-right", opacity: 0.9,

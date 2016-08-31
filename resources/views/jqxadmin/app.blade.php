@@ -15,18 +15,17 @@
             /* The html and body elements cannot have any padding or margin. */
         }
 
-        /* Wrapper for page content to push down footer */
+        /* Wrapper for page content to push down footer
         #wrap {
             min-height: 100%;
             height: auto;
-
-        }
+        }*/
         #widgets-content-wrap {
             position: absolute;
             width:100%;
             height: 100%;
-            /* Pad bottom by footer height */
-            padding: 0 0 120px;
+            /* Pad bottom by footer height
+            padding: 17px 0 120px;*/
         }
         #alertmessage {
             position: absolute;
@@ -44,6 +43,7 @@
     <!-- jQWidgets CSS -->
     <link href="{{ asset('/jqwidgets/styles/jqx.base.css') }}" rel="stylesheet">
     <link href="{{ asset('/jqwidgets/styles/jqx.bootstrap.css') }}" rel="stylesheet">
+    <link href="{{ asset('/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
 </head>
 
 <body>
@@ -53,10 +53,8 @@
 <div id="wrap">
     @include('jqxadmin.navbar')
     <!-- Begin page content -->
-    <div class="container-fluid" style="margin-top: 20px">
-        <div class="page-header">
-            @yield('title')
-        </div>
+    <div style="padding: 20px 0 0 15px">
+        @yield('title')
     </div>
     <div id="widgets-content-wrap" style="visibility: hidden">
         @yield('content')
@@ -73,6 +71,7 @@
 <script src="{{ asset('/jqwidgets/jqxcore.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxmenu.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxnotification.js') }}"></script>
+<script src="{{ asset('/medinfo/admin/admin.js') }}"></script>
 @stack('loadjsscripts')
 <script type="text/javascript">
     var theme = 'bootstrap';

@@ -1,13 +1,16 @@
 @extends('jqxadmin.app')
 
-@section('title', '<h2>Менеджер документов</h2>')
+@section('title', '<h2>Администрирование: отчетные документы</h2>')
 @section('headertitle', 'Менеджер документов')
+@section('local_actions')
+{{--<li><a href="#" id="newdocument">Новый документ</a></li>--}}
 
+@endsection
 
 @section('content')
 <div id="mainSplitter" class="jqx-widget">
     <div>
-        <div id="leftPanel" style="margin: 10px">
+        <div id="leftPanel">
             <div>
                 <h4>Территории/Медицинские организации</h4>
                 <div id="moTreeContainer">
@@ -16,7 +19,7 @@
             </div>
             <div id="filtertabs">
                 <ul>
-                    <li style="margin-left: 30px;">Формы</li>
+                    <li style="margin-left: 30px;" class="header-name">Формы</li>
                     <li>Статусы</li>
                     <li>Периоды</li>
                     <li>Типы</li>
@@ -63,6 +66,56 @@
             </div>
         </div>
     </div>
+    <div id="newForm">
+        <div id="newFormHeader">
+            <span id="headerContainer" style="float: left">Новые документы для отмеченных территорий/учреждений</span>
+        </div>
+
+        <div>
+            <form class="form-horizontal">
+{{--                <div class="form-group">
+                    <label class="control-label col-sm-3" for="ou">Территория/учреждение</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="ou" placeholder="Выберите ОЕ">
+                    </div>
+                </div>--}}
+                <div class="form-group">
+                    <label class="control-label col-sm-3" for="selectForm">Код формы</label>
+                    <div class="col-sm-6">
+                        <div id="selectForm"></div>
+                       {{-- <input type="text" class="form-control" id="form_code" placeholder="Введите код формы">--}}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-3" for="period">Период</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="period" placeholder="Введите отчетный период">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-3" for="period">Исходный статус</label>
+                    <div class="col-sm-6">
+                        <div id="selectState"></div>
+                        {{--<input type="text" class="form-control" id="status" placeholder="Статус">--}}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-8">
+                        <div class="checkbox">
+                            <label><input type="checkbox"> Первичные</label>
+                            <label><input type="checkbox"> Сводные</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-7">
+                        <button id="saveButton" class="btn btn-default">Создать</button>
+                        <button id="cancelButton" class="btn btn-default">Отменить</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 @endsection
 
@@ -84,6 +137,8 @@
     <script src="{{ asset('/jqwidgets/jqxgrid.selection.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
+    <script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>
+    <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
     <script src="{{ asset('/medinfo/admin/documentadmin.js') }}"></script>
 @endpush
 
@@ -106,9 +161,11 @@
         var checkeddtypes = {!! $dtype_ids !!};
 
         datasources();
+        initfilterdatasources();
+        initnewdocumentwindow();
         initsplitters();
         initmotree();
-        initfilterdatasources();
+
         initfiltertabs();
         initdocumentslist();
         initnotifications();
@@ -119,7 +176,7 @@
             source: changestateDA,
             displayMember: "name",
             valueMember: "code",
-            placeHolder: "Выберите статус документов:",
+            placeHolder: "Изменение статуса документов:",
             //selectedIndex: 2,
             width: 250,
             height: 25
