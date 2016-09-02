@@ -58,21 +58,19 @@ class DocumentMessageController extends Controller
         $newmessage->message = $remark;
         $newmessage->save();
         $for_mail_body = compact('document', 'remark', 'worker','form', 'unit');
-        // трай кэтч блок не работает в ларавед
-        // TODO: Разобраться с обработкой ошибок в Laravel
-        //try {
-            Mail::send('emails.documentmessage', $for_mail_body, function ($m) use ($emails) {
-                $m->from('noreply@miac-io.ru', 'Email оповещение Мединфо');
-                $m->to($emails)->subject('Сообщение/комментарий к отчетному документу Мединфо');
-            });
+        Mail::send('emails.documentmessage', $for_mail_body, function ($m) use ($emails) {
+            $m->from('noreply@miac-io.ru', 'Email оповещение Мединфо');
+            $m->to($emails)->subject('Сообщение/комментарий к отчетному документу Мединфо');
+        });
+        $data['sent_to'] = implode(",", $emails);
+        if( count(Mail::failures()) > 0 ) {
+            foreach(Mail::failures as $email_address) {
+                $data['error_emails'][] = $email_address;
+            }
+            $data['message_sent'] = false;
+        } else {
             $data['message_sent'] = true;
-            $data['sent_to'] = implode(",", $emails);
-        //}
-        //catch (Exception $e) {
-           // $data['message_sent'] = false;
-           // $data['error'] = $e->getMessage();
-        //}
-        // TODO: Вернуть правильный статус отправки почты
+        }
         return $data;
     }
 }

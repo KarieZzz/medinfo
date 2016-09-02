@@ -48,72 +48,58 @@
         </div>
     </div>
     <div>
-        <div id="rightPanel">
-            <div id="documentContainer">
-                <h4 style="margin-left: 10px">Документы</h4>
-                <div id="documentList" class="box" style="padding-bottom: 3px">  </div>
-            </div>
-            <div id="actionPanel">
-                <h4 style="margin-left: 10px">Действия с выделенными документами</h4>
-                <div class="row">
-                    <div style='float: left; padding-left: 20px; margin-left: 20px;' id='statesDropdownList'></div>
-                    <input class='jqx-input jqx-widget-content jqx-rc-all' id='changeStates' type='text' value='Сменить статус' style='height: 25px; float: left; width: 150px; margin-left: 10px;' />
-                </div>
-                <div class="row">
-                    <input class='jqx-input jqx-widget-content jqx-rc-all' id='deleteDocuments' type='text' value='Удалить' style='height: 25px; float: left; width: 150px;' />
-                    <input class='jqx-input jqx-widget-content jqx-rc-all' id='eraseData' type='text' value='Очистить данные' style='height: 25px; float: left; width: 150px;' />
+        <div id="rightPanel" style="height: 100%">
+            <div class="row">
+                <div class="col-sm-4"><h4 style="margin-left: 10px">Документы</h4></div>
+                <div style="padding-top: 7px" class="col-sm-6" id="checkedDocumentsToolbar">
+                    <div style='float: left; margin-right: 4px;' id='statesDropdownList'></div>
+                    {{--<input class='jqx-input jqx-widget-content jqx-rc-all' id='changeStates' type='text' value='Сменить статус' style='height: 25px; float: left; width: 150px; margin-left: 10px;' />--}}
+                    <i style='height: 14px' class="fa fa-eraser fa-lg" id='eraseData' title="Очистить данные"></i>
+                    <i style='height: 14px' class="fa fa-trash-o fa-lg" id='deleteDocuments' title="Удалить документы"></i>
                 </div>
             </div>
+            <div class="row" id="documentList"></div>
         </div>
     </div>
     <div id="newForm">
         <div id="newFormHeader">
             <span id="headerContainer" style="float: left">Новые документы для отмеченных территорий/учреждений</span>
         </div>
-
         <div>
-            <form class="form-horizontal">
-{{--                <div class="form-group">
-                    <label class="control-label col-sm-3" for="ou">Территория/учреждение</label>
-                    <div class="col-sm-6">
-                        <input type="text" class="form-control" id="ou" placeholder="Выберите ОЕ">
-                    </div>
-                </div>--}}
+            <div style="padding: 15px" class="form-horizontal">
                 <div class="form-group">
-                    <label class="control-label col-sm-3" for="selectForm">Код формы</label>
+                    <label class="control-label col-sm-3" for="selectForm">Формы</label>
                     <div class="col-sm-6">
                         <div id="selectForm"></div>
-                       {{-- <input type="text" class="form-control" id="form_code" placeholder="Введите код формы">--}}
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="control-label col-sm-3" for="period">Период</label>
                     <div class="col-sm-6">
-                        <input type="text" class="form-control" id="period" placeholder="Введите отчетный период">
+                        <div id="selectPeriod"></div>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="control-label col-sm-3" for="period">Исходный статус</label>
                     <div class="col-sm-6">
                         <div id="selectState"></div>
-                        {{--<input type="text" class="form-control" id="status" placeholder="Статус">--}}
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-8">
                         <div class="checkbox">
-                            <label><input type="checkbox"> Первичные</label>
-                            <label><input type="checkbox"> Сводные</label>
+                            <label><input type="checkbox" id="selectPrimary"> Первичные</label>
+                            <label><input type="checkbox" id="selectAggregate"> Сводные</label>
                         </div>
                     </div>
                 </div>
                 <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-7">
+                    <div class="col-sm-offset-3 col-sm-6">
                         <button id="saveButton" class="btn btn-default">Создать</button>
                         <button id="cancelButton" class="btn btn-default">Отменить</button>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
@@ -146,6 +132,7 @@
     @parent
     <script type="text/javascript">
         var docsource_url = '/admin/fetchdocuments?';
+        var createdocuments_url = '/admin/createdocuments';
         var deletedocuments_url = '/admin/deletedocuments';
         var erasedocuments_url = '/admin/erasedocuments';
         var changestate_url = '/admin/documentstatechange';
@@ -171,16 +158,6 @@
         initnotifications();
         initdocumentactions();
 
-        $("#statesDropdownList").jqxDropDownList({
-            theme: theme,
-            source: changestateDA,
-            displayMember: "name",
-            valueMember: "code",
-            placeHolder: "Изменение статуса документов:",
-            //selectedIndex: 2,
-            width: 250,
-            height: 25
-        });
 
     </script>
 @endsection

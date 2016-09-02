@@ -331,7 +331,7 @@ var renderaggregatetoolbar = function(toolbar) {
     var input1 = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='searchField' type='text' style='height: 23px; float: left; width: 150px;' />");
     var input2 = $("<input id='clearfilters' type='button' value='Очистить фильтр'/>");
     var input3 = $("<input id='EditForm' type='button' value='Просмотр отчета' />");
-    var input4 = $("<input id='MakeAggregation' type='button' value='Выполнить свод' />");
+    var makeaggregation = $("<input id='MakeAggregation' type='button' value='Выполнить свод' />");
     if (audit_permission) {
         var change_audit_status = $("<input id='ChangeAudutStatus' type='button' value='Проверка отчета' />");
         change_audit_status.click(function () {
@@ -374,7 +374,7 @@ var renderaggregatetoolbar = function(toolbar) {
     container.append(input1);
     container.append(input2);
     container.append(input3);
-    container.append(input4);
+    container.append(makeaggregation);
     if (audit_permission) {
         container.append(change_audit_status);
         change_audit_status.jqxButton({ theme: theme });
@@ -385,7 +385,7 @@ var renderaggregatetoolbar = function(toolbar) {
     input1.jqxInput({ width: 200, placeHolder: "МО/Территория" });
     input2.jqxButton({ theme: theme });
     input3.jqxButton({ theme: theme });
-    input4.jqxButton({ theme: theme });
+    makeaggregation.jqxButton({ theme: theme });
     input5.jqxButton({ theme: theme });
     var oldVal = "";
     input1.on('keydown', function (event) {
@@ -412,19 +412,20 @@ var renderaggregatetoolbar = function(toolbar) {
             var editWindow = window.open(edit_aggregate_url+'/'+document_id);
         }
     });
-    input4.click(function () {
+
+    makeaggregation.click(function () {
         var rowindex = $('#Aggregates').jqxGrid('getselectedrowindex');
         var row_id = $('#Aggregates').jqxGrid('getrowid', rowindex);
         var rowdata = $('#Aggregates').jqxGrid('getrowdata', rowindex);
-        var this_document_state ='';
         if (rowindex == -1) {
             return false;
         }
-        var data = "aggregate=" + row_id;
+        //var data = "aggregate=" + row_id;
         $.ajax({
             dataType: 'json',
-            url: 'make_aggregation.php',
-            data: data,
+            url: aggregatedata_url + row_id,
+            method: "PATCH",
+            //data: data,
             success: function (data, status, xhr) {
                 if (data.responce.aggregation) {
                     if (data.responce.affected_rows > 0) {
@@ -451,6 +452,7 @@ var renderaggregatetoolbar = function(toolbar) {
             }
         });
     });
+
     input5.click(function () {
         var rowindex = $('#Aggregates').jqxGrid('getselectedrowindex');
         var document_id = $('#Aggregates').jqxGrid('getrowid', rowindex);
@@ -603,8 +605,10 @@ var initfiltertabs = function() {
         width: 230,
         height: 200
     });
-    var item = $("#periodsListbox").jqxListBox('getItem', 0) ;
-    $("#periodsListbox").jqxListBox('checkItem', item );
+    //var item = $("#periodsListbox").jqxListBox('getItem', 0) ;
+    for (var i=0; i < checkedperiods.length; i++  ) {
+        $("#periodsListbox").jqxListBox('checkItem', checkedperiods[i] );
+    }
     $("#periodsListbox").on('click', function () {
         checkperiodfilter();
         updatedocumenttable();
@@ -809,9 +813,10 @@ var initpopupwindows = function() {
                 }
             },
             error: function (xhr, status, errorThrown) {
-                $("#currentError").text("Ошибка сохранения данных на сервере. " + xhr.status + ' (' + xhr.statusText + ') - '
+                raiseError('Ошибка сохранения данных на сервере', xhr);
+/*                $("#currentError").text("Ошибка сохранения данных на сервере. " + xhr.status + ' (' + xhr.statusText + ') - '
                     + status + ". Обратитесь к администратору.");
-                $("#serverErrorNotification").jqxNotification("open");
+                $("#serverErrorNotification").jqxNotification("open");*/
             }
         });
         $("#changeStateWindow").jqxWindow('hide');

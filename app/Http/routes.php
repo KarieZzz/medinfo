@@ -11,8 +11,6 @@
 |
 */
 
-
-
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -27,12 +25,10 @@
 Route::group(['middleware' => ['web']], function () {
     Route::auth();
     // Маршрут по умолчанию - ввод данных
-    Route::get('/', 'StatDataInput@index' );
+    Route::get('/', 'StatDataInput\DocumentDashboardController@index' );
 
     // Шаблоны на осноые jQWidgets для администрирования
-    Route::get('admin', function () {
-        return view('jqxadmin.home');
-    });
+    Route::get('admin', 'Admin\AdminController@index');
     // Менеджер пользователей - исполнителей
     Route::get('admin/workers', 'Admin\WorkerAdmin@index' );
     Route::get('admin/fetch_workers', 'Admin\WorkerAdmin@fetch_workers');
@@ -45,6 +41,7 @@ Route::group(['middleware' => ['web']], function () {
     // Менеджер отчетных документов
     Route::get('admin/documents', 'Admin\DocumentAdminController@index');
     Route::get('admin/fetchdocuments', 'Admin\DocumentAdminController@fetchDocuments');
+    Route::post('admin/createdocuments', 'Admin\DocumentAdminController@createDocuments');
     Route::delete('admin/deletedocuments', 'Admin\DocumentAdminController@deleteDocuments');
     Route::patch('admin/erasedocuments', 'Admin\DocumentAdminController@eraseStatData');
     Route::patch('admin/documentstatechange', 'Admin\DocumentAdminController@changeState');
@@ -55,17 +52,18 @@ Route::group(['middleware' => ['web']], function () {
     Route::post('workerlogin', 'Auth\DatainputAuthController@login' );
 
     // Рабочий стол - Первичные и сводные отчеты, сообщения, проверки и экспорт в эксель
-    Route::get('datainput', 'StatDataInput@index' );
-    Route::get('datainput/fetchdocuments', 'StatDataInput@fetchdocuments');
-    Route::get('datainput/fetchaggregates', 'StatDataInput@fetchaggregates');
+    Route::get('datainput', 'StatDataInput\DocumentDashboardController@index' );
+    Route::get('datainput/fetchdocuments', 'StatDataInput\DocumentDashboardController@fetchdocuments');
+    Route::get('datainput/fetchaggregates', 'StatDataInput\DocumentDashboardController@fetchaggregates');
     Route::get('datainput/fetchmessages', 'StatDataInput\DocumentMessageController@fetchMessages');
     Route::get('datainput/fetchauditions', 'StatDataInput\DocumentAuditionController@fetchAuditions');
     Route::post('datainput/sendmessage', 'StatDataInput\DocumentMessageController@sendMessage');
     Route::post('datainput/changestate', 'StatDataInput\DocumentStateController@changeState');
     Route::post('datainput/changeaudition', 'StatDataInput\DocumentAuditionController@changeAudition');
+    Route::patch('datainput/aggregatedata/{document}', 'StatDataInput\AggregatesDashboardController@aggregateData' );
 
     // Рабочий стол - Первичный отчетный документ, ввод данных, контроль, журнал изменений
-    Route::get('datainput/formdashboard/{id}', 'StatDataInput\FormDashboardController@index');
+    Route::get('datainput/formdashboard/{document}', 'StatDataInput\FormDashboardController@index');
     Route::get('datainput/fetchvalues/{document}/{table}', 'StatDataInput\FormDashboardController@fetchValues');
     Route::post('datainput/savevalue/{document}/{table}', 'StatDataInput\FormDashboardController@saveValue');
     Route::get('datainput/valuechangelog/{document}', 'StatDataInput\FormDashboardController@fullValueChangeLog');
@@ -75,14 +73,14 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('datainput/tableexport/{document}/{table}', 'StatDataInput\ExcelExportController@dataTableExport');
 
     // Рабочий стол для сводных документов
-    Route::get('datainput/aggregatedashboard/{id}', 'StatDataInput\AggregatesDashboardController@index');
+    Route::get('datainput/aggregatedashboard/{document}', 'StatDataInput\AggregatesDashboardController@index');
     Route::get('datainput/formcontrol/{document}', 'StatDataInput\FormDashboardController@formControl');
     Route::get('datainput/tablecontrol/{document}/{table}', 'StatDataInput\FormDashboardController@tableControl');
     //Route::get('datainput/formtest/{id}', 'StatDataInput\FormDashboardController@formtest');
 });
 
 // Эксперименты с шаблоном AdminLTE
-Route::get('adminlte', function () {
+/*Route::get('adminlte', function () {
     return view('welcome');
 });
 Route::get('adminlte/users', function () {
@@ -101,4 +99,4 @@ Route::get('adminlte/structure/testquery', 'StructureFormController@testQuery');
 // Строки
 Route::get('adminlte/structure/rows', 'StructureRowController@showrows');
 Route::get('adminlte/structure/editrow/{row}', 'StructureRowController@editrow');
-Route::patch('adminlte/structure/updaterow/{row}', 'StructureRowController@updaterow');
+Route::patch('adminlte/structure/updaterow/{row}', 'StructureRowController@updaterow');*/

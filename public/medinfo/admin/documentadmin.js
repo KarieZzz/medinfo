@@ -51,6 +51,54 @@ var datasources = function() {
         }
     });
 };
+// инициализация источников данных для предустановленных фильтров
+var initfilterdatasources = function() {
+    var forms_source =
+    {
+        datatype: "json",
+        datafields: [
+            { name: 'id' },
+            { name: 'form_code' }
+        ],
+        id: 'id',
+        localdata: forms
+    };
+    var states_source =
+    {
+        datatype: "array",
+        datafields: [
+            { name: 'code' },
+            { name: 'name' }
+        ],
+        id: 'code',
+        localdata: states
+    };
+    var periods_source =
+    {
+        datatype: "json",
+        datafields: [
+            { name: 'id' },
+            { name: 'name' }
+        ],
+        id: 'id',
+        localdata: periods
+    };
+    var dtypes_source =
+    {
+        datatype: "array",
+        datafields: [
+            { name: 'code' },
+            { name: 'name' }
+        ],
+        id: 'code',
+        localdata: dtypes
+    };
+    formsDataAdapter = new $.jqx.dataAdapter(forms_source);
+    statesDataAdapter = new $.jqx.dataAdapter(states_source);
+    changestateDA =  new $.jqx.dataAdapter(states_source);
+    periodsDataAdapter = new $.jqx.dataAdapter(periods_source);
+    dtypesDataAdapter = new $.jqx.dataAdapter(dtypes_source);
+};
 var checkformfilter = function() {
     checkedforms = [];
     var checkedItems = $("#formsListbox").jqxListBox('getCheckedItems');
@@ -93,7 +141,15 @@ var getselecteddocuments = function () {
     }
     return row_ids;
 };
-
+var getcheckedunits = function() {
+    var ids = [];
+    var checkedRows = $('#moTree').jqxTreeGrid('getCheckedRows');
+    for (var i = 0; i < checkedRows.length; i++) {
+        // get a row.
+        ids.push(checkedRows[i].uid);
+    }
+    return ids;
+};
 // обновление таблиц первичных и сводных документов в зависимости от выделенных форм, периодов, статусов документов
 var updatedocumenttable = function() {
     var old_doc_url = docsource.url;
@@ -107,21 +163,25 @@ var updatedocumenttable = function() {
 
 // Инициализация панели инструкментов
 var initnewdocumentwindow = function () {
+    var savebutton = $('#saveButton');
     var newdoc_form = $('#newForm').jqxWindow({
-        width: 550,
-        height: 400,
+        width: 500,
+        height: 320,
         resizable: false,
         autoOpen: false,
+        isModal: true,
         cancelButton: $('#cancelButton'),
-        position: { x: 300, y: 130 },
+        position: { x: 310, y: 125 },
         initContent: function () {
-            //$('#searchTextButton').jqxButton({ width: '80px', disabled: true });
-            //$('#cancelButton').jqxButton({ width: '80px', disabled: false });
-            //$('#matchCaseCheckBox').jqxCheckBox({ width: '150px' });
+            $('#selectPrimary').jqxCheckBox({ width: '150px' });
+            $('#selectAggregate').jqxCheckBox({ width: '150px' });
+            savebutton.jqxButton({ width: '80px', disabled: false });
+            $('#cancelButton').jqxButton({ width: '80px', disabled: false });
         }
     });
     $("#selectForm").jqxDropDownList({
         theme: theme,
+        checkboxes: true,
         source: formsDataAdapter,
         displayMember: "form_code",
         valueMember: "id",
@@ -130,9 +190,19 @@ var initnewdocumentwindow = function () {
         width: 250,
         height: 25
     });
+    $("#selectPeriod").jqxDropDownList({
+        theme: theme,
+        source: periodsDataAdapter,
+        displayMember: "name",
+        valueMember: "id",
+        placeHolder: "Выберите период:",
+        selectedIndex: 0,
+        width: 250,
+        height: 25
+    });
     $("#selectState").jqxDropDownList({
         theme: theme,
-        source: changestateDA,
+        source: statesDataAdapter,
         displayMember: "name",
         valueMember: "code",
         placeHolder: "Выберите статус:",
@@ -140,7 +210,54 @@ var initnewdocumentwindow = function () {
         width: 250,
         height: 25
     });
-
+    savebutton.click(function() {
+        var data;
+        var primary;
+        var aggregate;
+        var selectedunits = getcheckedunits();
+        var selectedforms = [];
+        var checked = $("#selectForm").jqxDropDownList('getCheckedItems');
+        for (var i = 0; i < checked.length; i++) {
+            selectedforms.push(checked[i].value);
+        }
+        if (selectedforms.length == 0) {
+            raiseError("Не выбрано ни одной формы для создания документов");
+            return false;
+        }
+        var selectedstate = $("#selectState").jqxDropDownList('getSelectedItem').value;
+        var selectedperiod = $("#selectPeriod").jqxDropDownList('getSelectedItem').value;
+        //console.log(selectedstate);
+        primary = $('#selectPrimary').jqxCheckBox('checked') ? 1 : 0 ;
+        aggregate = $('#selectAggregate').jqxCheckBox('checked') ? 1 : 0;
+        if (primary == 0 && aggregate == 0) {
+            raiseError("Не выбрано ни одного типа создаваемых документов (первичные, сводные");
+            return false;
+        }
+        data = "&units=" + selectedunits + "&forms=" + selectedforms + "&period=" + selectedperiod + "&state=" + selectedstate;
+        data += "&primary=" + primary + "&aggregate=" + aggregate;
+        $.ajax({
+            dataType: 'json',
+            url: createdocuments_url,
+            method: "POST",
+            data: data,
+            success: function (data, status, xhr) {
+                if (data.count_of_created > 0) {
+                    raiseInfo("Создано документов " + data.count_of_created);
+                    $('#documentList').jqxGrid('clearselection');
+                    $('#documentList').jqxGrid('updatebounddata');
+                }
+                else {
+                    raiseError("Документы не созданы")
+                }
+            },
+            error: function (xhr, status, errorThrown) {
+                raiseError('Ошибка сохранения данных на сервере', xhr);
+            }
+        });
+        updatedocumenttable();
+        $("#newForm").jqxWindow('hide');
+        //console.log(primary);
+    });
 };
 // Инициализация разбивки рабочего стола на области
 var initsplitters = function() {
@@ -244,55 +361,6 @@ var initmotree = function() {
 
 };
 
-// инициализация источников данных для предустановленных фильтров
-var initfilterdatasources = function() {
-    var forms_source =
-    {
-        datatype: "json",
-        datafields: [
-            { name: 'id' },
-            { name: 'form_code' }
-        ],
-        id: 'id',
-        localdata: forms
-    };
-    var states_source =
-    {
-        datatype: "array",
-        datafields: [
-            { name: 'code' },
-            { name: 'name' }
-        ],
-        id: 'code',
-        localdata: states
-    };
-    var periods_source =
-    {
-        datatype: "json",
-        datafields: [
-            { name: 'id' },
-            { name: 'name' }
-        ],
-        id: 'id',
-        localdata: periods
-    };
-    var dtypes_source =
-    {
-        datatype: "array",
-        datafields: [
-            { name: 'code' },
-            { name: 'name' }
-        ],
-        id: 'code',
-        localdata: dtypes
-    };
-    formsDataAdapter = new $.jqx.dataAdapter(forms_source);
-    statesDataAdapter = new $.jqx.dataAdapter(states_source);
-    changestateDA =  new $.jqx.dataAdapter(states_source);
-    periodsDataAdapter = new $.jqx.dataAdapter(periods_source);
-    dtypesDataAdapter = new $.jqx.dataAdapter(dtypes_source);
-};
-
 // инициализация вкладок-фильтров с элементами управления
 var initfiltertabs = function() {
     $("#filtertabs").jqxTabs({  height: '100%', width: '100%', theme: theme });
@@ -383,14 +451,14 @@ var initfiltertabs = function() {
 };
 //var pitem = $("#periodsListbox").jqxListBox('getItemByValue', "Годовой. 2015.");
 
-
 // инициализация таблицы-перечня отчетных документов
 var initdocumentslist = function() {
     $("#documentList").jqxGrid(
         {
             width: '98%',
-            height: '98%',
+            height: '95%',
             theme: theme,
+            localization: localize(),
             source: dataAdapter,
             columnsresize: true,
             selectionmode: 'checkbox',
@@ -405,9 +473,54 @@ var initdocumentslist = function() {
             ]
         });
 };
-
+// рендеринг панели инструментов для выделенных документов
 var initdocumentactions = function() {
-    $("#changeStates").jqxButton({ theme: theme});
+    $("#statesDropdownList").jqxDropDownList({
+        theme: theme,
+        source: changestateDA,
+        displayMember: "name",
+        valueMember: "code",
+        placeHolder: "Статус документов:",
+        //selectedIndex: 2,
+        width: 150,
+        height: 23
+    });
+    $('#statesDropdownList').on('select', function (event)
+    {
+        var args = event.args;
+        var selectedstate = args.item.value;
+        var row_ids = noselected_error("Не выбрано ни одного документа для смены статуса");
+        if (!row_ids) {
+            $(this).jqxDropDownList('clearSelection');
+            return false;
+        }
+        var data = "documents=" + row_ids + '&state=' + selectedstate;
+        var confirm_text = 'Подтвердите смену статуса у документов №№ ' + row_ids + '. \n';
+        confirm_text += 'Выбранный статус "' + selectedstate.label + '". \n';
+        if (!confirm(confirm_text)) {
+            $(this).jqxDropDownList('clearSelection');
+            return false;
+        }
+        $.ajax({
+            dataType: 'json',
+            url: changestate_url,
+            method: "PATCH",
+            data: data,
+            success: function (data, status, xhr) {
+                if (data.state_changed == 1) {
+                    raiseInfo(data.comment + ' Количество измененных документов ' + data.affected_documents + '.');
+                }
+                $('#documentList').jqxGrid('clearselection');
+                $('#documentList').jqxGrid('updatebounddata');
+            },
+            error: function (xhr, status, errorThrown) {
+                var error_text = "Ошибка сохранения данных на сервере. Обратитесь к администратору";
+                raiseError(error_text, xhr);
+            }
+        });
+        $(this).jqxDropDownList('clearSelection');
+    });
+/*    $("#changeStates").jqxButton({ theme: theme});
     $("#changeStates").click(function() {
         var row_ids = noselected_error("Не выбрано ни одного документа для смены статуса");
         if (!row_ids) {
@@ -437,11 +550,11 @@ var initdocumentactions = function() {
                 $('#documentList').jqxGrid('updatebounddata');
             },
             error: function (xhr, status, errorThrown) {
-                var error_text = "Ошибка сохранения данных на сервере. " + xhr.status + ' (' + xhr.statusText + ') - ' + status + ". Обратитесь к администратору.";
-                raiseError(error_text);
+                var error_text = "Ошибка сохранения данных на сервере. Обратитесь к администратору";
+                raiseError(error_text, xhr);
             }
         });
-    });
+    });*/
     $("#deleteDocuments").jqxButton({ theme: theme });
     $("#deleteDocuments").click(function () {
         var row_ids = noselected_error("Не выбрано ни одного документа для удаления");
@@ -745,6 +858,7 @@ var noselected_error = function(message) {
         modalOpacity: 0.01
     });
 };*/
+/*
 var initnotifications = function() {
     $("#serverErrorNotification").jqxNotification({
         width: 250, position: "top-right", opacity: 0.9,
@@ -768,4 +882,4 @@ var raiseInfo = function(comment) {
     }
     $("#currentInfoMessage").text(comment);
     $("#infoNotification").jqxNotification("open");
-};
+};*/

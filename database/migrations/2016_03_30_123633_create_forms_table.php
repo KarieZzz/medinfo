@@ -14,11 +14,12 @@ class CreateFormsTable extends Migration
     {
         Schema::create('forms', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('group_id')->index();
+            $table->integer('form_index')->index();
             $table->string('form_code', 7)->index();
             $table->string('form_name', 256);
             $table->integer('form_index')->index();
             $table->string('file_name', 16)->nullable();
-            $table->integer('form_index')->index();
             $table->char('medstat_code', 5)->nullable();
             $table->integer('medinfo_id')->nullable()->index();
             $table->timestamps();

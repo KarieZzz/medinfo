@@ -29,7 +29,7 @@ var localize = function() {
 var initnotifications = function() {
     $("#serverErrorNotification").jqxNotification({
         width: 250, position: "top-right", opacity: 0.9,
-        autoOpen: false, animationOpenDelay: 800, autoClose: false, template: "error"
+        autoOpen: false, animationOpenDelay: 800,  autoClose: true, autoCloseDelay: 8000, template: "error"
     });
     $("#infoNotification").jqxNotification({
         width: 250, position: "top-right", opacity: 0.9,

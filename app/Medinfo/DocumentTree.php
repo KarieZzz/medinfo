@@ -9,7 +9,6 @@
 namespace App\Medinfo;
 use DB;
 
-
 class DocumentTree
 {
     private $top_node;
@@ -25,9 +24,8 @@ class DocumentTree
     {
         if (is_array($scopes)) {
             $this->top_node = $scopes['top_node'];
-            // TODO: Переделать в "правильную" обработку исключений средствами фреймворка
             if ($this->top_node == 'null') {
-                throw new Exception("Не определен перечень доступа к медицинским организациям");
+                throw new \Exception("Не определен перечень доступа к медицинским организациям");
             }
             if (isset ($scopes['states'])) {
                 $this->states = $scopes['states'];
@@ -44,7 +42,7 @@ class DocumentTree
         }
         else {
             echo("Не определены условия выборки документов");
-            throw new Exception("Не определены условия выборки документов");
+            throw new \Exception("Не определены условия выборки документов");
         }
         $this->setScopes();
         $this->get_descendants();
@@ -137,6 +135,7 @@ class DocumentTree
               GROUP BY d.id, u.unit_code, u.unit_name, f.form_code, f.form_name, s.name, p.name, t.name
               ORDER BY u.unit_code, f.form_code, d.period_id;";
             //echo $doc_query;
+
             $this->documents = DB::select($doc_query);
             return $this->documents;
         }
@@ -158,23 +157,6 @@ class DocumentTree
             if (count($this->scopes) > 0 ) {
                 $scopes = implode(" ", $this->scopes);
             }
-            // TODO Разобраться как корректно выбрать актуальность сводного отчета;
-            /*$doc_query = "select d.doc_id, u.unit_code, u.unit_name, f.form_code, f.form_name, p.name period,
-                d.updated_at, max(v.updated_at) data_update_at,
-                if( (d.updated_at > max(v.updated_at) or d.updated_at > max(vv.updated_at) ) , 1, 0) actual,
-                if (isnull(max(v.updated_at)) , 1, 0) nodata, max(vv.updated_at) parented_ou
-                from mi_aggregates d
-                join mi_form f on d.form_id = f.form_id
-                join mo_hierarchy u on d.ou_id = u.unit_id
-                join dic_periods p on d.period_id = p.code
-                left join mi_document ddd on d.ou_id = ddd.ou_id and d.period_id = ddd.period_id and d.form_id = ddd.form_id
-                left join mo_hierarchy m on d.ou_id = m.parent_id
-                left join mi_document dd on d.form_id = dd.form_id and d.period_id = dd.period_id and m.unit_id = dd.ou_id
-                left join mi_data v on dd.doc_id = v.doc_id
-                left join mi_data vv on ddd.doc_id = vv.doc_id
-            where 1=1 $unit_scope $scopes
-            group by d.doc_id
-            ORDER BY u.unit_code, f.form_code, d.period_id";*/
             $doc_query = "SELECT d.id, u.unit_code, u.unit_name, f.form_code, f.form_name, p.name period, d.updated_at
               FROM documents d
               left join forms f on d.form_id = f.id

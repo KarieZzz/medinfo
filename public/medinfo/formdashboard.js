@@ -389,7 +389,6 @@ var checktable = function (table_id) {
                 markTableInvalid(data.table_id);
                 $("#extrabuttons").show();
                 protocol_wrapper = renderTableProtocol(table_id, data);
-                //console.log(protocol_wrapper[0].firstChild.children);
                 printable = protocol_wrapper.clone();
                 $(protocol_wrapper[0].firstChild).jqxNavigationBar({
                     width: 'auto',
@@ -960,7 +959,7 @@ var initlayout = function() {
                 },{
                     type: 'layoutPanel',
                     title: 'Контроль ячейки',
-                    contentContainer: 'CellControlPanel',
+                    contentContainer: 'CellControlPanel'
                 }]
             }]
         }]

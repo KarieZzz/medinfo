@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Medinfo\PeriodMM;
+//use App\Medinfo\PeriodMM;
+use App\Unit;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -22,7 +23,7 @@ class DocumentAdminController extends Controller
     //
     public function index()
     {
-        $forms = Form::orderBy('form_index', 'desc')->get(['id', 'form_code']);
+        $forms = Form::orderBy('form_index')->get(['id', 'form_code']);
         $states = DicDocumentState::all(['code', 'name']);
         $dtypes = DicDocumentType::all(['code', 'name']);
         $periods = Period::orderBy('begin_date', 'desc')->get(['id', 'name']);
@@ -45,6 +46,53 @@ class DocumentAdminController extends Controller
         $scopes = compact('top_node', 'dtypes', 'states', 'forms', 'periods');
         $d = new DocumentTree($scopes);
         $data = $d->get_documents();
+        return $data;
+    }
+
+    public function createDocuments(Request $request)
+    {
+        $units = explode(",", $request->units);
+        $forms = explode(",", $request->forms);
+        $create_primary = $request->primary;
+        $create_aggregate = $request->aggregate;
+        $period_id = $request->period;
+        $initial_state = $request->state;
+        $i = 0;
+        $duplicate = 0;
+        foreach ($units as $unit_id) {
+            $unit = Unit::find($unit_id);
+            foreach ($forms as $form_id) {
+                $newdoc = ['ou_id' => $unit_id, 'form_id' => $form_id , 'period_id' => $period_id, 'state' => $initial_state ];
+                if ($create_primary && $unit->report) {
+                    $newdoc['dtype'] = 1;
+                    try {
+                        Document::create($newdoc);
+                        $i++;
+                    } catch (\Illuminate\Database\QueryException $e) {
+                        $errorCode = $e->errorInfo[1];
+                        // duplicate key value - код ошибки 7 при использовании PostgreSQL
+                        if($errorCode == 7){
+                            $duplicate++;
+                        }
+                    }
+                }
+                if ($create_aggregate && $unit->aggregate) {
+                    $newdoc['dtype'] = 2;
+                    try {
+                        Document::create($newdoc);
+                        $i++;
+                    } catch (\Illuminate\Database\QueryException $e) {
+                        $errorCode = $e->errorInfo[1];
+                        if($errorCode == 7){
+                            $duplicate++;
+                        }
+                    }
+                }
+            }
+        }
+        $data['count_of_created'] = $i;
+        $data['count_of_duplicated'] = $duplicate;
+        $data['count_of_all'] = count($units)*count($forms);
         return $data;
     }
 

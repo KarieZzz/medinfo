@@ -136,6 +136,7 @@
         var aggrsource_url = 'datainput/fetchaggregates?';
         var edit_form_url = 'datainput/formdashboard';
         var edit_aggregate_url = 'datainput/aggregatedashboard';
+        var aggregatedata_url = "/datainput/aggregatedata/";
         var export_form_url = "/datainput/formexport/";
         var forms = {!! $forms  !!};
         var states = {!! $states !!};
