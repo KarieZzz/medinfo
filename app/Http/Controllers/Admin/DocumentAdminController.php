@@ -21,6 +21,11 @@ use App\Cell;
 class DocumentAdminController extends Controller
 {
     //
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function index()
     {
         $forms = Form::orderBy('form_index')->get(['id', 'form_code']);

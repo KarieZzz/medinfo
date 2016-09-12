@@ -126,7 +126,7 @@
         var audit_permission = {{ $audit_permission ? 'true' : 'false' }};
         var periods = {!! $periods !!};
         var disabled_states = [{!! $disabled_states !!}];
-        var mo_tree_url = 'admin/fetch_mo_tree/';
+        var mo_tree_url = 'datainput/fetch_mo_tree/';
         var docsource_url = 'datainput/fetchdocuments?';
         var docmessages_url = 'datainput/fetchmessages?';
         var changestate_url = 'datainput/changestate';

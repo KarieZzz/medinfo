@@ -615,6 +615,34 @@ var initdatasources = function() {
         }
     });
 };
+// Получение читабельных координат ячейки - код строки, индекс графы
+var getreadablecelladress = function(row, column) {
+    var row_code = $('#DataGrid').jqxGrid('getcellvaluebyid', rowid, current_row_number_datafield);
+    var column_index = $('#DataGrid').jqxGrid('getcolumnproperty', colid, 'text');
+    return { row: row_code, column: column_index};
+};
+var fetchcelllayer = function(row, column) {
+    var layer_container = $("<table class='table table-condensed table-striped table-bordered'></table>");
+    var period_container = $("<table class='table table-condensed table-striped table-bordered'></table>");
+    var fetch_url = cell_layer_url + row + '/' + column;
+    $.getJSON( fetch_url, function( data ) {
+        $.each(data.layers, function (i, layer) {
+            var row = $("<tr><td>" + layer.unit_code
+                + "</td><td>" + layer.unit_name
+                + "</td><td style='min-width: 40px' class='text-primary text-right'>" + layer.value
+                + "</td></tr>");
+            layer_container.append(row);
+        });
+        $.each(data.periods, function (i, period) {
+            var row = $("<tr><td>" + period.period
+                + "</td><td style='min-width: 40px' class='text-primary text-right'>" + period.value
+                + "</td></tr>");
+            period_container.append(row);
+        });
+    });
+    return { layers: layer_container, periods: period_container} ;
+};
+// Инициализация перечня таблиц текущей формы
 var inittablelist = function() {
     $("#formTables").jqxDataTable({
         width: '99%',
@@ -759,8 +787,8 @@ var initdatagrid = function() {
         } else {
             var oldvalue = null;
         }
-        var row_number = $('#DataGrid').jqxGrid('getcellvaluebyid', rowid, current_row_number_datafield);
-        var colindex = $('#DataGrid').jqxGrid('getcolumnproperty', colid, 'text');
+        var readable_coordinates = getreadablecelladress(rowid, colid);
+
         current_edited_cell.t = current_table;
         current_edited_cell.r = rowBoundIndex;
         current_edited_cell.c = colid;
@@ -789,8 +817,8 @@ var initdatagrid = function() {
                         if (log_str == "Изменений не было") {
                             log_str = "";
                         }
-                        $("#log").html(log_str + timestamp.toLocaleString() + " Изменена ячейка т ." + data_for_tables[current_table].tablecode +", с."+ row_number
-                            + ", г." + colindex + ". (" + oldvalue +
+                        $("#log").html(log_str + timestamp.toLocaleString() + " Изменена ячейка т ." + data_for_tables[current_table].tablecode +", с."+ readable_coordinates.row
+                            + ", г." + readable_coordinates.column + ". (" + oldvalue +
                             " >> " + value + ").</br>");
                         editedCells.push({ t: current_table, r: rowBoundIndex, c: colid});
 /*                        if (data.valid === false) {
@@ -854,123 +882,33 @@ var initdatagrid = function() {
     $("#DataGrid").on('cellselect', function (event)
     {
         var cell_protocol_panel = $("#cellprotocol");
-        var info = $("<table style='margin: 5px;'></table>");
-        if (typeof current_protocol_source == 'undefined') {
-            cell_protocol_panel.html('Протокол контроля формы не найден. Выполните "Контроль МИ"');
-            return false;
-        }
         cell_protocol_panel.html('');
         var args = event.args;
         var column_id = args.datafield;
         var rowindex = event.args.rowindex;
-        var rowid = $('#DataGrid').jqxGrid('getrowid', rowindex);
-        var searchresult = searchprotocol(current_protocol_source, column_id, rowid);
-        var count_of_rules  = searchresult.length > 0 ? searchresult.length : " не определены ";
-        var header = $("<div><p>Кол-во заданых правил контроля для данной ячейки - "+ count_of_rules + " </p></div>");
-        cell_protocol_panel.append(header);
-        for (i = 0; i < count_of_rules ; i++) {
-            info.append(renderCellProtocol(searchresult[i]));
+        var row_id = $('#DataGrid').jqxGrid('getrowid', rowindex);
+        var row_code = $('#DataGrid').jqxGrid('getcellvaluebyid', row_id, current_row_number_datafield);
+        var colindex = $('#DataGrid').jqxGrid('getcolumnproperty', column_id, 'text');
+        var analitic_header = "<b>Строка " +row_code + ", Графа " + colindex +  ": </b><br/>";
+        if (typeof current_protocol_source == 'undefined') {
+            cell_protocol_panel.html('Протокол контроля формы не найден. Выполните "Контроль МИ"');
+        } else {
+            var info = $("<table style='margin: 5px;'></table>");
+            var searchresult = searchprotocol(current_protocol_source, column_id, row_id);
+            var count_of_rules  = searchresult.length > 0 ? searchresult.length : " не определены ";
+            var header = $("<div><p>Кол-во заданых правил контроля для данной ячейки - "+ count_of_rules + " </p></div>");
+            cell_protocol_panel.append(header);
+            for (i = 0; i < count_of_rules ; i++) {
+                info.append(renderCellProtocol(searchresult[i]));
+            }
+            cell_protocol_panel.append(info);
         }
-        cell_protocol_panel.append(info);
+        if (doc_type == 2) {
+            var returned = fetchcelllayer(row_id, column_id);
+            $("#CellAnalysisTable").html(analitic_header);
+            $("#CellAnalysisTable").append(returned.layers);
+            $("#CellPeriodsTable").html(analitic_header);
+            $("#CellPeriodsTable").append(returned.periods);
+        }
     });
-
 };
-var initlayout = function() {
-    layout = [{
-        type: 'layoutGroup',
-        orientation: 'horizontal',
-        items: [{
-            type: 'layoutGroup',
-            orientation: 'vertical',
-            width: '40%',
-            items: [{
-                type: 'tabbedGroup',
-                height: '50%',
-                allowPin: false,
-                items: [{
-                    type: 'layoutPanel',
-                    title: 'Форма ' + form_code +', таблицы',
-                    contentContainer: 'FormPanel',
-                    initContent: inittablelist
-                }
-
-                ]
-            }, {
-                type: 'tabbedGroup',
-                height: '50%',
-                allowPin: false,
-                items: [
-                {
-                    type: 'layoutPanel',
-                    title: 'Контроль формы',
-                    contentContainer: 'FormControlPanel',
-                    initContent: initcheckformtab
-                },
-                {
-                    type: 'layoutPanel',
-                    title: 'Журнал изменений в текущем сеансе',
-                    contentContainer: 'ValueChangeLogPanel'
-                },
-                {
-                    type: 'layoutPanel',
-                    title: 'Полный журнал изменений',
-                    contentContainer: 'FullValueChangeLogPanel',
-                    initContent: function () {
-                        $("#openFullChangeLog").jqxButton({ theme: theme, disabled: control_disabled });
-                        $("#openFullChangeLog").click(function () {
-                            var dataExportWindow = window.open(valuechangelog_url);
-                        });
-                    }
-                }]
-            }]
-        }, {
-            type: 'layoutGroup',
-            orientation: 'vertical',
-            width: '60%',
-            items: [{
-                type: 'tabbedGroup',
-                height: '60%',
-                allowPin: false,
-                items: [{
-                    type: 'layoutPanel',
-                    title: 'Таблица ' + data_for_tables[current_table].tablecode + ', "' + data_for_tables[current_table].tablename + '"',
-                    contentContainer: 'TableEditPanel',
-                    initContent: function () {
-                        initfilters();
-                        initdatagrid();
-                    }
-                }]
-            }, {
-                type: 'tabbedGroup',
-                height: '40%',
-                allowPin: false,
-                alignment: 'bottom',
-                items: [{
-                    type: 'layoutPanel',
-                    title: 'Контроль таблицы',
-                    contentContainer: 'TableControlPanel',
-                    initContent: function () {
-                        $("#checktable").jqxButton({ theme: theme, disabled: control_disabled });
-                        $("#checktable").click( function() { checktable(current_table) });
-                        $("#compareprevperiod").jqxButton({ theme: theme });
-                        $("#compareprevperiod").click(compare_with_prev);
-
-                    }
-                },{
-                    type: 'layoutPanel',
-                    title: 'Контроль ячейки',
-                    contentContainer: 'CellControlPanel'
-                }]
-            }]
-        }]
-    }];
-
-};
-
-/*function DoFullScrene() {
-    console.log("Xnj ghjbc[jlbn&")
-    var elem = document.getElementById("DataGrid");
-    if (elem.requestFullscreen) {
-        elem.requestFullscreen();
-    }
-};*/

@@ -12,6 +12,12 @@ use App\Medinfo\UnitTree;
 class MOAdminController extends Controller
 {
     //
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function fetch_mo_hierarchy($parent = 0)
     {
         $mo_tree = UnitTree::getSimpleTree($parent);

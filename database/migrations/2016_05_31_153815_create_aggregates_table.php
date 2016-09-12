@@ -13,12 +13,10 @@ class CreateAggregatesTable extends Migration
     public function up()
     {
         Schema::create('aggregates', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('ou_id')->index();
-            $table->char('period_id', 8)->index();
-            $table->integer('form_id')->index();
-            $table->string('include_docs', 2048);
-            $table->softDeletes();
+            $table->integer('doc_id')->primary();
+            $table->integer('protected')->index();
+            $table->timestamp('aggregated_at')->nullable()->index();
+            $table->string('include_docs', 2048)->nullable();
             $table->timestamps();
         });
     }

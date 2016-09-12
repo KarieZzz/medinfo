@@ -48,6 +48,11 @@ class DocumentDashboardController extends Controller
             'disabled_states', 'audit_permission', 'forms', 'form_ids', 'states', 'state_ids'));
     }
 
+    public function fetch_mo_hierarchy($parent = 0)
+    {
+        return UnitTree::getSimpleTree($parent);
+    }
+
     public function fetchdocuments(Request $request)
     {
         $top_node = $request->ou;

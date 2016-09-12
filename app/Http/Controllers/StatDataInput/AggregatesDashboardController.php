@@ -4,47 +4,28 @@ namespace App\Http\Controllers\StatDataInput;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Auth\GenericUser;
-
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-
 use App\Unit;
-use App\Form;
 use App\Document;
-use App\Table;
-use App\NECells;
+use App\Aggregate;
+use App\Row;
+use App\Column;
 use App\Cell;
 
 class AggregatesDashboardController extends DashboardController
 {
     //
-    public function index(Document $document)
+    protected $dashboardView = 'jqxdatainput.aggregatedashboard';
+
+    public function __construct()
     {
-        $worker = Auth::guard('datainput')->user();
-        $statelabel = Document::$state_labels[$document->state];
-        $form = Form::find($document->form_id);
-        $current_unit = Unit::find($document->ou_id);
-        $editpermission = $this->isEditPermission($worker->permission, 0);
-        $editpermission ? $editmode = 'Редактирование' : $editmode = 'Только чтение';
-        $period = Period::find($document->period_id);
-        $editedtables = $this->getEditedTables($document->id);
-        $noteditablecells = NECells::where('f', $form->id)->select('t', 'r', 'c')->get();
-        $renderingtabledata = $this->composeDataForTablesRendering($form, $editedtables);
-        $laststate = $this->getLastState($worker, $document, $form);
-        return view('jqxdatainput.aggregatedashboard', compact(
-            'current_unit', 'document', 'worker', 'statelabel', 'editpermission', 'editmode',
-            'form', 'period', 'editedtables', 'noteditablecells', 'forformtable', 'renderingtabledata',
-            'laststate'
-        ));
+        $this->middleware('datainputauth');
     }
 
     public function aggregateData(Document $document)
     {
         $result = [];
         // перед сведением данных удаление старых данных
-        $affectedcells = Cell::where('doc_id', $document->id)->delete();
+        Cell::where('doc_id', $document->id)->delete();
         $units = Unit::getDescendants($document->ou_id);
         $included_documents = Document::whereIn('ou_id', $units)
             ->where('dtype', 1)
@@ -62,7 +43,40 @@ class AggregatesDashboardController extends DashboardController
             JOIN mo_hierarchy h on d.ou_id = h.id
           WHERE d.id in ({$strigified_documents}) AND h.blocked <> 1 GROUP BY v.table_id, v.row_id, v.col_id";
         $affected_cells = \DB::select($query);
+        $aggregate = Aggregate::firstOrCreate(['doc_id' => $document->id]);
+        $aggregate->include_docs = $strigified_documents;
+        $aggregate->aggregated_at = Carbon::now();
+        $aggregate->save();
         $result['affected_cells'] = count($affected_cells);
+        $result['aggregated_at'] =  $aggregate->aggregated_at->toDateTimeString();
+        return $result;
+    }
+
+    public function fetchAggregatedCellLayers(Document $document, Row $row, Column $column)
+    {
+        $aggregate = Aggregate::find($document->id);
+        $decimal = $column->decimal_count > 0 ?  'D' . str_pad('9', $column->decimal_count - 1, '9') . '0' : '';
+        $format_mask = 'FM' . str_pad('9', $column->number_count, '9') . $decimal;
+        $lquery ="select h.unit_code, h.unit_name, v.doc_id, to_char(v.value, '$format_mask') AS value from statdata v
+          join documents d on d.id = v.doc_id
+          join mo_hierarchy h on d.ou_id = h.id
+          where v.doc_id in ({$aggregate->include_docs})
+            and v.row_id = {$row->id}
+            and v.col_id = {$column->id}
+            and h.blocked = 0
+            and v.value is not null
+          order by h.unit_code";
+        $result['layers'] = \DB::select($lquery);
+        $pquery = "select p.name AS period, to_char(v.value, '$format_mask') AS value from statdata v
+          join documents d on d.id = v.doc_id
+          join periods p on p.id = d.period_id
+          where d.ou_id = {$document->ou_id}
+            and d.form_id = {$document->form_id}
+            and v.row_id = {$row->id}
+            and v.col_id = {$column->id}
+            and v.value is not null
+          order by p.name";
+        $result['periods'] = \DB::select($pquery);
         return $result;
     }
 }

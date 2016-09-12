@@ -427,28 +427,23 @@ var renderaggregatetoolbar = function(toolbar) {
             method: "PATCH",
             //data: data,
             success: function (data, status, xhr) {
-                if (data.responce.aggregation) {
-                    if (data.responce.affected_rows > 0) {
-                        $("#currentInfoMessage").text("Сведение данных завершено");
-                        $("#infoNotification").jqxNotification("open");
-                        rowdata.updated_at = data.responce.aggregated_at;
+                if (data.affected_cells) {
+                    if (data.affected_cells > 0) {
+                        raiseInfo("Сведение данных завершено");
+                        rowdata.updated_at = data.aggregated_at;
                         $('#Aggregates').jqxGrid('updaterow', row_id, rowdata);
                     }
                     else {
-                        $("#currentError").text(data.responce.comment);
-                        $("#serverErrorNotification").jqxNotification("open");
+                        raiseError("Сведение данных не выполнено! Отсутствуют дынные в первичных документах");
                     }
                 }
                 else {
-                    $("#currentError").text("Сведение данных не выполнено!");
-                    $("#serverErrorNotification").jqxNotification("open");
+                    raiseError("Сведение данных не выполнено!");
                     // TODO: Обработать ошибку сведения данных
                 }
             },
             error: function (xhr, status, errorThrown) {
-                $("#currentError").text("Ошибка сведения данных на сервере. " + xhr.status + ' (' + xhr.statusText + ') - '
-                    + status + ". Обратитесь к администратору.");
-                $("#serverErrorNotification").jqxNotification("open");
+                raiseError("Ошибка сведения данных на сервере.  Обратитесь к администратору", xhr);
             }
         });
     });

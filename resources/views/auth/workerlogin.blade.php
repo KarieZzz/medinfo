@@ -3,7 +3,7 @@
 @section('content')
 	<div class="login-box">
 		<div class="register-logo">
-			<a href="/"><b>Medinfo</b>ВводДанных</a>
+			<a href="/"><b>Medinfo</b> ВводДанных</a>
 		</div>
 		<div class="login-box-body">
 			@if (count($errors) > 0)
@@ -28,14 +28,14 @@
 						<span class="glyphicon glyphicon-lock form-control-feedback"></span>
 					</div>
 					<div class="row">
-						<div class="col-xs-8 col-xs-offset-0">
+{{--						<div class="col-xs-8 col-xs-offset-0">
 							<div class="form-group">
 								<label>
 									<input type="checkbox" name="remember"> Запомнить меня
 								</label>
 							</div>
                             <a class="btn btn-link" href="{{ url('/password/email') }}">Забыли Ваш пароль?</a>
-						</div>
+						</div>--}}
 						<!-- /.col -->
 						<div class="col-xs-4">
 							<button type="submit" class="btn btn-primary btn-block btn-flat">Войти</button>

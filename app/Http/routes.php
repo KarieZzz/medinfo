@@ -29,6 +29,7 @@ Route::group(['middleware' => ['web']], function () {
 
     // Шаблоны на осноые jQWidgets для администрирования
     Route::get('admin', 'Admin\AdminController@index');
+    Route::get('admin/logout', 'Auth\AuthController@logout');
     // Менеджер пользователей - исполнителей
     Route::get('admin/workers', 'Admin\WorkerAdmin@index' );
     Route::get('admin/fetch_workers', 'Admin\WorkerAdmin@fetch_workers');
@@ -53,6 +54,7 @@ Route::group(['middleware' => ['web']], function () {
 
     // Рабочий стол - Первичные и сводные отчеты, сообщения, проверки и экспорт в эксель
     Route::get('datainput', 'StatDataInput\DocumentDashboardController@index' );
+    Route::get('datainput/fetch_mo_tree/{parent}', 'StatDataInput\DocumentDashboardController@fetch_mo_hierarchy');
     Route::get('datainput/fetchdocuments', 'StatDataInput\DocumentDashboardController@fetchdocuments');
     Route::get('datainput/fetchaggregates', 'StatDataInput\DocumentDashboardController@fetchaggregates');
     Route::get('datainput/fetchmessages', 'StatDataInput\DocumentMessageController@fetchMessages');
@@ -67,6 +69,8 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('datainput/fetchvalues/{document}/{table}', 'StatDataInput\FormDashboardController@fetchValues');
     Route::post('datainput/savevalue/{document}/{table}', 'StatDataInput\FormDashboardController@saveValue');
     Route::get('datainput/valuechangelog/{document}', 'StatDataInput\FormDashboardController@fullValueChangeLog');
+    Route::get('datainput/formcontrol/{document}', 'StatDataInput\FormDashboardController@formControl');
+    Route::get('datainput/tablecontrol/{document}/{table}', 'StatDataInput\FormDashboardController@tableControl');
 
     // Эспорт данных в Эксель и заполнение печатных форм-шаблонов
     Route::get('datainput/formexport/{document}', 'StatDataInput\ExcelExportController@formExport');
@@ -74,8 +78,9 @@ Route::group(['middleware' => ['web']], function () {
 
     // Рабочий стол для сводных документов
     Route::get('datainput/aggregatedashboard/{document}', 'StatDataInput\AggregatesDashboardController@index');
-    Route::get('datainput/formcontrol/{document}', 'StatDataInput\FormDashboardController@formControl');
-    Route::get('datainput/tablecontrol/{document}/{table}', 'StatDataInput\FormDashboardController@tableControl');
+    Route::get('datainput/fetchcelllayers/{document}/{row}/{column}', 'StatDataInput\AggregatesDashboardController@fetchAggregatedCellLayers');
+
+
     //Route::get('datainput/formtest/{id}', 'StatDataInput\FormDashboardController@formtest');
 });
 

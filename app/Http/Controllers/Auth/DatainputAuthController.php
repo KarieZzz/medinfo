@@ -13,6 +13,7 @@ use App\Worker;
 class DatainputAuthController extends Controller
 {
 
+
     //
     public function getLogin()
     {

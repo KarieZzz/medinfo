@@ -42,6 +42,7 @@
                     </li>
                     <li><a href="/admin/documents">Документы</a></li>
                     @yield('local_actions')
+                    <li><a href="/admin/logout">Завершение работы</a></li>
                 </ul>
             </div><!--/.nav-collapse -->
         </div>

@@ -3,7 +3,7 @@
 @section('content')
 	<div class="login-box">
 		<div class="register-logo">
-			<a href="/"><b>Medinfo</b>WebAdmin</a>
+			<a href="/"><b>Medinfo</b> WebAdmin</a>
 		</div>
 		<div class="login-box-body">
 			@if (count($errors) > 0)
@@ -16,7 +16,7 @@
 					</ul>
 				</div>
 			@endif
-			<p class="login-box-msg">Авторизация пользователя</p>
+			<p class="login-box-msg">Авторизация пользователя - администратора системы</p>
 				<form role="form" method="POST" action="{{ url('/login') }}">
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
 					<div class="form-group has-feedback">
@@ -34,7 +34,7 @@
 									<input type="checkbox" name="remember"> Запомнить меня
 								</label>
 							</div>
-                            <a class="btn btn-link" href="{{ url('/password/email') }}">Забыли Ваш пароль?</a>
+                            <a class="btn btn-link" href="{{ url('/password/reset') }}">Забыли Ваш пароль?</a>
 						</div>
 						<!-- /.col -->
 						<div class="col-xs-4">
