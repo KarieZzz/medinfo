@@ -48,7 +48,8 @@ var datasources = function() {
             {name: 'form_code', type: 'string'},
             {name: 'form_name', type: 'string'},
             {name: 'period', type: 'string'},
-            {name: 'updated_at', type: 'string'}
+            {name: 'aggregated_at', type: 'string'},
+            { name: 'filled', type: 'bool' }
         ],
         id: 'id',
         url: aggrsource_url + '&ou=' + current_top_level_node + '&forms=' + checkedforms.join()+'&periods='+checkedperiods.join(),
@@ -108,6 +109,43 @@ var updatedocumenttable = function() {
         aggregate_source.url = new_aggr_url;
         $('#Aggregates').jqxGrid('updatebounddata');
     }
+};
+// выполнение сведения данных
+var aggregatedata = function() {
+    console.log("ddd");
+    var rowindex = $('#Aggregates').jqxGrid('getselectedrowindex');
+    var row_id = $('#Aggregates').jqxGrid('getrowid', rowindex);
+    var rowdata = $('#Aggregates').jqxGrid('getrowdata', rowindex);
+    if (rowindex == -1) {
+        return false;
+    }
+    //var data = "aggregate=" + row_id;
+    $.ajax({
+        dataType: 'json',
+        url: aggregatedata_url + row_id,
+        method: "PATCH",
+        //data: data,
+        success: function (data, status, xhr) {
+            if (data.affected_cells) {
+                if (data.affected_cells > 0) {
+                    raiseInfo("Сведение данных завершено");
+                    rowdata.aggregated_at = data.aggregated_at;
+                    $('#Aggregates').jqxGrid('updaterow', row_id, rowdata);
+                }
+                else {
+                    raiseError("Сведение данных не выполнено! Отсутствуют данные в первичных документах");
+                }
+            }
+            else {
+                if (data.aggregate_status == 500) {
+                    raiseError("Сведение данных не выполнено! " + data.error_message);
+                }
+            }
+        },
+        error: function (xhr, status, errorThrown) {
+            raiseError("Ошибка сведения данных на сервере.  Обратитесь к администратору", xhr);
+        }
+    });
 };
 // Установка класса для обозначения заполненных/пустых документов
 var filledFormclass = function (row, columnfield, value, rowdata) {
@@ -197,10 +235,7 @@ var rendertoolbar = function (toolbar) {
 
     var editform = $("<i style='margin-left: 2px;height: 14px' class='fa fa-edit fa-lg' title='Редактировать форму' />");
     var excel_export = $("<i style='margin-left: 2px;height: 14px' class='fa fa-file-excel-o fa-lg' title='Экспортировать документ в MS Excel'></i>");
-    //var excel_file = $("<input id='ExcelFile' type='button' value='Сформировать документ' />");
-    //var message_input = $("<input id='newMessage' type='button' value='Комментарий' />");
-    var message_input = $("<i style='margin-left: 2px;height: 14px' class='fa fa-sticky-note-o fa-lg' title='Сообщение/комментарий к документу'></i>");
-    //var refresh_list = $("<input id='RefreshList' type='button' value='Обновить список' />");
+    var message_input = $("<i style='margin-left: 2px;height: 14px' class='fa fa-commenting-o fa-lg' title='Сообщение/комментарий к документу'></i>");
     var refresh_list = $("<i style='margin-left: 2px;height: 14px' class='fa fa-refresh fa-lg' title='Обновить список'></i>");
     var changestatus = $("<input id='ChangeStatus' type='button' value='Статус отчета' />");
 
@@ -324,14 +359,14 @@ var rendertoolbar = function (toolbar) {
         $("#DocumentAuditions").html('');
     });
 };
-// Рендеринг панели инструментов для таблицы сводных документов
+// рендеринг панели инструментов для таблицы сводных документов
 var renderaggregatetoolbar = function(toolbar) {
     var me = this;
     var container = $("<div style='margin: 5px;'></div>");
     var input1 = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='searchField' type='text' style='height: 23px; float: left; width: 150px;' />");
-    var input2 = $("<input id='clearfilters' type='button' value='Очистить фильтр'/>");
-    var input3 = $("<input id='EditForm' type='button' value='Просмотр отчета' />");
-    var makeaggregation = $("<input id='MakeAggregation' type='button' value='Выполнить свод' />");
+    var filter = $("<i style='margin-left: 2px;height: 14px' class='fa fa-filter fa-lg' title='Очистить фильтр' />");
+    var editform = $("<i style='margin-left: 2px;height: 14px' class='fa fa-eye fa-lg' title='Просмотр/редактирование сводного отчета' />");
+    var makeaggregation = $("<i style='margin-left: 2px;height: 14px' class='fa fa-database fa-lg' title='Выполнить свод' />");
     if (audit_permission) {
         var change_audit_status = $("<input id='ChangeAudutStatus' type='button' value='Проверка отчета' />");
         change_audit_status.click(function () {
@@ -369,24 +404,29 @@ var renderaggregatetoolbar = function(toolbar) {
             $("#BatchChangeAuditStateWindow").jqxWindow('open');
         });
     }
-    var input5 = $("<input id='ExcelExport' type='button' value='Экспортировать в эксель' />");
+    var excel_export = $("<i style='margin-left: 2px;height: 14px' class='fa fa-file-excel-o fa-lg' title='Экспортировать документ в MS Excel'></i>");
+    var refresh_list = $("<i style='margin-left: 2px;height: 14px' class='fa fa-refresh fa-lg' title='Обновить список'></i>");
+
+
     toolbar.append(container);
     container.append(input1);
-    container.append(input2);
-    container.append(input3);
+    container.append(filter);
+    container.append(editform);
     container.append(makeaggregation);
     if (audit_permission) {
         container.append(change_audit_status);
         change_audit_status.jqxButton({ theme: theme });
     }
-    container.append(input5);
+    container.append(excel_export);
+    container.append(refresh_list);
     input1.addClass('jqx-widget-content-' + theme);
     input1.addClass('jqx-rc-all-' + theme);
     input1.jqxInput({ width: 200, placeHolder: "МО/Территория" });
-    input2.jqxButton({ theme: theme });
-    input3.jqxButton({ theme: theme });
+    filter.jqxButton({ theme: theme });
+    editform.jqxButton({ theme: theme });
     makeaggregation.jqxButton({ theme: theme });
-    input5.jqxButton({ theme: theme });
+    excel_export.jqxButton({ theme: theme });
+    refresh_list.jqxButton({ theme: theme });
     var oldVal = "";
     input1.on('keydown', function (event) {
         if (input1.val().length >= 2) {
@@ -404,8 +444,8 @@ var renderaggregatetoolbar = function(toolbar) {
             $("#Aggregates").jqxGrid('removefilter', '1');
         }
     });
-    input2.click(function () { $("#Aggregates").jqxGrid('clearfilters'); input1.val('');});
-    input3.click(function () {
+    filter.click(function () { $("#Aggregates").jqxGrid('clearfilters'); input1.val('');});
+    editform.click(function () {
         var rowindex = $('#Aggregates').jqxGrid('getselectedrowindex');
         var document_id = $('#Aggregates').jqxGrid('getrowid', rowindex);
         if (rowindex !== -1) {
@@ -413,50 +453,27 @@ var renderaggregatetoolbar = function(toolbar) {
         }
     });
 
-    makeaggregation.click(function () {
-        var rowindex = $('#Aggregates').jqxGrid('getselectedrowindex');
-        var row_id = $('#Aggregates').jqxGrid('getrowid', rowindex);
-        var rowdata = $('#Aggregates').jqxGrid('getrowdata', rowindex);
-        if (rowindex == -1) {
-            return false;
-        }
-        //var data = "aggregate=" + row_id;
-        $.ajax({
-            dataType: 'json',
-            url: aggregatedata_url + row_id,
-            method: "PATCH",
-            //data: data,
-            success: function (data, status, xhr) {
-                if (data.affected_cells) {
-                    if (data.affected_cells > 0) {
-                        raiseInfo("Сведение данных завершено");
-                        rowdata.updated_at = data.aggregated_at;
-                        $('#Aggregates').jqxGrid('updaterow', row_id, rowdata);
-                    }
-                    else {
-                        raiseError("Сведение данных не выполнено! Отсутствуют дынные в первичных документах");
-                    }
-                }
-                else {
-                    raiseError("Сведение данных не выполнено!");
-                    // TODO: Обработать ошибку сведения данных
-                }
-            },
-            error: function (xhr, status, errorThrown) {
-                raiseError("Ошибка сведения данных на сервере.  Обратитесь к администратору", xhr);
-            }
-        });
+    makeaggregation.click( function() {
+            aggregatedata();
     });
 
-    input5.click(function () {
+    excel_export.click(function () {
         var rowindex = $('#Aggregates').jqxGrid('getselectedrowindex');
         var document_id = $('#Aggregates').jqxGrid('getrowid', rowindex);
         if (rowindex !== -1) {
-            var editWindow = window.open(export_form_url+'aggregate='+document_id);
+            window.open(export_form_url + document_id);
         }
     });
+    refresh_list.click(function () {
+        var forms = checkedforms.join();
+        var periods = checkedperiods.join();
+        var new_filter =  '&ou=' +current_top_level_node +'&forms='+forms+'&periods=' + periods;
+        var new_aggr_url = aggrsource_url + new_filter;
+        aggregate_source.url = new_aggr_url;
+        $('#Aggregates').jqxGrid('updatebounddata');
+    });
 };
-// Инициализация дерева Территорий/Медицинских организаций
+// инициализация дерева Территорий/Медицинских организаций
 var initmotree = function() {
     $("#moTree").jqxTreeGrid(
         {
@@ -610,6 +627,7 @@ var initfiltertabs = function() {
     });
 
 };
+// инициализация вкладок с документами
 var initdocumentstabs = function() {
     $("#documenttabs").jqxTabs({  height: '100%', width: '100%', theme: theme });
     $("#Documents").jqxGrid(
@@ -709,11 +727,12 @@ var initdocumentstabs = function() {
             columns: [
                 { text: '№', datafield: 'id', width: '5%' },
                 { text: 'Код Территории/МО', datafield: 'unit_code', width: 100 },
-                { text: 'Наименование МО', datafield: 'unit_name', width: '25%' },
+                { text: 'Наименование МО', datafield: 'unit_name', width: '20%' },
                 { text: 'Код формы', datafield: 'form_code', width: 100 },
-                { text: 'Наименование формы', datafield: 'form_name', width: '25%' },
+                { text: 'Наименование формы', datafield: 'form_name', width: '20%' },
                 { text: 'Период', datafield: 'period', width: 150 },
-                { text: 'Обновление', datafield: 'updated_at', width: 150 }
+                { text: 'Сведение', datafield: 'aggregated_at', width: 150 },
+                { text: 'Данные', datafield: 'filled', columntype: 'checkbox', width: 120 }
             ]
         });
     $('#Aggregates').on('rowdoubleclick', function (event)
@@ -724,6 +743,7 @@ var initdocumentstabs = function() {
         var editWindow = window.open(edit_aggregate_url + '/' + document_id);
     });
 };
+// инициализация вкладок с сообщениями и проверками к документу
 var initdocumentproperties = function() {
     $('#DocumentPropertiesSplitter').jqxSplitter({
         width: '100%',
@@ -753,6 +773,7 @@ var initdocumentproperties = function() {
     });
     $("#auditExpander").jqxExpander({toggleMode: 'none', showArrow: false, width: "100%", height: "100%", theme: theme  });
 };
+// инициализация всплывающих окон с формами ввода сообщения и т.д.
 var initpopupwindows = function() {
     $("#changeStateWindow").jqxWindow({
         width: 430,

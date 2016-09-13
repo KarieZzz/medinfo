@@ -132,8 +132,8 @@ class DocumentTree
                 JOIN dic_document_types t on d.dtype = CAST(t.code AS numeric)
                 JOIN periods p on d.period_id = p.id
               WHERE 1=1 $unit_scope $scopes
-              GROUP BY d.id, u.unit_code, u.unit_name, f.form_code, f.form_name, s.name, p.name, t.name
-              ORDER BY u.unit_code, f.form_code, d.period_id;";
+              GROUP BY d.id, u.unit_code, u.unit_name, f.form_code, f.form_name, p.name, s.name, t.name
+              ORDER BY u.unit_code, f.form_code, p.name";
             //echo $doc_query;
 
             $this->documents = DB::select($doc_query);
@@ -157,12 +157,14 @@ class DocumentTree
             if (count($this->scopes) > 0 ) {
                 $scopes = implode(" ", $this->scopes);
             }
-            $doc_query = "SELECT d.id, u.unit_code, u.unit_name, f.form_code, f.form_name, p.name period, d.updated_at
+            $doc_query = "SELECT d.id, u.unit_code, u.unit_name, f.form_code, f.form_name, p.name period, a.aggregated_at,
+                CASE WHEN (SELECT sum(v.value) FROM statdata v where d.id = v.doc_id) > 0 THEN 1 ELSE 0 END filled
               FROM documents d
-              left join forms f on d.form_id = f.id
-              left join mo_hierarchy u on d.ou_id = u.id
-              join periods p on d.period_id = p.id
-              where 1=1 $unit_scope $scopes ORDER BY u.unit_code, f.form_code, d.period_id";
+              LEFT JOIN forms f on d.form_id = f.id
+              LEFT JOIN mo_hierarchy u on d.ou_id = u.id
+              LEFT JOIN aggregates a ON d.id = a.doc_id
+              JOIN periods p on d.period_id = p.id
+              WHERE 1=1 $unit_scope $scopes ORDER BY u.unit_code, f.form_code, p.name";
             //dd($doc_query);
             $res = DB::select($doc_query);
             return $res;

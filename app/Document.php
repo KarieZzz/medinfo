@@ -40,6 +40,12 @@ class Document extends Model
             ->where('form_id', $form);
     }
 
+    public static function countInPeriod(int $period)
+    {
+        $q = "SELECT count(id) doc_count FROM documents WHERE period_id = $period";
+        return \DB::selectOne($q)->doc_count;
+    }
+
     public static function dataUpdatedAt(int $document)
     {
         $q = "SELECT MAX(updated_at) latest_edited FROM statdata WHERE doc_id = $document";

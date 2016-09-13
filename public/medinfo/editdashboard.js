@@ -617,8 +617,8 @@ var initdatasources = function() {
 };
 // Получение читабельных координат ячейки - код строки, индекс графы
 var getreadablecelladress = function(row, column) {
-    var row_code = $('#DataGrid').jqxGrid('getcellvaluebyid', rowid, current_row_number_datafield);
-    var column_index = $('#DataGrid').jqxGrid('getcolumnproperty', colid, 'text');
+    var row_code = $('#DataGrid').jqxGrid('getcellvaluebyid', row, current_row_number_datafield);
+    var column_index = $('#DataGrid').jqxGrid('getcolumnproperty', column, 'text');
     return { row: row_code, column: column_index};
 };
 var fetchcelllayer = function(row, column) {

@@ -36,6 +36,4 @@ class MOAdminController extends Controller
         }
         return $units;
     }
-
-
 }

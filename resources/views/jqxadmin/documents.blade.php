@@ -95,8 +95,8 @@
                 </div>
                 <div class="form-group">
                     <div class="col-sm-offset-3 col-sm-6">
-                        <button id="saveButton" class="btn btn-default">Создать</button>
-                        <button id="cancelButton" class="btn btn-default">Отменить</button>
+                        <button type="button" id="saveButton" class="btn btn-default">Создать</button>
+                        <button type="button" id="cancelButton" class="btn btn-default">Отменить</button>
                     </div>
                 </div>
             </div>
@@ -146,18 +146,13 @@
         var checkedstates = {!! $state_ids !!};
         var checkedperiods = [{!! $period_ids !!}];
         var checkeddtypes = {!! $dtype_ids !!};
-
         datasources();
         initfilterdatasources();
         initnewdocumentwindow();
         initsplitters();
         initmotree();
-
         initfiltertabs();
         initdocumentslist();
-        initnotifications();
         initdocumentactions();
-
-
     </script>
 @endsection

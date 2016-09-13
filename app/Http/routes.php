@@ -21,15 +21,20 @@
 | kernel and includes session state, CSRF protection, and more.
 |
 */
+// Маршруты с авторизацией вынесены за пределы группы web
+Route::auth();
+Route::get('admin/logout', 'Auth\AuthController@logout');
+Route::get('workerlogin', 'Auth\DatainputAuthController@getLogin' );
+Route::get('workerlogout', 'Auth\DatainputAuthController@logout' );
+Route::post('workerlogin', 'Auth\DatainputAuthController@login' );
 
 Route::group(['middleware' => ['web']], function () {
-    Route::auth();
+
     // Маршрут по умолчанию - ввод данных
     Route::get('/', 'StatDataInput\DocumentDashboardController@index' );
 
     // Шаблоны на осноые jQWidgets для администрирования
     Route::get('admin', 'Admin\AdminController@index');
-    Route::get('admin/logout', 'Auth\AuthController@logout');
     // Менеджер пользователей - исполнителей
     Route::get('admin/workers', 'Admin\WorkerAdmin@index' );
     Route::get('admin/fetch_workers', 'Admin\WorkerAdmin@fetch_workers');
@@ -38,7 +43,12 @@ Route::group(['middleware' => ['web']], function () {
     Route::post('admin/workers/create', 'Admin\WorkerAdmin@worker_store');
     Route::patch('admin/workers/update', 'Admin\WorkerAdmin@worker_update');
     Route::patch('admin/workers/updateuserscope', 'Admin\WorkerAdmin@worker_scope_update');
-
+    // Менеджер отчетных периодов
+    Route::get('admin/periods', 'Admin\PeriodAdminController@index' );
+    Route::get('admin/fetchperiods', 'Admin\PeriodAdminController@fetchPeriods' );
+    Route::post('admin/periods/create', 'Admin\PeriodAdminController@store');
+    Route::patch('admin/periods/update', 'Admin\PeriodAdminController@update');
+    Route::delete('admin/periods/delete/{period}', 'Admin\PeriodAdminController@delete');
     // Менеджер отчетных документов
     Route::get('admin/documents', 'Admin\DocumentAdminController@index');
     Route::get('admin/fetchdocuments', 'Admin\DocumentAdminController@fetchDocuments');
@@ -48,10 +58,6 @@ Route::group(['middleware' => ['web']], function () {
     Route::patch('admin/documentstatechange', 'Admin\DocumentAdminController@changeState');
 
     // Ввод и корректировка статданных
-    Route::get('workerlogin', 'Auth\DatainputAuthController@getLogin' );
-    Route::get('workerlogout', 'Auth\DatainputAuthController@logout' );
-    Route::post('workerlogin', 'Auth\DatainputAuthController@login' );
-
     // Рабочий стол - Первичные и сводные отчеты, сообщения, проверки и экспорт в эксель
     Route::get('datainput', 'StatDataInput\DocumentDashboardController@index' );
     Route::get('datainput/fetch_mo_tree/{parent}', 'StatDataInput\DocumentDashboardController@fetch_mo_hierarchy');

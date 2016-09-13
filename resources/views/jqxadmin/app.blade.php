@@ -12,20 +12,11 @@
         body {
             height: 100%;
             overflow: hidden;
-            /* The html and body elements cannot have any padding or margin. */
         }
-
-        /* Wrapper for page content to push down footer
-        #wrap {
-            min-height: 100%;
-            height: auto;
-        }*/
         #widgets-content-wrap {
             position: absolute;
             width:100%;
             height: 100%;
-            /* Pad bottom by footer height
-            padding: 17px 0 120px;*/
         }
         #alertmessage {
             position: absolute;
@@ -37,7 +28,6 @@
         }
     </style>
     <title id="Description">Админ-страница (Bootstrap и jQWidgets дизайн)</title>
-
     <!-- Bootstrap core CSS -->
     <link href="{{ asset('/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
     <!-- jQWidgets CSS -->
@@ -47,8 +37,6 @@
 </head>
 
 <body>
-
-<!-- Wrap all page content here -->
 <div id="alertmessage" class="col-md-4 "></div>
 <div id="wrap">
     @include('jqxadmin.navbar')
@@ -62,9 +50,6 @@
     @include('jqxdatainput.notifications')
 </div>
 
-<!-- Bootstrap core JavaScript
-================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
 <script src="{{ asset('/plugins/jQuery/jquery-1.12.4.min.js') }}" type="text/javascript" ></script>
 <script src="{{ asset('/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
 <!-- jQWidgets JavaScript files -->
@@ -84,10 +69,9 @@
         $("#navBar").jqxMenu({ autoSizeMainItems: true, theme: theme, showTopLevelArrows: true, width: '100%' });
         $("#navBar").css("visibility", "visible");
         $("#widgets-content-wrap").css("visibility", "visible");
+        initnotifications();
     });
 </script>
-
 @yield('inlinejs')
-
 </body>
 </html>

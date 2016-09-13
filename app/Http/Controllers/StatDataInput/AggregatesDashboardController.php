@@ -33,6 +33,11 @@ class AggregatesDashboardController extends DashboardController
             ->where('period_id', $document->period_id)
             ->pluck('id');
         $strigified_documents = implode(',', $included_documents->toArray());
+        if (!$strigified_documents) {
+            $result['aggregate_status'] = 500;
+            $result['error_message'] =  'Нет первичных документов для сведения';
+            return $result;
+        }
         $now = Carbon::now();
         $query = "INSERT INTO statdata
             (doc_id, table_id, row_id, col_id, value, created_at, updated_at )
@@ -48,6 +53,7 @@ class AggregatesDashboardController extends DashboardController
         $aggregate->aggregated_at = Carbon::now();
         $aggregate->save();
         $result['affected_cells'] = count($affected_cells);
+        $result['aggregate_status'] = 200;
         $result['aggregated_at'] =  $aggregate->aggregated_at->toDateTimeString();
         return $result;
     }
