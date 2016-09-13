@@ -9,73 +9,81 @@ initsplitter = function() {
             theme: theme,
             panels:
                 [
-                    { size: '40%', min: '10%'},
-                    { size: '40%', min: '10%'}
+                    { size: '50%', min: '10%'},
+                    { size: '50%', min: '10%'}
                 ]
         }
     );
 };
 initdatasources = function() {
-    var periodsource =
+    var formsource =
     {
         datatype: "json",
         datafields: [
             { name: 'id', type: 'int' },
-            { name: 'name', type: 'string' },
-            { name: 'begin_date', type: 'string' },
-            { name: 'end_date', type: 'string' },
-            { name: 'pattern_id', type: 'int' },
-            { name: 'medinfo_id', type: 'string' }
+            { name: 'group_id', type: 'int' },
+            { name: 'form_index', type: 'int' },
+            { name: 'form_name', type: 'string' },
+            { name: 'form_code', type: 'string' },
+            { name: 'file_name', type: 'string' },
+            { name: 'medstat_code', type: 'string' },
+            { name: 'medinfo_id', type: 'int' }
         ],
         id: 'id',
-        url: 'fetchperiods',
+        url: 'fetchforms',
         root: null
     };
-    perioddataAdapter = new $.jqx.dataAdapter(periodsource);
+    formDataAdapter = new $.jqx.dataAdapter(formsource);
 };
 initperiodlist = function() {
-    $("#periodList").jqxGrid(
+    $("#formList").jqxGrid(
         {
             width: '98%',
-            height: '98%',
+            height: '90%',
             theme: theme,
             localization: localize(),
-            source: perioddataAdapter,
+            source: formDataAdapter,
             columnsresize: true,
             showfilterrow: true,
             filterable: true,
+            sortable: true,
             columns: [
                 { text: 'Id', datafield: 'id', width: '30px' },
-                { text: 'Имя', datafield: 'name' , width: '200px'},
-                { text: 'Начало', datafield: 'begin_date', width: '100px' },
-                { text: 'Окончание', datafield: 'end_date', width: '100px' },
-                { text: 'Паттерн', datafield: 'pattern_id', width: '100px'  },
-                { text: 'Id Мединфо', datafield: 'medinfo_id', width: '100px' }
+                { text: '№ п/п', datafield: 'form_index', width: '70px' },
+                { text: 'Код формы', datafield: 'form_code', width: '100px'  },
+                { text: 'Имя', datafield: 'form_name' , width: '400px'},
+                { text: 'Группа', datafield: 'group_id', width: '70px' },
+                { text: 'Файл', datafield: 'file_name', width: '70px'  },
+                { text: 'Медстат Id', datafield: 'medstat_code', width: '100px' },
+                { text: 'Мединфо Id', datafield: 'medinfo_id', width: '70px' }
             ]
         });
-    $('#periodList').on('rowselect', function (event) {
+    $('#formList').on('rowselect', function (event) {
         var row = event.args.row;
-        $("#name").val(row.name);
-        $("#begin_date").val(row.begin_date);
-        $("#end_date").val(row.end_date);
-        $("#pattern_id").val(row.pattern_id);
+        $("#form_name").val(row.form_name);
+        $("#group_id").val(row.group_id);
+        $("#form_index").val(row.form_index);
+        $("#form_code").val(row.form_code);
+        $("#file_name").val(row.file_name);
+        $("#medstat_code").val(row.medstat_code);
         $("#medinfo_id").val(row.medinfo_id);
     });
 };
 initformactions = function() {
     $("#insert").click(function () {
-        var data = "&name=" + $("#name").val() + "&begin_date=" + $("#begin_date").val() + "&end_date=" + $("#end_date").val() +
-            "&pattern_id=" + $("#pattern_id").val() + "&medinfo_id=" + $("#medinfo_id").val();
+        var data = "&form_name=" + $("#form_name").val() + "&group_id=" + $("#group_id").val() + "&form_index=" + $("#form_index").val() +
+            "&form_code=" + $("#form_code").val() + "&file_name=" + $("#file_name").val() +  "&medstat_code=" + $("#medstat_code").val() +
+            "&medinfo_id=" + $("#medinfo_id").val();
         $.ajax({
             dataType: 'json',
-            url: '/admin/periods/create',
+            url: '/admin/forms/create',
             method: "POST",
             data: data,
             success: function (data, status, xhr) {
                 if (typeof data.error != 'undefined') {
                     raiseError(data.message);
                 }
-                $("#periodList").jqxGrid('updatebounddata');
+                $("#formList").jqxGrid('updatebounddata');
             },
             error: function (xhr, status, errorThrown) {
                 $.each(xhr.responseJSON, function(field, errorText) {
@@ -85,17 +93,18 @@ initformactions = function() {
         });
     });
     $("#save").click(function () {
-        var row = $('#periodList').jqxGrid('getselectedrowindex');
+        var row = $('#formList').jqxGrid('getselectedrowindex');
         if (row == -1) {
             raiseError("Выберите запись для изменения/сохранения данных");
             return false;
         }
-        var rowid = $("#periodList").jqxGrid('getrowid', row);
-        var data = "id=" + rowid + "&name=" + $("#name").val() + "&begin_date=" + $("#begin_date").val() + "&end_date=" + $("#end_date").val() +
-            "&pattern_id=" + $("#pattern_id").val() + "&medinfo_id=" + $("#medinfo_id").val();
+        var rowid = $("#formList").jqxGrid('getrowid', row);
+        var data = "id=" + rowid + "&form_name=" + $("#form_name").val() + "&group_id=" + $("#group_id").val() + "&form_index=" + $("#form_index").val() +
+            "&form_code=" + $("#form_code").val() + "&file_name=" + $("#file_name").val() +  "&medstat_code=" + $("#medstat_code").val() +
+            "&medinfo_id=" + $("#medinfo_id").val();
         $.ajax({
             dataType: 'json',
-            url: '/admin/periods/update',
+            url: '/admin/forms/update',
             method: "PATCH",
             data: data,
             success: function (data, status, xhr) {
@@ -104,7 +113,7 @@ initformactions = function() {
                 } else {
                     raiseInfo(data.message);
                 }
-                $("#periodList").jqxGrid('updatebounddata');
+                $("#formList").jqxGrid('updatebounddata');
             },
             error: function (xhr, status, errorThrown) {
                 $.each(xhr.responseJSON, function(field, errorText) {
@@ -114,25 +123,25 @@ initformactions = function() {
         });
     });
     $("#delete").click(function () {
-        var row = $('#periodList').jqxGrid('getselectedrowindex');
+        var row = $('#formList').jqxGrid('getselectedrowindex');
         if (row == -1) {
             raiseError("Выберите запись для удаления");
             return false;
         }
-        var rowid = $("#periodList").jqxGrid('getrowid', row);
+        var rowid = $("#formList").jqxGrid('getrowid', row);
         $.ajax({
             dataType: 'json',
-            url: '/admin/periods/delete/' + rowid,
+            url: '/admin/forms/delete/' + rowid,
             method: "DELETE",
             success: function (data, status, xhr) {
                 if (typeof data.error != 'undefined') {
                     raiseError(data.message);
                 } else {
                     raiseInfo(data.message);
-                    $("#period")[0].reset();
+                    $("#form")[0].reset();
                 }
-                $("#periodList").jqxGrid('updatebounddata');
-                $("#periodList").jqxGrid('clearselection');
+                $("#formList").jqxGrid('updatebounddata');
+                $("#formList").jqxGrid('clearselection');
             },
             error: function (xhr, status, errorThrown) {
                 raiseError('Ошибка удаления отчетного периода', xhr);

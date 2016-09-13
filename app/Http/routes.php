@@ -49,6 +49,14 @@ Route::group(['middleware' => ['web']], function () {
     Route::post('admin/periods/create', 'Admin\PeriodAdminController@store');
     Route::patch('admin/periods/update', 'Admin\PeriodAdminController@update');
     Route::delete('admin/periods/delete/{period}', 'Admin\PeriodAdminController@delete');
+    // Менеджер отчетных форм/таблиц
+    Route::get('admin/forms', 'Admin\FormAdminController@index');
+    Route::get('admin/fetchforms', 'Admin\FormAdminController@fetchForms' );
+    Route::post('admin/forms/create', 'Admin\FormAdminController@store');
+    Route::patch('admin/forms/update', 'Admin\FormAdminController@update');
+    Route::delete('admin/forms/delete/{form}', 'Admin\FormAdminController@delete');
+
+
     // Менеджер отчетных документов
     Route::get('admin/documents', 'Admin\DocumentAdminController@index');
     Route::get('admin/fetchdocuments', 'Admin\DocumentAdminController@fetchDocuments');

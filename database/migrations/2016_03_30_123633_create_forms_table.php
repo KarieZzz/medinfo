@@ -16,12 +16,12 @@ class CreateFormsTable extends Migration
             $table->increments('id');
             $table->integer('group_id')->index();
             $table->integer('form_index')->index();
-            $table->string('form_code', 7)->index();
-            $table->string('form_name', 256);
+            $table->string('form_code', 7)->unique();
+            $table->string('form_name', 256)->unique();
             $table->integer('form_index')->index();
             $table->string('file_name', 16)->nullable();
-            $table->char('medstat_code', 5)->nullable();
-            $table->integer('medinfo_id')->nullable()->index();
+            $table->char('medstat_code', 5)->nullable()->unique();
+            $table->integer('medinfo_id')->nullable()->unique();
             $table->timestamps();
         });
     }

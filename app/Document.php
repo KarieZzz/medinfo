@@ -46,6 +46,12 @@ class Document extends Model
         return \DB::selectOne($q)->doc_count;
     }
 
+    public static function countInForm(int $form)
+    {
+        $q = "SELECT count(id) doc_count FROM documents WHERE form_id = $form";
+        return \DB::selectOne($q)->doc_count;
+    }
+
     public static function dataUpdatedAt(int $document)
     {
         $q = "SELECT MAX(updated_at) latest_edited FROM statdata WHERE doc_id = $document";

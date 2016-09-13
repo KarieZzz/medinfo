@@ -34,7 +34,8 @@
                         <a href="#">Структура</a>
                         <ul style="width: 250px;">
                             <li><a href="/admin/periods">Отчетные периоды</a></li>
-                            <li><a href="/admin/formstables">Формы и Таблицы</a></li>
+                            <li><a href="/admin/forms">Формы</a></li>
+                            <li><a href="/admin/tables">Таблицы</a></li>
                             <li><a href="/admin/rowscolumns">Строки и Графы</a></li>
                             <li type="separator"></li>
                             <li><a href="/admin/noteditablecells">Закрещенные ячейки</a></li>
