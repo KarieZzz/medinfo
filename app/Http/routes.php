@@ -22,13 +22,14 @@
 |
 */
 // Маршруты с авторизацией вынесены за пределы группы web
-Route::auth();
-Route::get('admin/logout', 'Auth\AuthController@logout');
-Route::get('workerlogin', 'Auth\DatainputAuthController@getLogin' );
-Route::get('workerlogout', 'Auth\DatainputAuthController@logout' );
-Route::post('workerlogin', 'Auth\DatainputAuthController@login' );
+
 
 Route::group(['middleware' => ['web']], function () {
+    Route::auth();
+    Route::get('admin/logout', 'Auth\AuthController@logout');
+    Route::get('workerlogin', 'Auth\DatainputAuthController@getLogin' );
+    Route::get('workerlogout', 'Auth\DatainputAuthController@logout' );
+    Route::post('workerlogin', 'Auth\DatainputAuthController@login' );
 
     // Маршрут по умолчанию - ввод данных
     Route::get('/', 'StatDataInput\DocumentDashboardController@index' );
@@ -55,7 +56,11 @@ Route::group(['middleware' => ['web']], function () {
     Route::post('admin/forms/create', 'Admin\FormAdminController@store');
     Route::patch('admin/forms/update', 'Admin\FormAdminController@update');
     Route::delete('admin/forms/delete/{form}', 'Admin\FormAdminController@delete');
-
+    Route::get('admin/tables', 'Admin\TableAdminController@index');
+    Route::get('admin/fetchtables', 'Admin\TableAdminController@fetchTables' );
+    Route::post('admin/tables/create', 'Admin\TableAdminController@store');
+    Route::patch('admin/tables/update', 'Admin\TableAdminController@update');
+    Route::delete('admin/tables/delete/{table}', 'Admin\TableAdminController@delete');
 
     // Менеджер отчетных документов
     Route::get('admin/documents', 'Admin\DocumentAdminController@index');

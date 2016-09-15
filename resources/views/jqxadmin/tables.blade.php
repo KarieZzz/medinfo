@@ -1,40 +1,54 @@
 @extends('jqxadmin.app')
 
-@section('title', '<h2>Администрирование: отчетные периоды</h2>')
-@section('headertitle', 'Менеджер отчетных периодов')
+@section('title', '<h2>Администрирование: таблицы</h2>')
+@section('headertitle', 'Менеджер таблиц отчетных форм')
 
 @section('content')
 <div id="mainSplitter" >
     <div>
-        <div id="periodList" style="margin: 10px"></div>
+        <div id="tableList" style="margin: 10px"></div>
     </div>
     <div id="formContainer">
-        <div id="periodPropertiesForm" class="panel panel-default" style="padding-bottom: 3px; width: 90%">
-            <div class="panel-heading"><h3>Редактирование/ввод отчетного периода</h3></div>
+        <div id="propertiesForm" class="panel panel-default" style="padding: 3px; width: 100%">
+            <div class="panel-heading"><h3>Редактирование/ввод таблицы отчетной формы</h3></div>
             <div class="panel-body">
-                <form id="period" class="form-horizontal" >
+                <form id="form" class="form-horizontal" >
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="name">Наименование периода:</label>
-                        <div class="col-sm-7">
-                            <input type="text" class="form-control" id="name">
+                        <label class="control-label col-sm-3" for="table_name">Заголовок:</label>
+                        <div class="col-sm-8">
+                            <textarea rows="3" class="form-control" id="table_name"></textarea>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="begin_date">Начало периода:</label>
+                        <label class="control-label col-sm-3" for="form_id">Входит в форму:</label>
                         <div class="col-sm-2">
-                            <input type="text" class="form-control" id="begin_date">
+                            <div id="form_id"></div>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="end_date">Окончание периода:</label>
+                        <label class="control-label col-sm-3" for="table_index">Порядковый номер в форме:</label>
                         <div class="col-sm-2">
-                            <input type="text" class="form-control" id="end_date">
+                            <input type="text" class="form-control" id="table_index">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="pattern_id">Паттерн:</label>
+                        <label class="control-label col-sm-3" for="table_code">Код таблицы:</label>
                         <div class="col-sm-2">
-                            <input type="text" class="form-control" id="pattern_id">
+                            <input type="text" class="form-control" id="table_code">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-sm-3" for="transposed">Таблица транспонирована:</label>
+                        <div class="col-sm-2">
+                            <input type="text" class="form-control" id="transposed">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-sm-3" for="medstat_code">Код Медстат:</label>
+                        <div class="col-sm-2">
+                            <input type="text" class="form-control" id="medstat_code">
                         </div>
                     </div>
                     <div class="form-group">
@@ -44,7 +58,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-sm-offset-3 col-sm-6">
+                        <div class="col-sm-offset-2 col-sm-7">
                             <button type="button" id="save" class="btn btn-default">Сохранить изменения</button>
                             <button type="button" id="insert" class="btn btn-default">Вставить новую запись</button>
                             <button type="button" id="delete" class="btn btn-danger">Удалить запись</button>
@@ -72,19 +86,23 @@
     <script src="{{ asset('/jqwidgets/jqxgrid.filter.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxgrid.columnsresize.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxgrid.selection.js') }}"></script>
+    <script src="{{ asset('/jqwidgets/jqxgrid.sort.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/periodadmin.js') }}"></script>
+    <script src="{{ asset('/medinfo/admin/tableadmin.js') }}"></script>
 @endpush
 
 @section('inlinejs')
     @parent
     <script type="text/javascript">
-        var perioddataAdapter;
+        var tableDataAdapter;
+        var formsDataAdapter;
+        var forms = {!! $forms  !!};
+        initfilterdatasources();
         initsplitter();
         initdatasources();
-        initperiodlist();
+        inittablelist();
         initformactions();
     </script>
 @endsection

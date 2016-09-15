@@ -21,4 +21,10 @@ class Cell extends Model
             ->where('col_id', $column);
     }
 
+    public static function countOfCells(int $table)
+    {
+        $q = "SELECT count(id) cell_count FROM statdata WHERE table_id = $table";
+        return \DB::selectOne($q)->cell_count;
+    }
+
 }

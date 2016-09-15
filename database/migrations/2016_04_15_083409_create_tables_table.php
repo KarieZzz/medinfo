@@ -16,16 +16,18 @@ class CreateTablesTable extends Migration
         Schema::create('tables', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('form_id')->index();
-            $table->string('table_code', 6)->index();
+            $table->integer('table_index');
+            $table->string('table_code', 6)->nullable()->index();
             $table->string('table_name', 256)->index();
             $table->char('medstat_code', 4)->nullable()->index();
             $table->integer('medinfo_id')->index();
-            $table->integer('transposed');
-            $table->integer('aggregated_column_id');
-            $table->integer('deleted');
-            $table->integer('deleted_at')->nullable();
-            //$table->softDeletes();
+            $table->integer('transposed')->default(0);
+            $table->integer('aggregated_column_id')->nullable();
+            $table->integer('deleted')->default(0)->index();
+            $table->string('comment', 256)->nullable();
+            $table->softDeletes();
             $table->timestamps();
+            $table->unique(['form_id', 'table_code']);
         });
     }
 
