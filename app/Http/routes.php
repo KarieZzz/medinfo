@@ -99,8 +99,9 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('datainput/aggregatedashboard/{document}', 'StatDataInput\AggregatesDashboardController@index');
     Route::get('datainput/fetchcelllayers/{document}/{row}/{column}', 'StatDataInput\AggregatesDashboardController@fetchAggregatedCellLayers');
 
+    // Аналитика: консолидированные отчеты, справки
+    Route::get('reports/by_mo', 'ReportController@consolidateIndexes');
 
-    //Route::get('datainput/formtest/{id}', 'StatDataInput\FormDashboardController@formtest');
 });
 
 // Эксперименты с шаблоном AdminLTE

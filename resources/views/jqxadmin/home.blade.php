@@ -1,9 +1,11 @@
 @extends('jqxadmin.app')
 
-@section('title', '<h2>MedinfoWebAdmin</h2>')
+@section('title', '<h2>Администрирование Мединфо</h2>')
 
 @section('content')
-    <p>Выберите раздел из меню</p>
+    <div class="col-sm-offset-1 col-sm-7">
+        <h4>Выберите раздел из меню</h4>
+    </div>
 @endsection
 
 @push('loadjsscripts')
@@ -12,5 +14,4 @@
 
 @section('inlinejs')
     @parent
-
 @endsection

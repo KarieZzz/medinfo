@@ -92,7 +92,7 @@ class TableAdminController extends Controller
             $table->delete();
             return ['message' => 'Удалена таблица Id' . $table->id ];
         } else {
-            return ['error' => 422, 'message' => 'Таблица ' . $table->id . ' содержит данные. Удаление невозможно.' ];
+            return ['error' => 422, 'message' => 'Таблица Id' . $table->id . ' содержит данные. Удаление невозможно.' ];
         }
     }
 }

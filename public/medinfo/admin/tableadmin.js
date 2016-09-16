@@ -156,7 +156,6 @@ initformactions = function() {
                     $("#tableList").jqxGrid('selectrow', newindex);
 
                 });
-
             },
             error: function (xhr, status, errorThrown) {
                 $.each(xhr.responseJSON, function(field, errorText) {

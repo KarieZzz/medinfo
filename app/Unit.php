@@ -16,6 +16,19 @@ class Unit extends Model
     {
         return $this->hasMany('App\WorkerScope', 'ou_id', 'id');
     }
+    // Выбор Юрлиц
+    public function scopeLegal($query)
+    {
+        return $query
+            ->where('node_type', 3);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query
+            ->where('blocked', 0);
+    }
+
 
     public static function getDescendants($parent) {
         $units[] = $parent;
