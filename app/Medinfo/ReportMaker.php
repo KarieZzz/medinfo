@@ -16,9 +16,9 @@ class ReportMaker
     public static function makeReport(array $indexes)
     {
         //$count_of_indexes = count($indexes['content']);
-        $period = 1;
-        $states = [ 2, 4, 8, 16, 32 ];
-        $dtype = 1;
+        $period = 1; // 2015 год
+        $states = [ 2, 4, 8, 16, 32 ]; // Документы со всеми статусами
+        $dtype = 1; // Только первичные документв
         $units = Unit::legal()->active()->orderBy('unit_code')->get();
         $report_units = [];
         foreach ($units as $unit) {
@@ -52,24 +52,29 @@ class ReportMaker
                             $documents[] = $doc->id;
                         }
                         $strigified_documents = implode(',', $documents);
-                        $val_q = "SELECT SUM(v.value) AS value FROM statdata v
-                          LEFT JOIN documents d ON v.doc_id = d.id
-                          JOIN tables t ON v.table_id = t.id
-                          LEFT JOIN rows r ON v.row_id = r.id
-                          LEFT JOIN columns c ON v.col_id = c.id
-                        WHERE d.id in ({$strigified_documents}) AND t.table_code = '$table_code'
-                          AND r.row_code = '$row_code' AND c.column_index = $col_index
-                        GROUP BY v.table_id, v.row_id, v.col_id";
-                        //dd($val_q);
-                        $val_res = \DB::selectOne($val_q);
-                        $v = $val_res->value;
+                        if (empty($strigified_documents)) {
+                            $v = 0;
+                        } else {
+                            $val_q = "SELECT SUM(v.value) AS value FROM statdata v
+                                LEFT JOIN documents d ON v.doc_id = d.id
+                                JOIN tables t ON v.table_id = t.id
+                                LEFT JOIN rows r ON v.row_id = r.id
+                                LEFT JOIN columns c ON v.col_id = c.id
+                              WHERE d.id in ({$strigified_documents}) AND t.table_code = '$table_code'
+                                AND r.row_code = '$row_code' AND c.column_index = $col_index
+                              GROUP BY v.table_id, v.row_id, v.col_id";
+                            //dd($val_q);
+                            $val_res = \DB::selectOne($val_q);
+                            $v = $val_res ? $val_res->value :  0;
+                        }
+
                     } else {
-                        $val_q = "SELECT v.value AS value from statdata v
-                          left join documents d on v.doc_id = d.id
-                          join tables t on v.table_id = t.id
-                          left join rows r on v.row_id = r.id
-                          left join columns c on v.col_id = c.id
-                        where  d.form_id = {$form->id} AND d.ou_id = {$unit->id} AND d.period_id = $period
+                        $val_q = "SELECT v.value AS value FROM statdata v
+                          LEFT JOIN documents d on v.doc_id = d.id
+                          JOIN tables t on v.table_id = t.id
+                          LEFT JOIN rows r on v.row_id = r.id
+                          LEFT JOIN columns c on v.col_id = c.id
+                        WHERE d.form_id = {$form->id} AND d.ou_id = {$unit->id} AND d.period_id = $period
                           AND t.table_code = '$table_code' AND r.row_code = '$row_code' AND c.column_index = $col_index";
                         $val_res = \DB::selectOne($val_q);
                         $v = $val_res ? $val_res->value :  0;

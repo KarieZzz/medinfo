@@ -9,8 +9,8 @@ initsplitter = function() {
             theme: theme,
             panels:
                 [
-                    { size: '50%', min: '10%'},
-                    { size: '50%', min: '10%'}
+                    { size: '50%', min: '10%', collapsible: false },
+                    { size: '50%', min: '10%', collapsible: false }
                 ]
         }
     );
@@ -27,64 +27,79 @@ var initfilterdatasources = function() {
         localdata: forms
     };
     formsDataAdapter = new $.jqx.dataAdapter(forms_source);
-};
-initdatasources = function() {
-    var tablesource =
+    var table_source =
     {
         datatype: "json",
         datafields: [
-            { name: 'form_code', map: 'form>form_code', type: 'string' },
+            { name: 'id' },
+            { name: 'table_code' }
+        ],
+        id: 'id',
+        localdata: tables
+    };
+    tablesDataAdapter = new $.jqx.dataAdapter(table_source);
+};
+initdatasources = function() {
+    rowsource =
+    {
+        datatype: "json",
+        datafields: [
             { name: 'id', type: 'int' },
-            { name: 'table_index', type: 'int' },
-            { name: 'form_id', type: 'int' },
-            { name: 'table_name', type: 'string' },
-            { name: 'table_code', type: 'string' },
-            { name: 'transposed', type: 'imt' },
+            { name: 'table_id', type: 'int' },
+            { name: 'table_code', map: 'table>table_code', type: 'string' },
+            { name: 'row_index', type: 'int' },
+            { name: 'row_code', type: 'string' },
+            { name: 'row_name', type: 'string' },
             { name: 'medstat_code', type: 'string' },
             { name: 'medinfo_id', type: 'int' }
         ],
         id: 'id',
-        url: 'fetchtables',
-        root: 'table'
+        url: 'fetchrows/' + current_table,
+        root: 'row'
     };
-    tableDataAdapter = new $.jqx.dataAdapter(tablesource);
+    rowsDataAdapter = new $.jqx.dataAdapter(rowsource);
 };
-inittablelist = function() {
-    $("#tableList").jqxGrid(
+initRowList = function() {
+    $("#rowList").jqxGrid(
         {
             width: '98%',
-            height: '90%',
+            height: '300px',
             theme: theme,
             localization: localize(),
-            source: tableDataAdapter,
+            source: rowsDataAdapter,
             columnsresize: true,
             showfilterrow: true,
             filterable: true,
             sortable: true,
             columns: [
                 { text: 'Id', datafield: 'id', width: '30px' },
-                { text: '№ п/п', datafield: 'table_index', width: '50px' },
-/*                { text: 'Форма (Id)', datafield: 'form_id', width: '70px'  },*/
-                { text: 'Код формы', datafield: 'form_code', width: '100px'  },
-                { text: 'Код таблицы', datafield: 'table_code', width: '100px'  },
-                { text: 'Имя', datafield: 'table_name' , width: '400px'},
-                { text: 'Транспонирование', datafield: 'transposed', width: '70px' },
+                { text: '№ п/п', datafield: 'row_index', width: '50px' },
+                { text: 'Код таблицы', datafield: 'table_code', width: '70px'  },
+                { text: 'Код строки', datafield: 'row_code', width: '70px'  },
+                { text: 'Имя', datafield: 'row_name' , width: '550px'},
                 { text: 'Код Медстат', datafield: 'medstat_code', width: '100px' },
                 { text: 'Мединфо Id', datafield: 'medinfo_id', width: '70px' }
             ]
         });
-    $('#tableList').on('rowselect', function (event) {
+    $('#rowList').on('rowselect', function (event) {
         var row = event.args.row;
-        $("#table_index").val(row.table_index);
-        $("#table_name").val(row.table_name);
-        $("#form_id").val(row.form_id);
-        $("#table_code").val(row.table_code);
-        $("#transposed").val( row.transposed == 1 );
+        $("#row_index").val(row.row_index);
+        $("#row_name").val(row.row_name);
+        $("#table_id").val(row.table_id);
+        $("#row_code").val(row.row_code);
         $("#medstat_code").val(row.medstat_code);
         $("#medinfo_id").val(row.medinfo_id);
     });
 };
-initformactions = function() {
+
+updateRowList = function() {
+    rowsource.url = rowfetch_url + current_table;
+    $('#rowList').jqxGrid('clearselection');
+    $('#rowList').jqxGrid('updatebounddata');
+};
+
+
+initFormTableFilter = function() {
     $("#form_id").jqxDropDownList({
         theme: theme,
         source: formsDataAdapter,
@@ -95,13 +110,27 @@ initformactions = function() {
         width: 200,
         height: 34
     });
-    $('#transposed').jqxSwitchButton({
-        height: 31,
-        width: 81,
-        onLabel: 'Да',
-        offLabel: 'Нет',
-        checked: false });
-    $("#insert").click(function () {
+    $("#table_id").jqxDropDownList({
+        theme: theme,
+        source: tablesDataAdapter,
+        displayMember: "table_code",
+        valueMember: "id",
+        placeHolder: "Выберите таблицу:",
+        //selectedIndex: 2,
+        width: 200,
+        height: 34
+    });
+    $('#table_id').on('select', function (event)
+    {
+        var args = event.args;
+        current_table = args.item.value;
+        updateRowList();
+    });
+    
+};
+
+initrowactions = function() {
+    $("#insertrow").click(function () {
         var data = "&form_id=" + $("#form_id").val() +
             "&table_index=" + $("#table_index").val() +
             "&table_code=" + $("#table_code").val() +
@@ -127,7 +156,7 @@ initformactions = function() {
             }
         });
     });
-    $("#save").click(function () {
+    $("#saverow").click(function () {
         var row = $('#tableList').jqxGrid('getselectedrowindex');
         console.log(row);
         if (row == -1) {
@@ -170,7 +199,7 @@ initformactions = function() {
             }
         });
     });
-    $("#delete").click(function () {
+    $("#deleterow").click(function () {
         var row = $('#tableList').jqxGrid('getselectedrowindex');
         if (row == -1) {
             raiseError("Выберите запись для удаления");

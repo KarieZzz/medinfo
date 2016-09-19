@@ -491,7 +491,7 @@ var rendertoolbar = function(toolbar) {
     var input4 = $("<input id='clearfilters' type='button' value='Очистить фильтр' />");
     //var input5 = $("<input id='savestate' type='button' value='Сохранить настройки таблицы' />");
     //var input6 = $("<input id='loadstate' type='button' value='Загрузить настройки таблицы' />");
-    var excelexport = $("<a id='excelexport' style='margin-left: 2px;' target='_blank'><span class='glyphicon glyphicon-export'></span></a>");
+    //var excelexport = $("<a id='excelexport' style='margin-left: 2px;' target='_blank'><span class='glyphicon glyphicon-export'></span></a>");
     var fullscreen = $("<a id='togglefullscreen' style='margin-left: 2px;' target='_blank'><span class='glyphicon glyphicon-fullscreen'></span></a>");
     toolbar.append(container);
     container.append(input1);
@@ -499,7 +499,7 @@ var rendertoolbar = function(toolbar) {
     container.append(input4);
     //container.append(input5);
     //container.append(input6);
-    container.append(excelexport);
+    //container.append(excelexport);
     container.append(fullscreen);
     input1.addClass('jqx-widget-content-' + theme);
     input1.addClass('jqx-rc-all-' + theme);
@@ -557,14 +557,14 @@ var rendertoolbar = function(toolbar) {
         });
     });*/
 
-    excelexport.jqxButton({ theme: theme });
+    //excelexport.jqxButton({ theme: theme });
     // TODO: Функция экспорта из виджета работает некорректно после обновления данных, некоторые данные экспортируются в формате даты
-    excelexport.on('click', function () {
+    //excelexport.on('click', function () {
         //var exported;
         //exported = $("#DataGrid").jqxGrid('exportdata', 'json');
         //console.log(dataAdapter.records);
-        tabledataexport(current_table);
-    });
+        //tabledataexport(current_table);
+    //});
     // TODO: Работает только в Хроме и Опере, разобраться с совместимостью вызова полноэкранного режима
     fullscreen.jqxToggleButton({ theme: theme });
     fullscreen.on('click', function () {

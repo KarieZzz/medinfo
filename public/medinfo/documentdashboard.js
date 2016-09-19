@@ -782,8 +782,7 @@ var initpopupwindows = function() {
         isModal: true,
         autoOpen: false,
         cancelButton: $("#CancelStateChanging"),
-        theme: theme,
-        modalOpacity: 0.01
+        theme: theme
     });
     $("#performed").jqxRadioButton({ width: 250, height: 25, theme: theme });
     $("#prepared").jqxRadioButton({ width: 250, height: 25, theme: theme });
@@ -844,8 +843,7 @@ var initpopupwindows = function() {
         isModal: true,
         autoOpen: false,
         cancelButton: $("#CancelAuditStateChanging"),
-        theme: theme,
-        modalOpacity: 0.01
+        theme: theme
     });
     $("#noaudit").jqxRadioButton({ width: 250, height: 25, theme: theme });
     $("#audit_incorrect").jqxRadioButton({ width: 250, height: 25, theme: theme });
@@ -1000,7 +998,6 @@ var initpopupwindows = function() {
         isModal: true,
         autoOpen: false,
         cancelButton: $("#CancelMessage"),
-        theme: theme,
-        modalOpacity: 0.01
+        theme: theme
     });
 };

@@ -61,6 +61,10 @@ Route::group(['middleware' => ['web']], function () {
     Route::post('admin/tables/create', 'Admin\TableAdminController@store');
     Route::patch('admin/tables/update', 'Admin\TableAdminController@update');
     Route::delete('admin/tables/delete/{table}', 'Admin\TableAdminController@delete');
+    // Менеджер строк и граф
+    Route::get('admin/rc', 'Admin\RowColumnAdminController@index');
+    Route::get('admin/fetchrows/{table}', 'Admin\RowColumnAdminController@fetchRows');
+
 
     // Менеджер отчетных документов
     Route::get('admin/documents', 'Admin\DocumentAdminController@index');

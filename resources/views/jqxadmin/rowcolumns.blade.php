@@ -1,50 +1,45 @@
 @extends('jqxadmin.app')
 
-@section('title', '<h2>Администрирование: таблицы</h2>')
-@section('headertitle', 'Менеджер таблиц отчетных форм')
+@section('title', '<h2>Администрирование: строки и графы</h2>')
+@section('headertitle', 'Менеджер строк м граф отчетных форм')
 
 @section('content')
+    <div class="row col-sm-offset-1">
+            <form class="form-inline">
+                <div class="form-group">
+                    <div id="form_id"></div>
+                </div>
+                <div class="form-group">
+                    <div id="table_id"></div>
+                </div>
+        </form>
+
+    </div>
 <div id="mainSplitter" >
     <div>
-        <div id="tableList" style="margin: 10px"></div>
-    </div>
-    <div id="formContainer">
+        <div id="rowList" style="margin: 10px"></div>
         <div id="propertiesForm" class="panel panel-default" style="padding: 3px; width: 100%">
-            <div class="panel-heading"><h3>Редактирование/ввод таблицы отчетной формы</h3></div>
+            <div class="panel-heading"><h3>Редактирование/ввод строки</h3></div>
             <div class="panel-body">
                 <form id="form" class="form-horizontal" >
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="table_name">Заголовок:</label>
+                        <label class="control-label col-sm-3" for="row_index">Порядковый номер в таблице:</label>
+                        <div class="col-sm-2">
+                            <input type="text" class="form-control" id="row_index">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-3" for="row_name">Имя:</label>
                         <div class="col-sm-8">
-                            <textarea rows="3" class="form-control" id="table_name"></textarea>
+                            <textarea rows="3" class="form-control" id="row_name"></textarea>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="form_id">Входит в форму:</label>
+                        <label class="control-label col-sm-3" for="row_code">Код:</label>
                         <div class="col-sm-2">
-                            <div id="form_id"></div>
+                            <input type="text" class="form-control" id="row_code">
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="control-label col-sm-3" for="table_index">Порядковый номер в форме:</label>
-                        <div class="col-sm-2">
-                            <input type="text" class="form-control" id="table_index">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-sm-3" for="table_code">Код таблицы:</label>
-                        <div class="col-sm-2">
-                            <input type="text" class="form-control" id="table_code">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="control-label col-sm-3" for="transposed">Таблица транспонирована:</label>
-                        <div class="col-sm-2">
-                            <div id="transposed"></div>
-                        </div>
-                    </div>
-
                     <div class="form-group">
                         <label class="control-label col-sm-3" for="medstat_code">Код Медстат:</label>
                         <div class="col-sm-2">
@@ -67,6 +62,9 @@
                 </form>
             </div>
         </div>
+    </div>
+    <div id="formContainer">
+
     </div>
 </div>
 @endsection
@@ -91,21 +89,25 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/tableadmin.js') }}"></script>
+    <script src="{{ asset('/medinfo/admin/rcadmin.js') }}"></script>
 @endpush
 
 @section('inlinejs')
     @parent
     <script type="text/javascript">
-        var rowsDataAdapter;
         var tableDataAdapter;
         var formsDataAdapter;
-
+        var rowsource;
+        var rowfetch_url = '/admin/fetchrows/';
         var forms = {!! $forms  !!};
+        var tables = {!! $tables !!};
+
+        var current_table = 0;
         initfilterdatasources();
         initsplitter();
         initdatasources();
-        inittablelist();
-        initformactions();
+        initRowList();
+        initFormTableFilter();
+        initrowactions();
     </script>
 @endsection

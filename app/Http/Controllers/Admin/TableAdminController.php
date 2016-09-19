@@ -10,7 +10,6 @@ use App\Form;
 use App\Table;
 use App\Cell;
 
-
 class TableAdminController extends Controller
 {
     //
@@ -22,6 +21,7 @@ class TableAdminController extends Controller
     public function index()
     {
         $forms = Form::orderBy('form_index')->get(['id', 'form_code']);
+
         return view('jqxadmin.tables', compact('forms'));
     }
 

@@ -189,6 +189,7 @@ class EvalMath {
         // and determining when a - is a negation
 
         if (preg_match("/[^\w\s+*^\/()\.,-]/", $expr, $matches)) { // make sure the characters are all good
+            //dd($matches);
             return $this->trigger("illegal character '{$matches[0]}'");
         }
 

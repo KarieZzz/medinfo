@@ -8,4 +8,16 @@ class Row extends Model
 {
     //
     protected $fillable = ['row_index', 'row_code', 'row_name', 'medstat_code', 'medinfo_id' ];
+
+    public function table()
+    {
+        return $this->belongsTo('App\Table');
+    }
+
+    public function scopeOfTable($query, $table)
+    {
+        return $query
+            ->orderBy('row_index')
+            ->where('table_id', $table);
+    }
 }

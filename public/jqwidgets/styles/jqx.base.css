@@ -2960,11 +2960,12 @@ of the horizontal scrollbar.*/
 }
 .jqx-switchbutton-label
 {
-    font-size: 15px;
-    font-family: Sans-Serif;
+/*    font-size: 15px;
+    font-family: Sans-Serif;*/
     text-align: center;
     text-transform: uppercase;
-    font-weight: bold;
+/*    font-weight: bold;*/
+    font-weight: normal;
 }
 .jqx-switchbutton-wrapper
 {
