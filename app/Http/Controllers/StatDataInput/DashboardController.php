@@ -125,9 +125,8 @@ class DashboardController extends Controller
             $cols = $table->columns->where('deleted', 0)->sortBy('column_index');
             foreach ($cols as $col) {
                 $datafields_arr[] = array('name'  => $col->id);
-                $width = $col->medinfo_size * 10;
+                $width = $col->size * 10;
                 $decimal_count = $col->decimal_count;
-                $number_count = $col->number_count;
                 $contentType = $col->getMedinfoContentType();
                 if ($contentType == 'data') {
                     $columns_arr[] = array(
@@ -143,7 +142,7 @@ class DashboardController extends Controller
                         'cellclassname' => 'cellclass',
                         'cellbeginedit' => 'cellbeginedit',
                         'validation' => "e = function (cell, value) { if (value < 0) { return { result: false, message: 'Допускаются только положительные значения' }; } return true;};",
-                        'createeditor' => "e = function(row, cellvalue, editor) { editor.jqxNumberInput({ digits: $number_count, decimalDigits: $decimal_count, min: 0, spinButtons: true, groupSeparator: '', inputMode: 'simple' })};"
+                        'createeditor' => "e = function(row, cellvalue, editor) { editor.jqxNumberInput({ digits: 12, decimalDigits: $decimal_count, min: 0, spinButtons: true, groupSeparator: '', inputMode: 'simple' })};"
                     );
                     $column_groups_arr[] = array(
                         'text' => $col->column_name,

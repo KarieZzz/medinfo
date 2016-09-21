@@ -26,4 +26,11 @@ class Table extends Model
     {
         return $this->hasMany('App\Row');
     }
+
+    public function scopeOfForm($query, $form)
+    {
+        return $query
+            ->orderBy('table_index')
+            ->where('form_id', $form);
+    }
 }

@@ -4,24 +4,30 @@
 @section('headertitle', 'Менеджер строк м граф отчетных форм')
 
 @section('content')
-    <div class="row col-sm-offset-1">
-            <form class="form-inline">
-                <div class="form-group">
-                    <div id="form_id"></div>
+<div class="row">
+    <div class="col-sm-2"><h4 class="text-right">Выберите форму и таблицу</h4></div>
+    <div class="col-sm-4">
+        <form class="form-inline">
+            <div class="form-group">
+                <div id="formList"></div>
+            </div>
+            <div class="form-group">
+                <div id="tableListContainer">
+                    <div id="tableList"></div>
                 </div>
-                <div class="form-group">
-                    <div id="table_id"></div>
-                </div>
+            </div>
         </form>
-
     </div>
+    <div id="tableProperties" class="col-sm-6 text-nowrap"></div>
+</div>
+
 <div id="mainSplitter" >
     <div>
         <div id="rowList" style="margin: 10px"></div>
-        <div id="propertiesForm" class="panel panel-default" style="padding: 3px; width: 100%">
+        <div id="rowPropertiesForm" class="panel panel-default" style="padding: 3px; width: 100%">
             <div class="panel-heading"><h3>Редактирование/ввод строки</h3></div>
             <div class="panel-body">
-                <form id="form" class="form-horizontal" >
+                <form id="rowform" class="form-horizontal" >
                     <div class="form-group">
                         <label class="control-label col-sm-3" for="row_index">Порядковый номер в таблице:</label>
                         <div class="col-sm-2">
@@ -41,30 +47,86 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="medstat_code">Код Медстат:</label>
+                        <label class="control-label col-sm-3" for="row_medstat_code">Код Медстат:</label>
                         <div class="col-sm-2">
-                            <input type="text" class="form-control" id="medstat_code">
+                            <input type="text" class="form-control" id="row_medstat_code">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="medinfo_id">Мединфо Id:</label>
+                        <label class="control-label col-sm-3" for="row_medinfo_id">Мединфо Id:</label>
                         <div class="col-sm-2">
-                            <input type="text" class="form-control" id="medinfo_id">
+                            <input type="text" class="form-control" id="row_medinfo_id">
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-7">
-                            <button type="button" id="save" class="btn btn-default">Сохранить изменения</button>
-                            <button type="button" id="insert" class="btn btn-default">Вставить новую запись</button>
-                            <button type="button" id="delete" class="btn btn-danger">Удалить запись</button>
+                            <button type="button" id="saverow" class="btn btn-default">Сохранить изменения</button>
+                            <button type="button" id="insertrow" class="btn btn-default">Вставить новую запись</button>
+                            <button type="button" id="deleterow" class="btn btn-danger">Удалить запись</button>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-    <div id="formContainer">
-
+    <div>
+        <div id="columnList" style="margin: 10px"></div>
+        <div id="columnPropertiesForm" class="panel panel-default" style="padding: 3px; width: 100%">
+            <div class="panel-heading"><h3>Редактирование/ввод графы</h3></div>
+            <div class="panel-body">
+                <form id="columnform" class="form-horizontal" >
+                    <div class="form-group">
+                        <label class="control-label col-sm-3" for="column_index">Порядковый номер в таблице:</label>
+                        <div class="col-sm-2">
+                            <input type="text" class="form-control" id="column_index">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-3" for="column_name">Имя:</label>
+                        <div class="col-sm-8">
+                            <textarea rows="3" class="form-control" id="column_name"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-3" for="content_type">Тип поля:</label>
+                        <div class="col-sm-2">
+                            <input type="text" class="form-control" id="content_type">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-3" for="size">Размер поля (*10px):</label>
+                        <div class="col-sm-2">
+                            <input type="text" class="form-control" id="size">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-3" for="decimal_count">Знаков после запятой (десятичных):</label>
+                        <div class="col-sm-2">
+                            <input type="text" class="form-control" id="decimal_count">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-3" for="column_medstat_code">Код Медстат:</label>
+                        <div class="col-sm-2">
+                            <input type="text" class="form-control" id="column_medstat_code">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-3" for="column_medinfo_id">Мединфо Id:</label>
+                        <div class="col-sm-2">
+                            <input type="text" class="form-control" id="column_medinfo_id">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-7">
+                            <button type="button" id="savecolumn" class="btn btn-default">Сохранить изменения</button>
+                            <button type="button" id="insertcolumn" class="btn btn-default">Вставить новую запись</button>
+                            <button type="button" id="deletecolumn" class="btn btn-danger">Удалить запись</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 @endsection
@@ -97,17 +159,25 @@
     <script type="text/javascript">
         var tableDataAdapter;
         var formsDataAdapter;
+        var rowsDataAdapter;
+        var columnsDataAdapter;
+        var tablesource;
         var rowsource;
-        var rowfetch_url = '/admin/fetchrows/';
+        var columnsource;
+        var tablefetch_url = '/admin/rc/fetchtables/';
+        var rowfetch_url = '/admin/rc/fetchrows/';
+        var columnfetch_url = '/admin/rc/fetchcolumns/';
         var forms = {!! $forms  !!};
-        var tables = {!! $tables !!};
-
+        //var tables = {!! $tables !!};
+        var current_form = 0;
         var current_table = 0;
-        initfilterdatasources();
+        initFilterDatasources();
         initsplitter();
         initdatasources();
         initRowList();
+        initColumnList();
         initFormTableFilter();
-        initrowactions();
+        initRowActions();
+        initColumnActions();
     </script>
 @endsection

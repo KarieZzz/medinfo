@@ -53,7 +53,7 @@ class TableControlMM
         $this->columns = \DB::table('columns')
             ->where('table_id', $this->table->id)
             ->where('deleted', 0)
-            ->where('medinfo_type', 4)
+            ->where('content_type', 4)
             ->where('medinfo_id', '<>', 0)
             ->orderBy('column_index')->get();
     }

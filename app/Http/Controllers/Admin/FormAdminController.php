@@ -33,6 +33,8 @@ class FormAdminController extends Controller
         $this->validate($request, [
                 'form_name' => 'required|unique:forms',
                 'form_code' => 'required|unique:forms',
+                'medstat_code' => 'digits:5',
+                'medinfo_id' => 'integer',
             ]
         );
         try {
@@ -50,8 +52,12 @@ class FormAdminController extends Controller
     public function update(Request $request)
     {
         $this->validate($request, [
-                'form_name' => 'required',
-                'form_code' => 'required',
+                'group_id' => 'integer',
+                'form_index' => 'integer',
+                'form_name' => 'required|max:256',
+                'form_code' => 'required|max:7',
+                'medstat_code' => 'digits:5',
+                'medinfo_id' => 'integer',
             ]
         );
         $form = Form::find($request->id);

@@ -21,10 +21,21 @@ class Cell extends Model
             ->where('col_id', $column);
     }
 
-    public static function countOfCells(int $table)
+    public static function countOfCellsByTable(int $table)
     {
         $q = "SELECT count(id) cell_count FROM statdata WHERE table_id = $table";
         return \DB::selectOne($q)->cell_count;
     }
 
+    public static function countOfCellsByRow(int $row)
+    {
+        $q = "SELECT count(id) cell_count FROM statdata WHERE row_id = $row";
+        return \DB::selectOne($q)->cell_count;
+    }
+
+    public static function countOfCellsByColumn(int $column)
+    {
+        $q = "SELECT count(id) cell_count FROM statdata WHERE col_id = $column";
+        return \DB::selectOne($q)->cell_count;
+    }
 }

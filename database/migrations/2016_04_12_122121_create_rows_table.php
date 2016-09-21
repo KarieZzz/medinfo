@@ -25,6 +25,7 @@ class CreateRowsTable extends Migration
             $table->integer('deleted_at')->nullable();
             //$table->softDeletes();
             $table->timestamps();
+            $table->unique(['table_id', 'row_code', 'row_name']);
         });
     }
 

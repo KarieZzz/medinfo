@@ -38,6 +38,8 @@ class TableAdminController extends Controller
                 'form_id' => 'required|exists:forms,id',
                 'table_name' => 'required',
                 'table_code' => 'required',
+                'medstat_code' => 'digits:4',
+                'medinfo_id' => 'integer',
             ]
         );
         try {
@@ -61,6 +63,9 @@ class TableAdminController extends Controller
     {
         $this->validate($request, [
                 'table_name' => 'required',
+                'transposed' => 'boolean',
+                'medstat_code' => 'digits:4',
+                'medinfo_id' => 'integer',
             ]
         );
         $table = Table::find($request->id);
@@ -87,7 +92,7 @@ class TableAdminController extends Controller
 
     public function delete(Table $table)
     {
-        $cell_count = Cell::countOfCells($table->id);
+        $cell_count = Cell::countOfCellsByTable($table->id);
         if ($cell_count == 0) {
             $table->delete();
             return ['message' => 'Удалена таблица Id' . $table->id ];

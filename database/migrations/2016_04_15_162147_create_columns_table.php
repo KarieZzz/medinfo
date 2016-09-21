@@ -17,16 +17,13 @@ class CreateColumnsTable extends Migration
             $table->integer('table_id')->index();
             $table->integer('column_index')->index();
             $table->string('column_name', 128)->index();
-            $table->smallInteger('content_type');
-            $table->smallInteger('value_type');
-            $table->smallInteger('number_count');
+            $table->smallInteger('content_type')->default(4)->index();
+            $table->smallInteger('size')->default(10);
             $table->smallInteger('decimal_count');
-            $table->char('medstat_code', 4)->nullable()->index();
+            $table->char('medstat_code', 2)->nullable()->index();
             $table->integer('medinfo_id')->nullable()->index();
-            $table->integer('deleted');
+            $table->integer('deleted')->default(0);
             $table->integer('deleted_at')->nullable();
-            $table->smallInteger('medinfo_type');
-            $table->smallInteger('medinfo_size');
             $table->timestamps();
         });
     }

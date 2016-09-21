@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class Column extends Model
 {
     //
+    protected $fillable = [
+        'table_id', 'column_index', 'column_name', 'content_type', 'size', 'decimal_count', 'medstat_code', 'medinfo_id',
+    ];
+
     public function table()
     {
         return $this->belongsTo('App\Table');
@@ -14,7 +18,7 @@ class Column extends Model
 
     public function getMedinfoContentType()
     {
-        switch ($this->medinfo_type) {
+        switch ($this->content_type) {
             case 4 :
                 $contentType = 'data';
                 break;
@@ -37,7 +41,7 @@ class Column extends Model
 
     public function scopeOfDataType($query)
     {
-        return $query->where('medinfo_type', 4);
+        return $query->where('content_type', 4);
     }
 
     public function scopeOfTable($query, $table)

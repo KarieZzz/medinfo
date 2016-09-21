@@ -34,7 +34,7 @@ Route::group(['middleware' => ['web']], function () {
     // Маршрут по умолчанию - ввод данных
     Route::get('/', 'StatDataInput\DocumentDashboardController@index' );
 
-    // Шаблоны на осноые jQWidgets для администрирования
+    // Шаблоны на основе jQWidgets для администрирования
     Route::get('admin', 'Admin\AdminController@index');
     // Менеджер пользователей - исполнителей
     Route::get('admin/workers', 'Admin\WorkerAdmin@index' );
@@ -63,9 +63,15 @@ Route::group(['middleware' => ['web']], function () {
     Route::delete('admin/tables/delete/{table}', 'Admin\TableAdminController@delete');
     // Менеджер строк и граф
     Route::get('admin/rc', 'Admin\RowColumnAdminController@index');
-    Route::get('admin/fetchrows/{table}', 'Admin\RowColumnAdminController@fetchRows');
-
-
+    Route::get('admin/rc/fetchrows/{table}', 'Admin\RowColumnAdminController@fetchRows');
+    Route::get('admin/rc/fetchcolumns/{table}', 'Admin\RowColumnAdminController@fetchColumns');
+    Route::get('admin/rc/fetchtables/{form}', 'Admin\RowColumnAdminController@fetchTables');
+    Route::patch('admin/rc/rowupdate/{row}', 'Admin\RowColumnAdminController@rowUpdate');
+    Route::post('admin/rc/rowcreate', 'Admin\RowColumnAdminController@rowStore');
+    Route::delete('admin/rc/rowdelete/{row}', 'Admin\RowColumnAdminController@rowDelete');
+    Route::patch('admin/rc/columnupdate/{column}', 'Admin\RowColumnAdminController@columnUpdate');
+    Route::delete('admin/rc/columndelete/{column}', 'Admin\RowColumnAdminController@columnDelete');
+    Route::post('admin/rc/columncreate', 'Admin\RowColumnAdminController@columnStore');
     // Менеджер отчетных документов
     Route::get('admin/documents', 'Admin\DocumentAdminController@index');
     Route::get('admin/fetchdocuments', 'Admin\DocumentAdminController@fetchDocuments');
