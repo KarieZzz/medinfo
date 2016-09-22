@@ -6,8 +6,8 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use DB;
-use App\Medinfo\UnitTree;
+use App\Unit;
+use App\DicUnitType;
 
 class MOAdminController extends Controller
 {
@@ -18,22 +18,15 @@ class MOAdminController extends Controller
         $this->middleware('auth');
     }
 
-    public function fetch_mo_hierarchy($parent = 0)
+    public function index()
     {
-        $mo_tree = UnitTree::getSimpleTree($parent);
-        return $mo_tree;
+        $unit_types = DicUnitType::all(['code', 'name']);
+        return view('jqxadmin.units', compact('unit_types'));
     }
 
-    private function get_childs($parent) {
-        $lev_query = "select id, parent_id, unit_code, unit_name from mo_hierarchy where parent_id = $parent";
-        $res = DB::select($lev_query);
-        $units = array();
-        if (count($res) > 0) {
-            foreach ($res as $r) {
-                $units[] = $r;
-                $units = array_merge($units, $this->get_childs($r->id) );
-            }
-        }
-        return $units;
+    public function fetchUnits()
+    {
+        return Unit::orderBy('unit_code')->with('parent')->get();
     }
+
 }

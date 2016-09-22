@@ -13,7 +13,7 @@
     }
 </style>
     <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-        <div class="col-md-4">
+        <div class="col-md-5">
             <div style="visibility: hidden;" id="navBar" >
                 <ul>
                     <li><a href="/admin">Home</a></li>
@@ -39,6 +39,13 @@
                             <li><a href="/admin/rc">Строки и Графы</a></li>
                             <li type="separator"></li>
                             <li><a href="/admin/noteditablecells">Закрещенные ячейки</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">Организационные единицы</a>
+                        <ul style="width: 250px;">
+                            <li><a href="/admin/units">Территории/Медицинские организации</a></li>
+                            <li><a href="/admin/units/groups">Группы медицинских организаций</a></li>
                         </ul>
                     </li>
                     <li><a href="/admin/documents">Документы</a></li>

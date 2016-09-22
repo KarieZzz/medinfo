@@ -16,6 +16,12 @@ class Unit extends Model
     {
         return $this->hasMany('App\WorkerScope', 'ou_id', 'id');
     }
+
+    public function parent()
+    {
+        return $this->belongsTo('App\Unit', 'parent_id', 'id');
+    }
+
     // Выбор Юрлиц
     public function scopeLegal($query)
     {

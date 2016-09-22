@@ -44,6 +44,11 @@ Route::group(['middleware' => ['web']], function () {
     Route::post('admin/workers/create', 'Admin\WorkerAdmin@worker_store');
     Route::patch('admin/workers/update', 'Admin\WorkerAdmin@worker_update');
     Route::patch('admin/workers/updateuserscope', 'Admin\WorkerAdmin@worker_scope_update');
+    // Менеджер организационных единиц
+    Route::get('admin/units', 'Admin\MOAdminController@index');
+    Route::get('admin/units/fetchunits', 'Admin\MOAdminController@fetchUnits');
+
+
     // Менеджер отчетных периодов
     Route::get('admin/periods', 'Admin\PeriodAdminController@index' );
     Route::get('admin/fetchperiods', 'Admin\PeriodAdminController@fetchPeriods' );

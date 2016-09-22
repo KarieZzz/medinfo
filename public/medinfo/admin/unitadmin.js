@@ -16,7 +16,7 @@ initsplitter = function() {
     );
 };
 initfilterdatasources = function() {
-    var forms_source =
+    var unittypessource =
     {
         datatype: "json",
         datafields: [
@@ -24,78 +24,83 @@ initfilterdatasources = function() {
             { name: 'form_code' }
         ],
         id: 'id',
-        localdata: forms
+        localdata: unitTypes
     };
-    formsDataAdapter = new $.jqx.dataAdapter(forms_source);
+    unittypesDataAdapter = new $.jqx.dataAdapter(unittypessource);
 };
 initdatasources = function() {
-    var tablesource =
+    var unitsource =
     {
         datatype: "json",
         datafields: [
-            { name: 'form_code', map: 'form>form_code', type: 'string' },
             { name: 'id', type: 'int' },
-            { name: 'table_index', type: 'int' },
-            { name: 'form_id', type: 'int' },
-            { name: 'table_name', type: 'string' },
-            { name: 'table_code', type: 'string' },
-            { name: 'transposed', type: 'int' },
-            { name: 'medstat_code', type: 'string' },
+            { name: 'parent', map: 'parent>unit_code', type: 'string' },
+            { name: 'unit_code', type: 'string' },
+            { name: 'inn', type: 'string' },
+            { name: 'unit_name', type: 'string' },
+            { name: 'node_type', type: 'int' },
+            { name: 'report', type: 'int' },
+            { name: 'aggregate', type: 'int' },
             { name: 'medinfo_id', type: 'int' }
         ],
         id: 'id',
-        url: 'fetchtables',
-        root: 'table'
+        url: unitfetch_url,
+        root: 'unit'
     };
-    tableDataAdapter = new $.jqx.dataAdapter(tablesource);
+    unitDataAdapter = new $.jqx.dataAdapter(unitsource);
 };
 inittablelist = function() {
-    $("#tableList").jqxGrid(
+    $("#unitList").jqxGrid(
         {
             width: '98%',
             height: '90%',
             theme: theme,
             localization: localize(),
-            source: tableDataAdapter,
+            source: unitDataAdapter,
             columnsresize: true,
             showfilterrow: true,
             filterable: true,
             sortable: true,
             columns: [
                 { text: 'Id', datafield: 'id', width: '30px' },
-                { text: '№ п/п', datafield: 'table_index', width: '50px' },
-/*                { text: 'Форма (Id)', datafield: 'form_id', width: '70px'  },*/
-                { text: 'Код формы', datafield: 'form_code', width: '100px'  },
-                { text: 'Код таблицы', datafield: 'table_code', width: '100px'  },
-                { text: 'Имя', datafield: 'table_name' , width: '400px'},
-                { text: 'Транспонирование', datafield: 'transposed', width: '70px' },
-                { text: 'Код Медстат', datafield: 'medstat_code', width: '100px' },
+                { text: 'Входит в', datafield: 'parent', width: '50px' },
+                { text: 'Код', datafield: 'unit_code', width: '100px'  },
+                { text: 'ИНН', datafield: 'inn', width: '100px'  },
+                { text: 'Имя', datafield: 'unit_name' , width: '400px'},
+                { text: 'Первичный', datafield: 'report' , width: '40px'},
+                { text: 'Сводный', datafield: 'aggregate' , width: '40px'},
                 { text: 'Мединфо Id', datafield: 'medinfo_id', width: '70px' }
             ]
         });
-    $('#tableList').on('rowselect', function (event) {
+    $('#unitList').on('rowselect', function (event) {
         var row = event.args.row;
-        $("#table_index").val(row.table_index);
-        $("#table_name").val(row.table_name);
-        $("#form_id").val(row.form_id);
-        $("#table_code").val(row.table_code);
-        $("#transposed").val( row.transposed == 1 );
-        $("#medstat_code").val(row.medstat_code);
+        $("#unit_name").val(row.unit_name);
+        $("#parent_id").val(row.parent_id);
+        $("#unit_code").val(row.unit_code);
+        $("#inn").val(row.inn);
+        $("#report").val( row.report == 1 );
+        $("#aggregate").val(row.aggregate == 1);
         $("#medinfo_id").val(row.medinfo_id);
     });
 };
-initformactions = function() {
-    $("#form_id").jqxDropDownList({
+initunitactions = function() {
+    $("#node_type").jqxDropDownList({
         theme: theme,
-        source: formsDataAdapter,
-        displayMember: "form_code",
+        source: unittypesDataAdapter,
+        displayMember: "code",
         valueMember: "id",
-        placeHolder: "Выберите форму:",
+        placeHolder: "Выберите тип ОЕ:",
         //selectedIndex: 2,
         width: 200,
         height: 34
     });
-    $('#transposed').jqxSwitchButton({
+    $('#report').jqxSwitchButton({
+        height: 31,
+        width: 81,
+        onLabel: 'Да',
+        offLabel: 'Нет',
+        checked: false });
+    $('#aggregate').jqxSwitchButton({
         height: 31,
         width: 81,
         onLabel: 'Да',

@@ -16,12 +16,13 @@ class CreateMoHierarchyTable extends Migration
             $table->increments('id');
             $table->integer('parent_id')->index()->nullable();
             $table->string('unit_code', 32)->index();
-            $table->char('inn', 10)->index();
-            $table->integer('node_type')->index();
-            $table->integer('report');
-            $table->integer('aggregate');
+            $table->char('inn', 10)->nullable()->index();
+            $table->smallInteger('node_type')->default(3)->index();
+            $table->smallInteger('report')->default(0);
+            $table->smallInteger('aggregate')->default(0);
             $table->string('unit_name', 256)->index();
-            $table->integer('blocked');
+            $table->smallInteger('blocked')->default(0);
+            $table->integer('medinfo_id')->nullable()->unique();
             $table->softDeletes();
             $table->timestamps();
         });

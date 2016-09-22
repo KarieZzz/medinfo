@@ -22,7 +22,7 @@ class CreateColumnsTable extends Migration
             $table->smallInteger('decimal_count');
             $table->char('medstat_code', 2)->nullable()->index();
             $table->integer('medinfo_id')->nullable()->index();
-            $table->integer('deleted')->default(0);
+            $table->smallInteger('deleted')->default(0);
             $table->integer('deleted_at')->nullable();
             $table->timestamps();
         });
