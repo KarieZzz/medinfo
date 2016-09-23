@@ -10,6 +10,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 use App\Medinfo\DocumentTree;
+use App\Medinfo\UnitTree;
 use App\Period;
 use App\Document;
 use App\DicDocumentState;
@@ -39,6 +40,11 @@ class DocumentAdminController extends Controller
         //dd($periods);
         //return $periods;
         return view('jqxadmin.documents', compact('forms', 'form_ids', 'states', 'state_ids', 'periods', 'period_ids', 'dtypes', 'dtype_ids'));
+    }
+
+    public function fetch_mo_hierarchy(int $parent = 0)
+    {
+        return UnitTree::getSimpleTree($parent);
     }
 
     public function fetchDocuments(Request $request)

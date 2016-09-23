@@ -39,7 +39,7 @@ Route::group(['middleware' => ['web']], function () {
     // Менеджер пользователей - исполнителей
     Route::get('admin/workers', 'Admin\WorkerAdmin@index' );
     Route::get('admin/fetch_workers', 'Admin\WorkerAdmin@fetch_workers');
-    Route::get('admin/fetch_mo_tree/{parent}', 'Admin\MOAdminController@fetch_mo_hierarchy');
+    Route::get('admin/fetch_mo_tree/{parent}', 'Admin\DocumentAdminController@fetch_mo_hierarchy');
     Route::get('admin/fetch_worker_scopes/{id}', 'Admin\WorkerAdmin@fetch_worker_scopes');
     Route::post('admin/workers/create', 'Admin\WorkerAdmin@worker_store');
     Route::patch('admin/workers/update', 'Admin\WorkerAdmin@worker_update');
