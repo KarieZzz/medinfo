@@ -15,18 +15,49 @@ initsplitter = function() {
         }
     );
 };
-initfilterdatasources = function() {
+initdropdowns = function() {
     var unittypessource =
     {
         datatype: "json",
         datafields: [
-            { name: 'id' },
-            { name: 'form_code' }
+            { name: 'code' },
+            { name: 'name' }
         ],
-        id: 'id',
+        id: 'code',
         localdata: unitTypes
     };
+    var aggregatablesource =
+    {
+        datatype: "json",
+        datafields: [
+            { name: 'id' },
+            { name: 'unit_name' }
+        ],
+        id: 'id',
+        localdata: aggregatables
+    };
     unittypesDataAdapter = new $.jqx.dataAdapter(unittypessource);
+    aggregatableDataAdapter = new $.jqx.dataAdapter(aggregatablesource);
+    $("#node_type").jqxDropDownList({
+        theme: theme,
+        source: unittypesDataAdapter,
+        displayMember: "name",
+        valueMember: "code",
+        placeHolder: "Выберите тип ОЕ:",
+        width: 300,
+        height: 34
+    });
+    $("#parent_id").jqxDropDownList({
+        theme: theme,
+        source: aggregatableDataAdapter,
+        filterable: true,
+        filterPlaceHolder: "Поиск",
+        displayMember: "unit_name",
+        valueMember: "id",
+        placeHolder: "Выберите ОЕ:",
+        width: 500,
+        height: 34
+    });
 };
 initdatasources = function() {
     var unitsource =
@@ -34,13 +65,15 @@ initdatasources = function() {
         datatype: "json",
         datafields: [
             { name: 'id', type: 'int' },
-            { name: 'parent', map: 'parent>unit_code', type: 'string' },
+            { name: 'parent_id', type: 'int' },
+            { name: 'parent', map: 'parent>unit_name', type: 'string' },
             { name: 'unit_code', type: 'string' },
             { name: 'inn', type: 'string' },
             { name: 'unit_name', type: 'string' },
             { name: 'node_type', type: 'int' },
             { name: 'report', type: 'int' },
             { name: 'aggregate', type: 'int' },
+            { name: 'blocked', type: 'int' },
             { name: 'medinfo_id', type: 'int' }
         ],
         id: 'id',
@@ -63,37 +96,44 @@ inittablelist = function() {
             sortable: true,
             columns: [
                 { text: 'Id', datafield: 'id', width: '30px' },
-                { text: 'Входит в', datafield: 'parent', width: '50px' },
-                { text: 'Код', datafield: 'unit_code', width: '100px'  },
-                { text: 'ИНН', datafield: 'inn', width: '100px'  },
-                { text: 'Имя', datafield: 'unit_name' , width: '400px'},
-                { text: 'Первичный', datafield: 'report' , width: '40px'},
-                { text: 'Сводный', datafield: 'aggregate' , width: '40px'},
-                { text: 'Мединфо Id', datafield: 'medinfo_id', width: '70px' }
+                { text: 'Входит в', datafield: 'parent', width: '90px' },
+                { text: 'Код', datafield: 'unit_code', width: '50px'  },
+                { text: 'ИНН', datafield: 'inn', width: '90px'  },
+                { text: 'Имя', datafield: 'unit_name' , width: '380px'},
+                { text: 'Тип', datafield: 'node_type' , width: '40px'},
+                { text: 'Перв', datafield: 'report' , width: '50px'},
+                { text: 'Свод', datafield: 'aggregate' , width: '50px'},
+                { text: 'Блок', datafield: 'blocked', width: '50px' },
+                { text: 'Мединфо Id', datafield: 'medinfo_id', width: '60px' }
             ]
         });
     $('#unitList').on('rowselect', function (event) {
+        $("#parent_id").jqxDropDownList('clearFilter');
         var row = event.args.row;
         $("#unit_name").val(row.unit_name);
         $("#parent_id").val(row.parent_id);
         $("#unit_code").val(row.unit_code);
         $("#inn").val(row.inn);
+        $("#node_type").val(row.node_type);
         $("#report").val( row.report == 1 );
         $("#aggregate").val(row.aggregate == 1);
+        $("#blocked").val(row.blocked == 1);
         $("#medinfo_id").val(row.medinfo_id);
     });
 };
+setquerystring = function() {
+    return "&unit_name=" + $("#unit_name").val() +
+        "&parent_id=" + $("#parent_id").val() +
+        "&unit_code=" + $("#unit_code").val() +
+        "&inn=" + $("#inn").val() +
+        "&node_type=" + $("#node_type").val() +
+        "&report=" + ($("#report").val() ? 1 :0) +
+        "&aggregate=" + ($("#aggregate").val() ? 1 :0) +
+        "&blocked=" + ($("#blocked").val() ? 1 :0) +
+        "&medinfo_id=" + $("#medinfo_id").val();
+};
 initunitactions = function() {
-    $("#node_type").jqxDropDownList({
-        theme: theme,
-        source: unittypesDataAdapter,
-        displayMember: "code",
-        valueMember: "id",
-        placeHolder: "Выберите тип ОЕ:",
-        //selectedIndex: 2,
-        width: 200,
-        height: 34
-    });
+
     $('#report').jqxSwitchButton({
         height: 31,
         width: 81,
@@ -106,24 +146,26 @@ initunitactions = function() {
         onLabel: 'Да',
         offLabel: 'Нет',
         checked: false });
+    $('#blocked').jqxSwitchButton({
+        height: 31,
+        width: 81,
+        onLabel: 'Да',
+        offLabel: 'Нет',
+        checked: false });
     $("#insert").click(function () {
-        var data = "&form_id=" + $("#form_id").val() +
-            "&table_index=" + $("#table_index").val() +
-            "&table_code=" + $("#table_code").val() +
-            "&table_name=" + $("#table_name").val() +
-            "&medstat_code=" + $("#medstat_code").val() +
-            "&medinfo_id=" + $("#medinfo_id").val() +
-            "&transposed=" + ($("#transposed").val() ? 1 :0);
+        var data = setquerystring();
         $.ajax({
             dataType: 'json',
-            url: '/admin/tables/create',
+            url: unitcreate_url,
             method: "POST",
             data: data,
             success: function (data, status, xhr) {
                 if (typeof data.error != 'undefined') {
                     raiseError(data.message);
+                } else {
+                    raiseInfo(data.message);
                 }
-                $("#tableList").jqxGrid('updatebounddata', 'data');
+                $("#unitList").jqxGrid('updatebounddata', 'data');
             },
             error: function (xhr, status, errorThrown) {
                 $.each(xhr.responseJSON, function(field, errorText) {
@@ -133,25 +175,16 @@ initunitactions = function() {
         });
     });
     $("#save").click(function () {
-        var row = $('#tableList').jqxGrid('getselectedrowindex');
-        console.log(row);
+        var row = $('#unitList').jqxGrid('getselectedrowindex');
         if (row == -1) {
             raiseError("Выберите запись для изменения/сохранения данных");
             return false;
         }
-        var rowid = $("#tableList").jqxGrid('getrowid', row);
-
-        var data = "&id=" + rowid +
-            "&form_id=" + $("#form_id").val() +
-            "&table_index=" + $("#table_index").val() +
-            "&table_code=" + $("#table_code").val() +
-            "&table_name=" + $("#table_name").val() +
-            "&medstat_code=" + $("#medstat_code").val() +
-            "&medinfo_id=" + $("#medinfo_id").val() +
-            "&transposed=" + ($("#transposed").val() ? 1 :0);
+        var rowid = $("#unitList").jqxGrid('getrowid', row);
+        var data = setquerystring();
         $.ajax({
             dataType: 'json',
-            url: '/admin/tables/update',
+            url: unitupdate_url + rowid,
             method: "PATCH",
             data: data,
             success: function (data, status, xhr) {
@@ -160,11 +193,11 @@ initunitactions = function() {
                 } else {
                     raiseInfo(data.message);
                 }
-                $("#tableList").jqxGrid('updatebounddata', 'data');
-                $("#tableList").on("bindingcomplete", function (event) {
-                    var newindex = $('#tableList').jqxGrid('getrowboundindexbyid', rowid);
+                $("#unitList").jqxGrid('updatebounddata', 'data');
+                $("#unitList").on("bindingcomplete", function (event) {
+                    var newindex = $('#unitList').jqxGrid('getrowboundindexbyid', rowid);
                     console.log(newindex);
-                    $("#tableList").jqxGrid('selectrow', newindex);
+                    $("#unitList").jqxGrid('selectrow', newindex);
 
                 });
             },
@@ -176,15 +209,15 @@ initunitactions = function() {
         });
     });
     $("#delete").click(function () {
-        var row = $('#tableList').jqxGrid('getselectedrowindex');
+        var row = $('#unitList').jqxGrid('getselectedrowindex');
         if (row == -1) {
             raiseError("Выберите запись для удаления");
             return false;
         }
-        var rowid = $("#tableList").jqxGrid('getrowid', row);
+        var rowid = $("#unitList").jqxGrid('getrowid', row);
         $.ajax({
             dataType: 'json',
-            url: '/admin/tables/delete/' + rowid,
+            url: unitdelete_url + rowid,
             method: "DELETE",
             success: function (data, status, xhr) {
                 if (typeof data.error != 'undefined') {
@@ -192,9 +225,9 @@ initunitactions = function() {
                 } else {
                     raiseInfo(data.message);
                     $("#form")[0].reset();
+                    $("#unitList").jqxGrid('updatebounddata', 'data');
+                    $("#unitList").jqxGrid('clearselection');
                 }
-                $("#tableList").jqxGrid('updatebounddata', 'data');
-                $("#tableList").jqxGrid('clearselection');
             },
             error: function (xhr, status, errorThrown) {
                 raiseError('Ошибка удаления отчетного периода', xhr);

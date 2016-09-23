@@ -22,7 +22,7 @@
                     <div class="form-group">
                         <label class="control-label col-sm-3" for="parent_id">Входит в состав:</label>
                         <div class="col-sm-2">
-                            <input type="text" class="form-control" id="parent_id">
+                            <div id="parent_id"></div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -40,7 +40,7 @@
                     <div class="form-group">
                         <label class="control-label col-sm-3" for="node_type">Тип организационной единицы:</label>
                         <div class="col-sm-2">
-                            <input type="text" class="form-control" id="node_type">
+                            <div id="node_type"></div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -49,11 +49,16 @@
                             <div id="report"></div>
                         </div>
                     </div>
-
                     <div class="form-group">
                         <label class="control-label col-sm-3" for="aggregate">Сводные отчеты:</label>
                         <div class="col-sm-2">
                             <div id="aggregate"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-3" for="blocked">Блокирована:</label>
+                        <div class="col-sm-2">
+                            <div id="blocked"></div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -105,9 +110,14 @@
         var rowsDataAdapter;
         var tableDataAdapter;
         var unittypesDataAdapter;
+        var aggregatableDataAdapter;
         var unitTypes = {!! $unit_types !!};
+        var aggregatables = {!! $aggregate_units !!};
         var unitfetch_url ='/admin/units/fetchunits';
-        initfilterdatasources();
+        var unitcreate_url ='/admin/units/create';
+        var unitupdate_url ='/admin/units/update/';
+        var unitdelete_url ='/admin/units/delete/';
+        initdropdowns();
         initsplitter();
         initdatasources();
         inittablelist();

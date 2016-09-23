@@ -47,7 +47,9 @@ Route::group(['middleware' => ['web']], function () {
     // Менеджер организационных единиц
     Route::get('admin/units', 'Admin\MOAdminController@index');
     Route::get('admin/units/fetchunits', 'Admin\MOAdminController@fetchUnits');
-
+    Route::post('admin/units/create', 'Admin\MOAdminController@unitStore');
+    Route::patch('admin/units/update/{unit}', 'Admin\MOAdminController@unitUpdate');
+    Route::delete('admin/units/delete/{unit}', 'Admin\MOAdminController@unitDelete');
 
     // Менеджер отчетных периодов
     Route::get('admin/periods', 'Admin\PeriodAdminController@index' );

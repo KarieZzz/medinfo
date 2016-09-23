@@ -40,6 +40,12 @@ class Document extends Model
             ->where('form_id', $form);
     }
 
+    public static function countInUnit(int $unit)
+    {
+        $q = "SELECT count(id) doc_count FROM documents WHERE ou_id = $unit";
+        return \DB::selectOne($q)->doc_count;
+    }
+
     public static function countInPeriod(int $period)
     {
         $q = "SELECT count(id) doc_count FROM documents WHERE period_id = $period";

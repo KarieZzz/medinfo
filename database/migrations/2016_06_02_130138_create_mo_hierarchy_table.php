@@ -15,8 +15,8 @@ class CreateMoHierarchyTable extends Migration
         Schema::create('mo_hierarchy', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('parent_id')->index()->nullable();
-            $table->string('unit_code', 32)->index();
-            $table->char('inn', 10)->nullable()->index();
+            $table->string('unit_code', 32)->unique();
+            $table->char('inn', 10)->nullable()->unique();
             $table->smallInteger('node_type')->default(3)->index();
             $table->smallInteger('report')->default(0);
             $table->smallInteger('aggregate')->default(0);

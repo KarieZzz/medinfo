@@ -117,6 +117,8 @@ initformactions = function() {
             success: function (data, status, xhr) {
                 if (typeof data.error != 'undefined') {
                     raiseError(data.message);
+                } else {
+                    raiseInfo(data.message);
                 }
                 $("#tableList").jqxGrid('updatebounddata', 'data');
             },

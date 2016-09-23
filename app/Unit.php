@@ -25,16 +25,18 @@ class Unit extends Model
     // Выбор Юрлиц
     public function scopeLegal($query)
     {
-        return $query
-            ->where('node_type', 3);
+        return $query->where('node_type', 3);
     }
-
+    // Только незаблокированные единицы
     public function scopeActive($query)
     {
-        return $query
-            ->where('blocked', 0);
+        return $query->where('blocked', 0);
     }
-
+    // Единицы по которым может производится сведение данных
+    public function scopeMayBeAggregate($query)
+    {
+        return $query->where('aggregate', 1);
+    }
 
     public static function getDescendants($parent) {
         $units[] = $parent;
