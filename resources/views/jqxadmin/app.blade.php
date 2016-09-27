@@ -48,6 +48,7 @@
         @yield('content')
     </div>
     @include('jqxdatainput.notifications')
+    @include('jqxdatainput.confirmpopup')
 </div>
 
 <script src="{{ asset('/plugins/jQuery/jquery-1.12.4.min.js') }}" type="text/javascript" ></script>
@@ -56,10 +57,12 @@
 <script src="{{ asset('/jqwidgets/jqxcore.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxmenu.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxnotification.js') }}"></script>
+<script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>
 <script src="{{ asset('/medinfo/admin/admin.js') }}"></script>
 @stack('loadjsscripts')
 <script type="text/javascript">
     var theme = 'bootstrap';
+    var confirm_action = false;
     $(document).ready(function () {
         $.ajaxSetup({
             headers: {
@@ -70,6 +73,7 @@
         $("#navBar").css("visibility", "visible");
         $("#widgets-content-wrap").css("visibility", "visible");
         initnotifications();
+        initConfirmWindow();
     });
 </script>
 @yield('inlinejs')

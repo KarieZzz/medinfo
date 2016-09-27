@@ -123,7 +123,6 @@
     <script src="{{ asset('/jqwidgets/jqxgrid.selection.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
     <script src="{{ asset('/medinfo/admin/documentadmin.js') }}"></script>
 @endpush

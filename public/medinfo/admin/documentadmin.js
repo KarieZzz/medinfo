@@ -312,7 +312,7 @@ var initmotree = function() {
             filterMode: "simple",
             columnsResize: true,
             checkboxes: true,
-            hierarchicalCheckboxes: true,
+            hierarchicalCheckboxes: false,
             //showToolbar: true,
             ready: function () {
                 //$("#moTree").jqxTreeGrid({ showToolbar: false });
@@ -358,7 +358,6 @@ var initmotree = function() {
         }
 
     });
-
 };
 
 // инициализация вкладок-фильтров с элементами управления
@@ -857,29 +856,4 @@ var noselected_error = function(message) {
         theme: theme,
         modalOpacity: 0.01
     });
-};*/
-/*
-var initnotifications = function() {
-    $("#serverErrorNotification").jqxNotification({
-        width: 250, position: "top-right", opacity: 0.9,
-        autoOpen: false, animationOpenDelay: 800, autoClose: false, template: "error"
-    });
-    $("#infoNotification").jqxNotification({
-        width: 250, position: "top-right", opacity: 0.9,
-        autoOpen: false, animationOpenDelay: 800, autoClose: true, autoCloseDelay: 3000, template: "info"
-    });
-};
-var raiseError = function(comment) {
-    if (typeof comment == 'undefined') {
-        comment = 'Ошибка получения данных ';
-    }
-    $("#currentError").text(comment);
-    $("#serverErrorNotification").jqxNotification("open");
-};
-var raiseInfo = function(comment) {
-    if (typeof comment == 'undefined') {
-        comment = 'Текст информационного сообщения по умолчанию ';
-    }
-    $("#currentInfoMessage").text(comment);
-    $("#infoNotification").jqxNotification("open");
 };*/

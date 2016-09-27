@@ -40,6 +40,11 @@ class Document extends Model
             ->where('form_id', $form);
     }
 
+    public function scopeOfUnit($query, $ou)
+    {
+        return $query->where('ou_id', $ou);
+    }
+
     public static function countInUnit(int $unit)
     {
         $q = "SELECT count(id) doc_count FROM documents WHERE ou_id = $unit";

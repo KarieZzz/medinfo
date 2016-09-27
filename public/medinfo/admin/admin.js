@@ -20,6 +20,17 @@ var raiseInfo = function(comment) {
     $("#currentInfoMessage").text(comment);
     $("#infoNotification").jqxNotification("open");
 };
+
+raiseConfirm = function(confirmMessage, event) {
+    //event.stopImmediatePropagation();;
+    $("#okButton").off( "click" );
+    $("#confirmMessage").html(confirmMessage);
+    $('#confirmPopup').jqxWindow('open');
+};
+hideConfirm = function() {
+    $('#confirmPopup').jqxWindow('close');
+};
+
 var localize = function() {
     var localizationobj = {};
     localizationobj.thousandsseparator = " ";
@@ -38,4 +49,21 @@ var initnotifications = function() {
         width: 250, position: "top-right", opacity: 0.9,
         autoOpen: false, animationOpenDelay: 800, autoClose: true, autoCloseDelay: 3000, template: "info"
     });
+}
+
+var initConfirmWindow = function() {
+    var confirm = $('#confirmPopup').jqxWindow({
+        width: 400,
+        height: 250,
+        resizable: false,
+        autoOpen: false,
+        isModal: true,
+        okButton: $('#okButton'),
+        cancelButton: $('#cancelButton')
+    });
+    $("#cancelButton").click( function() { return false } );
+    $('#confirmPopup').on('close', function (event) {
+        confirm_action = event.args.dialogResult.OK;
+    });
+
 }
