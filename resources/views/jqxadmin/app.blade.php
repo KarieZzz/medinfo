@@ -15,16 +15,9 @@
         }
         #widgets-content-wrap {
             position: absolute;
+            margin-top: 50px;
             width:100%;
             height: 100%;
-        }
-        #alertmessage {
-            position: absolute;
-            display: table;
-            left: 50%;
-            width:600px;
-            height: 30px;
-            z-index: 10000;
         }
     </style>
     <title id="Description">Админ-страница (Bootstrap и jQWidgets дизайн)</title>
@@ -40,10 +33,6 @@
 <div id="alertmessage" class="col-md-4 "></div>
 <div id="wrap">
     @include('jqxadmin.navbar')
-    <!-- Begin page content -->
-    <div style="padding: 20px 0 0 15px">
-        @yield('title')
-    </div>
     <div id="widgets-content-wrap" style="visibility: hidden">
         @yield('content')
     </div>
@@ -69,8 +58,7 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-        $("#navBar").jqxMenu({ autoSizeMainItems: true, theme: theme, showTopLevelArrows: true, width: '100%' });
-        $("#navBar").css("visibility", "visible");
+        //$("#menu").jqxMenu({ autoSizeMainItems: true, theme: theme, showTopLevelArrows: true, width: '800px' });
         $("#widgets-content-wrap").css("visibility", "visible");
         initnotifications();
         initConfirmWindow();

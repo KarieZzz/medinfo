@@ -1,58 +1,54 @@
-<!-- Fixed navbar -->
-<style>
-    #navBar
-    {
-        background: transparent !important;
-        border: none;
-        box-shadow: none;
-        -webkit-box-shadow: none;
-    }
-    .navbar
-    {
-        min-height: 35px !important;
-    }
-</style>
-    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-        <div class="col-md-5">
-            <div style="visibility: hidden;" id="navBar" >
-                <ul>
-                    <li><a href="/admin">Home</a></li>
-                    <li>
-                        <a href="#">Данные</a>
-                        <ul style="width: 250px;">
-                            <li><a href="/datainput">Ввод и корректировка</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="#">Пользователи</a>
-                        <ul style="width: 250px;">
-                            <li><a href="/admin/workers">Исполнители</a></li>
-                            <li><a href="#">Адмнистраторы</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="#">Структура</a>
-                        <ul style="width: 250px;">
-                            <li><a href="/admin/periods">Отчетные периоды</a></li>
-                            <li><a href="/admin/forms">Формы</a></li>
-                            <li><a href="/admin/tables">Таблицы</a></li>
-                            <li><a href="/admin/rc">Строки и Графы</a></li>
-                            <li type="separator"></li>
-                            <li><a href="/admin/noteditablecells">Закрещенные ячейки</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="#">Организационные единицы</a>
-                        <ul style="width: 250px;">
-                            <li><a href="/admin/units">Территории/Медицинские организации</a></li>
-                            <li><a href="/admin/units/groups">Группы медицинских организаций</a></li>
-                        </ul>
-                    </li>
-                    <li><a href="/admin/documents">Документы</a></li>
-                    @yield('local_actions')
-                    <li><a href="/admin/logout">Завершение работы</a></li>
-                </ul>
-            </div><!--/.nav-collapse -->
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">Адмнистрирование Мединфо</a>
         </div>
+        <ul class="nav navbar-nav">
+            <li><a href="/admin">К началу</a></li>
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Данные
+                    <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/datainput">Ввод и корректировка</a></li>
+                    </ul>
+            </li>
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Пользователи
+                    <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="/admin/workers">Исполнители</a></li>
+                    <li><a href="#">Адмнистраторы</a></li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Структура
+                    <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="/admin/periods">Отчетные периоды</a></li>
+                    <li><a href="/admin/forms">Формы</a></li>
+                    <li><a href="/admin/tables">Таблицы</a></li>
+                    <li><a href="/admin/rc">Строки и Графы</a></li>
+                    <li type="separator"></li>
+                    <li><a href="/admin/noteditablecells">Закрещенные ячейки</a></li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Организационные единицы
+                    <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="/admin/units">Территории/Медицинские организации</a></li>
+                    <li><a href="/admin/units/groups">Группы медицинских организаций</a></li>
+                </ul>
+            </li>
+            <li><a href="/admin/documents">Документы</a></li>
+            <li><a href="#">@yield('local_actions')</a></li>
+        </ul>
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">@yield('title')</a>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+            <li><a href="/admin/logout"><span class="glyphicon glyphicon-log-in"></span> Завершить работу</a></li>
+        </ul>
     </div>
+</nav>
 

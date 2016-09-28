@@ -1,10 +1,10 @@
 @extends('jqxadmin.app')
 
-@section('title', '<h2>Администрирование Мединфо</h2>')
+@section('title', 'Выберите раздел из меню')
 
 @section('content')
     <div class="col-sm-offset-1 col-sm-7">
-        <h4>Выберите раздел из меню</h4>
+        <h4>Структура отчетов, организационные единицы, исполнители</h4>
     </div>
 @endsection
 

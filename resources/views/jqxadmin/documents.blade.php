@@ -1,6 +1,6 @@
 @extends('jqxadmin.app')
 
-@section('title', '<h2>Администрирование: отчетные документы</h2>')
+@section('title', 'Отчетные документы')
 @section('headertitle', 'Менеджер документов')
 @section('local_actions')
 {{--<li><a href="#" id="newdocument">Новый документ</a></li>--}}

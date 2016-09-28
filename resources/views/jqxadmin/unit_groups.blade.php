@@ -1,6 +1,6 @@
 @extends('jqxadmin.app')
 
-@section('title', '<h2>Администрирование: группы медицинских организаций</h2>')
+@section('title', 'Группы медицинских организаций')
 @section('headertitle', 'Менеджер групп организационных единиц')
 
 @section('content')

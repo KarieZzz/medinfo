@@ -519,41 +519,6 @@ var initdocumentactions = function() {
         });
         $(this).jqxDropDownList('clearSelection');
     });
-/*    $("#changeStates").jqxButton({ theme: theme});
-    $("#changeStates").click(function() {
-        var row_ids = noselected_error("Не выбрано ни одного документа для смены статуса");
-        if (!row_ids) {
-            return false;
-        }
-        var selectedstate = $("#statesDropdownList").jqxDropDownList('getSelectedItem');
-        if (!selectedstate) {
-            raiseError("Не выбран статус документа для изменения");
-            return false;
-        }
-        var data = "documents=" + row_ids + '&state=' + selectedstate.value;
-        var confirm_text = 'Подтвердите смену статуса у документов №№ ' + row_ids + '. \n';
-        confirm_text += 'Выбранный статус "' + selectedstate.label + '". \n';
-        if (!confirm(confirm_text)) {
-            return false;
-        }
-        $.ajax({
-            dataType: 'json',
-            url: changestate_url,
-            method: "PATCH",
-            data: data,
-            success: function (data, status, xhr) {
-                if (data.state_changed == 1) {
-                    raiseInfo(data.comment + ' Количество измененных документов ' + data.affected_documents + '.');
-                }
-                $('#documentList').jqxGrid('clearselection');
-                $('#documentList').jqxGrid('updatebounddata');
-            },
-            error: function (xhr, status, errorThrown) {
-                var error_text = "Ошибка сохранения данных на сервере. Обратитесь к администратору";
-                raiseError(error_text, xhr);
-            }
-        });
-    });*/
     $("#deleteDocuments").jqxButton({ theme: theme });
     $("#deleteDocuments").click(function () {
         var row_ids = noselected_error("Не выбрано ни одного документа для удаления");

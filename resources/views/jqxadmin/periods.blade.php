@@ -1,6 +1,6 @@
 @extends('jqxadmin.app')
 
-@section('title', '<h2>Администрирование: отчетные периоды</h2>')
+@section('title', 'Отчетные периоды')
 @section('headertitle', 'Менеджер отчетных периодов')
 
 @section('content')

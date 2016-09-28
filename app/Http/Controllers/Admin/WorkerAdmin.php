@@ -27,6 +27,7 @@ class WorkerAdmin extends Controller
     public function fetch_workers()
     {
         $workers = DB::select("select * from workers order by id");
+        //$workers = Worker::orderBy('id')->get(); // возвращает без паролей
         return $workers;
         //return "{\"data\":" .json_encode($workers). "}";
     }
@@ -46,24 +47,19 @@ class WorkerAdmin extends Controller
             $responce_no_user['responce'] = $data;
             return $responce_no_user;
         }
-
-        //$scopes = DB::select("select s.ou_id, h.unit_code, h.unit_name, s.with_descendants recur
-          //from worker_scopes s left join mo_hierarchy h on s.ou_id = h.id WHERE s.worker_id = {$id}");
         $scope = DB::selectOne("select w.ou_id, o.unit_code, o.unit_name from worker_scopes w join mo_hierarchy o
           on w.ou_id = o.id WHERE worker_id = {$id}");
         if (!$scope) {
             $data['scopes'] = 0;
-            $data['comment'] = "Не указаны медицинские организации/территории, которым имеет доступ пользователь";
-
+            $data['comment'] = "Не указаны";
         } else {
             $data['scope'] = $scope->ou_id;
             $data['unit_code'] = $scope->unit_code;
             $data['unit_name'] = $scope->unit_name;
-            $data['comment'] = "<dl><dt>Учреждение/территория, к данным котрой имеет доступ пользователь:</dt><dd>" . $scope->unit_name . "</dd></dl>";
+            $data['comment'] = $scope->unit_name;
         }
         $responce['responce'] = $data;
         return $responce;
-        //return "{\"responce\":" .json_encode($data). "}";
     }
 
     public function worker_store(Request $request)
@@ -75,7 +71,7 @@ class WorkerAdmin extends Controller
                 'email' => 'email',
                 'role' => 'digits:1',
                 'permission' => 'digits_between:3,4',
-                'blocked' => 'boolean',
+                'blocked' => 'required|in:1,0',
             ]
         );
         $worker = new Worker($request->all());
@@ -84,7 +80,7 @@ class WorkerAdmin extends Controller
         return $responce;
     }
 
-    public function worker_update(Request $request)
+    public function worker_update(Worker $worker, Request $request)
     {
         $this->validate($request, [
                 'name' => 'required|max:16',
@@ -92,10 +88,10 @@ class WorkerAdmin extends Controller
                 'email' => 'email',
                 'role' => 'digits:1',
                 'permission' => 'digits_between:3,4',
-                'blocked' => 'boolean',
+                'blocked' => 'required|in:1,0',
             ]
         );
-        $worker = Worker::find($request->id);
+        //$worker = Worker::find($request->id);
         $worker->name = $request->name;
         $worker->password = $request->password;
         $worker->email = $request->email;
@@ -132,4 +128,18 @@ class WorkerAdmin extends Controller
         }
         return $responce;
     }
+
+    public function worker_delete(Worker $worker)
+    {
+        $id = $worker->id;
+        $scope_deleted = WorkerScope::where('worker_id', $id)->delete();
+        $worker_deleted = $worker->delete();
+        if ($worker_deleted) {
+            $message = 'Удалена пользователь Id ' . $id;
+        } else {
+            $message = 'Ошибка удаления пользователя Id ' . $id;
+        }
+        return compact('worker_deleted', 'scope_deleted', 'message');
+    }
+
 }

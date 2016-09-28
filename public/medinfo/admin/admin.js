@@ -43,11 +43,11 @@ var localize = function() {
 var initnotifications = function() {
     $("#serverErrorNotification").jqxNotification({
         width: 250, position: "top-right", opacity: 0.9,
-        autoOpen: false, animationOpenDelay: 800, autoClose: true, autoCloseDelay: 6000, template: "error"
+        autoOpen: false, animationOpenDelay: 600, autoClose: true, autoCloseDelay: 8000, template: "error"
     });
     $("#infoNotification").jqxNotification({
         width: 250, position: "top-right", opacity: 0.9,
-        autoOpen: false, animationOpenDelay: 800, autoClose: true, autoCloseDelay: 3000, template: "info"
+        autoOpen: false, animationOpenDelay: 600, autoClose: true, autoCloseDelay: 5000, template: "info"
     });
 }
 

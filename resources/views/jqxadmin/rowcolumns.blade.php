@@ -1,13 +1,13 @@
 @extends('jqxadmin.app')
 
-@section('title', '<h2>Администрирование: строки и графы</h2>')
+@section('title', 'Строки и графы отчетных форм')
 @section('headertitle', 'Менеджер строк м граф отчетных форм')
 
 @section('content')
 <div class="row">
     <div class="col-sm-2"><h4 class="text-right">Выберите форму и таблицу</h4></div>
     <div class="col-sm-4">
-        <form class="form-inline">
+        <form style="margin-top: 3px" class="form-inline">
             <div class="form-group">
                 <div id="formList"></div>
             </div>

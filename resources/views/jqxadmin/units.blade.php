@@ -1,6 +1,6 @@
 @extends('jqxadmin.app')
 
-@section('title', '<h2>Администрирование: территории/медицинские организации</h2>')
+@section('title', 'Территории/медицинские организации')
 @section('headertitle', 'Менеджер организационных единиц')
 
 @section('content')
@@ -9,7 +9,7 @@
         <div id="unitList" style="margin: 10px"></div>
     </div>
     <div id="formContainer">
-        <div id="propertiesForm" class="panel panel-default" style="padding: 3px; width: 100%">
+        <div id="propertiesForm" class="panel panel-default">
             <div class="panel-heading"><h3>Редактирование/ввод организационной единицы</h3></div>
             <div class="panel-body">
                 <form id="form" class="form-horizontal" >
@@ -22,7 +22,7 @@
                     <div class="form-group">
                         <label class="control-label col-sm-3" for="parent_id">Входит в состав:</label>
                         <div class="col-sm-2">
-                            <div id="parent_id"></div>
+                            <div id="parent_id" style="padding-left: 12px"></div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -40,7 +40,7 @@
                     <div class="form-group">
                         <label class="control-label col-sm-3" for="node_type">Тип организационной единицы:</label>
                         <div class="col-sm-2">
-                            <div id="node_type"></div>
+                            <div id="node_type" style="padding-left: 12px"></div>
                         </div>
                     </div>
                     <div class="form-group">

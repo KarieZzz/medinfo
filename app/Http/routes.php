@@ -42,8 +42,10 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('admin/fetch_mo_tree/{parent}', 'Admin\DocumentAdminController@fetch_mo_hierarchy');
     Route::get('admin/fetch_worker_scopes/{id}', 'Admin\WorkerAdmin@fetch_worker_scopes');
     Route::post('admin/workers/create', 'Admin\WorkerAdmin@worker_store');
-    Route::patch('admin/workers/update', 'Admin\WorkerAdmin@worker_update');
+    Route::patch('admin/workers/update/{worker}', 'Admin\WorkerAdmin@worker_update');
     Route::patch('admin/workers/updateuserscope', 'Admin\WorkerAdmin@worker_scope_update');
+    Route::delete('admin/workers/delete/{worker}', 'Admin\WorkerAdmin@worker_delete');
+
     // Менеджер организационных единиц
     Route::get('admin/units', 'Admin\MOAdminController@index');
     Route::get('admin/units/fetchunits', 'Admin\MOAdminController@fetchUnits');

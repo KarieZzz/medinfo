@@ -174,14 +174,14 @@ initFormTableFilter = function() {
         placeHolder: "Выберите форму:",
         //selectedIndex: 2,
         width: 200,
-        height: 34
+        height: 32
     });
     $('#formList').on('select', function (event) {
         var args = event.args;
         current_form = args.item.value;
         updateTableDropdownList(args.item);
     });
-    $("#tableListContainer").jqxDropDownButton({ width: 250, height: 34, theme: theme });
+    $("#tableListContainer").jqxDropDownButton({ width: 250, height: 32, theme: theme });
     $("#tableList").jqxDataTable({
         theme: theme,
         source: tablesDataAdapter,

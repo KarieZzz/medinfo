@@ -52,7 +52,10 @@ class DatainputAuthController extends Controller
 
     protected function attemptWorkerAuth($credentials)
     {
-        $worker = Worker::where('name', $credentials['name'])->where('password' , $credentials['password'])->first();
+        $worker = Worker::where('name', $credentials['name'])
+            ->where('password' , $credentials['password'])
+            ->where('blocked' , 0)
+            ->first();
         return $worker ? $worker->id : 0;
     }
 
