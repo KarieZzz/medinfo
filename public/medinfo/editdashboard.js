@@ -27,6 +27,16 @@ var cellbeginedit = function (row, datafield, columntype, value) {
         }
     }
 };
+var defaultEditor = function (row, cellvalue, editor, celltext, pressedChar) {
+    console.log(celltext);
+    editor.jqxNumberInput({ decimalDigits: 0, digits: 12 });
+};
+var initDecimal2Editor = function (row, cellvalue, editor, celltext, pressedChar) {
+    editor.jqxNumberInput({ decimalDigits: 2, digits: 12 });
+};
+var initDecimal3Editor = function (row, cellvalue, editor, celltext, pressedChar) {
+    editor.jqxNumberInput({ decimalDigits: 2, digits: 12 });
+};
 var cellclass = function (row, columnfield, value, rowdata) {
     var not_editable = '';
     for (var i = 0; i < not_editable_cells.length; i++) {
@@ -66,6 +76,12 @@ var cellclass = function (row, columnfield, value, rowdata) {
         }
         return class_compare + ' ' + not_editable;
     }
+};
+var validation = function(cell, value) {
+    if (value < 0) {
+        return { result: false, message: 'Допускаются только положительные значения' };
+    }
+    return true;
 };
 // Пояснялки названий столбцов
 var tooltiprenderer = function (element) {

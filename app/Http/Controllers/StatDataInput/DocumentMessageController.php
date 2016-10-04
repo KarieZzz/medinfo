@@ -18,6 +18,11 @@ use Mail;
 class DocumentMessageController extends Controller
 {
     //
+    public function __construct()
+    {
+        $this->middleware('datainputauth');
+    }
+
     public function fetchMessages(Request $request)
     {
         $messages = DocumentMessage::where('doc_id', $request->document)->orderBy('created_at', 'desc')->with('worker')->get();

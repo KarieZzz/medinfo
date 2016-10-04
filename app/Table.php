@@ -33,4 +33,17 @@ class Table extends Model
             ->orderBy('table_index')
             ->where('form_id', $form);
     }
+
+    public static function editedTables(int $document)
+    {
+        $editedtables = \DB::table('statdata')
+            ->join('documents', 'documents.id' ,'=', 'statdata.doc_id')
+            ->leftJoin('tables', 'tables.id', '=', 'statdata.table_id')
+            ->where('documents.id', $document)
+            ->where('tables.deleted', 0)
+            ->groupBy('statdata.table_id')
+            ->pluck('statdata.table_id');
+        return $editedtables;
+    }
+
 }

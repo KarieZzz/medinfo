@@ -14,14 +14,16 @@ use App\Document;
 use App\Form;
 use App\Table;
 use App\Cell;
-use App\NECells;
+use App\NECellsFetch;
 use App\ValuechangingLog;
 use App\Medinfo\TableControlMM;
+use App\Medinfo\TableEditing;
 
 class DashboardController extends Controller
 {
 
     //
+
     public function index(Document $document)
     {
         $worker = Auth::guard('datainput')->user();
@@ -31,8 +33,8 @@ class DashboardController extends Controller
         $editpermission = $this->isEditPermission($worker->permission, $document->state);
         $editpermission ? $editmode = 'Редактирование' : $editmode = 'Только чтение';
         $period = Period::find($document->period_id);
-        $editedtables = $this->getEditedTables($document->id);
-        $noteditablecells = NECells::where('f', $form->id)->select('t', 'r', 'c')->get();
+        $editedtables = Table::editedTables($document->id);
+        $noteditablecells = NECellsFetch::where('f', $form->id)->select('t', 'r', 'c')->get();
         $renderingtabledata = $this->composeDataForTablesRendering($form, $editedtables);
         $laststate = $this->getLastState($worker, $document, $form);
         //return $datafortables;
@@ -79,22 +81,6 @@ class DashboardController extends Controller
         return $edit_permission;
     }
 
-    /**
-     * @param int $document
-     * @return array
-     */
-    protected function getEditedTables(int $document)
-    {
-        $editedtables = \DB::table('statdata')
-            ->join('documents', 'documents.id' ,'=', 'statdata.doc_id')
-            ->leftJoin('tables', 'tables.id', '=', 'statdata.table_id')
-            ->where('documents.id', $document)
-            ->where('tables.deleted', 0)
-            ->groupBy('statdata.table_id')
-            ->pluck('statdata.table_id');
-        return $editedtables;
-    }
-
     //Описательная информация для построения гридов динамически
     // возвращается json объект в формате для jqxgrid
     /**
@@ -105,69 +91,13 @@ class DashboardController extends Controller
     protected function composeDataForTablesRendering(Form $form, array $editedtables)
     {
         $tables = Table::where('form_id', $form->id)->where('deleted', 0)->orderBy('table_code')->get();
-        $forformtable = array();
-        $datafortables = array();
+        $forformtable = [];
+        $datafortables = [];
         foreach ($tables as $table) {
             in_array($table->id, $editedtables) ? $edited = 1 : $edited = 0;
+            // данные для таблицы-фильтра для навигации по отчетным таблицам в форме
             $forformtable[] = "{ id: " . $table->id . ", code: '" . $table->table_code . "', name: '" . $table->table_name . "', edited: " . $edited . " }";
-            $datafields_arr = array();
-            $columns_arr = array();
-            $datafields_arr[0] = array('name'  => 'id');
-            $columns_arr[0] = array(
-                'text'  => 'id',
-                'dataField' => 'id',
-                'width' => 0,
-                'cellsalign' => 'left',
-                'hidden' => true,
-                'pinned' => true
-            );
-            $column_groups_arr = array();
-            $cols = $table->columns->where('deleted', 0)->sortBy('column_index');
-            foreach ($cols as $col) {
-                $datafields_arr[] = array('name'  => $col->id);
-                $width = $col->size * 10;
-                $decimal_count = $col->decimal_count;
-                $contentType = $col->getMedinfoContentType();
-                if ($contentType == 'data') {
-                    $columns_arr[] = array(
-                        'text'  => $col->column_index,
-                        'dataField' => $col->id,
-                        'width' => $width,
-                        'cellsalign' => 'right',
-                        'align' => 'center',
-                        'cellsformat' => 'd' . $decimal_count,
-                        'columntype' => 'numberinput',
-                        'columngroup' => $col->id,
-                        'filtertype' => 'number',
-                        'cellclassname' => 'cellclass',
-                        'cellbeginedit' => 'cellbeginedit',
-                        'validation' => "e = function (cell, value) { if (value < 0) { return { result: false, message: 'Допускаются только положительные значения' }; } return true;};",
-                        'createeditor' => "e = function(row, cellvalue, editor) { editor.jqxNumberInput({ digits: 12, decimalDigits: $decimal_count, min: 0, spinButtons: true, groupSeparator: '', inputMode: 'simple' })};"
-                    );
-                    $column_groups_arr[] = array(
-                        'text' => $col->column_name,
-                        'align' => 'center',
-                        'name' => $col->id,
-                        'rendered' => 'tooltiprenderer'
-                    );
-                } else if ($contentType == 'header') {
-                    $columns_arr[] = array(
-                        'text' => $col->column_name,
-                        'dataField' => $col->id,
-                        'width' => $width,
-                        'cellsalign' => 'left',
-                        'align' => 'center',
-                        'pinned' => true,
-                        'editable' => false,
-                        'filtertype' => 'textbox'
-                    );
-                }
-            }
-            $datafortables[$table->id]['tablecode'] = $table->table_code;
-            $datafortables[$table->id]['tablename'] = $table->table_name;
-            $datafortables[$table->id]['datafields'] = $datafields_arr;
-            $datafortables[$table->id]['columns'] = $columns_arr;
-            $datafortables[$table->id]['columngroups'] = $column_groups_arr;
+            $datafortables[$table->id] = TableEditing::fetchDataForTableRenedering($table);
         }
         $datafortables_json = addslashes(json_encode($datafortables));
         $composedata['tablelist'] = $forformtable;

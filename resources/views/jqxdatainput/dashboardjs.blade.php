@@ -15,12 +15,21 @@ var form_tables_data = [{!! implode(',', $renderingtabledata['tablelist']) !!}];
 var data_for_tables = $.parseJSON('{!!  $renderingtabledata['tablecompose'] !!}');
 $.each(data_for_tables, function(table, content) {
     $.each(content.columns, function(column, properties) {
-        if (typeof properties.cellclassname !== 'undefined')
+        if (typeof properties.cellclassname !== 'undefined') {
             properties.cellclassname = cellclass;
-            //var row, cellvalue, editor;
+        }
+/*        if (typeof properties.createeditor !== 'undefined') {
             properties.createeditor =  eval(properties.createeditor);
-            properties.validation =  eval(properties.validation);
+        }*/
+        if (typeof properties.initeditor !== 'undefined') {
+            properties.initeditor = eval(properties.initeditor);
+        }
+        if (typeof properties.validation !== 'undefined') {
+            properties.validation = validation;
+        }
+        if (typeof properties.cellbeginedit !== 'undefined') {
             properties.cellbeginedit = cellbeginedit;
+        }
     });
     $.each(content.columngroups, function(group, properties) {
         if (typeof properties.rendered !== 'undefined')

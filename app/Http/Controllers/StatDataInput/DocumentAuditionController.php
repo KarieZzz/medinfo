@@ -19,6 +19,11 @@ use Mail;
 class DocumentAuditionController extends Controller
 {
     //
+    public function __construct()
+    {
+        $this->middleware('datainputauth');
+    }
+
     public function fetchAuditions(Request $request)
     {
         $auditions = DocumentAudition::where('doc_id', $request->document)->with('dicauditstate', 'worker')->get();

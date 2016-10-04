@@ -45,7 +45,6 @@ Route::group(['middleware' => ['web']], function () {
     Route::patch('admin/workers/update/{worker}', 'Admin\WorkerAdmin@worker_update');
     Route::patch('admin/workers/updateuserscope', 'Admin\WorkerAdmin@worker_scope_update');
     Route::delete('admin/workers/delete/{worker}', 'Admin\WorkerAdmin@worker_delete');
-
     // Менеджер организационных единиц
     Route::get('admin/units', 'Admin\MOAdminController@index');
     Route::get('admin/units/fetchunits', 'Admin\MOAdminController@fetchUnits');
@@ -61,13 +60,14 @@ Route::group(['middleware' => ['web']], function () {
     Route::delete('admin/units/groupdelete/{group}', 'Admin\UnitGroupAdminController@delete');
     Route::post('admin/units/addmembers/{group}', 'Admin\UnitGroupAdminController@addMembers');
     Route::delete('admin/units/removemember/{member}', 'Admin\UnitGroupAdminController@removeMember');
-
     // Менеджер отчетных периодов
     Route::get('admin/periods', 'Admin\PeriodAdminController@index' );
     Route::get('admin/fetchperiods', 'Admin\PeriodAdminController@fetchPeriods' );
     Route::post('admin/periods/create', 'Admin\PeriodAdminController@store');
     Route::patch('admin/periods/update', 'Admin\PeriodAdminController@update');
+
     Route::delete('admin/periods/delete/{period}', 'Admin\PeriodAdminController@delete');
+
     // Менеджер отчетных форм/таблиц
     Route::get('admin/forms', 'Admin\FormAdminController@index');
     Route::get('admin/fetchforms', 'Admin\FormAdminController@fetchForms' );
@@ -90,6 +90,20 @@ Route::group(['middleware' => ['web']], function () {
     Route::patch('admin/rc/columnupdate/{column}', 'Admin\RowColumnAdminController@columnUpdate');
     Route::delete('admin/rc/columndelete/{column}', 'Admin\RowColumnAdminController@columnDelete');
     Route::post('admin/rc/columncreate', 'Admin\RowColumnAdminController@columnStore');
+    // Менеджер нередактируемых ячеек
+    Route::get('admin/necells/list', 'Admin\NECellAdminController@list');
+    Route::get('admin/necells/conditions', 'Admin\NECellAdminController@conditions');
+    Route::get('admin/necells/fetchconditions', 'Admin\NECellAdminController@fetchConditions');
+    Route::get('admin/necells/fetchcellcondition/{range}', 'Admin\NECellAdminController@fetchCellsCondition');
+    Route::get('admin/necells/grid/{table}', 'Admin\NECellAdminController@fetchGrid');
+    Route::get('admin/necells/fetchnecells/{table}', 'Admin\NECellAdminController@fetchValues');
+    Route::patch('admin/necells/changecellstate/{row_column}/{newstate}/{condition}', 'Admin\NECellAdminController@toggleCellState');
+    Route::patch('admin/necells/range/{range}/{noedit}/{condition}' , 'Admin\NECellAdminController@toggleCellRange');
+    Route::post('admin/necells/conditioncreate', 'Admin\NECellAdminController@store');
+    Route::delete('admin/necells/conditiondelete/{condition}', 'Admin\NECellAdminController@delete');
+    Route::patch('admin/necells/conditionsave/{condition}', 'Admin\NECellAdminController@update');
+
+
     // Менеджер отчетных документов
     Route::get('admin/documents', 'Admin\DocumentAdminController@index');
     Route::get('admin/fetchdocuments', 'Admin\DocumentAdminController@fetchDocuments');

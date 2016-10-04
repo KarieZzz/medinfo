@@ -29,7 +29,8 @@
                     <li><a href="/admin/tables">Таблицы</a></li>
                     <li><a href="/admin/rc">Строки и Графы</a></li>
                     <li type="separator"></li>
-                    <li><a href="/admin/noteditablecells">Закрещенные ячейки</a></li>
+                    <li><a href="/admin/necells/list">Нередактируемые ячейки, перечень</a></li>
+                    <li><a href="/admin/necells/conditions">Нередактируемые ячейки, условия</a></li>
                 </ul>
             </li>
             <li class="dropdown">

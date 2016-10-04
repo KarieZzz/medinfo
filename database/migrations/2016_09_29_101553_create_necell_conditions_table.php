@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateNoteditableCellsTable extends Migration
+class CreateNecellConditionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,13 +12,12 @@ class CreateNoteditableCellsTable extends Migration
      */
     public function up()
     {
-        Schema::create('noteditable_cells', function (Blueprint $table) {
+        Schema::create('necell_conditions', function (Blueprint $table) {
+            //
             $table->increments('id');
-            $table->integer('row_id')->index();
-            $table->integer('column_id')->index();
-            $table->integer('condition_id')->default(0)->index();
+            $table->string('condition_name', 128)->unique();
+            $table->integer('group_id')->index();
             $table->timestamps();
-            $table->unique(['row_id', 'column_id']);
         });
     }
 
@@ -29,6 +28,6 @@ class CreateNoteditableCellsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('noteditable_cells');
+        Schema::drop('necell_conditions');
     }
 }
