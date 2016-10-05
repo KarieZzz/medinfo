@@ -44,6 +44,7 @@
                     </div>
                 </form>
                 <div class="well" id="selectedInfo"></div>
+                <div class="well" id="conditionInfo"></div>
             </div>
         </div>
     </div>

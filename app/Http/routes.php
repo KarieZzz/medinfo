@@ -102,8 +102,6 @@ Route::group(['middleware' => ['web']], function () {
     Route::post('admin/necells/conditioncreate', 'Admin\NECellAdminController@store');
     Route::delete('admin/necells/conditiondelete/{condition}', 'Admin\NECellAdminController@delete');
     Route::patch('admin/necells/conditionsave/{condition}', 'Admin\NECellAdminController@update');
-
-
     // Менеджер отчетных документов
     Route::get('admin/documents', 'Admin\DocumentAdminController@index');
     Route::get('admin/fetchdocuments', 'Admin\DocumentAdminController@fetchDocuments');

@@ -74,18 +74,21 @@ class NECellAdminController extends Controller
         return NECellCondition::with('group')->get();
     }
 
-    public function fetchCellsCondition(Request $request)
+    public function fetchCellsCondition($range)
     {
-        return 1;
+        $conditions = [];
+        $coordinates = explode(',', $range);
+        foreach ($coordinates as $coordinate) {
+            $conditions[] = $this->getCellCondition($coordinate);
+        }
+        $conditions = array_values(array_unique($conditions));
+        return $conditions;
     }
 
     public function toggleCellRange($range, $noedit, $condition)
     {
         $coordinates = explode(',', $range);
         foreach ($coordinates as $coordinate) {
-            //$rc = explode('_', $coordinate);
-            //$row_id = $rc[0];
-            //$column_id = $rc[1];
             $this->toggleCellState($coordinate, $noedit, $condition);
         }
         return ['message' => 'Статус ячеек в выделенном диапазоне изменен'];
@@ -96,12 +99,20 @@ class NECellAdminController extends Controller
         $rc = explode('_', $row_column);
         $row_id = $rc[0];
         $column_id = $rc[1];
+        NECell::OfRC($row_id, $column_id)->delete();
         if ($newstate) {
             $ne = NECell::firstOrCreate([ 'row_id' => $row_id, 'column_id' => $column_id, 'condition_id' => $condition ]);
-        }  else {
-            $ne = NECell::where('row_id', $row_id)->where('column_id', $column_id)->delete();
         }
         return ['message' => 'Статус ячейки изменен'];
+    }
+
+    public function getCellCondition($row_column)
+    {
+        $rc = explode('_', $row_column);
+        $row_id = $rc[0];
+        $column_id = $rc[1];
+        $ne = NECell::OfRC($row_id, $column_id)->with('condition')->first();
+        return $ne->condition_id == 0 ? null : $ne->condition->condition_name;
     }
 
     public function store(Request $request)
@@ -150,7 +161,9 @@ class NECellAdminController extends Controller
     {
         $id = $condition->id;
         if ($condition->delete()) {
-            return ['message' => 'Удален удалено условие закрещивания ячеек Id ' . $id ];
+            // Связанные c условием закрещенные ячейки удаляем тоже
+            $deletedNECells = NECell::where('condition_id', $id)->delete();
+            return ['message' => 'Удалено условие закрещивания ячеек Id ' . $id ];
         } else {
             return ['error' => 422, 'message' => 'Ошибка удаления' ];
         }

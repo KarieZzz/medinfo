@@ -73,6 +73,7 @@ initdropdowns = function() {
     {
         datatype: "json",
         datafields: [
+            { name: 'id' },
             { name: 'group_id' },
             { name: 'condition_name' }
         ],
@@ -84,7 +85,7 @@ initdropdowns = function() {
         theme: theme,
         source: conditionsDataAdapter,
         displayMember: "condition_name",
-        valueMember: "group_id",
+        valueMember: "id",
         placeHolder: "Выберите условие:",
         width: 300,
         height: 34
@@ -114,24 +115,14 @@ initTableGrid = function() {
         //console.log(cells.length);
     //});
 
-    $('#tableGrid').mouseup( function() {
-
+    $('#tableGrid').on('cellselect',  function() {
         var cells = $('#tableGrid').jqxGrid('getselectedcells');
-        if (cells.length > 0) {
-            console.log("Работает");
-            if (this.timer) {
-                clearTimeout(this.timer);
-            }
-            this.timer = setTimeout(function () {
-                //row_name_filter(input1.val());
-                console.log("Начинаем проверять выделение");
-                fetchcellcondition();
-            }, 1000);
+        if (cellbeginedit) {
+            clearTimeout(cellbeginedit);
         }
-        else {
-            return true;
-            //$("#DataGrid").jqxGrid('removefilter', '1');
-        }
+        cellbeginedit = setTimeout(function () {
+            fetchcellcondition();
+        }, 500);
     });
 
     $('#tableGrid').on('cellvaluechanged', function (event) {
@@ -165,33 +156,44 @@ initTableGrid = function() {
 };
 
 fetchcellcondition = function() {
+    $("#conditionInfo").html('');
     var range = [];
     var cells = $('#tableGrid').jqxGrid('getselectedcells');
     var selected_count = cells.length;
     var rowid;
+    var cell;
     for (i = 0; i < selected_count; i++) {
-        //console.log(cells[i]);
         rowid = $('#tableGrid').jqxGrid('getrowid', cells[i].rowindex);
-        range.push(rowid + '_' + cells[i].datafield);
-
-    }
-    $.ajax({
-        dataType: 'json',
-        url: fetchcellcondition_url + range,
-        method: "GET",
-        success: function (data, status, xhr) {
-            if (typeof data.error != 'undefined') {
-                raiseError(data.message);
-            } else {
-                raiseInfo(data.message);
-            }
-        },
-        error: function (xhr, status, errorThrown) {
-            $.each(xhr.responseJSON, function(field, errorText) {
-                raiseError(errorText);
-            });
+        cell = $('#tableGrid').jqxGrid('getcell', cells[i].rowindex, cells[i].datafield);
+        if (cell.value === true) {
+            range.push(rowid + '_' + cells[i].datafield);
         }
-    });
+    }
+    if (range.length > 0) {
+        $.ajax({
+            dataType: 'json',
+            url: fetchcellcondition_url + range,
+            method: "GET",
+            success: function (data, status, xhr) {
+                var message;
+                //console.log(data.length);
+                if (data.length == 1) {
+                    message = data[0] == null ? "Для выделенного диапазона условия не определены" : 'Для выделенного диапазона определено условие: <strong>"' + data[0] + '"</strong>';
+                    $("#conditionInfo").html(message);
+                }
+                if (data.length > 1) {
+                    $("#conditionInfo").html("Для выделенного диапазона определено несколько условий");
+                }
+            },
+            error: function (xhr, status, errorThrown) {
+                $.each(xhr.responseJSON, function(field, errorText) {
+                    raiseError(errorText);
+                });
+            }
+        });
+    } else {
+        $("#conditionInfo").html("В выделенном диапазоне только редактируемые ячейки");
+    }
     $("#selectedInfo").html("Выделено ячеек: " + cells.length);
 };
 // Обновление списка таблиц при выборе формы
@@ -323,6 +325,7 @@ setcellrange = function(noedit) {
             } else {
                 raiseInfo(data.message);
             }
+            $("#tableGrid").jqxGrid('clearselection');
             $("#tableGrid").jqxGrid('updatebounddata', 'data');
         },
         error: function (xhr, status, errorThrown) {

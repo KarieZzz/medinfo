@@ -17,6 +17,11 @@ class NECell extends Model
             ->where('column_id', $column);
     }
 
+    public function condition()
+    {
+        return $this->hasOne('App\NECellCondition', 'id', 'condition_id');
+    }
+
 /*    public static function isNotEditable(int $row, int $column)
     {
         $noteditable = false;
