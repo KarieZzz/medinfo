@@ -156,7 +156,7 @@ initTableGrid = function() {
 };
 
 fetchcellcondition = function() {
-    $("#conditionInfo").html('');
+    $("#conditionInfo").html('Выделено ячеек: 0');
     var range = [];
     var cells = $('#tableGrid').jqxGrid('getselectedcells');
     var selected_count = cells.length;
@@ -178,7 +178,7 @@ fetchcellcondition = function() {
                 var message;
                 //console.log(data.length);
                 if (data.length == 1) {
-                    message = data[0] == null ? "Для выделенного диапазона условия не определены" : 'Для выделенного диапазона определено условие: <strong>"' + data[0] + '"</strong>';
+                    message = data[0] == null ? "Для выделенного диапазона условия не определены (для всех учреждений)" : 'Для выделенного диапазона определено условие: <strong>"' + data[0] + '"</strong>';
                     $("#conditionInfo").html(message);
                 }
                 if (data.length > 1) {
@@ -283,6 +283,7 @@ initFormTableFilter = function() {
     });
     $('#tableList').on('rowSelect', function (event) {
         $("#tableListContainer").jqxDropDownButton('close');
+        $("#conditionInfo").html('Выделено ячеек: 0');
         var args = event.args;
         var r = args.row;
         current_table = args.key;
@@ -311,7 +312,6 @@ setcellrange = function(noedit) {
         //console.log(cells[i]);
         rowid = $('#tableGrid').jqxGrid('getrowid', cells[i].rowindex);
         range.push(rowid + '_' + cells[i].datafield);
-
     }
     var data = range + '/' + newstate + '/' + condition;
     $.ajax({
@@ -327,6 +327,8 @@ setcellrange = function(noedit) {
             }
             $("#tableGrid").jqxGrid('clearselection');
             $("#tableGrid").jqxGrid('updatebounddata', 'data');
+            $("#selectedInfo").html("Выделено ячеек: 0");
+            $("#conditionInfo").html("Условия не определены");
         },
         error: function (xhr, status, errorThrown) {
             $.each(xhr.responseJSON, function(field, errorText) {

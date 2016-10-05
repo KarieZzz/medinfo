@@ -19,7 +19,6 @@ class UnitGroupAdminController extends Controller
     }
 
     public function index()
-
     {
         $groups = UnitGroup::all(['id', 'group_name']);
         return view('jqxadmin.unit_groups', compact('groups'));

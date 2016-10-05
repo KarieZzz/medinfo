@@ -34,7 +34,8 @@ class DashboardController extends Controller
         $editpermission ? $editmode = 'Редактирование' : $editmode = 'Только чтение';
         $period = Period::find($document->period_id);
         $editedtables = Table::editedTables($document->id);
-        $noteditablecells = NECellsFetch::where('f', $form->id)->select('t', 'r', 'c')->get();
+        //$noteditablecells = NECellsFetch::where('f', $form->id)->select('t', 'r', 'c')->get();
+        $noteditablecells = NECellsFetch::byOuId($current_unit->id, $form->id);
         $renderingtabledata = $this->composeDataForTablesRendering($form, $editedtables);
         $laststate = $this->getLastState($worker, $document, $form);
         //return $datafortables;

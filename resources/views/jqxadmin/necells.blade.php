@@ -37,14 +37,14 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-sm-offset-1 col-sm-8">
+                        <div class="col-sm-offset-2 col-sm-8">
                             <button type="button" id="editable" class="btn btn-success">Разрешить редактирование</button>
                             <button type="button" id="noteditable" class="btn btn-danger">Запретить редактирование</button>
                         </div>
                     </div>
                 </form>
-                <div class="well" id="selectedInfo"></div>
-                <div class="well" id="conditionInfo"></div>
+                <div class="well" id="selectedInfo">Выделено ячеек: 0</div>
+                <div class="well" id="conditionInfo">Условия не определены</div>
             </div>
         </div>
     </div>
