@@ -285,8 +285,8 @@ var rendertoolbar = function (toolbar) {
     input2.click(function () { $("#Documents").jqxGrid('clearfilters'); input1.val('');});
     editform.click(function () {
         var rowindex = $('#Documents').jqxGrid('getselectedrowindex');
-        var document_id = $('#Documents').jqxGrid('getrowid', rowindex);
         if (rowindex !== -1) {
+            var document_id = $('#Documents').jqxGrid('getrowid', rowindex);
             var editWindow = window.open(edit_form_url + '/' + document_id);
         }
     });

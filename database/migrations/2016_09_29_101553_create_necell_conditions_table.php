@@ -17,6 +17,7 @@ class CreateNecellConditionsTable extends Migration
             $table->increments('id');
             $table->string('condition_name', 128)->unique();
             $table->integer('group_id')->index();
+            $table->boolean('exclude')->default(false);
             $table->timestamps();
         });
     }

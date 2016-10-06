@@ -26,6 +26,12 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label class="control-label col-sm-3" for="aggregate"></label>
+                        <div class="col-sm-2">
+                            <div id="exclude"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-7">
                             <button type="button" id="save" class="btn btn-default">Сохранить изменения</button>
                             <button type="button" id="insert" class="btn btn-default">Вставить новую запись</button>
@@ -48,6 +54,7 @@
     <script src="{{ asset('/jqwidgets/jqxbuttons.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxdropdownbutton.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxcheckbox.js') }}"></script>
+    <script src="{{ asset('/jqwidgets/jqxswitchbutton.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxlistbox.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxdropdownlist.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxgrid.js') }}"></script>

@@ -8,7 +8,7 @@ class NECellCondition extends Model
 {
     //
     protected $table = 'necell_conditions';
-    protected $fillable = ['condition_name', 'group_id'];
+    protected $fillable = ['condition_name', 'group_id', 'exclude'];
 
     public function group()
     {

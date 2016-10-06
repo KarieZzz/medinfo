@@ -22,6 +22,7 @@ initdatasources = function() {
         datafields: [
             { name: 'id', type: 'int' },
             { name: 'group_id', type: 'int' },
+            { name: 'exclude', type: 'int' },
             { name: 'gname', map: 'group>group_name', type: 'string' },
             { name: 'condition_name', type: 'string' }
         ],
@@ -46,7 +47,8 @@ initConditionList = function() {
                 { text: 'Id', datafield: 'id', width: '70px' },
                 { text: 'Id группы', datafield: 'group_id', width: '70px' },
                 { text: 'Наименование группы', datafield: 'gname', width: '300px' },
-                { text: 'Наименование', datafield: 'condition_name' , width: '500px'}
+                { text: 'Наименование условия', datafield: 'condition_name' , width: '430px'},
+                { text: 'Исключая', datafield: 'exclude', width: '70px' }
             ]
         });
     $('#conditionList').on('rowselect', function (event) {
@@ -54,6 +56,7 @@ initConditionList = function() {
         var row = event.args.row;
         $("#group_id").val(row.group_id);
         $("#condition_name").val(row.condition_name);
+        $("#exclude").val(row.exclude == 1);
     });
 };
 
@@ -80,11 +83,24 @@ initdropdowns = function() {
         width: 300,
         height: 34
     });
+    $('#exclude').jqxSwitchButton({
+        height: 31,
+        width: 450,
+        onLabel: 'Исключая',
+        offLabel: 'Включая выбранную группу',
+        checked: false });
+
+};
+
+setquerystring = function() {
+    return "&condition_name=" + $("#condition_name").val() +
+        "&group_id=" + $("#group_id").val() +
+        "&exclude=" + ($("#exclude").val() ? 1 :0);
 };
 
 initformactions = function() {
     $("#insert").click(function () {
-        var data = "&condition_name=" + $("#condition_name").val() + "&group_id=" + $("#group_id").val();
+        var data = setquerystring();
         $.ajax({
             dataType: 'json',
             url:  '/admin/necells/conditioncreate',
@@ -110,7 +126,7 @@ initformactions = function() {
             return false;
         }
         var rowid = $("#conditionList").jqxGrid('getrowid', row);
-        var data = "&condition_name=" + $("#condition_name").val() + "&group_id=" + $("#group_id").val();
+        var data = setquerystring();
         $.ajax({
             dataType: 'json',
             url: '/admin/necells/conditionsave/' + rowid,

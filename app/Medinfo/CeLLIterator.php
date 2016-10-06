@@ -11,10 +11,9 @@ use App\Table;
 
 class CeLLIterator
 {
-    public $table_id;
+    //public $table_id;
     public $current_cell = 0;
     private $_end = false;
-    //private $_doc_id;
     private $_ou_id;
     private $_form_id;
     private $_period;
@@ -26,9 +25,6 @@ class CeLLIterator
 
     public function __construct(Table $table)
     {
-        if (!$table) {
-            throw new Exception("Идентификатор таблицы не определен");
-        }
         $this->table = $table;
         $this->_rows = $this->table->rows->where('deleted', 0)->sortBy('row_index');
         $this->_columns = $this->table->columns->where('deleted', 0)->sortBy('column_index');
@@ -136,30 +132,5 @@ class CeLLIterator
         $this->current_cell = 0;
         return $this->_all_cells;
     }
-
-/*    public function setCollection_oftrcp()
-    {
-        $this->_all_cells = array();
-        $i = 0;
-        foreach ($this->_rows as $r) {
-            foreach ($this->_columns as $c) {
-                $oftrcp = 'O'. $this->_ou_id .'F'. $this->_form_id .'T'. $this->table->id .'R'. $r['row_id'] .'C'. $c['col_id'] .'P'. $this->_period;
-                if ($this->data_only_cells) {
-                    if ($c['content'] == 'data') {
-                        $this->_all_cells[$i] = array('t' => $this->table_id, 'r' => $r['row_id'], 'c' => $c['col_id'], 'oftrcp' => $oftrcp);
-                        $i++;
-                    }
-                }
-                else {
-                    $this->_all_cells[$i] = array('t' => $this->table_id, 'r' => $r['row_id'], 'c' => $c['col_id'], 'oftrcp' => $oftrcp);
-                    $i++;
-                }
-
-
-            }
-        }
-        $this->current_cell = 0;
-        return $this->_all_cells;
-    }*/
 
 }

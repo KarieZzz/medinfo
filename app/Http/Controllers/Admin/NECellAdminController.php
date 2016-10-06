@@ -119,9 +119,11 @@ class NECellAdminController extends Controller
         $this->validate($request, [
                 'condition_name' => 'required',
                 'group_id' => 'required|exists:unit_groups,id',
+                'exclude' => 'required|in:1,0',
             ]
         );
         try {
+            $request->exclude = $request->exclude == 1 ? true : false;
             $newcondition = NECellCondition::create($request->all());
             return ['message' => 'Новая запись создана. Id:' . $newcondition->id];
         } catch (\Illuminate\Database\QueryException $e) {
@@ -138,10 +140,12 @@ class NECellAdminController extends Controller
         $this->validate($request, [
                 'condition_name' => 'required',
                 'group_id' => 'required|exists:unit_groups,id',
+                'exclude' => 'required|in:1,0',
             ]
         );
         $condition->condition_name = $request->condition_name;
         $condition->group_id = $request->group_id;
+        $condition->exclude = $request->exclude == 1 ? true : false;
         $result = [];
         try {
             $condition->save();
