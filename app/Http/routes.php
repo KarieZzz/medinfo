@@ -65,7 +65,6 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('admin/fetchperiods', 'Admin\PeriodAdminController@fetchPeriods' );
     Route::post('admin/periods/create', 'Admin\PeriodAdminController@store');
     Route::patch('admin/periods/update', 'Admin\PeriodAdminController@update');
-
     Route::delete('admin/periods/delete/{period}', 'Admin\PeriodAdminController@delete');
 
     // Менеджер отчетных форм/таблиц
@@ -141,6 +140,12 @@ Route::group(['middleware' => ['web']], function () {
 
     // Аналитика: консолидированные отчеты, справки
     Route::get('reports/by_mo', 'ReportController@consolidateIndexes');
+
+    // Работа с lexer-parser
+    Route::get('lexer/test_lexer', 'StatDataInput\DataCheckController@func_parser');
+    Route::get('lexer/test_parser', 'StatDataInput\DataCheckController@test_parser');
+    Route::get('lexer/test_celllexer', 'StatDataInput\DataCheckController@test_celllexer');
+    Route::get('lexer/test_cellparser', 'StatDataInput\DataCheckController@test_cellparser');
 
 });
 

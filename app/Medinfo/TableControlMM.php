@@ -35,10 +35,10 @@ class TableControlMM
     public function __construct($doc_id = null, $table_id = null)
     {
         if (!$doc_id) {
-            throw new Exception("Для выполнения контроля по таблице необходимо указать Id документа");
+            throw new \Exception("Для выполнения контроля по таблице необходимо указать Id документа");
         }
         if (!$table_id) {
-            throw new Exception("Для выполнения контроля по таблице необходимо указать Id таблицы");
+            throw new \Exception("Для выполнения контроля по таблице необходимо указать Id таблицы");
         }
         $this->doc_id = $doc_id;
         $this->document = Document::find($doc_id);
@@ -552,8 +552,8 @@ class TableControlMM
                 $result = $lp < $rp;
                 break;
             case '<=' :
-            $result = $lp <= $rp;
-            break;
+                $result = $lp <= $rp;
+                break;
             case '^' :
                 $result = ($lp && $rp) || (!$lp && !$rp);
                 break;
@@ -598,12 +598,13 @@ class TableControlMM
         }
         $q = "SELECT MAX(updated_at) latest_edited FROM statdata WHERE doc_id = {$this->doc_id} AND table_id = {$this->table->id}";
         $updated_at = \DB::selectOne($q)->latest_edited;
-        if ($updated_at) {
+        return $updated_at ? new Carbon($updated_at) : Carbon::create(1900, 1, 1);
+/*        if ($updated_at) {
             return new Carbon($updated_at);
         } else {
             // Возвращаем объект с заведомо старой датой
             return Carbon::create(1900, 1, 1);
-        }
+        }*/
     }
 
     public static function tableContainsData(int $document, int $table)
@@ -613,10 +614,11 @@ class TableControlMM
         }
         $q = "SELECT SUM(value) sum_of_values FROM statdata WHERE doc_id = $document AND table_id = $table";
         $res = \DB::selectOne($q);
-        if ($res->sum_of_values > 0 ) {
+        return $res->sum_of_values > 0 ? true : false;
+/*        if ($res->sum_of_values > 0 ) {
             return true;
         } else {
             return false;
-        }
+        }*/
     }
 }
