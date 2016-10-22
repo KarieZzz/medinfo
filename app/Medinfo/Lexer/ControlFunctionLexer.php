@@ -19,6 +19,7 @@ class ControlFunctionLexer extends Lexer {
     const TABLEADRESS   = 14;
     const ROWADRESS     = 15;
     const COLUMNADRESS  = 16;
+    const NUMBER        = 17;
 
 
     public static $tokenNames = [
@@ -39,6 +40,7 @@ class ControlFunctionLexer extends Lexer {
         "TABLEADRESS",
         "ROWADRESS",
         "COLUMNADRESS",
+        "NUMBER",
     ];
     
     public function getTokenName($x)
@@ -59,6 +61,11 @@ class ControlFunctionLexer extends Lexer {
     public function isFUNCNAME()
     {
         return $this->c >= 'а' && $this->c <= 'я';
+    }
+
+    public function isNUMBER()
+    {
+        return $this->c == '.' || ($this->c >= '0' && $this->c <= '9');
     }
 
     public function isFORMCODE()
@@ -106,8 +113,7 @@ class ControlFunctionLexer extends Lexer {
                     return $this->tokenstack->push(self::COLON, ':');
                 case '+' :
                 case '-' :
-                    $this->consume();
-                    return $this->tokenstack->push(self::OPERATOR, $this->c == '+' ? '+' : '-');
+                    return $this->operator();
                 case '*' :
                     $this->consume();
                     return $this->tokenstack->push(self::MULTIPLY, '*');
@@ -120,6 +126,8 @@ class ControlFunctionLexer extends Lexer {
                     return $this->boolean_sign();
                 case $this->c >= 'а' && $this->c <= 'я':
                     return $this->function_name();
+                case $this->c >= '0' && $this->c <= '9':
+                    return $this->number();
                 case 'Ф':
                     return $this->formAdress();
                 case 'Т':
@@ -146,6 +154,13 @@ class ControlFunctionLexer extends Lexer {
         return $this->tokenstack->push(self::BOOLEAN, $buf);
     }
 
+    public function operator()
+    {
+        $operator = $this->c == '+' ? '+' : '-';
+        $this->consume();
+        return $this->tokenstack->push(self::OPERATOR, $operator);
+    }
+
     public function function_name()
     {
         $buf = '';
@@ -154,6 +169,16 @@ class ControlFunctionLexer extends Lexer {
             $this->consume();
         } while ($this->isFUNCNAME());
         return $this->tokenstack->push(self::NAME, $buf);
+    }
+
+    public function number()
+    {
+        $buf = '';
+        do {
+            $buf .= $this->c;
+            $this->consume();
+        } while ($this->isNUMBER());
+        return $this->tokenstack->push(self::NUMBER, $buf);
     }
 
     public function formAdress()

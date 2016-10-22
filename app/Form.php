@@ -20,4 +20,10 @@ class Form extends Model
         return $this->hasMany('App\Table');
     }
 
+    public function scopeOfCode($query, $code)
+    {
+        return $query
+            ->where('form_code', $code);
+    }
+
 }

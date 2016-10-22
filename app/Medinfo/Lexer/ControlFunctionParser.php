@@ -56,20 +56,21 @@ class ControlFunctionParser extends Parser {
     }
     // элемент в выражении - или адрес ячейки, или функция "сумма"
     public function element() {
-        $r = new ControlFunctionParseTree(__FUNCTION__);
-        $o = $this->currentNode;
-        $this->currentNode->addChild($r);
-        $this->currentNode = $r;
-
-        if ($this->lookahead->type == ControlFunctionLexer::FORMADRESS ) {
+        //$r = new ControlFunctionParseTree(__FUNCTION__);
+        //$o = $this->currentNode;
+        //$this->currentNode->addChild($r);
+        //$this->currentNode = $r;
+        if ($this->lookahead->type == ControlFunctionLexer::NUMBER ) {
+            $this->number();
+        } elseif ($this->lookahead->type == ControlFunctionLexer::FORMADRESS ) {
             $this->celladress();
         } elseif ($this->lookahead->type == ControlFunctionLexer::NAME && $this->lookahead->text == 'сумма') {
             $this->summfunction();
         } else {
-            throw new \Exception("Ожидался адрес ячейки или функция сумма. Найдено: "  . $this->lookahead);
+            throw new \Exception("Ожидалось число, адрес ячейки или функция 'сумма'. Найдено: " . $this->lookahead);
         }
 
-        $this->currentNode = $o;
+        //$this->currentNode = $o;
     }
 
     public function operator()
@@ -80,6 +81,18 @@ class ControlFunctionParser extends Parser {
         $this->currentNode = $r;
 
         $this->match(ControlFunctionLexer::OPERATOR); // Пока предусмотрено только сложение и вычитание
+
+        $this->currentNode = $o;
+    }
+
+    public function number()
+    {
+        $r = new ControlFunctionParseTree(__FUNCTION__);
+        $o = $this->currentNode;
+        $this->currentNode->addChild($r);
+        $this->currentNode = $r;
+
+        $this->match(ControlFunctionLexer::NUMBER); // Пока предусмотрено только сложение и вычитание
 
         $this->currentNode = $o;
     }
@@ -135,7 +148,7 @@ class ControlFunctionParser extends Parser {
         $this->currentNode->addChild($r);
         $this->currentNode = $r;
 
-        $this->match(ControlFunctionLexer::BOOLEAN); // Третий агрумент - пока только знак сравнения - нужно затем заменить на булевые символы
+        $this->match(ControlFunctionLexer::BOOLEAN);
 
         $this->currentNode = $o;
     }
@@ -143,7 +156,7 @@ class ControlFunctionParser extends Parser {
     public function iterations()
     {
         $r = new ControlFunctionParseTree(__FUNCTION__);
-        $o = $this->currentNode; // сохраняем текущий узел, что бы вернутся к нему в конце функции
+        $o = $this->currentNode;
         $this->currentNode->addChild($r);
         $this->currentNode = $r;
 
@@ -158,7 +171,7 @@ class ControlFunctionParser extends Parser {
     public function scope()
     {
         $r = new ControlFunctionParseTree(__FUNCTION__);
-        $o = $this->currentNode; // сохраняем текущий узел, что бы вернутся к нему в конце функции
+        $o = $this->currentNode;
         $this->currentNode->addChild($r);
         $this->currentNode = $r;
 
@@ -173,7 +186,7 @@ class ControlFunctionParser extends Parser {
     public function group_name()
     {
         $r = new ControlFunctionParseTree(__FUNCTION__);
-        $o = $this->currentNode; // сохраняем текущий узел, что бы вернутся к нему в конце функции
+        $o = $this->currentNode;
         $this->currentNode->addChild($r);
         $this->currentNode = $r;
 
@@ -188,7 +201,7 @@ class ControlFunctionParser extends Parser {
     public function iteration_range()
     {
         $r = new ControlFunctionParseTree(__FUNCTION__);
-        $o = $this->currentNode; // сохраняем текущий узел, что бы вернутся к нему в конце функции
+        $o = $this->currentNode;
         $this->currentNode->addChild($r);
         $this->currentNode = $r;
 
