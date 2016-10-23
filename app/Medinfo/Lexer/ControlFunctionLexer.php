@@ -137,7 +137,7 @@ class ControlFunctionLexer extends Lexer {
                 case 'Г':
                     return $this->columnAdress();
                 default :
-                    throw new \Exception("Invalid character: " . $this->c);
+                    throw new \Exception("Неверный символ: " . $this->c);
             }
         }
         return $this->tokenstack->push(self::EOF_TYPE,"EOF");

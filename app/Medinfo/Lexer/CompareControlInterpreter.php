@@ -18,14 +18,16 @@ use App\Cell;
 class CompareControlInterpreter
 {
     public $root;
-    public $lpExpression; // node левая часть сравнения
-    public $rpExpression; // node правая часть сравнения
+    public $lpExpressionRoot; // node левая часть сравнения до интерации по неполным ссылкам
+    public $rpExpressionRoot; // node правая часть сравнения до итерации по неполным ссылкам
     public $boolean; // знак сравнения в контроле
     public $unitScope; // область приложения функции (группы учреждений)
     public $iterationMode; // режим перебора - без перебора(null) по строкам(1) и графам(2) при внутритабличном контроле
     public $iterationRange; // собственно диапазон строк или граф для подстановки значений
+    public $lpStack = [];
+    public $rpStack = [];
 
-    // все по таблице текущего документа
+    // все по текущему документу
     public $document;
     public $unit;
     public $period;
@@ -46,29 +48,132 @@ class CompareControlInterpreter
 
     public function setArguments()
     {
-        $this->lpExpression = $this->root->children[0];
-        $this->rpExpression = $this->root->children[1];
+        $this->lpExpressionRoot = $this->root->children[0];
+        $this->rpExpressionRoot = $this->root->children[1];
         $this->boolean = $this->root->children[2]->tokens[0]->text;
         if (isset($this->root->children[3]->children[0]->tokens[0])) {
             $this->unitScope = $this->root->children[3]->children[0]->tokens[0]->text;
         }
         if (count($this->root->children[4]->children[0]->tokens)) {
-            $this->iterationRange = $this->root->children[4]->children[0]->tokens[0]->text;
+            $this->iterationMode = $this->root->children[4]->tokens[0]->text == 'строки' ? 1 : 2;
+            $this->setIterationRange($this->root->children[4]->children[0]->tokens);
         }
-        $this->iterationMode = $this->root->children[4]->tokens[0]->text == 'строки' ? 1 : 2;
+        $this->rewrite_summfunctions($this->lpExpressionRoot);
+        $this->rewrite_summfunctions($this->rpExpressionRoot);
+
+        if ($this->iterationMode) {
+            foreach($this->iterationRange as $iteration) {
+                $lpRootCopy = unserialize(serialize($this->lpExpressionRoot)); // clone не работает, нужно разобраться
+                $rpRootCopy = unserialize(serialize($this->rpExpressionRoot));
+
+                $this->lpStack[] = $this->fillIncompleteLinks($lpRootCopy, $iteration);
+                $this->rpStack[] = $this->fillIncompleteLinks($rpRootCopy, $iteration);
+            }
+        }
+        //dd($this->rpStack[10]);
+    }
+
+    public function fillIncompleteLinks($expression, $link)
+    {
+        $token_index = $this->iterationMode == 1 ? 2 : 3;
+        $prefix = $this->iterationMode == 1 ? 'С' : 'Г';
+        foreach($expression->children as $element) {
+            if ($element->rule == 'celladress') {
+                $element->tokens[$token_index]->text = $prefix . $link;
+            }
+        }
+        return $expression;
     }
 
     public function exec(Document $document)
     {
         $this->document = $document;
-        $this->rewrite_summfunctions($this->lpExpression);
-        $this->rewrite_summfunctions($this->rpExpression);
-        $this->rewrite_celladresses($this->lpExpression);
-        $this->rewrite_celladresses($this->rpExpression);
-        dd($this->rpExpression);
+        $compare_results = [];
+        if ($this->iterationMode) {
+            for($i = 0; $i < count($this->iterationRange); $i++) {
+                $this->rewrite_celladresses($this->lpStack[$i]);
+                $this->rewrite_celladresses($this->rpStack[$i]);
+                $lp_result = $this->calculate($this->lpStack[$i]);
+                $rp_result = $this->calculate($this->rpStack[$i]);
+                $compare_results[] = $this->chekoutRule($lp_result, $rp_result);
+            }
+        } else {
+            $this->rewrite_celladresses($this->lpExpressionRoot);
+            $this->rewrite_celladresses($this->rpExpressionRoot);
+            $lp_result = $this->calculate($this->lpExpressionRoot);
+            $rp_result = $this->calculate($this->rpExpressionRoot);
+            $compare_results[] = $this->chekoutRule($lp_result, $rp_result);
+        }
+
+
+        return $compare_results;
+        //dd($compare_result);
     }
 
-    public function rewrite_summfunctions($expression)
+    public function setIterationRange(array $iteration_tokens)
+    {
+        if ($iteration_tokens[0]->text == '*') { // итерация по всем строкам или графам
+            if ($this->iterationMode == 1) {
+                $this->iterationRange = Row::OfTable($this->table->id)->where('deleted', 0)->pluck('row_code')->toArray();
+            } elseif ($this->iterationMode == 2) {
+                $this->iterationRange = Column::OfTable($this->table->id)->OfDataType()->where('deleted', 0)->pluck('column_index')->toArray();
+            }
+        } else { // подразумевается, что приведено перечисление строк или граф по которым нужно переписать неполные ссылки
+            foreach ($iteration_tokens as $iteration_token) {
+                if ($iteration_token->type == ControlFunctionLexer::NUMBER) {
+                    $this->iterationRange[] = $iteration_token->text;
+                }
+            }
+        }
+
+        //dd($this->iterationRange);
+    }
+
+    public function calculate(ParseTree $expression)
+    {
+        $eval_stack = [];
+        foreach($expression->children as $element) {
+            if ($element->rule == 'operator' || $element->rule == 'number' ) {
+                $eval_stack[] = $element->tokens[0]->text;
+            }
+        }
+        $result = eval('return ' . implode('', $eval_stack). ';');
+        return $result;
+    }
+
+    private function chekoutRule($lp, $rp)
+    {
+        $delta = 0.0001;
+        // Если обе части выражения равны нулю - пропускаем проверку.
+        if ($lp == 0 && $rp == 0) {
+            return true;
+        }
+        switch ($this->boolean) {
+            case '=' :
+                $result = abs($lp - $rp) < $delta ? true : false;
+                break;
+            case '>' :
+                $result = $lp > $rp;
+                break;
+            case '>=' :
+                $result = $lp >= $rp;
+                break;
+            case '<' :
+                $result = $lp < $rp;
+                break;
+            case '<=' :
+                $result = $lp <= $rp;
+                break;
+            case '^' :
+                $result = ($lp && $rp) || (!$lp && !$rp);
+                break;
+            default:
+                $result = false;
+        }
+        return $result;
+    }
+
+    public function rewrite_summfunctions(ParseTree $expression)
     {
         $this->currentNode = $expression;
         $elementcount = count($expression->children);
@@ -88,23 +193,14 @@ class CompareControlInterpreter
         }
     }
 
-    public function rewrite_celladresses($expression)
+    public function rewrite_celladresses(ParseTree $expression)
     {
         $this->currentNode = $expression;
-        //$elementcount = count($expression->children);
-        //$celladress_ids = [];
-        //for ($i = 0; $i < $elementcount; $i++) {
         foreach($expression->children as $element) {
             if ($element->rule == 'celladress') {
                 $this->reduce_celladress($element);
-                //$celladress_ids[] = $i;
             }
         }
-        // После редуцирования найденных функций удаляем выбранные узлы и предыдущий по отношению к ним оператор
-        //foreach($celladress_ids as $id) {
-        //  unset($expression->children[$id]);
-        //unset($expression->children[$id-1]);
-        //}
     }
 
     public function reduce_summfunction(ParseTree $sf)
@@ -163,13 +259,19 @@ class CompareControlInterpreter
     {
         $form_code = mb_substr($celladress->tokens[0]->text, 1);
         $table_code = mb_substr($celladress->tokens[1]->text, 1);
+
         $row_code = mb_substr($celladress->tokens[2]->text, 1);
+        if (!$row_code) {
+            throw new \Exception("Неполная ссылка (при отстутствии функции итерации по строкам). Не указан код строки. Получить значение ячейки невозможно");
+        }
         $column_index = mb_substr($celladress->tokens[3]->text, 1);
+        if (!$column_index) {
+            throw new \Exception("Не указан индекс графы (при отстутствии функции итерации по графам). Получить значение ячейки невозможно");
+        }
 
         $row = Row::ofTable($this->table->id)->where('row_code', $row_code)->first();
         $column = Column::ofTable($this->table->id)->where('column_index', $column_index)->first();
         $cell = Cell::ofDTRC($this->document->id, $this->table->id, $row->id, $column->id)->first();
-        //$newcellnode = new ControlFunctionParseTree('number');
         $value = $cell ? $cell->value : 0;
         $celladress->rule = 'number';
         $celladress->tokens = [];

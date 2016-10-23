@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Row extends Model
 {
     //
-    protected $fillable = ['table_id', 'row_index', 'row_code', 'row_name', 'medstat_code', 'medinfo_id' ];
+    protected $fillable = ['table_id', 'row_index', 'row_code', 'row_name', 'medstat_code', 'medinfo_id', 'deleted' ];
 
     public function table()
     {

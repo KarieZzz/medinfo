@@ -207,7 +207,15 @@ class ControlFunctionParser extends Parser {
 
         if ($this->lookahead->type == ControlFunctionLexer::MULTIPLY ) {
             $this->match(ControlFunctionLexer::MULTIPLY);
+        } elseif ($this->lookahead->type == ControlFunctionLexer::NUMBER) {
+            $this->match(ControlFunctionLexer::NUMBER);
+            while ($this->lookahead->type == ControlFunctionLexer::COMMA ) {
+                $this->match(ControlFunctionLexer::COMMA);
+                $this->match(ControlFunctionLexer::NUMBER);
+
+            }
         }
+
         $this->currentNode = $o;
     }
 }

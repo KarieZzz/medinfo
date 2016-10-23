@@ -37,7 +37,7 @@ abstract class Lexer {
         if ( $this->c == $x) {
             $this->consume();
         } else {
-            throw new \Exception("expecting " . $x . "; found " . $this->c );
+            throw new \Exception("Ожидался символ " . $x . "; найден " . $this->c );
         }
     }
 
