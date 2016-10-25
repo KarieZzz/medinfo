@@ -21,7 +21,6 @@ class ControlFunctionLexer extends Lexer {
     const COLUMNADRESS  = 16;
     const NUMBER        = 17;
 
-
     public static $tokenNames = [
         "n/a",
         "EOF",

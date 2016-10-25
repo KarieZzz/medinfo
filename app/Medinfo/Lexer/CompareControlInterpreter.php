@@ -26,6 +26,9 @@ class CompareControlInterpreter
     public $iterationRange; // собственно диапазон строк или граф для подстановки значений
     public $lpStack = [];
     public $rpStack = [];
+    public $readableFormula; // отображение формулы контроля в более удобочитаемом виде
+    public $pad = ' ';
+    public $results; // Протокол выполнения функции
 
     // все по текущему документу
     public $document;
@@ -58,6 +61,7 @@ class CompareControlInterpreter
             $this->iterationMode = $this->root->children[4]->tokens[0]->text == 'строки' ? 1 : 2;
             $this->setIterationRange($this->root->children[4]->children[0]->tokens);
         }
+        $this->prepareReadable();
         $this->rewrite_summfunctions($this->lpExpressionRoot);
         $this->rewrite_summfunctions($this->rpExpressionRoot);
 
@@ -71,6 +75,67 @@ class CompareControlInterpreter
             }
         }
         //dd($this->rpStack[10]);
+    }
+
+    public function prepareReadable()
+    {
+        $lp = $this->writeReadableCellAdresses($this->lpExpressionRoot);
+        $rp = $this->writeReadableCellAdresses($this->rpExpressionRoot);
+        $this->readableFormula = implode('', $lp) . ' ' . $this->boolean . ' ' . implode('', $rp);
+        $this->results['boolean_sign'] = $this->boolean;
+        $this->results['left_part_formula'] = implode('', $lp);
+        $this->results['right_part_formula'] = implode('', $rp);
+    }
+
+    public function writeReadableCellAdresses(ParseTree $expression)
+    {
+        $expession_elements = [];
+        foreach($expression->children as $element) {
+            switch ($element->rule) {
+                case  'celladress' :
+                    $expession_elements = array_merge( $expession_elements, $this->rewriteCodes($element->tokens));
+                    break;
+                case 'operator' :
+                case 'number' :
+                    $expession_elements[] = $this->pad . $element->tokens[0]->text . $this->pad;
+                    break;
+                case 'summfunction' :
+                    $expession_elements[] = 'сумма';
+                    $expession_elements[] = '(';
+                    $expession_elements = array_merge(
+                        $expession_elements,
+                        $this->rewriteCodes($element->children[0]->children[0]->tokens),
+                        [' по '],
+                        $this->rewriteCodes($element->children[0]->children[1]->tokens));
+                    $expession_elements[] = ')';
+                    break;
+            }
+        }
+        return $expession_elements;
+    }
+
+    public function rewriteCodes($elements)
+    {
+        //dd($elements);
+        $expession_elements = [];
+        $form_code = mb_substr($elements[0]->text, 1);
+        //dd($this->form);
+        if ( $this->form->form_code !==  $form_code) {
+            $expession_elements[] = 'ф.' . $form_code;
+        }
+        $table_code = mb_substr($elements[1]->text, 1);
+        if ( $this->table->table_code !==  $table_code) {
+            $expession_elements[] = 'т.' . $table_code;
+        }
+        $row_code = mb_substr($elements[2]->text, 1);
+        if ( $row_code) {
+            $expession_elements[] = 'с.' . $row_code;
+        }
+        $column_code = mb_substr($elements[3]->text, 1);
+        if ( $column_code) {
+            $expession_elements[] = 'г.' . $column_code;
+        }
+        return $expession_elements;
     }
 
     public function fillIncompleteLinks($expression, $link)
@@ -88,25 +153,34 @@ class CompareControlInterpreter
     public function exec(Document $document)
     {
         $this->document = $document;
-        $compare_results = [];
+        $result = &$this->results['iterations'];
+        $this->results['valid'] = true;
         if ($this->iterationMode) {
             for($i = 0; $i < count($this->iterationRange); $i++) {
                 $this->rewrite_celladresses($this->lpStack[$i]);
                 $this->rewrite_celladresses($this->rpStack[$i]);
                 $lp_result = $this->calculate($this->lpStack[$i]);
                 $rp_result = $this->calculate($this->rpStack[$i]);
-                $compare_results[] = $this->chekoutRule($lp_result, $rp_result);
+                $result[$i]['left_part_value'] = $lp_result;
+                $result[$i]['right_part_value'] = $rp_result;
+                $result[$i]['deviation'] = abs(round($rp_result-$lp_result, 3));
+                $result[$i]['valid'] = $this->chekoutRule($lp_result, $rp_result);
+                $this->results['valid'] = $this->results['valid'] && $result[$i]['valid'];
             }
         } else {
             $this->rewrite_celladresses($this->lpExpressionRoot);
             $this->rewrite_celladresses($this->rpExpressionRoot);
             $lp_result = $this->calculate($this->lpExpressionRoot);
             $rp_result = $this->calculate($this->rpExpressionRoot);
-            $compare_results[] = $this->chekoutRule($lp_result, $rp_result);
+            $result[0]['left_part_value'] = $lp_result;
+            $result[0]['right_part_value'] = $rp_result;
+            $result[0]['deviation'] = abs(round($rp_result-$lp_result, 3));
+            $result[0]['valid'] = $this->chekoutRule($lp_result, $rp_result);
+            $this->results['valid'] = $result[0]['valid'];
         }
 
 
-        return $compare_results;
+        return $this->results;
         //dd($compare_result);
     }
 
@@ -293,12 +367,12 @@ class CompareControlInterpreter
         $matrix = [];
         $f = 'Ф' . $this->currentForm->form_code;
         $t = 'Т' . $this->currentTable->table_code;
-        if (count($columns) == 0) { // Неполная ссылка по графам
+        if (count($columns) === 0) { // Неполная ссылка по графам
             foreach($rows as $row) {
                 $r = 'C' . $row;
                 $matrix[] = [ $f, $t, $r , 'Г' ];
             }
-        } elseif(count($rows) == 0) { // неполная ссылка по строкам
+        } elseif(count($rows) === 0) { // неполная ссылка по строкам
             foreach($columns as $column) {
                 $c = 'Г' . $column;
                 $matrix[] = [ $f, $t, 'С' , $c ];

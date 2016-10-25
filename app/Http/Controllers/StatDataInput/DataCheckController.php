@@ -19,14 +19,13 @@ class DataCheckController extends Controller
     //
     public function func_parser()
     {
-        $init = '0101';
         $real = 'сравнение(
                     Ф30Т1100С1Г,
-                    сумма(Ф30Т1100С4Г:Ф30Т1100С45Г) + сумма(Ф30Т1100С48Г:Ф30Т1100С67Г) + Ф30Т1100С69Г + Ф30Т1100С71Г
+                    3.14 + сумма(Ф30Т1100С4Г:Ф30Т1100С45Г) + сумма(Ф30Т1100С48Г:Ф30Т1100С67Г) + Ф30Т1100С69Г + Ф30Т1100С71Г
                         + Ф30Т1100С73Г + сумма(Ф30Т1100С75Г:Ф30Т1100С96Г) + сумма(Ф30Т1100С101Г:Ф30Т1100С109Г) + сумма(Ф30Т1100С111Г:Ф30Т1100С122Г),
                     =,
                     группы(*),
-                    графы(5,6)
+                    графы(4,5 )
                 )';
 /*        $real = 'сравнение(
                     Ф30Т1100С1Г3,
@@ -41,7 +40,7 @@ class DataCheckController extends Controller
             $document = Document::find(7011);
             $lexer = new ControlFunctionLexer($real);
             $parser = new ControlFunctionParser($lexer);
-            $interpret = new CompareControlInterpreter($parser->controlFunction(), $document->id, $table);
+            $interpret = new CompareControlInterpreter($parser->controlFunction(), $document->form_id, $table);
         dd( $interpret->exec($document));
             $result = $interpret->exec($document) ? 'Правильно' : 'Ошибка';
             echo 'Результат выполнения контроля: ' . $result;
