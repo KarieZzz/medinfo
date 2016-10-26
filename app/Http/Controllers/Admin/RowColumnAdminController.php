@@ -22,9 +22,11 @@ class RowColumnAdminController extends Controller
 
     public function index()
     {
-        $forms = Form::orderBy('form_index')->with('tables')->get(['id', 'form_code']);
-        $tables = Table::orderBy('form_id')->orderBy('table_index')->get(['id', 'form_id', 'table_code']);
-        return view('jqxadmin.rowcolumns', compact('forms', 'tables'));
+        //$forms = Form::orderBy('form_index')->with('tables')->get(['id', 'form_code']);
+        $forms = Form::orderBy('form_index')->get(['id', 'form_code']);
+        //$tables = Table::orderBy('form_id')->orderBy('table_index')->get(['id', 'form_id', 'table_code']);
+        //return view('jqxadmin.rowcolumns', compact('forms', 'tables'));
+        return view('jqxadmin.rowcolumns', compact('forms'));
     }
 
     public function fetchTables(int $form)
@@ -62,9 +64,9 @@ class RowColumnAdminController extends Controller
             $row->save();
             $result = ['message' => 'Запись id ' . $row->id . ' сохранена'];
         } catch (\Illuminate\Database\QueryException $e) {
-            $errorCode = $e->errorInfo[1];
+            $errorCode = $e->errorInfo[0];
             // duplicate key value - код ошибки 7 при использовании PostgreSQL
-            if($errorCode == 7){
+            if($errorCode == '23505'){
                 $result = ['error' => 422, 'message' => 'Запись не сохранена. Дублирование данных.'];
             }
         }
@@ -93,9 +95,9 @@ class RowColumnAdminController extends Controller
             $newrow->save();
             return ['message' => 'Новая запись создана. Id:' . $newrow->id];
         } catch (\Illuminate\Database\QueryException $e) {
-            $errorCode = $e->errorInfo[1];
+            $errorCode = $e->errorInfo[0];
             switch ($errorCode) {
-                case 7:
+                case '23505':
                     $message = 'Запись не сохранена. Дублирующиеся значения.';
                     break;
                 default:

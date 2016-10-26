@@ -5,7 +5,7 @@
     <div>
         <div style="padding: 15px" class="form-horizontal">
             <div class="form-group">
-                <div class="alert alert-danger" id="confirmMessage"></div>
+                <div class="alert alert-danger" id="confirmMessage">Подтвердите действие</div>
             </div>
             <div class="form-group">
                 <div class="col-sm-offset-3 col-sm-6">

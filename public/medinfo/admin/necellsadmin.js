@@ -15,31 +15,7 @@ initsplitter = function() {
         }
     );
 };
-initFilterDatasources = function() {
-    var formssource =
-    {
-        datatype: "json",
-        datafields: [
-            { name: 'id' },
-            { name: 'form_code' }
-        ],
-        id: 'id',
-        localdata: forms
-    };
-    formsDataAdapter = new $.jqx.dataAdapter(formssource);
-    tablesource =
-    {
-        datatype: "json",
-        datafields: [
-            { name: 'id' },
-            { name: 'table_code' },
-            { name: 'table_name' }
-        ],
-        id: 'id',
-        url: tablefetch_url + current_form
-    };
-    tablesDataAdapter = new $.jqx.dataAdapter(tablesource);
-};
+
 initdatasources = function() {
     gridsource = {
         datatype: "json",
@@ -196,12 +172,11 @@ fetchcellcondition = function() {
     }
     $("#selectedInfo").html("Выделено ячеек: " + cells.length);
 };
-// Обновление списка таблиц при выборе формы
-updateTableDropdownList = function(form) {
-    tablesource.url = tablefetch_url + current_form;
-    $("#tableListContainer").jqxDropDownButton('setContent', '<div style="margin-top: 9px">Выберите таблицу из формы ' + form.label + '</div>');
-    $("#tableList").jqxDataTable('updateBoundData');
+
+updateRelated = function() {
+    updateTableGrid();
 };
+
 // Обновление списка строк при выборе таблицы
 updateTableGrid = function() {
     $.ajax({
@@ -246,51 +221,7 @@ updateTableGrid = function() {
 
     //console.log(datafields);
 };
-// Инициализация списков-фильтров форма -> таблица
-initFormTableFilter = function() {
-    $("#formList").jqxDropDownList({
-        theme: theme,
-        source: formsDataAdapter,
-        displayMember: "form_code",
-        valueMember: "id",
-        placeHolder: "Выберите форму:",
-        //selectedIndex: 2,
-        width: 200,
-        height: 32
-    });
-    $('#formList').on('select', function (event) {
-        var args = event.args;
-        current_form = args.item.value;
-        updateTableDropdownList(args.item);
-    });
-    $("#tableListContainer").jqxDropDownButton({ width: 250, height: 32, theme: theme });
-    $("#tableList").jqxDataTable({
-        theme: theme,
-        source: tablesDataAdapter,
-        width: 420,
-        height: 400,
-        columns: [{
-            text: 'Код',
-            dataField: 'table_code',
-            width: 100
-            },
-            {
-                text: 'Наименование',
-                dataField: 'table_name',
-                width: 300
-            }
-        ]
-    });
-    $('#tableList').on('rowSelect', function (event) {
-        $("#tableListContainer").jqxDropDownButton('close');
-        $("#conditionInfo").html('Выделено ячеек: 0');
-        var args = event.args;
-        var r = args.row;
-        current_table = args.key;
-        $("#tableProperties").html('Таблица: (' + r.table_code + ') ' + r.table_name);
-        updateTableGrid();
-    });
-};
+
 // Операции с ячейками
 initCellActions = function() {
     $("#noteditable").click(function () {

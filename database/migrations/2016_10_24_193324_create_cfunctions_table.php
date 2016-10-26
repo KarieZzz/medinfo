@@ -18,7 +18,8 @@ class CreateCfunctionsTable extends Migration
             $table->integer('table_id')->index();
             $table->smallInteger('level')->index();
             $table->string('script', 512);
-            $table->string('comment', 128);
+            $table->string('comment', 128)->nullable();
+            $table->boolean('blocked')->default(false);
             $table->boolean('compiled');
             $table->text('compiled_cashe')->nullable();
             $table->timestamps();

@@ -61,15 +61,15 @@ class MOAdminController extends Controller
             $newunit->save();
             return ['message' => 'Новая запись создана. Id:' . $newunit->id];
         } catch (\Illuminate\Database\QueryException $e) {
-            $errorCode = $e->errorInfo[1];
+            $errorCode = $e->errorInfo[0];
             switch ($errorCode) {
-                case 7:
+                case '23505':
                     $message = 'Запись не сохранена. Дублирующиеся значения.';
                     break;
                 default:
                     $message = 'Новая запись не создана. Код ошибки ' . $errorCode . '.';
                     break;
-            }
+        }
             return ['error' => 422, 'message' => $message];
         }
     }
@@ -103,9 +103,9 @@ class MOAdminController extends Controller
             $unit->save();
             $result = ['message' => 'Запись id ' . $unit->id . ' сохранена'];
         } catch (\Illuminate\Database\QueryException $e) {
-            $errorCode = $e->errorInfo[1];
+            $errorCode = $e->errorInfo[0];
             // duplicate key value - код ошибки 7 при использовании PostgreSQL
-            if($errorCode == 7){
+            if($errorCode == '23505'){
                 $result = ['error' => 422, 'message' => 'Запись не сохранена. Дублирование данных.'];
             }
         }

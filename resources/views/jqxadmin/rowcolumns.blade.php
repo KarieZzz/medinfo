@@ -4,23 +4,7 @@
 @section('headertitle', 'Менеджер строк м граф отчетных форм')
 
 @section('content')
-<div class="row">
-    <div class="col-sm-2"><h4 class="text-right">Выберите форму и таблицу</h4></div>
-    <div class="col-sm-4">
-        <form style="margin-top: 3px" class="form-inline">
-            <div class="form-group">
-                <div id="formList"></div>
-            </div>
-            <div class="form-group">
-                <div id="tableListContainer">
-                    <div id="tableList"></div>
-                </div>
-            </div>
-        </form>
-    </div>
-    <div id="tableProperties" class="col-sm-6 text-nowrap"></div>
-</div>
-
+    @include('jqxadmin.table_picker')
 <div id="mainSplitter" >
     <div>
         <div id="rowList" style="margin: 10px"></div>
@@ -151,6 +135,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
+    <script src="{{ asset('/medinfo/admin/tablepicker.js') }}"></script>
     <script src="{{ asset('/medinfo/admin/rcadmin.js') }}"></script>
 @endpush
 
@@ -168,7 +153,6 @@
         var rowfetch_url = '/admin/rc/fetchrows/';
         var columnfetch_url = '/admin/rc/fetchcolumns/';
         var forms = {!! $forms  !!};
-        //var tables = {!! $tables !!};
         var current_form = 0;
         var current_table = 0;
         initFilterDatasources();

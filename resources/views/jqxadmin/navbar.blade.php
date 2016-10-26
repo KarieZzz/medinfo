@@ -34,6 +34,15 @@
                 </ul>
             </li>
             <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Аналитика
+                    <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="/admin/cfunctions">Функции контроля</a></li>
+                    <li><a href="#">Консолидированные формы</a></li>
+                    <li><a href="#">Отчеты</a></li>
+                </ul>
+            </li>
+            <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">Организационные единицы
                     <span class="caret"></span></a>
                 <ul class="dropdown-menu">

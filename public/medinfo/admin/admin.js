@@ -1,7 +1,7 @@
 /**
  * Created by shameev on 31.08.2016.
  */
-var raiseError = function(comment, xhr) {
+raiseError = function(comment, xhr) {
     if (typeof comment == 'undefined') {
         var comment = 'Ошибка получения данных ';
     }
@@ -13,7 +13,7 @@ var raiseError = function(comment, xhr) {
     $("#currentError").text(comment + add_inf);
     $("#serverErrorNotification").jqxNotification("open");
 };
-var raiseInfo = function(comment) {
+raiseInfo = function(comment) {
     if (typeof comment == 'undefined') {
         comment = 'Текст информационного сообщения по умолчанию ';
     }
@@ -21,17 +21,16 @@ var raiseInfo = function(comment) {
     $("#infoNotification").jqxNotification("open");
 };
 
-raiseConfirm = function(confirmMessage, event) {
-    //event.stopImmediatePropagation();;
-    $("#okButton").off( "click" );
+raiseConfirm = function(confirmMessage) {
     $("#confirmMessage").html(confirmMessage);
-    $('#confirmPopup').jqxWindow('open');
+    confirmpopup.jqxWindow('open');
 };
+
 hideConfirm = function() {
     $('#confirmPopup').jqxWindow('close');
 };
 
-var localize = function() {
+localize = function() {
     var localizationobj = {};
     localizationobj.thousandsseparator = " ";
     localizationobj.emptydatastring = "Нет данных";
@@ -40,7 +39,7 @@ var localize = function() {
     localizationobj.filtersearchstring = "Поиск:";
     return localizationobj;
 };
-var initnotifications = function() {
+initnotifications = function() {
     $("#serverErrorNotification").jqxNotification({
         width: 250, position: "top-right", opacity: 0.9,
         autoOpen: false, animationOpenDelay: 600, autoClose: true, autoCloseDelay: 8000, template: "error"
@@ -51,18 +50,20 @@ var initnotifications = function() {
     });
 }
 
-var initConfirmWindow = function() {
-    var confirm = $('#confirmPopup').jqxWindow({
+initConfirmWindow = function() {
+    var cbutton = $('#cancelButton');
+    var okbutton = $('#okButton');
+    confirmpopup.jqxWindow({
         width: 400,
         height: 250,
         resizable: false,
         autoOpen: false,
         isModal: true,
-        okButton: $('#okButton'),
-        cancelButton: $('#cancelButton')
+        okButton: okbutton,
+        cancelButton: cbutton
     });
-    $("#cancelButton").click( function() { return false } );
-    $('#confirmPopup').on('close', function (event) {
+    okbutton.click( function() { performAction() } );
+    confirmpopup.on('close', function (event) {
         confirm_action = event.args.dialogResult.OK;
     });
 

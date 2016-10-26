@@ -1,11 +1,10 @@
 var raiseError = function(comment, xhr) {
+    var add_inf = '';
     if (typeof comment == 'undefined') {
-        var comment = 'Ошибка получения данных ';
+        comment = 'Ошибка получения данных ';
     }
-    if (typeof xhr != 'undefined') {
-        var add_inf = ' (Код ошибки ' + xhr.status + ')';
-    } else {
-        var add_inf = '';
+    if (typeof xhr !== 'undefined') {
+        add_inf = ' (Код ошибки ' + xhr.status + ')';
     }
     $("#currentError").text(comment + add_inf);
     $("#serverErrorNotification").jqxNotification("open");

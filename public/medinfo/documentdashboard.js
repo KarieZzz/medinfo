@@ -101,21 +101,20 @@ var updatedocumenttable = function() {
     var new_aggr_url = aggrsource_url + new_filter;
     if (new_doc_url != old_doc_url) {
         docsource.url = new_doc_url;
-        $('#Documents').jqxGrid('updatebounddata');
+        dgrid.jqxGrid('updatebounddata');
         $("#DocumentMessages").html('');
         $("#DocumentAuditions").html('');
     }
     if (new_aggr_url != old_aggr_url) {
         aggregate_source.url = new_aggr_url;
-        $('#Aggregates').jqxGrid('updatebounddata');
+        agrid.jqxGrid('updatebounddata');
     }
 };
 // выполнение сведения данных
 var aggregatedata = function() {
-    console.log("ddd");
-    var rowindex = $('#Aggregates').jqxGrid('getselectedrowindex');
-    var row_id = $('#Aggregates').jqxGrid('getrowid', rowindex);
-    var rowdata = $('#Aggregates').jqxGrid('getrowdata', rowindex);
+    var rowindex = agrid.jqxGrid('getselectedrowindex');
+    var row_id = agrid.jqxGrid('getrowid', rowindex);
+    var rowdata = agrid.jqxGrid('getrowdata', rowindex);
     if (rowindex == -1) {
         return false;
     }
@@ -130,7 +129,7 @@ var aggregatedata = function() {
                 if (data.affected_cells > 0) {
                     raiseInfo("Сведение данных завершено");
                     rowdata.aggregated_at = data.aggregated_at;
-                    $('#Aggregates').jqxGrid('updaterow', row_id, rowdata);
+                    agrid.jqxGrid('updaterow', row_id, rowdata);
                 }
                 else {
                     raiseError("Сведение данных не выполнено! Отсутствуют данные в первичных документах");
@@ -175,8 +174,8 @@ var mo_name_filter = function (needle) {
     var filtercondition = 'contains';
     var nameRecordFilter = rowFilterGroup.createfilter('stringfilter', filtervalue, filtercondition);
     rowFilterGroup.addfilter(filter_or_operator, nameRecordFilter);
-    $("#Documents").jqxGrid('addfilter', 'unit_name', rowFilterGroup);
-    $("#Documents").jqxGrid('applyfilters');
+    dgrid.jqxGrid('addfilter', 'unit_name', rowFilterGroup);
+    dgrid.jqxGrid('applyfilters');
 };
 // фильтр для быстрого поиска по наименованию учреждения/территории - сводные документы
 var mo_name_aggrfilter = function (needle) {
@@ -186,8 +185,8 @@ var mo_name_aggrfilter = function (needle) {
     var filtercondition = 'contains';
     var nameRecordFilter = rowFilterGroup.createfilter('stringfilter', filtervalue, filtercondition);
     rowFilterGroup.addfilter(filter_or_operator, nameRecordFilter);
-    $("#Aggregates").jqxGrid('addfilter', 'unit_name', rowFilterGroup);
-    $("#Aggregates").jqxGrid('applyfilters');
+    agrid.jqxGrid('addfilter', 'unit_name', rowFilterGroup);
+    agrid.jqxGrid('applyfilters');
 };
 // Рендеринг панели инструментов для таблицы первичных документов
 var rendertoolbar = function (toolbar) {
@@ -199,7 +198,7 @@ var rendertoolbar = function (toolbar) {
     if (audit_permission) {
         var input5 = $("<input id='ChangeAudutStatus' type='button' value='Проверка отчета' />");
         input5.click(function () {
-            var rowindex = $('#Documents').jqxGrid('getselectedrowindex');
+            var rowindex = dgrid.jqxGrid('getselectedrowindex');
             if (rowindex == -1) {
                 return false;
             }
@@ -227,7 +226,7 @@ var rendertoolbar = function (toolbar) {
                     }
                 }
             });
-            var offset = $("#Documents").offset();
+            var offset = dgrid.offset();
             $("#changeAuditStateWindow").jqxWindow({ position: { x: parseInt(offset.left) + 150, y: parseInt(offset.top) + 100 } });
             $("#changeAuditStateWindow").jqxWindow('open');
         });
@@ -279,26 +278,26 @@ var rendertoolbar = function (toolbar) {
             }
         }
         else {
-            $("#Documents").jqxGrid('removefilter', '1');
+            dgrid.jqxGrid('removefilter', '1');
         }
     });
-    input2.click(function () { $("#Documents").jqxGrid('clearfilters'); input1.val('');});
+    input2.click(function () { dgrid.jqxGrid('clearfilters'); input1.val('');});
     editform.click(function () {
-        var rowindex = $('#Documents').jqxGrid('getselectedrowindex');
-        if (rowindex !== -1) {
-            var document_id = $('#Documents').jqxGrid('getrowid', rowindex);
+        var rowindex = dgrid.jqxGrid('getselectedrowindex');
+        if (rowindex !== -1 && typeof rowindex !== 'undefined') {
+            var document_id = dgrid.jqxGrid('getrowid', rowindex);
             var editWindow = window.open(edit_form_url + '/' + document_id);
         }
     });
     changestatus.click(function () {
-        var rowindex = $('#Documents').jqxGrid('getselectedrowindex');
+        var rowindex = dgrid.jqxGrid('getselectedrowindex');
         var this_document_state ='';
-        if (rowindex == -1) {
+        if (rowindex == -1 && typeof rowindex !== 'undefined') {
             return false;
         }
-        var offset = $("#Documents").offset();
+        var offset = dgrid.offset();
         $("#changeStateWindow").jqxWindow({ position: { x: parseInt(offset.left) + 100, y: parseInt(offset.top) + 100 } });
-        var data = $("#Documents").jqxGrid('getrowdata', rowindex);
+        var data = dgrid.jqxGrid('getrowdata', rowindex);
         var radiostates = $('.stateradio');
         radiostates.each(function() {
             var state = $(this).attr('id');
@@ -324,18 +323,18 @@ var rendertoolbar = function (toolbar) {
         $("#changeStateWindow").jqxWindow('open');
     });
     message_input.click(function () {
-        var rowindex = $('#Documents').jqxGrid('getselectedrowindex');
+        var rowindex = dgrid.jqxGrid('getselectedrowindex');
         if (rowindex == -1) {
             return false;
         }
         $("#message").val("");
-        var offset = $("#Documents").offset();
+        var offset = dgrid.offset();
         $("#sendMessageWindow").jqxWindow({ position: { x: parseInt(offset.left) + 100, y: parseInt(offset.top) + 100 } });
         $("#sendMessageWindow").jqxWindow('open');
     });
     excel_export.click(function () {
-        var rowindex = $('#Documents').jqxGrid('getselectedrowindex');
-        var document_id = $('#Documents').jqxGrid('getrowid', rowindex);
+        var rowindex = dgrid.jqxGrid('getselectedrowindex');
+        var document_id = dgrid.jqxGrid('getrowid', rowindex);
         if (rowindex !== -1) {
             window.open(export_form_url + document_id);
         }
@@ -354,7 +353,7 @@ var rendertoolbar = function (toolbar) {
         var new_filter =  '&ou=' +current_top_level_node +'&states='+states+'&forms='+forms+'&periods=' + periods;
         var new_doc_url = docsource_url + new_filter;
         docsource.url = new_doc_url;
-        $('#Documents').jqxGrid('updatebounddata');
+        dgrid.jqxGrid('updatebounddata');
         $("#DocumentMessages").html('');
         $("#DocumentAuditions").html('');
     });
@@ -370,7 +369,7 @@ var renderaggregatetoolbar = function(toolbar) {
     if (audit_permission) {
         var change_audit_status = $("<input id='ChangeAudutStatus' type='button' value='Проверка отчета' />");
         change_audit_status.click(function () {
-            var rowindex = $('#Aggregates').jqxGrid('getselectedrowindex');
+            var rowindex = agrid.jqxGrid('getselectedrowindex');
             if (rowindex == -1) {
                 return false;
             }
@@ -399,7 +398,7 @@ var renderaggregatetoolbar = function(toolbar) {
                     }
                 }
             });
-            var offset = $("#Aggregates").offset();
+            var offset = agrid.offset();
             $("#BatchChangeAuditStateWindow").jqxWindow({ position: { x: parseInt(offset.left) + 150, y: parseInt(offset.top) + 100 } });
             $("#BatchChangeAuditStateWindow").jqxWindow('open');
         });
@@ -441,13 +440,13 @@ var renderaggregatetoolbar = function(toolbar) {
             }
         }
         else {
-            $("#Aggregates").jqxGrid('removefilter', '1');
+            agrid.jqxGrid('removefilter', '1');
         }
     });
-    filter.click(function () { $("#Aggregates").jqxGrid('clearfilters'); input1.val('');});
+    filter.click(function () { agrid.jqxGrid('clearfilters'); input1.val('');});
     editform.click(function () {
-        var rowindex = $('#Aggregates').jqxGrid('getselectedrowindex');
-        var document_id = $('#Aggregates').jqxGrid('getrowid', rowindex);
+        var rowindex = agrid.jqxGrid('getselectedrowindex');
+        var document_id = agrid.jqxGrid('getrowid', rowindex);
         if (rowindex !== -1) {
             var editWindow = window.open(edit_aggregate_url+'/'+document_id);
         }
@@ -458,8 +457,8 @@ var renderaggregatetoolbar = function(toolbar) {
     });
 
     excel_export.click(function () {
-        var rowindex = $('#Aggregates').jqxGrid('getselectedrowindex');
-        var document_id = $('#Aggregates').jqxGrid('getrowid', rowindex);
+        var rowindex = agrid.jqxGrid('getselectedrowindex');
+        var document_id = agrid.jqxGrid('getrowid', rowindex);
         if (rowindex !== -1) {
             window.open(export_form_url + document_id);
         }
@@ -468,9 +467,8 @@ var renderaggregatetoolbar = function(toolbar) {
         var forms = checkedforms.join();
         var periods = checkedperiods.join();
         var new_filter =  '&ou=' +current_top_level_node +'&forms='+forms+'&periods=' + periods;
-        var new_aggr_url = aggrsource_url + new_filter;
-        aggregate_source.url = new_aggr_url;
-        $('#Aggregates').jqxGrid('updatebounddata');
+        aggregate_source.url = aggrsource_url + new_filter;
+        agrid.jqxGrid('updatebounddata');
     });
 };
 // инициализация дерева Территорий/Медицинских организаций
@@ -630,7 +628,7 @@ var initfiltertabs = function() {
 // инициализация вкладок с документами
 var initdocumentstabs = function() {
     $("#documenttabs").jqxTabs({  height: '100%', width: '100%', theme: theme });
-    $("#Documents").jqxGrid(
+    dgrid.jqxGrid(
         {
             width: '100%',
             height: '100%',
@@ -651,7 +649,7 @@ var initdocumentstabs = function() {
                 { text: 'Данные', datafield: 'filled', columntype: 'checkbox', width: 120 }
             ]
         });
-    $('#Documents').on('rowselect', function (event)
+    dgrid.on('rowselect', function (event)
     {
         var row = event.args.row;
         var murl = docmessages_url + 'document=' + row.id;
@@ -707,17 +705,17 @@ var initdocumentstabs = function() {
             }
         });
     });
-    $('#Documents').on('rowdoubleclick', function (event)
+    dgrid.on('rowdoubleclick', function (event)
     {
         var args = event.args;
         var rowindex = args.rowindex;
-        var document_id = $('#Documents').jqxGrid('getrowid', rowindex);
+        var document_id = dgrid.jqxGrid('getrowid', rowindex);
         var editWindow = window.open(edit_form_url + '/' + document_id);
     });
-    $("#Aggregates").jqxGrid(
+    agrid.jqxGrid(
         {
             width: '100%',
-            height: '95%',
+            height: '93%',
             theme: theme,
             source: aggregate_report_table,
             columnsresize: true,
@@ -735,11 +733,11 @@ var initdocumentstabs = function() {
                 { text: 'Данные', datafield: 'filled', columntype: 'checkbox', width: 120 }
             ]
         });
-    $('#Aggregates').on('rowdoubleclick', function (event)
+    agrid.on('rowdoubleclick', function (event)
     {
         var args = event.args;
         var rowindex = args.rowindex;
-        var document_id = $('#Aggregates').jqxGrid('getrowid', rowindex);
+        var document_id = agrid.jqxGrid('getrowid', rowindex);
         var editWindow = window.open(edit_aggregate_url + '/' + document_id);
     });
 };
@@ -793,9 +791,9 @@ var initpopupwindows = function() {
     $("#CancelStateChanging").jqxButton({ theme: theme });
     $("#SaveState").jqxButton({ theme: theme });
     $("#SaveState").click(function () {
-        var rowindex = $('#Documents').jqxGrid('getselectedrowindex');
-        var rowdata = $('#Documents').jqxGrid('getrowdata', rowindex);
-        var row_id = $('#Documents').jqxGrid('getrowid', rowindex);
+        var rowindex = dgrid.jqxGrid('getselectedrowindex');
+        var rowdata = dgrid.jqxGrid('getrowdata', rowindex);
+        var row_id = dgrid.jqxGrid('getrowid', rowindex);
         var message = $("#statusChangeMessage").val();
         var radiostates = $('.stateradio');
         var selected_state;
@@ -818,8 +816,8 @@ var initpopupwindows = function() {
                     $("#currentInfoMessage").html("Статус документа изменен. <br /> Новый статус: \"" + statelabels[data.new_status] + '"');
                     $("#infoNotification").jqxNotification("open");
                     rowdata.state = statelabels[data.new_status];
-                    $('#Documents').jqxGrid('updaterow', row_id, rowdata);
-                    $('#Documents').jqxGrid('selectrow', rowindex);
+                    dgrid.jqxGrid('updaterow', row_id, rowdata);
+                    dgrid.jqxGrid('selectrow', rowindex);
                 }
                 else {
                     $("#currentError").text("Статус не изменен!");
@@ -857,8 +855,8 @@ var initpopupwindows = function() {
     $("#SaveAuditState").jqxButton({ theme: theme });
     $("#CancelAuditStateChanging").jqxButton({ theme: theme });
     $("#SaveAuditState").click(function () {
-        var rowindex = $('#Documents').jqxGrid('getselectedrowindex');
-        var row_id = $('#Documents').jqxGrid('getrowid', rowindex);
+        var rowindex = dgrid.jqxGrid('getselectedrowindex');
+        var row_id = dgrid.jqxGrid('getrowid', rowindex);
         var radiostates = $('.auditstateradio');
         var message = $("#auditChangeMessage").val();
         var old_state;
@@ -884,7 +882,7 @@ var initpopupwindows = function() {
                     if (data.audit_status_changed == 1) {
                         $("#currentInfoMessage").text("Статус проверки документа изменен");
                         $("#infoNotification").jqxNotification("open");
-                        $('#Documents').jqxGrid('selectrow', rowindex);
+                        dgrid.jqxGrid('selectrow', rowindex);
                     }
                     else {
                         $("#currentError").text("Статус проверки документа не изменен!");
@@ -917,8 +915,8 @@ var initpopupwindows = function() {
     $("#SaveBatchAuditState").jqxButton({ theme: theme });
     $("#CancelBatchAuditStateChanging").jqxButton({ theme: theme });
     $("#SaveBatchAuditState").click(function () {
-        var rowindex = $('#Aggregates').jqxGrid('getselectedrowindex');
-        var row_id = $('#Aggregates').jqxGrid('getrowid', rowindex);
+        var rowindex = agrid.jqxGrid('getselectedrowindex');
+        var row_id = agrid.jqxGrid('getrowid', rowindex);
         var radiostates = $('.batchauditstateradio');
         var message = $("#AuditBatchChangeMessage").val();
         var selected_state;
@@ -938,7 +936,7 @@ var initpopupwindows = function() {
                     var m = "Статус проверки для всех входящих в сводный отчет документов ("+ data.responce.audit_status_changed + ") изменен"
                     $("#currentInfoMessage").text(m);
                     $("#infoNotification").jqxNotification("open");
-                    $('#Documents').jqxGrid('selectrow', rowindex);
+                    dgrid.jqxGrid('selectrow', rowindex);
                 }
                 else if (data.responce.audit_status_changed == 0) {
                     $("#currentError").text("Статус проверки документов не изменен! " + comment);
@@ -961,9 +959,9 @@ var initpopupwindows = function() {
     $("#CancelMessage").jqxButton({ theme: theme });
     $("#SendMessage").jqxButton({ theme: theme });
     $("#SendMessage").click(function () {
-        var rowindex = $('#Documents').jqxGrid('getselectedrowindex');
-        var rowdata = $('#Documents').jqxGrid('getrowdata', rowindex);
-        var row_id = $('#Documents').jqxGrid('getrowid', rowindex);
+        var rowindex = dgrid.jqxGrid('getselectedrowindex');
+        var rowdata = dgrid.jqxGrid('getrowdata', rowindex);
+        var row_id = dgrid.jqxGrid('getrowid', rowindex);
         var message = $("#message").val();
         message = message.trim();
         if (message.length == 0) {
@@ -980,7 +978,7 @@ var initpopupwindows = function() {
                 if (data.message_sent == 1) {
                     $("#currentInfoMessage").text("Сообщение сохранено");
                     $("#infoNotification").jqxNotification("open");
-                    $('#Documents').jqxGrid('selectrow', rowindex);
+                    dgrid.jqxGrid('selectrow', rowindex);
                 }
             },
             error: function (xhr, status, errorThrown) {

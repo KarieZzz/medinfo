@@ -101,6 +101,15 @@ Route::group(['middleware' => ['web']], function () {
     Route::post('admin/necells/conditioncreate', 'Admin\NECellAdminController@store');
     Route::delete('admin/necells/conditiondelete/{condition}', 'Admin\NECellAdminController@delete');
     Route::patch('admin/necells/conditionsave/{condition}', 'Admin\NECellAdminController@update');
+
+    // Менеджер функций контроля
+    Route::get('admin/cfunctions', 'Admin\CFunctionAdminController@index');
+    Route::get('admin/cfunctions/fetchcf/{table}', 'Admin\CFunctionAdminController@fetchControlFunctions');
+    Route::post('admin/cfunctions/create', 'Admin\CFunctionAdminController@Store');
+    Route::patch('admin/cfunctions/update/{cfunction}', 'Admin\CFunctionAdminController@Update');
+    Route::delete('admin/cfunctions/delete/{cfunction}', 'Admin\CFunctionAdminController@Delete');
+
+
     // Менеджер отчетных документов
     Route::get('admin/documents', 'Admin\DocumentAdminController@index');
     Route::get('admin/fetchdocuments', 'Admin\DocumentAdminController@fetchDocuments');

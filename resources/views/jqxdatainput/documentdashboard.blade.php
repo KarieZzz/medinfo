@@ -145,6 +145,8 @@
         //var checkedform = ['f30','f17','f12','f14','f14дс','f16','f57','f1-РБ','f15','f16-вн','f13','f31','f32','f32_вкл','f19','f1-ДЕТИ','f10','f11','f36','f36-ПЛ','f37','f9','f34','f7','f35','f8','f33','f7-Т','f39','f41', 'f53','f55','f56','f61','f70'];
         //var checkedstates = ['st2', 'st4', 'st8', 'st16', 'st32'];
         var checkedperiods = [{{ $period_ids }}];
+        var dgrid = $("#Documents"); // сетка для первичных документов
+        var agrid = $("#Aggregates"); // сетка для сводных документов
         var current_document_form_code;
         var current_document_form_name;
         var current_document_ou_name;

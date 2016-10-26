@@ -50,8 +50,6 @@
 <script src="{{ asset('/medinfo/admin/admin.js') }}"></script>
 @stack('loadjsscripts')
 <script type="text/javascript">
-    var theme = 'bootstrap';
-    var confirm_action = false;
     $(document).ready(function () {
         $.ajaxSetup({
             headers: {
@@ -60,9 +58,14 @@
         });
         //$("#menu").jqxMenu({ autoSizeMainItems: true, theme: theme, showTopLevelArrows: true, width: '800px' });
         $("#widgets-content-wrap").css("visibility", "visible");
-        initnotifications();
-        initConfirmWindow();
+
+
     });
+    var theme = 'bootstrap';
+    var confirm_action = false;
+    var confirmpopup = $('#confirmPopup');
+    initnotifications();
+    initConfirmWindow();
 </script>
 @yield('inlinejs')
 </body>
