@@ -26,7 +26,7 @@ initdatasources = function() {
     };
     functionsDataAdapter = new $.jqx.dataAdapter(functionsource);
 };
-// Таблица строк
+// Таблица функций
 initFunctionList = function() {
     fgrid.jqxGrid(
         {
@@ -49,7 +49,7 @@ initFunctionList = function() {
                 { text: 'Компилирована', datafield: 'compiled', columntype: 'checkbox', width: '70px' }
             ]
         });
-    $('#functionList').on('rowselect', function (event) {
+    fgrid.on('rowselect', function (event) {
         var row = event.args.row;
         $("#level").val(row.level);
         $("#script").val(row.script);
@@ -60,8 +60,8 @@ initFunctionList = function() {
 // Обновление списка строк при выборе таблицы
 updateFunctionList = function() {
     functionsource.url = functionfetch_url + current_table;
-    $('#functionList').jqxGrid('clearselection');
-    $('#functionList').jqxGrid('updatebounddata');
+    fgrid.jqxGrid('clearselection');
+    fgrid.jqxGrid('updatebounddata');
 };
 // Операции с функциями контроля
 

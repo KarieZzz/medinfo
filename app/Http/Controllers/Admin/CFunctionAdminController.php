@@ -30,7 +30,7 @@ class CFunctionAdminController extends Controller
         return CFunction::OfTable($table)->with('table')->get();
     }
 
-    public function Store(Request $request)
+    public function store(Request $request)
     {
         $this->validate($request, $this->validateRules());
         $newfunction = new CFunction();
@@ -60,7 +60,7 @@ class CFunctionAdminController extends Controller
     }
 
 
-    public function Update(CFunction $cfunction, Request $request)
+    public function update(CFunction $cfunction, Request $request)
     {
         $this->validate($request, $this->validateRules());
         $cfunction->level = $request->level;
@@ -84,7 +84,7 @@ class CFunctionAdminController extends Controller
         }
     }
 
-    public function Delete(CFunction $cfunction)
+    public function delete(CFunction $cfunction)
     {
         $cfunction->delete();
         return ['message' => 'Удалена функция Id' . $cfunction->id ];

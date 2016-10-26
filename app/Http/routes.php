@@ -105,10 +105,14 @@ Route::group(['middleware' => ['web']], function () {
     // Менеджер функций контроля
     Route::get('admin/cfunctions', 'Admin\CFunctionAdminController@index');
     Route::get('admin/cfunctions/fetchcf/{table}', 'Admin\CFunctionAdminController@fetchControlFunctions');
-    Route::post('admin/cfunctions/create', 'Admin\CFunctionAdminController@Store');
-    Route::patch('admin/cfunctions/update/{cfunction}', 'Admin\CFunctionAdminController@Update');
-    Route::delete('admin/cfunctions/delete/{cfunction}', 'Admin\CFunctionAdminController@Delete');
+    Route::post('admin/cfunctions/create', 'Admin\CFunctionAdminController@store');
+    Route::patch('admin/cfunctions/update/{cfunction}', 'Admin\CFunctionAdminController@update');
+    Route::delete('admin/cfunctions/delete/{cfunction}', 'Admin\CFunctionAdminController@delete');
 
+    Route::get('admin/micontrols/vtk', 'Admin\MedinfoControlsAdminController@index');
+    Route::get('admin/micontrols/fetchcontrolledrows/{table}/{scope}', 'Admin\MedinfoControlsAdminController@fetchControlledRows');
+    Route::get('admin/micontrols/vtk/fetchcontrollingrows/{table}/{relation}', 'Admin\MedinfoControlsAdminController@fetchControllingRows');
+    Route::get('admin/micontrols/fetchcolumns/{firstcol}/{countcol}', 'Admin\MedinfoControlsAdminController@fetchColumns');
 
     // Менеджер отчетных документов
     Route::get('admin/documents', 'Admin\DocumentAdminController@index');

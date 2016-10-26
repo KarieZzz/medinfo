@@ -31,9 +31,9 @@
 
 <body>
 <div id="alertmessage" class="col-md-4 "></div>
-<div id="wrap">
+<div id="wrap" style="display: none">
     @include('jqxadmin.navbar')
-    <div id="widgets-content-wrap" style="visibility: hidden">
+    <div id="widgets-content-wrap">
         @yield('content')
     </div>
     @include('jqxdatainput.notifications')
@@ -50,6 +50,11 @@
 <script src="{{ asset('/medinfo/admin/admin.js') }}"></script>
 @stack('loadjsscripts')
 <script type="text/javascript">
+    var theme = 'bootstrap';
+    var confirm_action = false;
+    var confirmpopup = $('#confirmPopup');
+    initnotifications();
+    initConfirmWindow();
     $(document).ready(function () {
         $.ajaxSetup({
             headers: {
@@ -57,15 +62,9 @@
             }
         });
         //$("#menu").jqxMenu({ autoSizeMainItems: true, theme: theme, showTopLevelArrows: true, width: '800px' });
-        $("#widgets-content-wrap").css("visibility", "visible");
-
-
+        $("#wrap").show();
     });
-    var theme = 'bootstrap';
-    var confirm_action = false;
-    var confirmpopup = $('#confirmPopup');
-    initnotifications();
-    initConfirmWindow();
+
 </script>
 @yield('inlinejs')
 </body>

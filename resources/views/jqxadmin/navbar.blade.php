@@ -38,8 +38,14 @@
                     <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                     <li><a href="/admin/cfunctions">Функции контроля</a></li>
-                    <li><a href="#">Консолидированные формы</a></li>
+                    <li><a href="#">Функции рассчета</a></li>
                     <li><a href="#">Отчеты</a></li>
+                    <li type="separator"></li>
+                    <li><a href="/admin/micontrols/vtk">Методики контроля Мединфо (внутритабличные)</a></li>
+                    <li><a href="/admin/micontrols/vfk">Методики контроля Мединфо (внутриформенные)</a></li>
+                    <li><a href="/admin/micontrols/mfk">Методики контроля Мединфо (межформенные)</a></li>
+
+
                 </ul>
             </li>
             <li class="dropdown">
