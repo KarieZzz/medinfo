@@ -133,12 +133,16 @@ updateFunctionList = function() {
     controlsource.url = fetchcontrolledrows_url + current_table + '/' + controlscope;
     grid.jqxGrid('clearselection');
     grid.jqxGrid('updatebounddata');
+
 };
 
 updateControllingRowsList = function() {
     controlingsource.url = fetchcontrollingrows_url + current_table + '/' + current_relation;
     pgrid.jqxGrid('clearselection');
     pgrid.jqxGrid('updatebounddata');
+    pgrid.on("bindingcomplete", function (event) {
+        pgrid.jqxGrid('selectrow', 0);
+    });
 };
 
 updateColumnList = function() {

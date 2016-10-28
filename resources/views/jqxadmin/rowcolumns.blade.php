@@ -153,6 +153,8 @@
         var rowfetch_url = '/admin/rc/fetchrows/';
         var columnfetch_url = '/admin/rc/fetchcolumns/';
         var forms = {!! $forms  !!};
+        var rlist = $("#rowList");
+        var clist = $("#columnList");
         var current_form = 0;
         var current_table = 0;
         initFilterDatasources();

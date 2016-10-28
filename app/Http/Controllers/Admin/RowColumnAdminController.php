@@ -143,9 +143,9 @@ class RowColumnAdminController extends Controller
             $column->save();
             $result = ['message' => 'Запись id ' . $column->id . ' сохранена'];
         } catch (\Illuminate\Database\QueryException $e) {
-            $errorCode = $e->errorInfo[1];
+            $errorCode = $e->errorInfo[0];
             // duplicate key value - код ошибки 7 при использовании PostgreSQL
-            if($errorCode == 7){
+            if($errorCode == '23505'){
                 $result = ['error' => 422, 'message' => 'Запись не сохранена. Дублирование данных.'];
             }
         }
@@ -178,9 +178,9 @@ class RowColumnAdminController extends Controller
             $newcolumn->save();
             return ['message' => 'Новая запись создана. Id:' . $newcolumn->id];
         } catch (\Illuminate\Database\QueryException $e) {
-            $errorCode = $e->errorInfo[1];
+            $errorCode = $e->errorInfo[0];
             switch ($errorCode) {
-                case 7:
+                case '23505':
                     $message = 'Запись не сохранена. Дублирующиеся значения.';
                     break;
                 default:

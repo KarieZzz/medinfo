@@ -34,6 +34,13 @@ class Table extends Model
             ->where('form_id', $form);
     }
 
+    public function scopeOfFormTableCode($query, $form, $table_code)
+    {
+        return $query
+            ->where('form_id', $form)
+            ->where('table_code', $table_code);
+    }
+
     public static function editedTables(int $document)
     {
         $editedtables = \DB::table('statdata')

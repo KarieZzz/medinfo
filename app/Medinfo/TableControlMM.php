@@ -28,7 +28,7 @@ class TableControlMM
     private $value_cashe;
     public static $control_type = array(1 => 'втк', 2 => 'вфк', 3 => 'мфк', 4 => 'кгр', 5 => 'квс' );
     public static $control_type_readable = array('втк' => 'внутритабличный контроль', 'вфк' => 'внутриформенный контроль', 'мфк' => 'межформенный контроль' );
-    public static $boolean_sign = [0 => '^', 1 => '>', 2 => '>=', 3 => '==', 4 => '<=', 5 => '<'];
+    public static $boolean_sign = ['^', '>', '>=', '==', '<=', '<'];
     public static $boolean_readable = array('^' => 'существует', '>' => 'больше', '>=' => 'больше или равно' , '==' => 'равно', '<=' => 'меньше или равно', '<' => 'меньше');
     public static $number_sign = [1 => '+', -1 => '-'];
 

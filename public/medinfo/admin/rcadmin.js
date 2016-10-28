@@ -56,7 +56,7 @@ initdatasources = function() {
 };
 // Таблица строк
 initRowList = function() {
-    $("#rowList").jqxGrid(
+    rlist.jqxGrid(
         {
             width: '98%',
             height: '300px',
@@ -77,7 +77,7 @@ initRowList = function() {
                 { text: 'Мединфо Id', datafield: 'medinfo_id', width: '70px' }
             ]
         });
-    $('#rowList').on('rowselect', function (event) {
+    rlist.on('rowselect', function (event) {
         var row = event.args.row;
         $("#row_index").val(row.row_index);
         $("#row_name").val(row.row_name);
@@ -88,7 +88,7 @@ initRowList = function() {
 };
 //Таблица граф
 initColumnList = function() {
-    $("#columnList").jqxGrid(
+    clist.jqxGrid(
         {
             width: '98%',
             height: '300px',
@@ -111,7 +111,7 @@ initColumnList = function() {
                 { text: 'Мединфо Id', datafield: 'medinfo_id', width: '70px' }
             ]
         });
-    $('#columnList').on('rowselect', function (event) {
+    clist.on('rowselect', function (event) {
         var row = event.args.row;
         $("#column_index").val(row.column_index);
         $("#column_name").val(row.column_name);
@@ -126,30 +126,47 @@ initColumnList = function() {
 updateRelated = function() {
     updateRowList();
     updateColumnList();
+    $("#rowform")[0].reset();
+    $("#columnform")[0].reset();
 };
 
 // Обновление списка строк при выборе таблицы
 updateRowList = function() {
     rowsource.url = rowfetch_url + current_table;
-    $('#rowList').jqxGrid('clearselection');
-    $('#rowList').jqxGrid('updatebounddata');
+    rlist.jqxGrid('clearselection');
+    rlist.jqxGrid('updatebounddata');
 };
 // Обновление списка граф при выборе таблицы
 updateColumnList = function() {
     columnsource.url = columnfetch_url + current_table;
-    $('#columnList').jqxGrid('clearselection');
-    $('#columnList').jqxGrid('updatebounddata');
+    clist.jqxGrid('clearselection');
+    clist.jqxGrid('updatebounddata');
+};
+
+setrowquery = function() {
+    return "&table_id=" + current_table +
+        "&row_index=" + $("#row_index").val() +
+        "&row_code=" + $("#row_code").val() +
+        "&row_name=" + $("#row_name").val() +
+        "&medstat_code=" + $("#row_medstat_code").val() +
+        "&medinfo_id=" + $("#row_medinfo_id").val();
+};
+
+setcolumnquery = function() {
+    return "&table_id=" + current_table +
+        "&column_index=" + $("#column_index").val() +
+        "&column_name=" + $("#column_name").val() +
+        "&content_type=" + $("#content_type").val() +
+        "&size=" + $("#size").val() +
+        "&decimal_count=" + $("#decimal_count").val() +
+        "&medstat_code=" + $("#column_medstat_code").val() +
+        "&medinfo_id=" + $("#column_medinfo_id").val();
 };
 
 // Операции со строками
 initRowActions = function() {
     $("#insertrow").click(function () {
-        var data = "&table_id=" + current_table +
-            "&row_index=" + $("#row_index").val() +
-            "&row_code=" + $("#row_code").val() +
-            "&row_name=" + $("#row_name").val() +
-            "&medstat_code=" + $("#row_medstat_code").val() +
-            "&medinfo_id=" + $("#row_medinfo_id").val();
+        var data = setrowquery();
         $.ajax({
             dataType: 'json',
             url: '/admin/rc/rowcreate',
@@ -161,7 +178,7 @@ initRowActions = function() {
                 } else {
                     raiseInfo(data.message);
                 }
-                $("#rowList").jqxGrid('updatebounddata', 'data');
+                rlist.jqxGrid('updatebounddata', 'data');
             },
             error: function (xhr, status, errorThrown) {
                 $.each(xhr.responseJSON, function(field, errorText) {
@@ -171,18 +188,13 @@ initRowActions = function() {
         });
     });
     $("#saverow").click(function () {
-        var row = $('#rowList').jqxGrid('getselectedrowindex');
+        var row = rlist.jqxGrid('getselectedrowindex');
         if (row == -1) {
             raiseError("Выберите запись для изменения/сохранения данных");
             return false;
         }
-        var rowid = $("#rowList").jqxGrid('getrowid', row);
-
-        var data = "&row_index=" + $("#row_index").val() +
-            "&row_code=" + $("#row_code").val() +
-            "&row_name=" + $("#row_name").val() +
-            "&medstat_code=" + $("#row_medstat_code").val() +
-            "&medinfo_id=" + $("#row_medinfo_id").val();
+        var rowid = rlist.jqxGrid('getrowid', row);
+        var data = setrowquery();
         $.ajax({
             dataType: 'json',
             url: '/admin/rc/rowupdate/' + rowid,
@@ -194,10 +206,10 @@ initRowActions = function() {
                 } else {
                     raiseInfo(data.message);
                 }
-                $("#rowList").jqxGrid('updatebounddata', 'data');
-                $("#rowList").on("bindingcomplete", function (event) {
-                    var newindex = $('#rowList').jqxGrid('getrowboundindexbyid', rowid);
-                    $("#rowList").jqxGrid('selectrow', newindex);
+                rlist.jqxGrid('updatebounddata', 'data');
+                rlist.on("bindingcomplete", function (event) {
+                    var newindex = rlist.jqxGrid('getrowboundindexbyid', rowid);
+                    rlist.jqxGrid('selectrow', newindex);
 
                 });
             },
@@ -209,12 +221,12 @@ initRowActions = function() {
         });
     });
     $("#deleterow").click(function () {
-        var row = $('#rowList').jqxGrid('getselectedrowindex');
+        var row = rlist.jqxGrid('getselectedrowindex');
         if (row == -1) {
             raiseError("Выберите запись для удаления");
             return false;
         }
-        var rowid = $("#rowList").jqxGrid('getrowid', row);
+        var rowid = rlist.jqxGrid('getrowid', row);
         $.ajax({
             dataType: 'json',
             url: '/admin/rc/rowdelete/' + rowid,
@@ -226,8 +238,8 @@ initRowActions = function() {
                     raiseInfo(data.message);
                     $("#rowform")[0].reset();
                 }
-                $("#rowList").jqxGrid('updatebounddata', 'data');
-                $("#rowList").jqxGrid('clearselection');
+                rlist.jqxGrid('updatebounddata', 'data');
+                rlist.jqxGrid('clearselection');
             },
             error: function (xhr, status, errorThrown) {
                 raiseError('Ошибка удаления записи', xhr);
@@ -237,14 +249,7 @@ initRowActions = function() {
 };
 initColumnActions = function() {
     $("#insertcolumn").click(function () {
-        var data = "&table_id=" + current_table +
-            "&column_index=" + $("#column_index").val() +
-            "&column_name=" + $("#column_name").val() +
-            "&content_type=" + $("#content_type").val() +
-            "&size=" + $("#size").val() +
-            "&decimal_count=" + $("#decimal_count").val() +
-            "&medstat_code=" + $("#column_medstat_code").val() +
-            "&medinfo_id=" + $("#column_medinfo_id").val();
+        var data = setcolumnquery();
         $.ajax({
             dataType: 'json',
             url: '/admin/rc/columncreate',
@@ -256,7 +261,7 @@ initColumnActions = function() {
                 } else {
                     raiseInfo(data.message);
                 }
-                $("#columnList").jqxGrid('updatebounddata', 'data');
+                clist.jqxGrid('updatebounddata', 'data');
             },
             error: function (xhr, status, errorThrown) {
                 $.each(xhr.responseJSON, function(field, errorText) {
@@ -266,20 +271,13 @@ initColumnActions = function() {
         });
     });
     $("#savecolumn").click(function () {
-        var row = $('#columnList').jqxGrid('getselectedrowindex');
+        var row = clist.jqxGrid('getselectedrowindex');
         if (row == -1) {
             raiseError("Выберите запись для изменения/сохранения данных");
             return false;
         }
-        var rowid = $("#columnList").jqxGrid('getrowid', row);
-
-        var data = "&column_index=" + $("#column_index").val() +
-            "&column_name=" + $("#column_name").val() +
-            "&content_type=" + $("#content_type").val() +
-            "&size=" + $("#size").val() +
-            "&decimal_count=" + $("#decimal_count").val() +
-            "&medstat_code=" + $("#column_medstat_code").val() +
-            "&medinfo_id=" + $("#column_medinfo_id").val();
+        var rowid = clist.jqxGrid('getrowid', row);
+        var data = setcolumnquery();
         $.ajax({
             dataType: 'json',
             url: '/admin/rc/columnupdate/' + rowid,
@@ -291,10 +289,10 @@ initColumnActions = function() {
                 } else {
                     raiseInfo(data.message);
                 }
-                $("#columnList").jqxGrid('updatebounddata', 'data');
-                $("#columnList").on("bindingcomplete", function (event) {
-                    var newindex = $('#columnList').jqxGrid('getrowboundindexbyid', rowid);
-                    $("#columnList").jqxGrid('selectrow', newindex);
+                clist.jqxGrid('updatebounddata', 'data');
+                clist.on("bindingcomplete", function (event) {
+                    var newindex = clist.jqxGrid('getrowboundindexbyid', rowid);
+                    clist.jqxGrid('selectrow', newindex);
 
                 });
             },
@@ -306,12 +304,12 @@ initColumnActions = function() {
         });
     });
     $("#deletecolumn").click(function () {
-        var row = $('#columnList').jqxGrid('getselectedrowindex');
+        var row = clist.jqxGrid('getselectedrowindex');
         if (row == -1) {
             raiseError("Выберите запись для удаления");
             return false;
         }
-        var rowid = $("#columnList").jqxGrid('getrowid', row);
+        var rowid = clist.jqxGrid('getrowid', row);
         $.ajax({
             dataType: 'json',
             url: '/admin/rc/columndelete/' + rowid,
@@ -323,8 +321,8 @@ initColumnActions = function() {
                     raiseInfo(data.message);
                     $("#columnform")[0].reset();
                 }
-                $("#columnList").jqxGrid('updatebounddata', 'data');
-                $("#columnList").jqxGrid('clearselection');
+                clist.jqxGrid('updatebounddata', 'data');
+                clist.jqxGrid('clearselection');
             },
             error: function (xhr, status, errorThrown) {
                 raiseError('Ошибка удаления записи', xhr);

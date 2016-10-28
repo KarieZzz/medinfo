@@ -4,11 +4,24 @@ namespace App\Medinfo\Lexer;
 
 class ControlFunctionParser extends Parser {
 
+    public $functionIndex;
+
     public function __construct(Lexer $input) {
         parent::__construct($input);
     }
+
+    public function run()
+    {
+        if ($this->lookahead->type == ControlFunctionLexer::NAME ) {
+            $this->functionIndex = FunctionDispatcher::functionIndex($this->lookahead->text);
+            $functionName = FunctionDispatcher::$structNames[$this->functionIndex];
+            return $this->$functionName();
+        } else {
+            throw new \Exception("Ожидалось объявление функции. Обнаружено " .  $this->input->getTokenName($this->lookahead->type));
+        }
+    }
     
-    public function controlFunction() {
+    public function compare() {
         $r = new ControlFunctionParseTree(__FUNCTION__);
         $o = $this->currentNode; // сохраняем текущий узел, что бы вернутся к нему в конце функции
         if ($this->root == null) {
@@ -31,8 +44,6 @@ class ControlFunctionParser extends Parser {
         $this->match(ControlFunctionLexer::RPARENTH);
         $this->currentNode = $o;
         return $this->root;
-        //dd($this->root);
-        //dd($this->input->tokenstack);
 
     }
     // Первый аргумент в функции. В выражении может несколько элементов, разделенных (пока) знаком плюс
@@ -46,6 +57,9 @@ class ControlFunctionParser extends Parser {
         }
         $this->currentNode = $r;
 
+        if ($this->lookahead->type == ControlFunctionLexer::OPERATOR) {
+            $this->operator();
+        }
         $this->element();
         while ($this->lookahead->type == ControlFunctionLexer::OPERATOR ) {
             $this->operator();

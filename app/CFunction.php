@@ -8,7 +8,8 @@ class CFunction extends Model
 {
     //
     protected $table = 'cfunctions';
-    protected $fillable = ['table_id', 'level', 'script', 'comment', 'blocked', 'compiled' ];
+    protected $fillable = ['table_id', 'level', 'script', 'comment', 'blocked', ];
+    protected $hidden = ['compiled_cashe'];
 
     public function scopeOfTable($query, $table)
     {

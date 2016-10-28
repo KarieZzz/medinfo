@@ -2,13 +2,19 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Medinfo\Lexer\FunctionDispatcher;
+use App\Table;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+
 use App\Form;
 use App\CFunction;
 use App\DicErrorLevel;
+use App\Medinfo\Lexer\ControlFunctionLexer;
+use App\Medinfo\Lexer\ControlFunctionParser;
+use App\Medinfo\Lexer\CompareControlInterpreter;
 
 class CFunctionAdminController extends Controller
 {
@@ -30,17 +36,21 @@ class CFunctionAdminController extends Controller
         return CFunction::OfTable($table)->with('table')->get();
     }
 
-    public function store(Request $request)
+    public function store(Table $table, Request $request)
     {
         $this->validate($request, $this->validateRules());
+        try {
+            $interpreter =  new CompareControlInterpreter($this->compile($request->script), $table);
+        } catch (\Exception $e) {
+            return ['error' => 422, 'message' => "Ошибка при компилляции функции: " . $e->getMessage()];
+        }
         $newfunction = new CFunction();
-        $newfunction->table_id = $request->table_id;
+        $newfunction->table_id = $table->id;
         $newfunction->level = $request->level;
         $newfunction->script = $request->script;
         $newfunction->comment = $request->comment;
         $newfunction->blocked = $request->blocked;
-        $newfunction->compiled = 0;
-
+        $newfunction->compiled_cashe = serialize($interpreter);
         //$newfunction->save();
         try {
             $newfunction->save();
@@ -59,15 +69,24 @@ class CFunctionAdminController extends Controller
         }
     }
 
-
     public function update(CFunction $cfunction, Request $request)
     {
         $this->validate($request, $this->validateRules());
+        $table = Table::find($cfunction->table_id);
         $cfunction->level = $request->level;
+        if ($cfunction->script !== $request->script) {
+            try {
+                $interpreter =  new CompareControlInterpreter($this->compile($request->script), $table);
+                $cfunction->compiled_cashe = serialize($interpreter);
+            } catch (\Exception $e) {
+                return ['error' => 422, 'message' => "Ошибка при компилляции функции: " . $e->getMessage()];
+            }
+        }
         $cfunction->script = $request->script;
         $cfunction->comment = $request->comment;
         $cfunction->blocked = $request->blocked;
         try {
+
             $cfunction->save();
             return ['message' => 'Запись id ' . $cfunction->id . ' сохранена'];
         } catch (\Illuminate\Database\QueryException $e) {
@@ -77,11 +96,18 @@ class CFunctionAdminController extends Controller
                     $message = 'Запись не сохранена. Дублирующиеся значения.';
                     break;
                 default:
-                    $message = 'Новая запись не создана. Код ошибки ' . $errorCode . '.';
+                    $message = 'Запись не сохранена. Код ошибки ' . $errorCode . '.';
                     break;
             }
             return ['error' => 422, 'message' => $message];
         }
+    }
+
+    public function compile($script)
+    {
+        $lexer = new ControlFunctionLexer($script);
+        $parser = new ControlFunctionParser($lexer);
+        return $parser->run();
     }
 
     public function delete(CFunction $cfunction)
@@ -93,7 +119,6 @@ class CFunctionAdminController extends Controller
     protected function validateRules()
     {
         return [
-            'table_id' => 'required|exists:tables,id',
             'level' => 'integer',
             'script' => 'required|max:512',
             'comment' => 'max:128',

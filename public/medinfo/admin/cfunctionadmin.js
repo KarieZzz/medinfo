@@ -5,6 +5,7 @@
 // функция для обновления связанных объектов после выбора таблицы
 updateRelated = function() {
     updateFunctionList();
+    $("#form")[0].reset();
 };
 
 initdatasources = function() {
@@ -17,12 +18,11 @@ initdatasources = function() {
             { name: 'level', type: 'int' },
             { name: 'script', type: 'string' },
             { name: 'comment', type: 'string' },
-            { name: 'blocked', type: 'bool' },
-            { name: 'compiled', type: 'bool' }
+            { name: 'blocked', type: 'bool' }
         ],
         id: 'id',
         url: functionfetch_url + current_table,
-        root: 'function'
+        root: 'f'
     };
     functionsDataAdapter = new $.jqx.dataAdapter(functionsource);
 };
@@ -45,8 +45,7 @@ initFunctionList = function() {
                 { text: 'Уровень', datafield: 'level', width: '70px'  },
                 { text: 'Функция контроля', datafield: 'script' , width: '50%'},
                 { text: 'Комментарий', datafield: 'comment', width: '30%' },
-                { text: 'Отключена', datafield: 'blocked', columntype: 'checkbox', width: '70px' },
-                { text: 'Компилирована', datafield: 'compiled', columntype: 'checkbox', width: '70px' }
+                { text: 'Отключена', datafield: 'blocked', columntype: 'checkbox', width: '70px' }
             ]
         });
     fgrid.on('rowselect', function (event) {
@@ -95,9 +94,8 @@ initButtons = function() {
 };
 
 setquerystring = function() {
-    return "&table_id=" + current_table +
-        "&level=" + $("#level").val() +
-        "&script=" + $("#script").val() +
+    return "&level=" + $("#level").val() +
+        "&script=" + encodeURIComponent($("#script").val()) +
         "&comment=" + $("#comment").val() +
         "&blocked=" + ($("#blocked").val() ? 1 :0);
 };
@@ -111,7 +109,7 @@ initFunctionActions = function() {
         var data = setquerystring();
         $.ajax({
             dataType: 'json',
-            url: '/admin/cfunctions/create',
+            url: '/admin/cfunctions/create/' + current_table ,
             method: "POST",
             data: data,
             success: function (data, status, xhr) {
@@ -136,7 +134,6 @@ initFunctionActions = function() {
             return false;
         }
         var id = fgrid.jqxGrid('getrowid', row);
-
         var data = setquerystring();
         $.ajax({
             dataType: 'json',
@@ -148,13 +145,12 @@ initFunctionActions = function() {
                     raiseError(data.message);
                 } else {
                     raiseInfo(data.message);
+                    fgrid.jqxGrid('updatebounddata', 'data');
+                    fgrid.on("bindingcomplete", function (event) {
+                        var newindex = fgrid.jqxGrid('getrowboundindexbyid', id);
+                        fgrid.jqxGrid('selectrow', newindex);
+                    });
                 }
-                fgrid.jqxGrid('updatebounddata', 'data');
-                fgrid.on("bindingcomplete", function (event) {
-                    var newindex = $('#functionList').jqxGrid('getrowboundindexbyid', rowid);
-                    fgrid.jqxGrid('selectrow', newindex);
-
-                });
             },
             error: function (xhr, status, errorThrown) {
                 $.each(xhr.responseJSON, function(field, errorText) {

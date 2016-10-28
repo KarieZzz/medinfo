@@ -10,6 +10,7 @@ use App\Form;
 use App\ControlledRow;
 use App\ControllingRow;
 use App\ControlledColumn;
+use App\Medinfo\MIControlTranslater;
 
 class MedinfoControlsAdminController extends Controller
 {
@@ -39,4 +40,14 @@ class MedinfoControlsAdminController extends Controller
     {
         return ControlledColumn::where('rec_id','>=' ,$firstcol)->where('rec_id', '<', $firstcol + $countcol)->get();
     }
+
+    public function MIRulesTranslate(int $table)
+    {
+        $rules = new MIControlTranslater($table);
+        return $rules->InTableRowControl();
+        //return $rules->InFormRowControl();
+        //return $rules->InReportRowControl();
+        //return $rules->ColumnControl();
+    }
+
 }

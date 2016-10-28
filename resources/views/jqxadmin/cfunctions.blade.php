@@ -20,7 +20,7 @@
                     <div class="form-group">
                         <label class="control-label col-sm-3" for="script">Текст функции:</label>
                         <div class="col-sm-8">
-                            <textarea rows="5" class="form-control" id="script"></textarea>
+                            <textarea rows="7" class="form-control" id="script"></textarea>
                         </div>
                     </div>
                     <div class="form-group">
