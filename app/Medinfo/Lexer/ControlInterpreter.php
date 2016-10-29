@@ -32,6 +32,7 @@ class ControlInterpreter
     public $form;
     public $table;
 
+    public $currentIteration;
     public $currentForm; // ORM Model обрабатываемой формы
     public $currentTable; // ORM Model обрабатываемой таблицы
     public $currentNode; // текущий узел ParseTreeNode - для обработки
@@ -45,6 +46,11 @@ class ControlInterpreter
     }
 
     public function setArguments()
+    {
+
+    }
+
+    public function prepareReadable()
     {
 
     }
@@ -126,7 +132,7 @@ class ControlInterpreter
         $token_index = $this->iterationMode == 1 ? 2 : 3;
         $prefix = $this->iterationMode == 1 ? 'С' : 'Г';
         foreach($expression->children as $element) {
-            if ($element->rule == 'celladress') {
+            if ($element->rule == 'celladress' && empty(mb_substr($element->tokens[$token_index]->text, 1))) {
                 $element->tokens[$token_index]->text = $prefix . $link;
             }
         }
@@ -215,10 +221,6 @@ class ControlInterpreter
 
     public function reduce_summfunction(ParseTree $sf, $operator)
     {
-        //$form = Form::ofCode(mb_substr($sf->children[0]->children[0]->tokens[0]->text, 1))->first();
-        //$table = Table::ofForm($form->id)->where('table_code', mb_substr($sf->children[0]->children[0]->tokens[1]->text, 1))->first();
-        //$this->currentTable = $table;
-        //$this->currentForm = $form;
         $incomplete_row_adresses = false;
         $incomplete_column_adresses = false;
         $rows = [];
@@ -271,24 +273,33 @@ class ControlInterpreter
         $table_code = mb_substr($celladress->tokens[1]->text, 1);
         // Проверяем относится ли редуцируемая ячейка к текущей таблице
         if ($this->form->form_code == $form_code || empty($form_code)) {
-            $document = $this->document;
+            $doc_id = $this->document->id;
+            $f_id = $this->form->id;
         } else {
             $form = Form::OfCode($form_code)->first();
+            if (is_null($form)) {
+                throw new \Exception("Форма " . $form_code . " не существует");
+            }
+
             $document = Document::OfUPF($this->document->ou_id, $this->document->period_id, $form->id)->first();
             if (is_null($document)) {
                 $celladress->rule = 'number';
                 $celladress->tokens = [];
                 $celladress->addToken(new Token(ControlFunctionLexer::NUMBER, 0));
+                $this->results['iterations'][$this->currentIteration]['documents_absent'] =  ['ou_id' => $this->document->ou_id, 'period_id' => $this->document->period_id, 'form_id' => $form->id];
                 return $celladress;
             }
+            $doc_id = $document->id;
+            $f_id = $form->id;
             //dd($form->id);
             //dd($this->document->period_id);
             //dd($document);
         }
         if ($this->table->table_code == $table_code || empty($table_code)) {
-            $table = $this->table;
+            $t_id = $this->table->id;
         } else {
-            $table = Table::OfFormTableCode($form->id, $table_code)->first();
+            $table = Table::OfFormTableCode($f_id, $table_code)->first();
+            $t_id = $table->id;
         }
         $row_code = mb_substr($celladress->tokens[2]->text, 1);
         if (!$row_code) {
@@ -298,17 +309,29 @@ class ControlInterpreter
         if (!$column_index) {
             throw new \Exception("Не указан индекс графы (при отстутствии функции итерации по графам). Получить значение ячейки невозможно");
         }
-        $row = Row::ofTable($table->id)->where('row_code', $row_code)->first();
+
+        $row = Row::ofTable($t_id)->where('row_code', $row_code)->first();
+        //$row = Row::ofTable(10)->where('row_code', 69)->first();
         //dd($row);
         if (is_null($row)) {
             throw new \Exception("Строка с кодом " . $row_code . " не найдена в таблице " . $table->table_name . "(" . $table->table_code . ")");
         }
-        $column = Column::ofTable($table->id)->where('column_index', $column_index)->first();
+        //var_dump($this->form->form_code == $form_code || empty($form_code));
+        //var_dump($f_id);
+        //var_dump($this->form->form_code);
+        //var_dump($form_code);
+        //var_dump($this->table->table_code == $table_code || empty($table_code));
+        //var_dump($t_id);
+        //var_dump($column_index);
+        //var_dump($this->table->table_code);
+        //var_dump($table_code);
+        $column = Column::ofTable($t_id)->where('column_index', $column_index)->first();
         //dd($column);
         if (is_null($column)) {
-            throw new \Exception("Графа с индексом " . $column_index . " не найдена в таблице " . $table->table_name . "(" . $table->table_code . ")");
+            //throw new \Exception("Графа с индексом " . $column_index . " не найдена в таблице " . $table->table_name . "(" . $table->table_code . ")");
+            throw new \Exception("Графа с индексом " . $column_index . " не найдена в таблице " . $t_id);
         }
-        $cell = Cell::ofDTRC($document->id, $table->id, $row->id, $column->id)->first();
+        $cell = Cell::ofDTRC($doc_id, $t_id, $row->id, $column->id)->first();
         //$cell = Cell::ofDTRC(7062, 10, 10,1362)->first();
         //dd($cell);
         is_null($cell) ? $value = 0 : $value = $cell->value;

@@ -70,14 +70,19 @@ class ControlFunctionLexer extends Lexer {
     public function isFORMCODE()
     {
         return
-        $this->c != 'Т' &&
-        ($this->c >= '0' && $this->c <= '9') ;
+        $this->c != 'Т' && (
+            ($this->c >= '0' && $this->c <= '9') ||
+            ($this->c >= 'A' && $this->c <= 'Z') ||
+            $this->c == '.' ||
+            $this->c == '_' ||
+            $this->c == '-'
+        );
     }
 
     public function isTABLECODE()
     {
         return
-            $this->c != 'Р' &&
+            $this->c != 'С' &&
             $this->c >= '0' &&
             $this->c <= '9';
     }
@@ -173,7 +178,15 @@ class ControlFunctionLexer extends Lexer {
     public function number()
     {
         $buf = '';
+        $decimal_separator = false;
         do {
+            if ($this->c === '.') {
+                if ($decimal_separator) {
+                    throw new \Exception("Лишний десятичный разделитель в числе " . $buf);
+                } else {
+                    $decimal_separator = true;
+                }
+            }
             $buf .= $this->c;
             $this->consume();
         } while ($this->isNUMBER());
@@ -186,7 +199,7 @@ class ControlFunctionLexer extends Lexer {
         do {
             $buf .= $this->c;
             $this->consume();
-        } while ($this->isCODE());
+        } while ($this->isFORMCODE());
         return $this->tokenstack->push(self::FORMADRESS, $buf);
     }
 

@@ -57,33 +57,6 @@ class CompareControlInterpreter extends ControlInterpreter
         $this->results['right_part_formula'] = implode('', $rp);
     }
 
-    public function writeReadableCellAdresses(ParseTree $expression)
-    {
-        $expession_elements = [];
-        foreach($expression->children as $element) {
-            switch ($element->rule) {
-                case  'celladress' :
-                    $expession_elements = array_merge( $expession_elements, $this->rewriteCodes($element->tokens));
-                    break;
-                case 'operator' :
-                case 'number' :
-                    $expession_elements[] = $this->pad . $element->tokens[0]->text . $this->pad;
-                    break;
-                case 'summfunction' :
-                    $expession_elements[] = 'сумма';
-                    $expession_elements[] = '(';
-                    $expession_elements = array_merge(
-                        $expession_elements,
-                        $this->rewriteCodes($element->children[0]->children[0]->tokens),
-                        [' по '],
-                        $this->rewriteCodes($element->children[0]->children[1]->tokens));
-                    $expession_elements[] = ')';
-                    break;
-            }
-        }
-        return $expession_elements;
-    }
-
     public function exec(Document $document)
     {
         $this->document = $document;
@@ -91,6 +64,7 @@ class CompareControlInterpreter extends ControlInterpreter
         $this->results['valid'] = true;
         if ($this->iterationMode) {
             for($i = 0; $i < count($this->iterationRange); $i++) {
+                $this->currentIteration = $i;
                 $this->rewrite_celladresses($this->lpStack[$i]);
                 $this->rewrite_celladresses($this->rpStack[$i]);
                 $lp_result = $this->calculate($this->lpStack[$i]);
@@ -102,6 +76,7 @@ class CompareControlInterpreter extends ControlInterpreter
                 $this->results['valid'] = $this->results['valid'] && $result[$i]['valid'];
             }
         } else {
+            $this->currentIteration = 0;
             $this->rewrite_celladresses($this->lpExpressionRoot);
             $this->rewrite_celladresses($this->rpExpressionRoot);
             $lp_result = $this->calculate($this->lpExpressionRoot);
