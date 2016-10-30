@@ -66,15 +66,16 @@ class ControlFunctionLexer extends Lexer {
     {
         return $this->c == '.' || ($this->c >= '0' && $this->c <= '9');
     }
-
+    // Для кода формы допустимые символя - цифры, строчные кириллические буквы, точка, дефис
     public function isFORMCODE()
     {
         return
         $this->c != 'Т' && (
             ($this->c >= '0' && $this->c <= '9') ||
-            ($this->c >= 'A' && $this->c <= 'Z') ||
+            //($this->c >= 'А' && $this->c <= 'Я') ||
+            ($this->c >= 'а' && $this->c <= 'я') ||
             $this->c == '.' ||
-            $this->c == '_' ||
+            //$this->c == '_' ||
             $this->c == '-'
         );
     }

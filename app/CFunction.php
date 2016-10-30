@@ -16,6 +16,11 @@ class CFunction extends Model
         return $query->where('table_id', $table);
     }
 
+    public function scopeActive($query)
+    {
+        return $query->where('blocked', 0);
+    }
+
     public function table()
     {
         return $this->belongsTo('App\Table');

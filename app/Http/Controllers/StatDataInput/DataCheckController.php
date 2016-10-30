@@ -8,16 +8,30 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-//use App\Medinfo\Lexer\Lexer;
+
+use App\Medinfo\Control\TableDataCheck;
 use App\Medinfo\Lexer\ControlFunctionLexer;
 use App\Medinfo\Lexer\ControlFunctionParser;
 use App\Medinfo\Lexer\CompareControlInterpreter;
 use App\Table;
+use PhpParser\Comment\Doc;
 
 
 class DataCheckController extends Controller
 {
     //
+
+    public function check_table(Document $document, Table $table)
+    {
+        return TableDataCheck::execute($document, $table);
+    }
+
+    public function check_document(Document $document)
+    {
+
+    }
+
+
     public function func_parser()
     {
         $real = 'сравнение(
@@ -27,7 +41,9 @@ class DataCheckController extends Controller
                     =,
                     группы(*),
                     графы(*))';
-        $i = "сравнение( Ф16-BHТ2100С01Г3,50.00 + сумма(ФТС4Г:ФТС45Г) +сумма(ФТС48Г:ФТС67Г) + ФТС69Г + ФТС71Г + ФТС73Г + сумма(ФТС75Г:ФТС96Г) + сумма(ФТС101Г:ФТС109Г) + сумма(ФТС111Г:ФТС122Г), =, группы(*), графы(*))";
+        //$i = "сравнение(Ф16-внТ1000С01Г5 +Ф16-внТ1000С02Г5,50.00 + сумма(ФТС4Г:ФТС45Г) +сумма(ФТС48Г:ФТС67Г) + ФТС69Г + ФТС71Г + ФТС73Г + сумма(ФТС75Г:ФТС96Г) + сумма(ФТС101Г:ФТС109Г) + сумма(ФТС111Г:ФТС122Г), =, группы(*), графы(*))";
+        //$i = "сравнение( ФТС1Г, сумма(ФТС4Г:ФТС45Г) +сумма(ФТС48Г:ФТС67Г) + ФТС69Г + ФТС71Г + ФТС73Г + сумма(ФТС75Г:ФТС96Г) + сумма(ФТС101Г:ФТС109Г) + сумма(ФТС111Г:ФТС122Г), =, группы(*), графы(*))";
+        $i = "сравнение( ФТС1Г, сумма(ФТС4Г:ФТС7Г), =, группы(*), графы(6))";
 
 /*        $real = 'сравнение(
                     Ф30Т1100С1Г3,
@@ -40,7 +56,7 @@ class DataCheckController extends Controller
         //try {
             $table = Table::find(10);
             //$document = Document::find(7011);
-            $document = Document::find(7062);
+            $document = Document::find(7024);
             $lexer = new ControlFunctionLexer($i);
             $parser = new ControlFunctionParser($lexer);
         $r = $parser->run();
@@ -56,6 +72,9 @@ class DataCheckController extends Controller
 
 
     }
+
+
+
 
     public function test_celllexer()
     {

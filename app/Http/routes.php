@@ -66,7 +66,6 @@ Route::group(['middleware' => ['web']], function () {
     Route::post('admin/periods/create', 'Admin\PeriodAdminController@store');
     Route::patch('admin/periods/update', 'Admin\PeriodAdminController@update');
     Route::delete('admin/periods/delete/{period}', 'Admin\PeriodAdminController@delete');
-
     // Менеджер отчетных форм/таблиц
     Route::get('admin/forms', 'Admin\FormAdminController@index');
     Route::get('admin/fetchforms', 'Admin\FormAdminController@fetchForms' );
@@ -143,6 +142,9 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('datainput/valuechangelog/{document}', 'StatDataInput\FormDashboardController@fullValueChangeLog');
     Route::get('datainput/formcontrol/{document}', 'StatDataInput\FormDashboardController@formControl');
     Route::get('datainput/tablecontrol/{document}/{table}', 'StatDataInput\FormDashboardController@tableControl');
+
+    Route::get('datainput/dcheck/table/{document}/{table}', 'StatDataInput\DataCheckController@check_table');
+    Route::get('datainput/dcheck/form/{document}', 'StatDataInput\DataCheckController@check_document');
 
     // Эспорт данных в Эксель и заполнение печатных форм-шаблонов
     Route::get('datainput/formexport/{document}', 'StatDataInput\ExcelExportController@formExport');

@@ -9,12 +9,11 @@
 namespace App\Medinfo;
 
 use App\Document;
-use App\ControlCashe;
+//use App\ControlCashe;
 use App\Form;
-use App\Column;
+//use App\Column;
 use App\Table;
 use App\Cell;
-use Carbon\Carbon;
 
 class TableControlMM
 {
@@ -61,13 +60,6 @@ class TableControlMM
     public function setForceReload($state = false)
     {
         $this->force_reload = $state;
-    }
-
-    private function CashedProtocolActual()
-    {
-        $updated_at =  $this->dataUpdatedAt();
-        $cahed_at = $this->protocolCashedAt();
-        return $cahed_at->gt($updated_at);
     }
 
 /*    public function comparePeriods()
@@ -128,8 +120,8 @@ class TableControlMM
 
     public function takeAllBatchControls()
     {
-        if ($this->CashedProtocolActual() && !$this->force_reload) {
-            $protocol = $this->loadProtocol();
+        if (ControlHelper::CashedProtocolActual($this->doc_id, $this->table->id ) && !$this->force_reload) {
+            $protocol = ControlHelper::loadProtocol($this->doc_id, $this->table->id);
             return $protocol;
         } else {
             $protocol['intable'] = $this->InTableRowControl();
@@ -159,7 +151,7 @@ class TableControlMM
             } else {
                 $protocol['valid'] = false;
             }
-            $this->cashProtocol($protocol);
+            ControlHelper::cashProtocol($protocol, $this->doc_id, $this->table->id);
             return $protocol;
         }
     }
@@ -317,7 +309,7 @@ class TableControlMM
                     $column_protocol = compact('left_part_value', 'left_part_formula', 'right_part_value', 'right_part_formula',
                         'boolean_sign', 'boolean_readable', 'deviation', 'column_id');
                     $column_protocol['row_id'] = $row->id;
-                    $column_protocol['valid'] = $this->chekoutRule($column_protocol);
+                    $column_protocol['valid'] = ControlHelper::chekoutCompareRule($column_protocol);
                     $row_protocol[$i][] = $column_protocol;
                     $row_protocol[$i]['valid'] = $row_protocol[$i]['valid'] && $column_protocol['valid'];
                 }
@@ -382,13 +374,13 @@ class TableControlMM
                     $column_protocol = compact('left_part_value', 'left_part_formula', 'right_part_value', 'right_part_formula',
                         'boolean_sign', 'boolean_readable', 'deviation', 'column_id');
                     $column_protocol['row_id'] = $rule->row_id;
-                    $column_protocol['valid'] = $this->chekoutRule($column_protocol);
+                    $column_protocol['valid'] = ControlHelper::chekoutCompareRule($column_protocol);
                     $row_protocol[$i][] = $column_protocol;
                     $row_protocol[$i]['valid'] = $row_protocol[$i]['valid'] && $column_protocol['valid'];
                 }
             }
             $i++;
-        }
+    }
         return $row_protocol;
     }
 
@@ -444,7 +436,7 @@ class TableControlMM
         $row_protocol['deviation'] = $row_protocol['left_part_value'] - $right_part_value;
         $row_protocol['row_id'] = $rule->row_id;
         $row_protocol['column_id'] = $column->id;
-        $row_protocol['valid'] = $this->chekoutRule($row_protocol);
+        $row_protocol['valid'] =  ControlHelper::chekoutCompareRule($row_protocol);
         return $row_protocol;
     }
 
@@ -527,98 +519,5 @@ class TableControlMM
                   ORDER BY rows.row_index";
         //dd($q_crows);
         return \DB::select($q_crows);
-    }
-
-    private function chekoutRule(array $condition)
-    {
-        $lp = $condition['left_part_value'];
-        $rp = $condition['right_part_value'];
-        $delta = 0.0001;
-        // Если обе части выражения равны нулю - пропускаем проверку.
-        if ($lp == 0 && $rp == 0) {
-            return true;
-        }
-        switch ($condition['boolean_sign']) {
-            case '==' :
-                $result = abs($lp - $rp) < $delta ? true : false;
-                break;
-            case '>' :
-                $result = $lp > $rp;
-                break;
-            case '>=' :
-                $result = $lp >= $rp;
-                break;
-            case '<' :
-                $result = $lp < $rp;
-                break;
-            case '<=' :
-                $result = $lp <= $rp;
-                break;
-            case '^' :
-                $result = ($lp && $rp) || (!$lp && !$rp);
-                break;
-            default:
-                $result = false;
-        }
-        return $result;
-    }
-
-    public function cashProtocol($protocol)
-    {
-        $protocol['cashed'] = true;
-        $to_store = serialize($protocol);
-        $ccashe = ControlCashe::firstOrCreate(['doc_id' => $this->doc_id, 'table_id' => $this->table->id]);
-        $ccashe->control_cashe = $to_store;
-        $ccashe->cashed_at = Carbon::now();
-        $ccashe->save();
-        return true;
-    }
-
-    public function loadProtocol()
-    {
-        return unserialize(ControlCashe::OfDocumentTable($this->doc_id, $this->table->id)->first(['control_cashe'])->control_cashe);
-    }
-
-    public function protocolCashedAt()
-    {
-        $protocol = ControlCashe::OfDocumentTable($this->doc_id, $this->table->id)->first(['cashed_at']);
-        if ($protocol) {
-            return $protocol->cashed_at;
-        } else {
-            // Возвращаем объект с заведомо старой датой
-            return Carbon::create(1900, 1, 1);
-        }
-
-    }
-
-    public function dataUpdatedAt()
-    {
-        if (!$this->doc_id || !$this->table->id) {
-            throw new Exception("Не указан идентификатор таблицы для получения даты и времени сохранения данных");
-        }
-        $q = "SELECT MAX(updated_at) latest_edited FROM statdata WHERE doc_id = {$this->doc_id} AND table_id = {$this->table->id}";
-        $updated_at = \DB::selectOne($q)->latest_edited;
-        return $updated_at ? new Carbon($updated_at) : Carbon::create(1900, 1, 1);
-/*        if ($updated_at) {
-            return new Carbon($updated_at);
-        } else {
-            // Возвращаем объект с заведомо старой датой
-            return Carbon::create(1900, 1, 1);
-        }*/
-    }
-
-    public static function tableContainsData(int $document, int $table)
-    {
-        if (!$document || !$table) {
-            throw new Exception("Не указан идентификатор документа/таблицы для проверки наличия данных");
-        }
-        $q = "SELECT SUM(value) sum_of_values FROM statdata WHERE doc_id = $document AND table_id = $table";
-        $res = \DB::selectOne($q);
-        return $res->sum_of_values > 0 ? true : false;
-/*        if ($res->sum_of_values > 0 ) {
-            return true;
-        } else {
-            return false;
-        }*/
     }
 }

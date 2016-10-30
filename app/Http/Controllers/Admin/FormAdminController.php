@@ -30,9 +30,12 @@ class FormAdminController extends Controller
 
     public function store(Request $request)
     {
+        // TODO: Добавить проверку для кода формы -  допустимые символы: цифры, строчные кириллические буквы, точка, дефис
         $this->validate($request, [
-                'form_name' => 'required|unique:forms',
-                'form_code' => 'required|unique:forms',
+                'group_id' => 'integer',
+                'form_index' => 'integer',
+                'form_name' => 'required|unique:forms|max:256',
+                'form_code' => 'required|unique:forms|max:7',
                 'medstat_code' => 'digits:5',
                 'medinfo_id' => 'integer',
             ]

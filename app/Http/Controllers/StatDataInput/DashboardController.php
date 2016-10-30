@@ -17,13 +17,13 @@ use App\Cell;
 use App\NECellsFetch;
 use App\ValuechangingLog;
 use App\Medinfo\TableControlMM;
+use App\Medinfo\ControlHelper;
 use App\Medinfo\TableEditing;
 
 class DashboardController extends Controller
 {
 
     //
-
     public function index(Document $document)
     {
         $worker = Auth::guard('datainput')->user();
@@ -235,7 +235,7 @@ class DashboardController extends Controller
 
     public function tableControl(int $document, int $table)
     {
-        if (TableControlMM::tableContainsData($document, $table)) {
+        if (ControlHelper::tableContainsData($document, $table)) {
             $control = new TableControlMM($document, $table);
 
             $table_protocol = $control->takeAllBatchControls();
@@ -258,7 +258,7 @@ class DashboardController extends Controller
             ->where('medinfo_id', '<>', 0)
             ->orderBy('table_code')->get();
         foreach ($tables as $table) {
-            if (TableControlMM::tableContainsData($document, $table->id)) {
+            if (ControlHelper::tableContainsData($document, $table->id)) {
                 $offset = $table->table_code;
                 $control = new TableControlMM($document, $table->id);
                 $form_protocol[$offset] = $control->takeAllBatchControls();

@@ -73,13 +73,7 @@ var initlayout = function() {
                     type: 'layoutPanel',
                     title: 'Контроль таблицы',
                     contentContainer: 'TableControlPanel',
-                    initContent: function () {
-                        $("#checktable").jqxButton({ theme: theme, disabled: control_disabled });
-                        $("#checktable").click( function() { checktable(current_table) });
-                        $("#compareprevperiod").jqxButton({ theme: theme });
-                        $("#compareprevperiod").click(compare_with_prev);
-
-                    }
+                    initContent: initchecktabletab
                 },{
                     type: 'layoutPanel',
                     title: 'Контроль ячейки',

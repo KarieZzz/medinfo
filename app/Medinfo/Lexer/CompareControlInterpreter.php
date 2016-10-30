@@ -37,6 +37,7 @@ class CompareControlInterpreter extends ControlInterpreter
         $this->prepareReadable();
         $this->rewrite_summfunctions($this->lpExpressionRoot);
         $this->rewrite_summfunctions($this->rpExpressionRoot);
+
         if ($this->iterationMode) {
             foreach($this->iterationRange as $iteration) {
                 $lpRootCopy = unserialize(serialize($this->lpExpressionRoot)); // clone не работает, нужно разобраться
@@ -67,6 +68,7 @@ class CompareControlInterpreter extends ControlInterpreter
                 $this->currentIteration = $i;
                 $this->rewrite_celladresses($this->lpStack[$i]);
                 $this->rewrite_celladresses($this->rpStack[$i]);
+                //dd($this->rpStack[$i]);
                 $lp_result = $this->calculate($this->lpStack[$i]);
                 $rp_result = $this->calculate($this->rpStack[$i]);
                 $result[$i]['left_part_value'] = $lp_result;

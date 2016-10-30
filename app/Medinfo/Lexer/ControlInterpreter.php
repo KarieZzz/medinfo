@@ -45,20 +45,11 @@ class ControlInterpreter
         $this->setArguments();
     }
 
-    public function setArguments()
-    {
+    public function setArguments()  { }
 
-    }
+    public function prepareReadable()  { }
 
-    public function prepareReadable()
-    {
-
-    }
-
-    public function exec(Document $document)
-    {
-
-    }
+    public function exec(Document $document)  { }
 
     public function writeReadableCellAdresses(ParseTree $expression)
     {
@@ -141,14 +132,16 @@ class ControlInterpreter
 
     public function calculate(ParseTree $expression)
     {
+        //dd($expression);
         $eval_stack = [];
         foreach($expression->children as $element) {
             if ($element->rule == 'operator' || $element->rule == 'number' ) {
                 $eval_stack[] = $element->tokens[0]->text;
             }
         }
-        $expression = implode('', $eval_stack). ';';
-        $result = eval('return ' . $expression);
+        $inline = implode('', $eval_stack). ';';
+        //var_dump($expression);
+        $result = eval('return ' . $inline);
         return $result;
     }
 
@@ -299,6 +292,9 @@ class ControlInterpreter
             $t_id = $this->table->id;
         } else {
             $table = Table::OfFormTableCode($f_id, $table_code)->first();
+            if (is_null($table)) {
+                throw new \Exception("Таблицы " . $table_code . " нет в составе формы " . $form_code );
+            }
             $t_id = $table->id;
         }
         $row_code = mb_substr($celladress->tokens[2]->text, 1);
@@ -335,7 +331,7 @@ class ControlInterpreter
         //$cell = Cell::ofDTRC(7062, 10, 10,1362)->first();
         //dd($cell);
         is_null($cell) ? $value = 0 : $value = $cell->value;
-        //$value = $cell ? $cell->value : 0;
+        if (is_null($value)) $value = 0; // NULL значения трактуются как равные нулю
         $celladress->rule = 'number';
         $celladress->tokens = [];
         $celladress->addToken(new Token(ControlFunctionLexer::NUMBER, $value));

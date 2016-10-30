@@ -6,6 +6,9 @@ var doc_type = '{{ $document->dtype }}';
 var form_name = '{{ $form->form_name }}';
 var form_code = '{{ $form->form_code }}';
 var current_user_role = '{{ $worker->role }}';
+var fgrid; // селектор для сетки с перечнем таблиц
+var dgrid; // селектор для сетки с данными таблиц
+
 var edited_tables = [{!! implode(',', $editedtables) !!}];
 var not_editable_cells = {!! json_encode($noteditablecells) !!};
 //console.log(not_editable_cells);
@@ -53,11 +56,15 @@ var current_protocol_source;
 var source_url = "/datainput/fetchvalues/" + doc_id + "/";
 var savevalue_url = "/datainput/savevalue/" + doc_id + "/";
 var validate_table_url = "/datainput/tablecontrol/" + doc_id + "/";
+var tabledatacheck_url = "/datainput/dcheck/table/" + doc_id + "/";
+var formdatacheck_url = "/datainput/dcheck/form/" + doc_id;
+
 var validate_form_url = "/datainput/formcontrol/" + doc_id;
 var medstat_control_url = "medstat_control_protocol.php?document=" + doc_id;
 var valuechangelog_url = "/datainput/valuechangelog/" + doc_id;
 var tableexport_url = "/datainput/tableexport/" + doc_id + "/";
 var cell_layer_url = "/datainput/fetchcelllayers/" + doc_id + "/";
+
 initdatasources();
 initnotifications();
 inittablelist();

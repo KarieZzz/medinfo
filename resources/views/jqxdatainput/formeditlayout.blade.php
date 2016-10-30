@@ -30,7 +30,8 @@
     </div>
     <div data-container="TableControlPanel" id="TableControlPanel">
         <div style="padding: 4px" id="ProtocolToolbar">
-            <input style="float: left" id="checktable" type="button" value="Контроль таблицы" />
+            <input style="float: left" id="checktable" type="button" value="Контроль таблицы (МИ)" />
+            <input style="float: left" id="datacheck" type="button" value="Контроль таблицы (Ф)" />
             <input style="float: left" id="compareprevperiod" type="button" value="Сравнить с предыдущим периодом" />
             {{--<a href="#" onClick="DoFullScrene()">Full Screen Mode</a>--}}
             <div style="padding: 4px" id="extrabuttons">
