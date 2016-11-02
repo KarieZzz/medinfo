@@ -23,7 +23,7 @@ class ControlInterpreter
     public $pad = ' ';
     public $results; // Протокол выполнения функции
     public $iterationMode; // режим перебора - без перебора(null) по строкам(1) и графам(2) при внутритабличном контроле
-    public $iterationRange; // собственно диапазон строк или граф для подстановки значений
+    public $iterationRange = []; // собственно диапазон строк или граф для подстановки значений
 
     // все по текущему документу
     public $document;
@@ -101,22 +101,39 @@ class ControlInterpreter
         return $expession_elements;
     }
 
-    public function setIterationRange(array $iteration_tokens)
+    public function setIterationRange(array $iteration_nodes)
     {
-        if ($iteration_tokens[0]->text == '*') { // итерация по всем строкам или графам
+        if ($iteration_nodes[0]->rule == 'all_rc') { // итерация по всем строкам или графам
             if ($this->iterationMode == 1) {
                 $this->iterationRange = Row::OfTable($this->table->id)->where('deleted', 0)->pluck('row_code')->toArray();
             } elseif ($this->iterationMode == 2) {
                 $this->iterationRange = Column::OfTable($this->table->id)->OfDataType()->where('deleted', 0)->pluck('column_index')->toArray();
             }
         } else { // подразумевается, что приведено перечисление строк или граф по которым нужно переписать неполные ссылки
-            foreach ($iteration_tokens as $iteration_token) {
-                if ($iteration_token->type == ControlFunctionLexer::NUMBER) {
-                    $this->iterationRange[] = $iteration_token->text;
+            foreach ($iteration_nodes as $node) {
+                if ($node->rule == 'iteration_number') {
+                    //dd($node);
+                    $this->iterationRange[] = $node->tokens[0]->text;
+                } elseif($node->rule == 'iteration_range') {
+                    $start = $node->tokens[0]->text;
+                    $end = $node->tokens[2]->text;
+                    if ($this->iterationMode == 1) {
+                        $codes = $this->row_codes($start, $end)->toArray();
+                        //dd($codes);
+                    } elseif ($this->iterationMode == 2) {
+                        $i = (int)$start;
+                        while($i <= $end) {
+                            $codes[] = $i++;
+                        }
+                    }
+                    $this->iterationRange = array_merge($this->iterationRange, $codes );
                 }
             }
         }
+        //dd($this->iterationRange);
     }
+
+
 
     public function fillIncompleteLinks($expression, $link)
     {
@@ -127,6 +144,7 @@ class ControlInterpreter
                 $element->tokens[$token_index]->text = $prefix . $link;
             }
         }
+
         return $expression;
     }
 
@@ -284,9 +302,6 @@ class ControlInterpreter
             }
             $doc_id = $document->id;
             $f_id = $form->id;
-            //dd($form->id);
-            //dd($this->document->period_id);
-            //dd($document);
         }
         if ($this->table->table_code == $table_code || empty($table_code)) {
             $t_id = $this->table->id;
@@ -307,29 +322,14 @@ class ControlInterpreter
         }
 
         $row = Row::ofTable($t_id)->where('row_code', $row_code)->first();
-        //$row = Row::ofTable(10)->where('row_code', 69)->first();
-        //dd($row);
         if (is_null($row)) {
             throw new \Exception("Строка с кодом " . $row_code . " не найдена в таблице " . $table->table_name . "(" . $table->table_code . ")");
         }
-        //var_dump($this->form->form_code == $form_code || empty($form_code));
-        //var_dump($f_id);
-        //var_dump($this->form->form_code);
-        //var_dump($form_code);
-        //var_dump($this->table->table_code == $table_code || empty($table_code));
-        //var_dump($t_id);
-        //var_dump($column_index);
-        //var_dump($this->table->table_code);
-        //var_dump($table_code);
         $column = Column::ofTable($t_id)->where('column_index', $column_index)->first();
-        //dd($column);
         if (is_null($column)) {
-            //throw new \Exception("Графа с индексом " . $column_index . " не найдена в таблице " . $table->table_name . "(" . $table->table_code . ")");
             throw new \Exception("Графа с индексом " . $column_index . " не найдена в таблице " . $t_id);
         }
         $cell = Cell::ofDTRC($doc_id, $t_id, $row->id, $column->id)->first();
-        //$cell = Cell::ofDTRC(7062, 10, 10,1362)->first();
-        //dd($cell);
         is_null($cell) ? $value = 0 : $value = $cell->value;
         if (is_null($value)) $value = 0; // NULL значения трактуются как равные нулю
         $celladress->rule = 'number';

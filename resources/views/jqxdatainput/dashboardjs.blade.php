@@ -46,6 +46,7 @@ var current_row_number_datafield = data_for_tables[current_table].columns[2].dat
 var protocol_control_created = false;
 var invalidTables = [];
 var editedCells = [];
+var alertedCells = [];
 var invalidCells = [];
 var comparedCells = [];
 var show_table_errors_only = true;

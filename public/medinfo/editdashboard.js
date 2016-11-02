@@ -134,12 +134,12 @@ var renderRowProtocol = function (container, table_id, protocol_by_type, header_
     var i = 0;
     var info = $("<div class='rule-comment bg-info'> - правила контроля не заданы</div>");
     //console.log(protocol_by_type);
-    if (!protocol_by_type.no_rules) {
+    if (typeof protocol_by_type.no_rules == 'undefined' || !protocol_by_type.no_rules) {
         info = $("<table style='margin: 5px;'></table>");
         $.each(protocol_by_type, function(row_index, row_protocol) {
-            if (typeof row_protocol.valid !='undefined') {
+            if (typeof row_protocol.valid !== 'undefined') {
                 $.each(row_protocol, function(column_index, cell_protocol ) {
-                    if ( typeof cell_protocol.valid !='undefined' ) {
+                    if ( typeof cell_protocol.valid !=='undefined' ) {
                         var valid = '';
                         var row = renderCellProtocol(cell_protocol);
                         info.append(row);
@@ -169,14 +169,20 @@ var renderTableProtocol = function (table_id, data) {
     var container;
     var protocol_wrapper = $("<div class='tableprotocol-content'></div>");
     container = $("<div></div>");
-    renderRowProtocol(container, table_id, data.intable, 'Результаты внутритабличного контроля строк');
-    renderRowProtocol(container, table_id, data.inform, 'Результаты внутриформенного контроля строк');
-    renderRowProtocol(container, table_id, data.inreport, 'Результаты межформенного контроля строк');
-    renderRowProtocol(container, table_id, data.inrow, 'Результаты контроля внутри строки');
-    renderRowProtocol(container, table_id, data.columns, 'Результаты контроля граф');
+    if (typeof data.intable !== 'undefined') {
+        renderRowProtocol(container, table_id, data.intable, 'Результаты внутритабличного контроля строк');
+        renderRowProtocol(container, table_id, data.inform, 'Результаты внутриформенного контроля строк');
+        renderRowProtocol(container, table_id, data.inreport, 'Результаты межформенного контроля строк');
+        renderRowProtocol(container, table_id, data.inrow, 'Результаты контроля внутри строки');
+        renderRowProtocol(container, table_id, data.columns, 'Результаты контроля граф');
+    } else if(typeof data.rules !== 'undefined') {
+        renderRowProtocol(container, table_id, data.rules, 'Результаты контроля таблицы');
+    }
+
     protocol_wrapper.append(container);
     return protocol_wrapper;
 };
+
 // Инициализация дополнительных кнопок на панели инструментов контроля формы
 var init_fc_extarbuttons = function () {
     //$("#fc_extrabuttons").hide();
@@ -468,7 +474,7 @@ var gettableprotocol = function (data, status, xhr) {
         tableprotocol.html("<div class='alert alert-info'>"+ timestamp+" Проверяемая таблица не содержит данных</div>");
         protocol_control_created = true;
     }
-    else if (data.no_rules) {
+    else if (typeof data.no_rules != 'undefined' && data.no_rules) {
         tableprotocol.html("<div class='alert alert-info'>"+ timestamp+" Для данной таблицы не заданы правила контроля</div>");
         protocol_control_created = false;
     }
@@ -659,8 +665,8 @@ var initdatasources = function() {
 };
 // Получение читабельных координат ячейки - код строки, индекс графы
 var getreadablecelladress = function(row, column) {
-    var row_code = $('#DataGrid').jqxGrid('getcellvaluebyid', row, current_row_number_datafield);
-    var column_index = $('#DataGrid').jqxGrid('getcolumnproperty', column, 'text');
+    var row_code = dgrid.jqxGrid('getcellvaluebyid', row, current_row_number_datafield);
+    var column_index = dgrid.jqxGrid('getcolumnproperty', column, 'text');
     return { row: row_code, column: column_index};
 };
 var fetchcelllayer = function(row, column) {

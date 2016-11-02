@@ -15,6 +15,7 @@ use App\Table;
 use App\Medinfo\Lexer\ControlFunctionLexer;
 use App\Medinfo\Lexer\ControlFunctionParser;
 use App\Medinfo\Lexer\CompareControlInterpreter;
+use App\Medinfo\Lexer\FunctionDispatcher;
 
 class TableDataCheck
 {
@@ -28,15 +29,23 @@ class TableDataCheck
                 $table_protocol['no_rules'] = true;
                 return $table_protocol;
             }
-            $rules =  &$table_protocol['rules'];
+            $table_protocol['no_rules'] = false;
+            $rules = &$table_protocol['rules'];
+            $valid = true;
             foreach ($cfunctions as $function) {
-
                 $lexer = new ControlFunctionLexer($function->script);
                 $parser = new ControlFunctionParser($lexer);
                 $r = $parser->run();
-                $interpret = new CompareControlInterpreter($r, $table);
-                $rules[] = $interpret->exec($document);
+                $interpreter = new CompareControlInterpreter($r, $table);
+                $rule = $interpreter->exec($document);
+                $rule['function_id'] = $parser->functionIndex;
+                $rule['function'] = FunctionDispatcher::$structNames[$parser->functionIndex];
+                $rule['input'] = $function->script;
+                $rule['no_rules'] = false;
+                $rules[] = $rule;
+                $valid = $valid && $rule['valid'];
             }
+            $table_protocol['valid'] = $valid;
             return $table_protocol;
         }
         $table_protocol['no_data'] = true;

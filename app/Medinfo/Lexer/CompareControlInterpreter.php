@@ -30,9 +30,9 @@ class CompareControlInterpreter extends ControlInterpreter
         if (isset($this->root->children[3]->children[0]->tokens[0])) {
             $this->unitScope = $this->root->children[3]->children[0]->tokens[0]->text;
         }
-        if (count($this->root->children[4]->children[0]->tokens)) {
+        if (count($this->root->children[4]->children[0]->children)) {
             $this->iterationMode = $this->root->children[4]->tokens[0]->text == 'строки' ? 1 : 2;
-            $this->setIterationRange($this->root->children[4]->children[0]->tokens);
+            $this->setIterationRange($this->root->children[4]->children[0]->children);
         }
         $this->prepareReadable();
         $this->rewrite_summfunctions($this->lpExpressionRoot);
@@ -40,8 +40,10 @@ class CompareControlInterpreter extends ControlInterpreter
 
         if ($this->iterationMode) {
             foreach($this->iterationRange as $iteration) {
+                //var_dump($iteration);
                 $lpRootCopy = unserialize(serialize($this->lpExpressionRoot)); // clone не работает, нужно разобраться
                 $rpRootCopy = unserialize(serialize($this->rpExpressionRoot));
+
                 $this->lpStack[] = $this->fillIncompleteLinks($lpRootCopy, $iteration);
                 $this->rpStack[] = $this->fillIncompleteLinks($rpRootCopy, $iteration);
             }
@@ -63,6 +65,7 @@ class CompareControlInterpreter extends ControlInterpreter
         $this->document = $document;
         $result = &$this->results['iterations'];
         $this->results['valid'] = true;
+        $this->results['iteration_mode'] = $this->iterationMode;
         if ($this->iterationMode) {
             for($i = 0; $i < count($this->iterationRange); $i++) {
                 $this->currentIteration = $i;
@@ -71,6 +74,7 @@ class CompareControlInterpreter extends ControlInterpreter
                 //dd($this->rpStack[$i]);
                 $lp_result = $this->calculate($this->lpStack[$i]);
                 $rp_result = $this->calculate($this->rpStack[$i]);
+                $result[$i]['code'] = $this->iterationRange[$i];
                 $result[$i]['left_part_value'] = $lp_result;
                 $result[$i]['right_part_value'] = $rp_result;
                 $result[$i]['deviation'] = abs(round($rp_result-$lp_result, 3));

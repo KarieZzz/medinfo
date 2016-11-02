@@ -167,21 +167,6 @@ class ControlFunctionParser extends Parser {
         $this->currentNode = $o;
     }
 
-    public function iterations()
-    {
-        $r = new ControlFunctionParseTree(__FUNCTION__);
-        $o = $this->currentNode;
-        $this->currentNode->addChild($r);
-        $this->currentNode = $r;
-
-        $this->match(ControlFunctionLexer::NAME);
-        $this->match(ControlFunctionLexer::LPARENTH);
-        $this->iteration_range();
-        $this->match(ControlFunctionLexer::RPARENTH);
-
-        $this->currentNode = $o;
-    }
-
     public function scope()
     {
         $r = new ControlFunctionParseTree(__FUNCTION__);
@@ -212,7 +197,22 @@ class ControlFunctionParser extends Parser {
         $this->currentNode = $o;
     }
 
-    public function iteration_range()
+    public function iterations()
+    {
+        $r = new ControlFunctionParseTree(__FUNCTION__);
+        $o = $this->currentNode;
+        $this->currentNode->addChild($r);
+        $this->currentNode = $r;
+
+        $this->match(ControlFunctionLexer::NAME);
+        $this->match(ControlFunctionLexer::LPARENTH);
+        $this->iteration_ranges();
+        $this->match(ControlFunctionLexer::RPARENTH);
+
+        $this->currentNode = $o;
+    }
+
+    public function iteration_ranges()
     {
         $r = new ControlFunctionParseTree(__FUNCTION__);
         $o = $this->currentNode;
@@ -220,18 +220,52 @@ class ControlFunctionParser extends Parser {
         $this->currentNode = $r;
 
         if ($this->lookahead->type == ControlFunctionLexer::MULTIPLY ) {
-            $this->match(ControlFunctionLexer::MULTIPLY);
+            $this->all_rc();
         } elseif ($this->lookahead->type == ControlFunctionLexer::NUMBER) {
-            $this->match(ControlFunctionLexer::NUMBER);
-            while ($this->lookahead->type == ControlFunctionLexer::COMMA ) {
-                $this->match(ControlFunctionLexer::COMMA);
-                $this->match(ControlFunctionLexer::NUMBER);
 
-            }
+            $this->iteration_range();
         }
 
         $this->currentNode = $o;
     }
+
+    public function all_rc()
+    {
+        $r = new ControlFunctionParseTree(__FUNCTION__);
+        $o = $this->currentNode;
+        $this->currentNode->addChild($r);
+        $this->currentNode = $r;
+
+        $this->match(ControlFunctionLexer::MULTIPLY);
+
+        $this->currentNode = $o;
+    }
+
+    public function iteration_range()
+    {
+        $r = new ControlFunctionParseTree(__FUNCTION__);
+        $o = $this->currentNode;
+        $this->currentNode->addChild($r);
+        $this->currentNode = $r;
+        $this->currentNode->rule = 'iteration_number';
+        $this->match(ControlFunctionLexer::NUMBER);
+
+        if ($this->lookahead->type == ControlFunctionLexer::COMMA ) {
+            $this->match(ControlFunctionLexer::COMMA);
+            $this->currentNode = $o;
+            $this->iteration_range();
+        } elseif ($this->lookahead->type == ControlFunctionLexer::OPERATOR && $this->lookahead->text = '-') {
+            $this->currentNode->rule = 'iteration_range';
+            $this->match(ControlFunctionLexer::OPERATOR);
+            $this->match(ControlFunctionLexer::NUMBER);
+            if ($this->lookahead->type == ControlFunctionLexer::COMMA ) {
+                $this->match(ControlFunctionLexer::COMMA);
+                $this->currentNode = $o;
+                $this->iteration_range();
+            }
+        }
+    }
+
 }
 
 ?>
