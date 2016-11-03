@@ -14,7 +14,6 @@ use App\Medinfo\Lexer\ControlFunctionLexer;
 use App\Medinfo\Lexer\ControlFunctionParser;
 use App\Medinfo\Lexer\CompareControlInterpreter;
 use App\Table;
-use PhpParser\Comment\Doc;
 
 
 class DataCheckController extends Controller
@@ -28,7 +27,22 @@ class DataCheckController extends Controller
 
     public function check_document(Document $document)
     {
-
+        $form_protocol = [];
+        $form_protocol['valid'] = true;
+        $form_protocol['no_data'] = true;
+        $form_id = $document->form_id;
+        $tables = Table::OfForm($form_id)->where('deleted', 0)->get();
+        foreach ($tables as $table) {
+            $offset = $table->table_code;
+            $control = TableDataCheck::execute($document, $table);
+            if ($control['no_data'] == false) {
+                //dd($control);
+                $form_protocol[$offset] = $control;
+                $form_protocol['valid'] = $form_protocol['valid'] && $control['valid'];
+                $form_protocol['no_data'] = false;
+            }
+        }
+        return $form_protocol;
     }
 
 

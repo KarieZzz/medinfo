@@ -28,7 +28,7 @@ class CompareControlInterpreter extends ControlInterpreter
         $this->rpExpressionRoot = $this->root->children[1];
         $this->boolean = $this->root->children[2]->tokens[0]->text;
         if (isset($this->root->children[3]->children[0]->tokens[0])) {
-            $this->unitScope = $this->root->children[3]->children[0]->tokens[0]->text;
+            $this->unitScope = $this->setUnitScope($this->root->children[3]->children[0]->tokens[0]->text);
         }
         if (count($this->root->children[4]->children[0]->children)) {
             $this->iterationMode = $this->root->children[4]->tokens[0]->text == 'строки' ? 1 : 2;
@@ -63,13 +63,21 @@ class CompareControlInterpreter extends ControlInterpreter
     public function exec(Document $document)
     {
         $this->document = $document;
-        $result = &$this->results['iterations'];
         $this->results['valid'] = true;
+        $this->results['not_in_scope'] = false;
+        if (!$this->inScope()) {
+            $this->results['not_in_scope'] = true;
+            return $this->results;
+        }
+        $result = &$this->results['iterations'];
         $this->results['iteration_mode'] = $this->iterationMode;
         if ($this->iterationMode) {
             for($i = 0; $i < count($this->iterationRange); $i++) {
                 $this->currentIteration = $i;
+                $result[$i]['cells'] = [];
+                $this->currentArgument = 1;
                 $this->rewrite_celladresses($this->lpStack[$i]);
+                $this->currentArgument = 2;
                 $this->rewrite_celladresses($this->rpStack[$i]);
                 //dd($this->rpStack[$i]);
                 $lp_result = $this->calculate($this->lpStack[$i]);

@@ -17,7 +17,9 @@ class ControlHelper
     public static function CashedProtocolActual(int $document, int $table)
     {
         $updated_at =  self::dataUpdatedAt($document, $table);
+
         $cahed_at = self::protocolCashedAt($document, $table);
+
         return $cahed_at->gt($updated_at);
     }
 

@@ -14,11 +14,13 @@ use App\Row;
 use App\Column;
 use App\Table;
 use App\Cell;
+use App\UnitGroup;
+use App\UnitGroupMember;
 
 class ControlInterpreter
 {
     public $root;
-    public $unitScope; // область приложения функции (группы учреждений)
+    public $unitScope = []; // область приложения функции (группы учреждений)
     public $readableFormula; // отображение формулы контроля в более удобочитаемом виде
     public $pad = ' ';
     public $results; // Протокол выполнения функции
@@ -33,6 +35,7 @@ class ControlInterpreter
     public $table;
 
     public $currentIteration;
+    public $currentArgument;
     public $currentForm; // ORM Model обрабатываемой формы
     public $currentTable; // ORM Model обрабатываемой таблицы
     public $currentNode; // текущий узел ParseTreeNode - для обработки
@@ -50,6 +53,29 @@ class ControlInterpreter
     public function prepareReadable()  { }
 
     public function exec(Document $document)  { }
+
+    public function setUnitScope($group_alias)
+    {
+        if ($group_alias == '*') {
+            return null;
+        }
+        $group = UnitGroup::OfSlug($group_alias)->first();
+        if (!$group) {
+            throw new \Exception("Группа медицинских организаций <" . $group_alias . "> не найдена");
+        }
+        return UnitGroupMember::OfGroup($group->id)->pluck('ou_id')->toArray();
+    }
+
+    public function inScope()
+    {
+        if (is_null($this->unitScope)) {
+            return true;
+        }
+        if (!in_array($this->document->ou_id, $this->unitScope)) {
+            return false;
+        }
+        return true;
+    }
 
     public function writeReadableCellAdresses(ParseTree $expression)
     {
@@ -228,6 +254,7 @@ class ControlInterpreter
                 $this->reduce_celladress($element);
             }
         }
+        $this->currentArgument = null;
     }
 
     public function reduce_summfunction(ParseTree $sf, $operator)
@@ -330,6 +357,12 @@ class ControlInterpreter
             throw new \Exception("Графа с индексом " . $column_index . " не найдена в таблице " . $t_id);
         }
         $cell = Cell::ofDTRC($doc_id, $t_id, $row->id, $column->id)->first();
+
+        // Записываем только левую (или единственную) часть сравнения
+        if($this->currentArgument == 1) {
+            $this->results['iterations'][$this->currentIteration]['cells'][] = ['row' => $row->id, 'column' => $column->id ];
+        }
+        //$this->results['iterations'][$this->currentIteration]['cells'][] = ['row' => $row->id, 'column' => $column->id ];
         is_null($cell) ? $value = 0 : $value = $cell->value;
         if (is_null($value)) $value = 0; // NULL значения трактуются как равные нулю
         $celladress->rule = 'number';

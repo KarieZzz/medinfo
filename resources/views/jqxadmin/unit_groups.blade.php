@@ -26,6 +26,12 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label class="control-label col-sm-3" for="slug">Псевдоним:</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="slug" />
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label class="control-label col-sm-3" for="parent_id">Входит в состав:</label>
                         <div class="col-sm-2">
                             <div id="parent_id"></div>
@@ -81,7 +87,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/unitgroupadmin.js') }}"></script>
+    <script src="{{ asset('/medinfo/admin/unitgroupadmin.js?v=0001') }}"></script>
 @endpush
 
 @section('inlinejs')

@@ -2,27 +2,31 @@
     color: black\9;
     background-color: #b0ffaf\9;
 }
-.yellow {
-    color: black\9;
-    background-color: yellow\9;
-}
-.invalid {
-    color: black\9;
-    background-color: #ffc8c8 \9;
-}
 
 .valid:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected), .jqx-widget .green:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected) {
     color: black;
     background-color: #b0ffaf;
 }
-.yellow:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected), .jqx-widget .yellow:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected) {
+
+.alerted {
     color: black;
-    background-color: yellow;
+    background-color: #f5ff9b;
 }
+.alerted:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected), .jqx-widget .yellow:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected) {
+    color: black;
+    background-color: #f5ff9b;
+}
+
+.invalid {
+    color: black\9;
+    background-color: #ffc8c8 !important;
+}
+
 .invalid:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected), .jqx-widget .red:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected) {
     color: black;
     background-color: #ffc8c8;
 }
+
 .editedRow {
     font-style: italic;
     font-weight: bold ;

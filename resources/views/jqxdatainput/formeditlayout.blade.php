@@ -7,7 +7,7 @@
     <div data-container="FormControlPanel" id="fcp">
         <div id="formControlToolbar" style="padding: 4px;">
             {{--<input id="dataexport" type="button" value="Экспорт данных" />--}}
-            <input id="checkform" style="float: left" type="button" value="Контроль МИ" />
+            <input id="checkform" style="float: left" type="button" value="Контроль формы" />
             <div style="padding: 4px; display: none" id="fc_extrabuttons">
                 <div id="showallfcrule" class="extrabutton" style="float: left"><span>Показать только ошибки</span></div>
                 <a id="toggle_formcontrolscreen" style="margin-left: 2px;" target="_blank"><span class='glyphicon glyphicon-fullscreen'></span></a>
@@ -30,10 +30,10 @@
     </div>
     <div data-container="TableControlPanel" id="TableControlPanel">
         <div style="padding: 4px" id="ProtocolToolbar">
-            <input style="float: left" id="checktable" type="button" value="Контроль таблицы (МИ)" />
-            <input style="float: left" id="datacheck" type="button" value="Контроль таблицы (Ф)" />
-            <input style="float: left" id="compareprevperiod" type="button" value="Сравнить с предыдущим периодом" />
-            {{--<a href="#" onClick="DoFullScrene()">Full Screen Mode</a>--}}
+           {{-- <input style="float: left" id="checktable" type="button" value="Контроль таблицы (МИ)" />--}}
+            <input style="float: left" id="datacheck" type="button" value="Контроль таблицы" />
+            {{--<input style="float: left" id="compareprevperiod" type="button" value="Сравнить с предыдущим периодом" />--}}
+
             <div style="padding: 4px" id="extrabuttons">
                 <div id="showallrule" class="extrabutton" style="float: left"><span>Показать только ошибки</span></div>
                 <a id="togglecontrolscreen" style="margin-left: 2px;" target="_blank"><span class='glyphicon glyphicon-fullscreen'></span></a>

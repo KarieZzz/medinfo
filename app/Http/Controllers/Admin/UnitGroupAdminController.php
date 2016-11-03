@@ -20,13 +20,14 @@ class UnitGroupAdminController extends Controller
 
     public function index()
     {
-        $groups = UnitGroup::all(['id', 'group_name']);
+        $groups = UnitGroup::all();
         return view('jqxadmin.unit_groups', compact('groups'));
     }
 
     public function fetchGroups()
     {
-       return UnitGroup::orderBy('group_name')->get();
+       //return UnitGroup::orderBy('group_name')->get();
+       return UnitGroup::all();;
     }
 
     public function fetchMembers(int $group)
@@ -39,11 +40,13 @@ class UnitGroupAdminController extends Controller
         $this->validate($request, [
                 'parent_id' => 'exists:unit_groups,id',
                 'group_name' => 'required|max:128|unique:unit_groups',
+                'slug' => 'max:128|unique:unit_groups',
             ]
         );
         $newgroup = new UnitGroup();
         $newgroup->parent_id = empty($request->parent_id) ? null : $request->parent_id;
         $newgroup->group_name = $request->group_name;
+        $newgroup->slug = empty($request->slug) ?  str_slug($newgroup->group_name) : $request->slug;
         $newgroup->save();
         try {
             $newgroup->save();
@@ -67,10 +70,12 @@ class UnitGroupAdminController extends Controller
         $this->validate($request, [
                 'parent_id' => 'exists:unit_groups,id',
                 'group_name' => 'required|max:128',
+                'slug' => 'required|max:128|unique:unit_groups',
             ]
         );
         $group->parent_id = empty($request->parent_id) ? null : $request->parent_id;
         $group->group_name = $request->group_name;
+        $group->slug = $request->slug;
         $result = [];
         try {
             $group->save();
