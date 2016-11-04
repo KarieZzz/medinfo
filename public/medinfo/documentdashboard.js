@@ -291,7 +291,8 @@ var rendertoolbar = function (toolbar) {
     });
     changestatus.click(function () {
         var rowindex = dgrid.jqxGrid('getselectedrowindex');
-        var this_document_state ='';
+        var alert_message;
+        var this_document_state = '';
         if (rowindex == -1 && typeof rowindex !== 'undefined') {
             return false;
         }
@@ -312,6 +313,10 @@ var rendertoolbar = function (toolbar) {
         if (current_user_role == 1 && this_document_state !== 'performed' && this_document_state !== 'declined') {
             $('#prepared').jqxRadioButton('disable');
         } else if (current_user_role == 1 && (this_document_state == 'performed' || this_document_state == 'declined')) {
+            alert_message = '<strong>Внимание!</strong> Смена статуса документа допускается только в то случае если ВСЕ правки документа выполнены! <br />';
+            alert_message += 'Если Вы не уверены, что закончили редактирование - отмените действие!';
+            $('#changeStateAlertMessage').html(alert_message);
+            $('#changeStateAlertMessage').show();
             $('#prepared').jqxRadioButton('enable');
         }
         if ((current_user_role == 3 || current_user_role ==4) && this_document_state == 'performed') {
@@ -774,14 +779,15 @@ var initdocumentproperties = function() {
 // инициализация всплывающих окон с формами ввода сообщения и т.д.
 var initpopupwindows = function() {
     $("#changeStateWindow").jqxWindow({
-        width: 430,
-        height: 360,
+        width: 530,
+        height: 460,
         resizable: false,
         isModal: true,
         autoOpen: false,
         cancelButton: $("#CancelStateChanging"),
         theme: theme
     });
+    $('#changeStateWindow').on('close', function (event) { $('#changeStateAlertMessage').hide(); });
     $("#performed").jqxRadioButton({ width: 250, height: 25, theme: theme });
     $("#prepared").jqxRadioButton({ width: 250, height: 25, theme: theme });
     $("#accepted").jqxRadioButton({ width: 250, height: 25, theme: theme });
@@ -813,23 +819,18 @@ var initpopupwindows = function() {
             data: data,
             success: function (data, status, xhr) {
                 if (data.status_changed == 1) {
-                    $("#currentInfoMessage").html("Статус документа изменен. <br /> Новый статус: \"" + statelabels[data.new_status] + '"');
-                    $("#infoNotification").jqxNotification("open");
+                    raiseInfo("Статус документа изменен. <br /> Новый статус: \"" + statelabels[data.new_status] + '"');
                     rowdata.state = statelabels[data.new_status];
                     dgrid.jqxGrid('updaterow', row_id, rowdata);
                     dgrid.jqxGrid('selectrow', rowindex);
                 }
                 else {
-                    $("#currentError").text("Статус не изменен!");
-                    $("#serverErrorNotification").jqxNotification("open");
+                    raiseError("Статус не изменен!", xhr);
                     // TODO: Обработать ошибку изменения статуса
                 }
             },
             error: function (xhr, status, errorThrown) {
                 raiseError('Ошибка сохранения данных на сервере', xhr);
-/*                $("#currentError").text("Ошибка сохранения данных на сервере. " + xhr.status + ' (' + xhr.statusText + ') - '
-                    + status + ". Обратитесь к администратору.");
-                $("#serverErrorNotification").jqxNotification("open");*/
             }
         });
         $("#changeStateWindow").jqxWindow('hide');

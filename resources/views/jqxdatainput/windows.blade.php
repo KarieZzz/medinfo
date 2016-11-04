@@ -1,6 +1,7 @@
 <div id="changeStateWindow">
     <div>Изменение статуса документа</div>
     <div style="overflow: hidden;">
+        <div id="changeStateAlertMessage" style="display: none" class="alert alert-danger"></div>
         <div style='margin-top: 10px;' class="stateradio" id='performed'>
             <span>Выполняется</span></div>
         <div style='margin-top: 10px;' class="stateradio" id='prepared'>

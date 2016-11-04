@@ -44,7 +44,7 @@
         <div style="clear: both"></div>
         <div style="display: none" id="protocolloader"><h5>Выполнение проверки и загрузка протокола контроля <img src='/jqwidgets/styles/images/loader-small.gif' /></h5></div>
         <div style="display: none" class="inactual-protocol"><span class='text-danger'>Протокол неактуален (в таблице произведены изменения после его формирования)</span></div>
-        <div style='width: 100%;height: 90%' id="tableprotocol"></div>
+        <div style="width: 100%; height: 85%" id="tableprotocol"></div>
     </div>
     <div data-container="CellControlPanel">
         <div id="cellprotocol"></div>

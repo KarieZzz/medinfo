@@ -6,6 +6,8 @@ var doc_type = '{{ $document->dtype }}';
 var form_name = '{{ $form->form_name }}';
 var form_code = '{{ $form->form_code }}';
 var current_user_role = '{{ $worker->role }}';
+var current_table = '{{ $laststate['currenttable']->id }}';
+var current_table_code = '{{ $laststate['currenttable']->table_code }}';
 var fgrid; // селектор для сетки с перечнем таблиц
 var dgrid; // селектор для сетки с данными таблиц
 
@@ -40,7 +42,6 @@ $.each(data_for_tables, function(table, content) {
     });
 });
 //console.log(data_for_tables);
-var current_table = '{{ $laststate['currenttable'] }}';
 var current_row_name_datafield = data_for_tables[current_table].columns[1].dataField;
 var current_row_number_datafield = data_for_tables[current_table].columns[2].dataField;
 var protocol_control_created = false;
@@ -53,7 +54,7 @@ var show_table_errors_only = true;
 var marking_mode = 'control';
 var current_edited_cell = {};
 // JSON объект - протокол контроля формы
-var current_protocol_source;
+var current_protocol_source = [];
 var source_url = "/datainput/fetchvalues/" + doc_id + "/";
 var savevalue_url = "/datainput/savevalue/" + doc_id + "/";
 var validate_table_url = "/datainput/tablecontrol/" + doc_id + "/";

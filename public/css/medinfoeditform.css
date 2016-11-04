@@ -56,9 +56,7 @@
     text-decoration: underline;
 }
 .tableprotocol-content {
-    margin-left: 20px;
-    padding-right: 20px;
-    font-size: 0.9em;
+    margin-left: 10px;
 }
 
 .equality { background-color: #57ff53; }

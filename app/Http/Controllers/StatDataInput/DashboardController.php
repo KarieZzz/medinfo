@@ -274,7 +274,7 @@ class DashboardController extends Controller
     {
         $laststate = array();
         $current_table = $form->tables->where('deleted', 0)->sortBy('table_code')->first();
-        $laststate['currenttable'] = $current_table->id;
+        $laststate['currenttable'] = $current_table;
         return $laststate;
     }
 }
