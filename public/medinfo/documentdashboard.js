@@ -315,6 +315,9 @@ var rendertoolbar = function (toolbar) {
         } else if (current_user_role == 1 && (this_document_state == 'performed' || this_document_state == 'declined')) {
             alert_message = '<strong>Внимание!</strong> Смена статуса документа допускается только в то случае если ВСЕ правки документа выполнены! <br />';
             alert_message += 'Если Вы не уверены, что закончили редактирование - отмените действие!';
+            if (!data.filled) {
+                alert_message += '<strong>Внимание!</strong> Если документ не содержит данные, необходимо, В ОБЯЗАТЕЛЬНОМ ПОРЯДКЕ, пояснить в комментарии по какой причине! <br />';
+            }
             $('#changeStateAlertMessage').html(alert_message);
             $('#changeStateAlertMessage').show();
             $('#prepared').jqxRadioButton('enable');
@@ -780,7 +783,7 @@ var initdocumentproperties = function() {
 var initpopupwindows = function() {
     $("#changeStateWindow").jqxWindow({
         width: 530,
-        height: 460,
+        height: 480,
         resizable: false,
         isModal: true,
         autoOpen: false,

@@ -29,6 +29,7 @@ class DataCheckController extends Controller
     {
         $form_protocol = [];
         $form_protocol['valid'] = true;
+        $form_protocol['no_alerts'] = true;
         $form_protocol['no_data'] = true;
         $form_id = $document->form_id;
         $tables = Table::OfForm($form_id)->where('deleted', 0)->get();
@@ -39,6 +40,7 @@ class DataCheckController extends Controller
                 //dd($control);
                 $form_protocol[$offset] = $control;
                 $form_protocol['valid'] = $form_protocol['valid'] && $control['valid'];
+                $form_protocol['no_alerts'] = $form_protocol['no_alerts'] && $control['no_alerts'];
                 $form_protocol['no_data'] = false;
             }
         }

@@ -421,16 +421,17 @@ var checkform = function () {
                 protocol_control_created = false;
                 return true;
             }
-            else if (data.valid) {
-                formprotocol.html("<div class='alert alert-success'>" + timestamp + " При проверке формы ошибок не выявлено</div>");
+            else if (data.valid && data.no_alerts) {
+                formprotocol.html("<div class='alert alert-success'>" + timestamp + " При проверке формы ошибок/замечаний не выявлено</div>");
                 protocol_control_created = true;
                 return true;
             }
             $("#fc_extrabuttons").show();
             $.each(data, function(tablecode, tablecontrol) {
                 if (typeof tablecontrol == 'object') {
-                    if (!tablecontrol.valid) {
+                    if (!tablecontrol.valid || !tablecontrol.no_alerts) {
                         invalidCells[tablecontrol.table_id] = [];
+                        alertedCells[tablecontrol.table_id] = [];
                         markTableInvalid(tablecontrol.table_id);
                         var header_text = "(" + tablecode + ") " + data_for_tables[tablecontrol.table_id].tablename;
                         var theader = $("<div class='tableprotocol-header text-info'><span class='glyph glyphicon-plus'></span>" + header_text + " " + "</div>");
@@ -442,10 +443,18 @@ var checkform = function () {
                     }
                 }
             });
-            header = $("<div class='alert alert-danger'>" + timestamp + " При проверке формы выявлены ошибки в следующих таблицах:</div>");
+            header = $("<div class='alert'></div>");
+            header.html(timestamp + " При проверке формы выявлены ошибки/замечания в следующих таблицах: ");
+            if (!data.valid) {
+                header.addClass('alert-danger');
+            } else {
+                header.addClass('alert-warning');
+            }
+            formprotocol.append(header);
+            //header = $("<div class='alert alert-danger'>" + timestamp + " При проверке формы выявлены ошибки/замечания в следующих таблицах:</div>");
             formprotocol.append(protocol_wrapper);
             printable = formprotocol.clone();
-            formprotocol.prepend(header);
+
             formprotocol.jqxPanel({ autoUpdate: true, width: '97%', height: '80%'});
             $("#formprotocol .tableprotocol-header").click(function() {
                 $(this).next().toggle();
@@ -622,13 +631,20 @@ var gettableprotocol = function (data, status, xhr) {
         tableprotocol.html("<div class='alert alert-info'>"+ timestamp+" Для данной таблицы не заданы правила контроля</div>");
         protocol_control_created = false;
     }
-    else if (data.valid) {
+    else if (data.valid && data.no_alerts) {
         markTableValid(data.table_id);
-        tableprotocol.html("<div class='alert alert-success'>" + timestamp + " При проверке таблицы ошибок не выявлено" + " " + cashed + "</div>");
+        tableprotocol.html("<div class='alert alert-success'>" + timestamp + " При проверке таблицы ошибок/замечаний не выявлено" + " " + cashed + "</div>");
         protocol_control_created = true;
     }
     else {
-        header = $("<div class='alert alert-danger'>" + timestamp + " При проверке таблицы выявлены ошибки " + " " + cashed + "</div>");
+
+        header = $("<div class='alert'></div>");
+        header.html(timestamp + " При проверке таблицы выявлены ошибки/замечания " + " " + cashed);
+        if (!data.valid) {
+            header.addClass('alert-danger');
+        } else {
+            header.addClass('alert-warning');
+        }
         markTableInvalid(data.table_id);
         $("#extrabuttons").show();
         protocol_wrapper = renderTableProtocol(data.table_id, data);

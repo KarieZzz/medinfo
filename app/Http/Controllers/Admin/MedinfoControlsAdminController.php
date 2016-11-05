@@ -45,9 +45,11 @@ class MedinfoControlsAdminController extends Controller
     {
         $rules = new MIControlTranslater($table);
         //return $rules->InTableRowControl();
-        //return $rules->InFormRowControl();
+        return $rules->InFormRowControl();
         //return $rules->InReportRowControl();
-        return $rules->ColumnControl();
+        //return $rules->ColumnControl();
+        //return $rules->inRowControl();
+        //return $rules->translateAll();
     }
 
 }

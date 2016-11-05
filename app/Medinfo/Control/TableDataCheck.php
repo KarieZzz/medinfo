@@ -33,11 +33,13 @@ class TableDataCheck
             if (count($cfunctions) == 0) {
                 $table_protocol['no_rules'] = true;
                 $table_protocol['valid'] = true;
+                $table_protocol['no_alerts'] = true;
                 return $table_protocol;
             }
             $table_protocol['no_rules'] = false;
             $rules = &$table_protocol['rules'];
             $valid = true;
+            $do_not_alerted = true;
             foreach ($cfunctions as $function) {
                 $lexer = new ControlFunctionLexer($function->script);
                 $parser = new ControlFunctionParser($lexer);
@@ -55,13 +57,20 @@ class TableDataCheck
                     }
                     $rule['no_rules'] = false;
                     $rules[] = $rule;
-                    $valid = $valid && $rule['valid'];
+                    // При проверке валидности данных по таблице учитываем только скрипты уровня "ошибка"
+                    if ($function->level == 1) {
+                        $valid = $valid && $rule['valid'];
+                    } elseif ($function->level == 2) {
+                        $do_not_alerted = $do_not_alerted && $rule['valid'];
+                    }
+
                 }
                 catch (\Exception $e) {
                     $rules[] = ['error' => "<strong class='text-danger'>Ошибка при обработке правила контроля:</strong> <code>" . $function->script . '</code> ' . $e->getMessage() ];
                 }
             }
             $table_protocol['valid'] = $valid;
+            $table_protocol['no_alerts'] = $do_not_alerted;
             ControlHelper::cashProtocol($table_protocol, $document->id, $table->id);
             return $table_protocol;
         }

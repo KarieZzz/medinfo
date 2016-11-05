@@ -25,13 +25,23 @@ class DocumentStateController extends Controller
                 'state' => 'required',
             ]
         );
+        $data = [];
+        $checker = new DataCheckController();
+
         $remark = $request->message;
         $new_state = Document::$state_aliases_keys[$request->state];
         $document = Document::find($request->document);
+        if ($new_state == 4) {
+            $protocol = $checker->check_document($document);
+            if (!$protocol['valid']) {
+                $data['status_changed'] = 0;
+                $data['comment'] = "При контроле документа перед сменой статуса выявлены критические ошибки требующие исправлений. Смена статуса невозможна.";
+                return $data;
+            }
+        }
         $form = Form::find($document->form_id);
         $current_unit = Unit::find($document->ou_id);
         $worker = Auth::guard('datainput')->user();
-        $emails = array();
         $miac_emails = explode(",", config('app.miac_emails'));
         $director_emails = explode(",", config('app.director_emails'));
         $old_state = $document->state;
@@ -46,7 +56,6 @@ class DocumentStateController extends Controller
         // TODO: Отправлять или нет сообщения аудиторам?
         $emails = array_merge($miac_emails, $director_emails, $executors);
         $p = $worker->permission;
-        $data = array();
         if ($p & config('app.permission.permission_change_any_status')) {
             $document->save();
             $data['status_changed'] = 1;
@@ -96,7 +105,7 @@ class DocumentStateController extends Controller
                     break;
             }
             if ($data['status_changed']) {
-                // TODO: Записать событие в журнал
+                // TODO: Записать событие об изменении статуса в журнал
                 //Log::storeFormStateChangeEvent($doc_id, $user->user_id, $old_state, $new_state);
                 $newmessage = new DocumentMessage();
                 $newmessage->doc_id = $document->id;

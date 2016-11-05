@@ -159,8 +159,6 @@ class ControlInterpreter
         //dd($this->iterationRange);
     }
 
-
-
     public function fillIncompleteLinks($expression, $link)
     {
         $token_index = $this->iterationMode == 1 ? 2 : 3;
