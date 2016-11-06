@@ -37,6 +37,7 @@ class TableDataCheck
                 return $table_protocol;
             }
             $table_protocol['no_rules'] = false;
+            $table_protocol['errors'] = [];
             $rules = &$table_protocol['rules'];
             $valid = true;
             $do_not_alerted = true;
@@ -54,6 +55,11 @@ class TableDataCheck
                     $rule['comment'] = $function->comment;
                     if ($rule['not_in_scope']) {
                         $rule['comment'] .= " Правило контроля не применяется к данному документу (ограничения по группе медицинских организаций)";
+                    }
+                    if (isset($rule['errors'])) {
+                        foreach($rule['errors'] as $error) {
+                            $table_protocol['errors'][] =  $error;
+                        }
                     }
                     $rule['no_rules'] = false;
                     $rules[] = $rule;

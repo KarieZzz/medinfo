@@ -79,13 +79,18 @@ class CompareControlInterpreter extends ControlInterpreter
                 $this->rewrite_celladresses($this->lpStack[$i]);
                 $this->currentArgument = 2;
                 $this->rewrite_celladresses($this->rpStack[$i]);
-                //dd($this->rpStack[$i]);
                 $lp_result = $this->calculate($this->lpStack[$i]);
                 $rp_result = $this->calculate($this->rpStack[$i]);
+                if (count($this->errorStack) > 0) {
+                    $result[$i]['errors'] = $this->errorStack;
+                    $this->errors = array_merge($this->errors, $this->errorStack);
+                    $this->errorStack = [];
+                }
                 $result[$i]['code'] = $this->iterationRange[$i];
                 $result[$i]['left_part_value'] = $lp_result;
                 $result[$i]['right_part_value'] = $rp_result;
                 $result[$i]['deviation'] = abs(round($rp_result-$lp_result, 3));
+
                 $result[$i]['valid'] = $this->chekoutRule($lp_result, $rp_result, $this->boolean);
                 $this->results['valid'] = $this->results['valid'] && $result[$i]['valid'];
             }
@@ -95,11 +100,19 @@ class CompareControlInterpreter extends ControlInterpreter
             $this->rewrite_celladresses($this->rpExpressionRoot);
             $lp_result = $this->calculate($this->lpExpressionRoot);
             $rp_result = $this->calculate($this->rpExpressionRoot);
+            if (count($this->errorStack) > 0) {
+                $result[0]['errors'] = $this->errorStack;
+                $this->errors = array_merge($this->errors, $this->errorStack);
+                $this->errorStack = [];
+            }
             $result[0]['left_part_value'] = $lp_result;
             $result[0]['right_part_value'] = $rp_result;
             $result[0]['deviation'] = abs(round($rp_result-$lp_result, 3));
             $result[0]['valid'] = $this->chekoutRule($lp_result, $rp_result, $this->boolean);
             $this->results['valid'] = $result[0]['valid'];
+        }
+        if (count($this->errors) > 0) {
+            $this->results['errors'] = $this->errors;
         }
         return $this->results;
     }

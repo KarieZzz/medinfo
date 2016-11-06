@@ -614,6 +614,8 @@ var gettableprotocol = function (data, status, xhr) {
     var protocol_wrapper;
     var header;
     var printable;
+    var scripterrors;
+
     var tableprotocol = $("#tableprotocol");
     var now = new Date();
     var timestamp = now.toLocaleString();
@@ -633,13 +635,14 @@ var gettableprotocol = function (data, status, xhr) {
     }
     else if (data.valid && data.no_alerts) {
         markTableValid(data.table_id);
-        tableprotocol.html("<div class='alert alert-success'>" + timestamp + " При проверке таблицы ошибок/замечаний не выявлено" + " " + cashed + "</div>");
-        protocol_control_created = true;
-    }
-    else {
 
+        tableprotocol.append("<div class='alert alert-success'>" + timestamp + " При проверке таблицы ошибок/замечаний не выявлено" + " " + cashed + "</div>");
+
+        protocol_control_created = true;
+    } else {
         header = $("<div class='alert'></div>");
         header.html(timestamp + " При проверке таблицы выявлены ошибки/замечания " + " " + cashed);
+
         if (!data.valid) {
             header.addClass('alert-danger');
         } else {
@@ -682,6 +685,14 @@ var gettableprotocol = function (data, status, xhr) {
             pWindow.document.write(print_style + printprotocolheader + printable.html());
         });
         protocol_control_created = true;
+    }
+    if (data.errors.length > 0 && (current_user_role == 3 || current_user_role == 4 )) {
+        scripterrors = $("<div class='alert alert-danger'></div>");
+        scripterrors.append("<p><strong>Ошибка выполнения!</strong> При выполнения контроля по данной таблицы выявлен ряд ошибок в функциях:</p>");
+        $.each(data.errors, function(error_inx, error ) {
+            scripterrors.append("<p><strong>Код ошибки: " + error.code + "</strong> " + error.message + "</p>");
+        });
+        tableprotocol.append(scripterrors);
     }
     current_protocol_source[current_table_code] = data;
     fgrid.jqxDataTable('refresh');

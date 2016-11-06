@@ -45,10 +45,31 @@ class MedinfoControlsAdminController extends Controller
     {
         $rules = new MIControlTranslater($table);
         //return $rules->InTableRowControl();
-        return $rules->InFormRowControl();
+        //return $rules->InFormRowControl();
         //return $rules->InReportRowControl();
         //return $rules->ColumnControl();
         //return $rules->inRowControl();
+        $all_rules = $rules->translateAll();
+
+        echo '<pre>';
+        echo "[\n";
+        foreach ($all_rules['intable'] as $rule) {
+            echo "['text' => '$rule', 'comment' => 'внутритабличный контроль', 'table_id' => $table  ],\n";
+        }
+        foreach ($all_rules['inform'] as $rule) {
+            echo "['text' => '$rule', 'comment' => 'внутриформенный контроль', 'table_id' => $table  ],\n";
+        }
+        foreach ($all_rules['inreport'] as $rule) {
+            echo "['text' => '$rule', 'comment' => 'межформенный контроль', 'table_id' => $table  ],\n";
+        }
+        foreach ($all_rules['columns'] as $rule) {
+            echo "['text' => '$rule', 'comment' => 'контроль граф', 'table_id' => $table  ],\n";
+        }
+        foreach ($all_rules['inrow'] as $rule) {
+            echo "['text' => '$rule', 'comment' => 'контроль внутри строки', 'table_id' => $table  ],\n";
+        }
+        echo ']';
+        echo '</pre>';
         //return $rules->translateAll();
     }
 

@@ -135,11 +135,13 @@ Route::group(['middleware' => ['web']], function () {
     Route::post('datainput/changeaudition', 'StatDataInput\DocumentAuditionController@changeAudition');
     Route::patch('datainput/aggregatedata/{document}', 'StatDataInput\AggregatesDashboardController@aggregateData' );
 
-    // Рабочий стол - Первичный отчетный документ, ввод данных, контроль, журнал изменений
+    // Рабочий стол - Первичный отчетный документ, ввод данных, журнал изменений
     Route::get('datainput/formdashboard/{document}', 'StatDataInput\FormDashboardController@index');
     Route::get('datainput/fetchvalues/{document}/{table}', 'StatDataInput\FormDashboardController@fetchValues');
     Route::post('datainput/savevalue/{document}/{table}', 'StatDataInput\FormDashboardController@saveValue');
     Route::get('datainput/valuechangelog/{document}', 'StatDataInput\FormDashboardController@fullValueChangeLog');
+
+    // Контроль данных
     Route::get('datainput/formcontrol/{document}', 'StatDataInput\FormDashboardController@formControl');
     Route::get('datainput/tablecontrol/{document}/{table}', 'StatDataInput\FormDashboardController@tableControl');
 

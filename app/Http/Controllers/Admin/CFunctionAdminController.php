@@ -11,10 +11,12 @@ use App\Http\Controllers\Controller;
 
 use App\Form;
 use App\CFunction;
+use App\ControlCashe;
 use App\DicErrorLevel;
 use App\Medinfo\Lexer\ControlFunctionLexer;
 use App\Medinfo\Lexer\ControlFunctionParser;
 use App\Medinfo\Lexer\CompareControlInterpreter;
+
 
 class CFunctionAdminController extends Controller
 {
@@ -54,7 +56,9 @@ class CFunctionAdminController extends Controller
         //$newfunction->save();
         try {
             $newfunction->save();
-            return ['message' => 'Новая запись создана. Id:' . $newfunction->id];
+            $deleted_protocols =  ControlCashe::where('table_id', $table->id)->delete();
+
+            return ['message' => 'Новая запись создана. Id:' . $newfunction->id ];
         } catch (\Illuminate\Database\QueryException $e) {
             $errorCode = $e->errorInfo[0];
             switch ($errorCode) {
@@ -74,10 +78,12 @@ class CFunctionAdminController extends Controller
         $this->validate($request, $this->validateRules());
         $table = Table::find($cfunction->table_id);
         $cfunction->level = $request->level;
+        $deleted_protocols = 0;
         if ($cfunction->script !== $request->script) {
             try {
                 $interpreter =  new CompareControlInterpreter($this->compile($request->script), $table);
                 $cfunction->compiled_cashe = serialize($interpreter);
+                $deleted_protocols =  ControlCashe::where('table_id', $table->id)->delete();
             } catch (\Exception $e) {
                 return ['error' => 422, 'message' => "Ошибка при компилляции функции: " . $e->getMessage()];
             }
@@ -88,7 +94,7 @@ class CFunctionAdminController extends Controller
         try {
 
             $cfunction->save();
-            return ['message' => 'Запись id ' . $cfunction->id . ' сохранена'];
+            return ['message' => 'Запись id ' . $cfunction->id . ' сохранена.' . 'Удалено кэшированных протоколов контроля: ' . $deleted_protocols];
         } catch (\Illuminate\Database\QueryException $e) {
             $errorCode = $e->errorInfo[0];
             switch ($errorCode) {

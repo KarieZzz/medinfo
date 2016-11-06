@@ -53,13 +53,13 @@ class MIControlTranslater
 
     public function translateAll()
     {
-            $protocol['intable'] = $this->InTableRowControl();
-            $protocol['inform'] = $this->InFormRowControl();
-            $protocol['inreport'] = $this->InReportRowControl();
-            $protocol['inrow'] = $this->InRowControl();
-            $protocol['columns'] = $this->ColumnControl();
-            $protocol['table_id'] = $this->table->id;
-            return $protocol;
+        $protocol['intable'] = $this->InTableRowControl();
+        $protocol['inform'] = $this->InFormRowControl();
+        $protocol['inreport'] = $this->InReportRowControl();
+        $protocol['columns'] = $this->ColumnControl();
+        $protocol['inrow'] = $this->InRowControl();
+        $protocol['table_id'] = $this->table->id;
+        return $protocol;
     }
 
     public function InTableRowControl() {

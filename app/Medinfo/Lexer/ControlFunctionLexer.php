@@ -88,6 +88,14 @@ class ControlFunctionLexer extends Lexer {
             $this->c <= '9';
     }
 
+    public function isROWCODE()
+    {
+        return
+            $this->c != 'Г' && (
+                ($this->c >= '0' && $this->c <= '9') || $this->c == '.'
+            );
+    }
+
     public function nextToken()
     {
         while ( $this->c != self::EOF ) {
@@ -220,7 +228,7 @@ class ControlFunctionLexer extends Lexer {
         do {
             $buf .= $this->c;
             $this->consume();
-        } while ($this->isCODE());
+        } while ($this->isROWCODE());
         return $this->tokenstack->push(self::ROWADRESS, $buf);
     }
 

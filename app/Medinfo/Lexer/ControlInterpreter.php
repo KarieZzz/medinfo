@@ -20,6 +20,8 @@ use App\UnitGroupMember;
 class ControlInterpreter
 {
     public $root;
+    public $errors = [];
+    public $errorStack = [];
     public $unitScope = []; // область приложения функции (группы учреждений)
     public $readableFormula; // отображение формулы контроля в более удобочитаемом виде
     public $pad = ' ';
@@ -182,7 +184,6 @@ class ControlInterpreter
             }
         }
         $inline = implode('', $eval_stack). ';';
-        //var_dump($expression);
         $result = eval('return ' . $inline);
         return $result;
     }
@@ -249,7 +250,12 @@ class ControlInterpreter
         $this->currentNode = $expression;
         foreach($expression->children as $element) {
             if ($element->rule == 'celladress') {
-                $this->reduce_celladress($element);
+                try {
+                    $this->reduce_celladress($element);
+                }
+                catch (InterpreterException $e) {
+                    $this->errorStack[] = ['code' => $e->getErrorCode(), 'message' => $e->getMessage() ];
+                }
             }
         }
         $this->currentArgument = null;
@@ -310,11 +316,12 @@ class ControlInterpreter
         // Проверяем относится ли редуцируемая ячейка к текущей таблице
         if ($this->form->form_code == $form_code || empty($form_code)) {
             $doc_id = $this->document->id;
+            $form = $this->form;
             $f_id = $this->form->id;
         } else {
             $form = Form::OfCode($form_code)->first();
             if (is_null($form)) {
-                throw new \Exception("Форма " . $form_code . " не существует");
+                throw new InterpreterException("Форма " . $form_code . " не существует", 1001);
             }
 
             $document = Document::OfUPF($this->document->ou_id, $this->document->period_id, $form->id)->first();
@@ -330,29 +337,30 @@ class ControlInterpreter
         }
         if ($this->table->table_code == $table_code || empty($table_code)) {
             $t_id = $this->table->id;
+            $table = $this->table;
         } else {
             $table = Table::OfFormTableCode($f_id, $table_code)->first();
             if (is_null($table)) {
-                throw new \Exception("Таблицы " . $table_code . " нет в составе формы " . $form_code );
+                throw new InterpreterException("Таблицы " . $table_code . " нет в составе формы " . $form_code, 1002);
             }
             $t_id = $table->id;
         }
         $row_code = mb_substr($celladress->tokens[2]->text, 1);
         if (!$row_code) {
-            throw new \Exception("Неполная ссылка (при отстутствии функции итерации по строкам). Не указан код строки. Получить значение ячейки невозможно");
+            throw new InterpreterException("Неполная ссылка (при отстутствии функции итерации по строкам). Не указан код строки. Получить значение ячейки невозможно", 1003);
         }
         $column_index = mb_substr($celladress->tokens[3]->text, 1);
         if (!$column_index) {
-            throw new \Exception("Не указан индекс графы (при отстутствии функции итерации по графам). Получить значение ячейки невозможно");
+            throw new InterpreterException("Не указан индекс графы (при отстутствии функции итерации по графам). Получить значение ячейки невозможно", 1004);
         }
 
         $row = Row::ofTable($t_id)->where('row_code', $row_code)->first();
         if (is_null($row)) {
-            throw new \Exception("Строка с кодом " . $row_code . " не найдена в таблице " . $table->table_name . "(" . $table->table_code . ")");
+            throw new InterpreterException("Строка с кодом " . $row_code . " не найдена в таблице (" . $table->table_code . ") \"" . $table->table_name . "\" в форме " . $form->form_code, 1005);
         }
         $column = Column::ofTable($t_id)->where('column_index', $column_index)->first();
         if (is_null($column)) {
-            throw new \Exception("Графа с индексом " . $column_index . " не найдена в таблице " . $t_id);
+            throw new InterpreterException("Графа с индексом " . $column_index . " не найдена в таблице " . $t_id, 1006);
         }
         $cell = Cell::ofDTRC($doc_id, $t_id, $row->id, $column->id)->first();
 
