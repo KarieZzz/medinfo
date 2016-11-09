@@ -21,6 +21,9 @@ use App\Medinfo\Lexer\CompareControlInterpreter;
 class CFunctionAdminController extends Controller
 {
     //
+    public $compile_error;
+    public $functionIndex;
+
     public function __construct()
     {
         $this->middleware('auth');
@@ -41,10 +44,9 @@ class CFunctionAdminController extends Controller
     public function store(Table $table, Request $request)
     {
         $this->validate($request, $this->validateRules());
-        try {
-            $interpreter =  new CompareControlInterpreter($this->compile($request->script), $table);
-        } catch (\Exception $e) {
-            return ['error' => 422, 'message' => "Ошибка при компилляции функции: " . $e->getMessage()];
+        $cache = $this->compile($request->script, $table);
+        if (!$cache) {
+            return ['error' => 422, 'message' => $this->compile_error];
         }
         $newfunction = new CFunction();
         $newfunction->table_id = $table->id;
@@ -52,13 +54,13 @@ class CFunctionAdminController extends Controller
         $newfunction->script = $request->script;
         $newfunction->comment = $request->comment;
         $newfunction->blocked = $request->blocked;
-        $newfunction->compiled_cashe = serialize($interpreter);
+        $newfunction->function = $this->functionIndex;
+        $newfunction->compiled_cashe = $cache;
         //$newfunction->save();
         try {
             $newfunction->save();
             $deleted_protocols =  ControlCashe::where('table_id', $table->id)->delete();
-
-            return ['message' => 'Новая запись создана. Id:' . $newfunction->id ];
+            return ['message' => 'Новая запись создана. Id:' . $newfunction->id . 'Удалено кэшированных протоколов контроля: ' . $deleted_protocols];
         } catch (\Illuminate\Database\QueryException $e) {
             $errorCode = $e->errorInfo[0];
             switch ($errorCode) {
@@ -78,22 +80,18 @@ class CFunctionAdminController extends Controller
         $this->validate($request, $this->validateRules());
         $table = Table::find($cfunction->table_id);
         $cfunction->level = $request->level;
-        $deleted_protocols = 0;
-        if ($cfunction->script !== $request->script) {
-            try {
-                $interpreter =  new CompareControlInterpreter($this->compile($request->script), $table);
-                $cfunction->compiled_cashe = serialize($interpreter);
-                $deleted_protocols =  ControlCashe::where('table_id', $table->id)->delete();
-            } catch (\Exception $e) {
-                return ['error' => 422, 'message' => "Ошибка при компилляции функции: " . $e->getMessage()];
-            }
+        $cache = $this->compile($request->script, $table);
+        if (!$cache) {
+            return ['error' => 422, 'message' => $this->compile_error];
         }
         $cfunction->script = $request->script;
         $cfunction->comment = $request->comment;
         $cfunction->blocked = $request->blocked;
+        $cfunction->function = $this->functionIndex;
+        $cfunction->compiled_cashe = $cache;
         try {
-
             $cfunction->save();
+            $deleted_protocols =  ControlCashe::where('table_id', $table->id)->delete();
             return ['message' => 'Запись id ' . $cfunction->id . ' сохранена.' . 'Удалено кэшированных протоколов контроля: ' . $deleted_protocols];
         } catch (\Illuminate\Database\QueryException $e) {
             $errorCode = $e->errorInfo[0];
@@ -109,11 +107,21 @@ class CFunctionAdminController extends Controller
         }
     }
 
-    public function compile($script)
+    public function compile($script, Table $table)
     {
-        $lexer = new ControlFunctionLexer($script);
-        $parser = new ControlFunctionParser($lexer);
-        return $parser->run();
+        try {
+            $lexer = new ControlFunctionLexer($script);
+            $parser = new ControlFunctionParser($lexer);
+            $r = $parser->run();
+            $callInterpreter = FunctionDispatcher::INTERPRETERNS . FunctionDispatcher::$interpreterNames[$parser->functionIndex];
+            $interpreter = new $callInterpreter($r, $table);
+            $compiled_cache = serialize($interpreter);
+            $this->functionIndex = $parser->functionIndex;
+            return $compiled_cache;
+        } catch (\Exception $e) {
+            $this->compile_error = "Ошибка при компилляции функции: " . $e->getMessage();
+            return false;
+        }
     }
 
     public function delete(CFunction $cfunction)

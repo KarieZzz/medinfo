@@ -9,10 +9,7 @@
 namespace App\Medinfo;
 
 use App\Form;
-use App\Column;
 use App\Table;
-use App\Cell;
-
 
 class MIControlTranslater
 {
@@ -34,7 +31,6 @@ class MIControlTranslater
         if (!$table_id) {
             throw new \Exception("Для выполнения преобразования контроля по таблице необходимо указать Id таблицы");
         }
-
         $this->table = Table::find($table_id);
         $this->form = Form::find($this->table->form_id);
         $this->rows = \DB::table('rows')
@@ -58,7 +54,7 @@ class MIControlTranslater
         $protocol['inreport'] = $this->InReportRowControl();
         $protocol['columns'] = $this->ColumnControl();
         $protocol['inrow'] = $this->InRowControl();
-        $protocol['table_id'] = $this->table->id;
+        //$protocol['table_id'] = $this->table->id;
         return $protocol;
     }
 
@@ -67,8 +63,8 @@ class MIControlTranslater
         // Итерация по контролируемым строкам с типом контроля "вт.к."
         $rules = $this->getRules($ctype_id);
         if (!$rules) {
-            $protocol['no_rules'] = true;
-            return $protocol;
+            //$protocol['no_rules'] = true;
+            return [];
         }
         $i = 0;
         foreach ($rules as $rule) {
@@ -86,27 +82,20 @@ class MIControlTranslater
                     $column_indexes[] = $column->column_index;
                 }
             }
-
-/*            foreach ($this->columns as $column) {
-                $crows = $this->getControllingRows($ctype_id, $rule->relation, $column->medinfo_id);
-                // Итерация по столбцам, включенным в текущее правило контроля ("корреспонденция граф") - при наличии правила
-                if (count($crows) > 0) {
-
-                }
-            }*/
-
-            //$protocol[$i]['row_id'] = $rule->row_id;
             $arg4 = 'группы(*)';
             if (count($column_indexes) == 1) {
-                $arg5 = 'графы()';
+                $arg5 = 'графы(' . $column_indexes[0] . ')';
             } else {
                 $arg5 = 'графы(' . implode(',', $column_indexes) . ')';
             }
-            $protocol[$i] = 'сравнение('. $arg1 . ',' . $arg2 . ','
-                . $arg3 . ',' . $arg4 . ',' . $arg5 .')';
-
+            if ($arg3 == '^') {
+                $protocol[] = 'зависимость('. $arg1 . ', ' . $arg2 . ', ' . $arg4 . ', ' . $arg5 .')';
+            } else {
+                $protocol[] = 'сравнение('. $arg1 . ', ' . $arg2 . ', '  . $arg3 . ', ' . $arg4 . ', ' . $arg5 .')';
+            }
             $i++;
         }
+
         return $protocol;
     }
 
@@ -116,8 +105,8 @@ class MIControlTranslater
         // Итерация по контролируемым строкам с типом контроля "вф.к."
         $rules = $this->getRules($ctype_id);
         if (!$rules) {
-            $protocol['no_rules'] = true;
-            return $protocol;
+            //$protocol['no_rules'] = true;
+            return [];
         }
         $i = 0;
         foreach ($rules as $rule) {
@@ -133,19 +122,13 @@ class MIControlTranslater
                     $arg3 = $prot['boolean_sign'];
                     $arg4 = 'группы(*)';
                     $arg5 = 'графы()';
-                    $protocol[] = 'сравнение('. $arg1 . ',' . $arg2 . ','
-                        . $arg3 . ',' . $arg4 . ',' . $arg5 .')';
+                    if ($arg3 == '^') {
+                        $protocol[] = 'зависимость('. $arg1 . ', ' . $arg2 . ', ' . $arg4 . ', ' . $arg5 .')';
+                    } else {
+                        $protocol[] = 'сравнение('. $arg1 . ', ' . $arg2 . ', '  . $arg3 . ', ' . $arg4 . ', ' . $arg5 .')';
+                    }
                 }
             }
-/*            $arg4 = 'группы(*)';
-            if (count($column_indexes) == 1) {
-                $arg5 = 'графы()';
-            } else {
-                $arg5 = 'графы(' . implode(',', $column_indexes) . ')';
-            }
-            $protocol[$i] = 'сравнение('. $arg1 . ',' . $arg2 . ','
-                . $arg3 . ',' . $arg4 . ',' . $arg5 .')';*/
-
             $i++;
         }
         return $protocol;
@@ -157,8 +140,8 @@ class MIControlTranslater
         // Итерация по контролируемым строкам с типом контроля "вф.к."
         $rules = $this->getRules($ctype_id);
         if (!$rules) {
-            $protocol['no_rules'] = true;
-            return $protocol;
+            //$protocol['no_rules'] = true;
+            return [];
         }
         $i = 0;
         foreach ($rules as $rule) {
@@ -173,20 +156,13 @@ class MIControlTranslater
                     $arg3 = $prot['boolean_sign'];
                     $arg4 = 'группы(*)';
                     $arg5 = 'графы()';
-                    $protocol[] = 'сравнение('. $arg1 . ',' . $arg2 . ','
-                        . $arg3 . ',' . $arg4 . ',' . $arg5 .')';
-                    //$column_indexes[] = $column->column_index;
+                    if ($arg3 == '^') {
+                        $protocol[] = 'зависимость('. $arg1 . ', ' . $arg2 . ', ' . $arg4 . ', ' . $arg5 .')';
+                    } else {
+                        $protocol[] = 'сравнение('. $arg1 . ', ' . $arg2 . ', '  . $arg3 . ', ' . $arg4 . ', ' . $arg5 .')';
+                    }
                 }
             }
-
-/*            if (count($column_indexes) == 1) {
-                $arg5 = 'графы()';
-            } else {
-                $arg5 = 'графы(' . implode(',', $column_indexes) . ')';
-            }
-            $protocol[$i] = 'сравнение('. $arg1 . ',' . $arg2 . ','
-                . $arg3 . ',' . $arg4 . ',' . $arg5 .')';*/
-
             $i++;
         }
         return $protocol;
@@ -199,8 +175,8 @@ class MIControlTranslater
         //dd($q_rule);
         $rule = \DB::selectOne($q_rule);
         if (!$rule) {
-            $protocol['no_rules'] = true;
-            return $protocol;
+            //$protocol['no_rules'] = true;
+            return [];
         }
         $q_columns_range = "SELECT first_col, first_col+count_col last_col FROM controlling_rows WHERE rec_id = {$rule->relation}";
         //echo $q_columns_range;
@@ -219,7 +195,11 @@ class MIControlTranslater
                     $boolean_sign = self::$boolean_sign[$ccell->boolean_sign];
                     $right_part_formula .= self::$number_sign[$ccell->number_sign] . 'ФТСГ' . $ccell->column_index;
                 }
-                $formula = 'сравнение(' . $left_part_formula . ',' . $right_part_formula . ',' . $boolean_sign . ', группы(*), строки(*)'  . ')';
+                if ($boolean_sign == '^') {
+                    $formula = 'зависимость(' . $left_part_formula . ', ' . $right_part_formula . ', группы(*), строки(*)'  . ')';
+                } else {
+                    $formula = 'сравнение(' . $left_part_formula . ', ' . $right_part_formula . ', ' . $boolean_sign . ', группы(*), строки(*)'  . ')';
+                }
                 $protocol[] = $formula;
             }
         }
@@ -231,8 +211,8 @@ class MIControlTranslater
         $rule_type = 5;
         $rules = $this->getRules($rule_type);
         if (!$rules) {
-            $protocol['no_rules'] = true;
-            return $protocol;
+            //$protocol['no_rules'] = true;
+            return [];
         }
         $i = 0;
         foreach ($rules as $rule) {
@@ -253,7 +233,11 @@ class MIControlTranslater
                         $boolean_sign = self::$boolean_sign[$ccell->boolean_sign];
                         $right_part_formula .= self::$number_sign[$ccell->number_sign] . 'ФТС' . $rule->row_code . 'Г' . $ccell->column_index;
                     }
-                    $formula = 'сравнение(' . $left_part_formula . ',' . $right_part_formula . ',' . $boolean_sign . ', группы(*), строки()'  . ')';
+                    if ($boolean_sign == '^') {
+                        $formula = 'зависимость(' . $left_part_formula . ', ' . $right_part_formula . ', группы(*), строки()'  . ')';
+                    } else {
+                        $formula = 'сравнение(' . $left_part_formula . ', ' . $right_part_formula . ', ' . $boolean_sign . ', группы(*), строки()'  . ')';
+                    }
                     $protocol[] = $formula;
                 }
             }
@@ -290,8 +274,6 @@ class MIControlTranslater
 
         }
         $row_protocol['right_part_formula'] = $right_part_formula;
-        //$row_protocol['row_id'] = $rule->row_id;
-        //$row_protocol['column_id'] = $column->id;
         return $row_protocol;
     }
 
@@ -316,7 +298,6 @@ class MIControlTranslater
         return $part;
     }
 
-    // Итерация по контролирующим строкам внутри текущего правила
     private function getControllingRows(int $rule_type, int $relation, int $column)
     {
         switch ($rule_type) {
@@ -347,7 +328,6 @@ class MIControlTranslater
                   JOIN columns ON c.controlling = columns.medinfo_id AND columns.table_id = r.table_id
                   WHERE r.relation = {$relation} AND r.form_id $f_sign {$this->form->id} AND r.table_id $t_sign {$this->table->id} AND c.controlled = $column
                   ORDER BY rows.row_index";
-        //dd($q_crows);
         return \DB::select($q_crows);
     }
 }

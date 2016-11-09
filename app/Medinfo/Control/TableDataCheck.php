@@ -14,11 +14,13 @@ use App\Table;
 use App\Medinfo\ControlHelper;
 use App\Medinfo\Lexer\ControlFunctionLexer;
 use App\Medinfo\Lexer\ControlFunctionParser;
-use App\Medinfo\Lexer\CompareControlInterpreter;
+//use App\Medinfo\Lexer\CompareControlInterpreter;
 use App\Medinfo\Lexer\FunctionDispatcher;
 
 class TableDataCheck
 {
+
+
 
     public static function execute(Document $document, Table $table, $force_reload = false)
     {
@@ -46,7 +48,8 @@ class TableDataCheck
                 $parser = new ControlFunctionParser($lexer);
                 $r = $parser->run();
                 try {
-                    $interpreter = new CompareControlInterpreter($r, $table);
+                    $callInterpreter = FunctionDispatcher::INTERPRETERNS . FunctionDispatcher::$interpreterNames[$parser->functionIndex];
+                    $interpreter = new $callInterpreter($r, $table);
                     $rule = $interpreter->exec($document);
                     $rule['function_id'] = $parser->functionIndex;
                     $rule['function'] = FunctionDispatcher::$structNames[$parser->functionIndex];

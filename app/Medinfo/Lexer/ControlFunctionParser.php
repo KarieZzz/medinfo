@@ -44,8 +44,31 @@ class ControlFunctionParser extends Parser {
         $this->match(ControlFunctionLexer::RPARENTH);
         $this->currentNode = $o;
         return $this->root;
-
     }
+
+    public function dependency() {
+        $r = new ControlFunctionParseTree(__FUNCTION__);
+        $o = $this->currentNode; // сохраняем текущий узел, что бы вернутся к нему в конце функции
+        if ($this->root == null) {
+            $this->root = $r;
+        } else {
+            $this->currentNode->addChild($r);
+        }
+        $this->currentNode = $r;
+        $this->match(ControlFunctionLexer::NAME);
+        $this->match(ControlFunctionLexer::LPARENTH);
+        $this->expression(); // Первый аргумент - вычисление
+        $this->match(ControlFunctionLexer::COMMA);
+        $this->expression(); // Второй аргумент - вычисление
+        $this->match(ControlFunctionLexer::COMMA);
+        $this->scope(); // Четвертый аргумент - функции ограничения применения данного контроля к группе учреждений
+        $this->match(ControlFunctionLexer::COMMA);
+        $this->iterations(); // Пятый аргумент - функции итерации по строкам и графам
+        $this->match(ControlFunctionLexer::RPARENTH);
+        $this->currentNode = $o;
+        return $this->root;
+    }
+
     // Первый аргумент в функции. В выражении может несколько элементов, разделенных (пока) знаком плюс
     function expression() {
         $r = new ControlFunctionParseTree(__FUNCTION__);

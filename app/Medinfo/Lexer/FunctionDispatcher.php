@@ -12,13 +12,17 @@ namespace App\Medinfo\Lexer;
 class FunctionDispatcher
 {
     const COMPARE   = 1;
-    const PRESENCE  = 2;
-    const ABSENS    = 3;
-    const CEIL      = 4;
+    const DEPENDENCY = 2;
+    const PRESENCE  = 3;
+    const ABSENS    = 4;
+    const CEIL      = 5;
+
+    const INTERPRETERNS = 'App\\Medinfo\\Lexer\\';
 
     public static $functionNames = [
         "н/а" => null,
         "сравнение" => self::COMPARE,
+        "зависимость" => self::DEPENDENCY,
         "наличие" => self::PRESENCE ,
         "отсутствие" => self::ABSENS,
         "кратность" => self::CEIL,
@@ -27,6 +31,7 @@ class FunctionDispatcher
     public static $structNames = [
         null,
         "compare",
+        "dependency",
         "presens",
         "absence",
         "ceil",
@@ -35,6 +40,7 @@ class FunctionDispatcher
     public static $interpreterNames = [
         null,
         "CompareControlInterpreter",
+        "DependencyControlInterpreter",
         "Presens",
         "Absence",
         "Ceil",
@@ -44,6 +50,7 @@ class FunctionDispatcher
     {
         switch ($function_name) {
             case 'сравнение':
+            case 'зависимость':
             case 'наличе':
             case 'отсутствие':
             case 'кратность':
