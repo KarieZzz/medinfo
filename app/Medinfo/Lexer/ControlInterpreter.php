@@ -101,6 +101,22 @@ class ControlInterpreter
                         $this->rewriteCodes($element->children[0]->children[1]->tokens));
                     $expession_elements[] = ')';
                     break;
+                case 'minmaxfunctions' :
+                    $expession_elements[] = 'меньшее';
+                    $expession_elements[] = '(';
+                    $arguments = [];
+                    foreach($element->children[0]->children as $arg) {
+                        $arguments[]  = $this->rewriteCodes($arg->tokens);
+                    }
+                    $arg_text = [];
+                    foreach($arguments as $arg) {
+                        $arg_texts[] = implode('', $arg);
+                    }
+
+                    $expession_elements[] = implode(', ', $arg_texts);
+                    $expession_elements[] = ')';
+                    //dd($expession_elements);
+                    break;
             }
         }
         return $expession_elements;
@@ -242,6 +258,40 @@ class ControlInterpreter
         foreach($summfunction_ids as $id) {
             unset($expression->children[$id]);
             unset($expression->children[$id-1]);
+        }
+    }
+
+    public function reduce_minmaxfunctions(ParseTree $expression)
+    {
+        $this->currentNode = $expression;
+        $elementcount = count($expression->children);
+        $minmaxfunctions_ids = [];
+        $valuenodes = [];
+        for ($i = 0; $i < $elementcount; $i++) {
+            $element = $expression->children[$i];
+            if ($element->rule == 'minmaxfunctions') {
+                foreach($element->children[0]->children as $celladress) {
+                    $valuenodes[] = $this->reduce_celladress($celladress);
+                }
+                $minmaxfunctions_ids[] = $i;
+            }
+        }
+
+        // После редуцирования найденных функций удаляем выбранные узлы и предыдущий по отношению к ним оператор
+        foreach($minmaxfunctions_ids as $id) {
+            unset($expression->children[$id]);
+        }
+
+        $values = [];
+        foreach ($valuenodes as $valuenode) {
+            $values[] = (float)$valuenode->tokens[0]->text;
+        }
+        // TODO: дописать для выбора функции "большее". Пока только минимальное значение из масива ячеек
+        if (count($values) > 0) {
+            $minvalue = min($values);
+            $newnode = new ControlFunctionParseTree('number');
+            $newnode->addToken(new Token(ControlFunctionLexer::NUMBER, $minvalue));
+            $expression->addChild($newnode);
         }
     }
 

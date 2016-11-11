@@ -67,6 +67,12 @@
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            statusCode: {
+                401: function(err){
+                    console.log('Login Failed.', err.responseJSON);
+
+                }
             }
         });
         $("#widgets-content-wrap").css("visibility", "visible");

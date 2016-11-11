@@ -184,10 +184,14 @@ var renderIterationProtocol = function(result, boolean_sign, mode, level) {
             error_level_mark = 'alerted';
             break;
     }
-    var row = $("<tr class='control-row'></tr>");
-    var column = $("<td></td>");
+    var row = $("<div class='control-row'></div>");
     result.valid ? valid = 'верно' : valid = 'не верно';
-    var rule = $("<div class='showrule'><span class='text-info'><strong>" + explanation_intro + "</strong></span> <em>" + result.code + "</em>:</div>");
+    if (typeof result.code !== 'undefined') {
+        console.log(result.code);
+        var rule = $("<div class='showrule'><span class='text-info'><strong>" + explanation_intro + "</strong></span> <em>" + result.code + "</em>:</div>");
+        row.append(rule);
+    }
+
     var t = "<table class='control-result'><tr><td>Значение</td>";
     t += "<td>Знак сравнения</td><td>Контрольная сумма</td><td>Отклонение</td>";
     t += "<td>Результат контроля</td></tr>";
@@ -195,25 +199,25 @@ var renderIterationProtocol = function(result, boolean_sign, mode, level) {
     t += "<td>" + result.right_part_value + "</td>";
     t += "<td>"+result.deviation + "</td><td class='check'>" + valid + "</td></tr></table>";
     var explanation = $(t);
-    column.append(rule);
-    column.append(explanation);
+
+    row.append(explanation);
     if (!result.valid) {
         explanation.addClass(error_level_mark);
     } else {
         explanation.addClass('bg-success');
     }
-    row.append(column);
     return row;
 };
 // Отображение результатов контроля (новый формат) по каждой функции контроля
 var renderFunctionProtocol = function (container, table_id, rule) {
-    var header = $("<div class='rule-header'></div>");
-    var content = $("<div class='rule-content'></div>");
+    var rule_valid = rule.valid ? 'rule-valid' : 'rule-invalid';
+    var header = $("<div class='rule-header " + rule_valid + "'></div>");
+    var content = $("<div class='rule-content " + rule_valid + "'></div>");
     var error_level_mark;
     container.append(header);
     container.append(content);
     if (rule.comment !== '') {
-        content.append("<div class='well well-sm'><strong>Пояснения: </strong>" + rule.comment + "</div>");
+        content.append("<div class='text-warning small'><strong>^ Пояснения: </strong>" + rule.comment + "</div>");
     }
     if (typeof rule.error !== 'undefined') {
         header.append(rule.error);
@@ -227,11 +231,9 @@ var renderFunctionProtocol = function (container, table_id, rule) {
             error_level_mark = 'text-warning bg-warning';
             break;
     }
-    header.append("<strong>Правило контроля: </strong><span class='" + error_level_mark +"'>" + rule.left_part_formula + ' ' + rule.boolean_sign + ' ' + rule.right_part_formula + "</span> ");
+    header.append("<strong>Правило контроля: </strong><span class='" + error_level_mark +"'>" + rule.formula + "</span> ");
     var r = 0;
     var i = 0;
-    //var info = $("<table style='margin: 5px;'></table>");
-
     $.each(rule.iterations, function(i_index, result) {
         if ( typeof result.valid !=='undefined' ) {
 
@@ -258,7 +260,6 @@ var renderFunctionProtocol = function (container, table_id, rule) {
         }
     });
     var badge = "<span class='badge' title='Всего выполнено / Обнаружены ошибки'>" + r + " / " + i + "</span>";
-    //var badge = "<span class='badge'>" + i + "</span>";
     header.append(badge);
 
 
@@ -290,17 +291,16 @@ var renderTableProtocol = function (table_id, data) {
     protocol_wrapper.append(container);
     return protocol_wrapper;
 };
-
 // Инициализация дополнительных кнопок на панели инструментов контроля формы
 var init_fc_extarbuttons = function () {
     //$("#fc_extrabuttons").hide();
-    $("#showallfcrule").jqxCheckBox({ theme: theme, checked: true });
-    $("#showallfcrule").on('checked', function (event) {
-        $(".control-valid").hide();
-    });
-    $("#showallfcrule").on('unchecked', function (event) {
-        $(".control-row").show();
-    });
+    //$("#showallfcrule").jqxCheckBox({ theme: theme, checked: true });
+    //$("#showallfcrule").on('checked', function (event) {
+        //$(".rule-valid ").parent(".jqx-expander-header").hide().next().hide();
+    //});
+    //$("#showallfcrule").on('unchecked', function (event) {
+        //$(".rule-valid ").parent(".jqx-expander-header").show().next().show();
+    //});
     $("#toggle_formcontrolscreen").jqxToggleButton({ theme: theme });
     $("#toggle_formcontrolscreen").on('click', function () {
         var toggled = $("#toggle_formcontrolscreen").jqxToggleButton('toggled');
@@ -315,13 +315,14 @@ var init_fc_extarbuttons = function () {
 // Инициализация дополнительных кнопок на панели инструментов контроля таблицы
 var initextarbuttons = function () {
     $("#extrabuttons").hide();
-    //var showall = $("#showallrule") ;
     $("#showallrule").jqxCheckBox({ theme: theme, checked: true });
     $("#showallrule").on('checked', function (event) {
-        $(".control-valid").hide();
+        $(".rule-valid ").parent(".jqx-expander-header").hide().next().hide();
+        $(".control-valid ").hide();
     });
     $("#showallrule").on('unchecked', function (event) {
-        $(".control-row").show();
+        $(".rule-valid").parent(".jqx-expander-header").show().next().show();
+        $(".control-valid").show();
     });
     $("#togglecontrolscreen").jqxToggleButton({ theme: theme });
     $("#togglecontrolscreen").on('click', function () {
@@ -467,7 +468,9 @@ var checkform = function () {
                     glyph.removeClass('glyphicon-minus');
                 }
             });
-            $("#formprotocol .rule-valid").hide();
+
+
+            //$("#formprotocol .rule-valid").hide();
             $("#formprotocol .tableprotocol-content").hide();
             $("#formprotocol .tableprotocol-content").each( function() {
                 //consol.log(this.firstChild);
@@ -478,11 +481,16 @@ var checkform = function () {
                     theme: theme
                 });
             });
+            $(".rule-valid ").parent(".jqx-expander-header").hide().next().hide();
+            $(".control-valid ").hide();
+
             formprotocolheader ="<a href='#' onclick='window.print()'>Распечатать</a>";
             formprotocolheader +="<h2>Протокол контроля формы № "+ form_code +": \"" + form_name +"\" </h2>";
             formprotocolheader +="<h3>Учреждение: " + ou_code + " " + ou_name + "</h3>";
             var print_style = "<style>.tableprotocol-header { margin-top: 20px; font-size: 1.1em; font-weight: bold }";
             print_style += ".badge { background-color: #cbcbcb }";
+            print_style += ".rule-valid { display:none }";
+            print_style += ".control-valid { display:none }";
             print_style += ".rule-comment { text-indent: 20px; font-style: italic }";
             print_style += ".rule-header { border-bottom: 1px solid; margin-top: 10px}";
             print_style += ".showrule { font-size: 0.8em; }";
@@ -494,10 +502,7 @@ var checkform = function () {
                 pWindow.document.body.innerHTML = " ";
                 pWindow.document.write(print_style + formprotocolheader + printable.html());
             });
-            //console.log(layout[0].items[0].items[0].items[0].selected = true);
-            //layout[0].items[0].items[0].items[0].selected = true;
-            //layout[0].items[0].items[0].items[1].selected = false;
-            //$('#formEditLayout').jqxLayout('refresh');
+
             protocol_control_created = true;
             $("#formTables").jqxDataTable('refresh');
             $('#DataGrid').jqxGrid('refresh');
@@ -662,15 +667,17 @@ var gettableprotocol = function (data, status, xhr) {
         tableprotocol.append(header);
         tableprotocol.append(protocol_wrapper);
         if ($("#showallrule").jqxCheckBox('checked'))  {
-            $(".control-valid").hide();
+            $(".rule-valid ").parent(".jqx-expander-header").hide().next().hide();
+
         } else {
-            $(".control-valid").show();
+            $(".rule-valid").parent(".jqx-expander-header").show().next().hide();
         }
         var printprotocolheader ="<a href='#' onclick='window.print()'>Распечатать</a>";
         printprotocolheader += "<h2>Протокол контроля таблицы " + current_table_code + " \""+ data_for_tables[data.table_id].tablename;
         printprotocolheader += "\" формы № "+ form_code + "</h2>";
         printprotocolheader +="<h4>Учреждение: " + ou_code + " " + ou_name + "</h4>";
         var print_style = "<style>.badge { background-color: #cbcbcb }";
+        print_style += ".rule-valid { display:none }";
         print_style += ".rule-comment { text-indent: 20px; font-style: italic }";
         print_style += ".rule-header { border-bottom: 1px solid; margin-top: 10px}";
         print_style += ".showrule { font-size: 0.8em; }";

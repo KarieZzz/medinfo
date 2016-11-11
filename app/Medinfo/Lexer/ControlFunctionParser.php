@@ -103,6 +103,8 @@ class ControlFunctionParser extends Parser {
             $this->celladress();
         } elseif ($this->lookahead->type == ControlFunctionLexer::NAME && $this->lookahead->text == 'сумма') {
             $this->summfunction();
+        } elseif ($this->lookahead->type == ControlFunctionLexer::NAME && $this->lookahead->text == 'меньшее') {
+            $this->minmaxfunctions();
         } else {
             throw new \Exception("Ожидалось число, адрес ячейки или функция 'сумма'. Найдено: " . $this->lookahead);
         }
@@ -163,6 +165,23 @@ class ControlFunctionParser extends Parser {
         $this->currentNode = $o;
     }
 
+    public function cellarray()
+    {
+        $r = new ControlFunctionParseTree(__FUNCTION__);
+        $o = $this->currentNode;
+        $this->currentNode->addChild($r);
+        $this->currentNode = $r;
+
+        $this->celladress();
+        while ($this->lookahead->type == ControlFunctionLexer::COMMA ) {
+            //while ($this->lookahead['type'] == CellLexer::COMMA ) {
+            $this->match(ControlFunctionLexer::COMMA);
+            $this->celladress();
+        }
+
+        $this->currentNode = $o;
+    }
+
     public function summfunction()
     {
         $r = new ControlFunctionParseTree(__FUNCTION__);
@@ -177,6 +196,22 @@ class ControlFunctionParser extends Parser {
 
         $this->currentNode = $o;
     }
+
+    public function minmaxfunctions()
+    {
+        $r = new ControlFunctionParseTree(__FUNCTION__);
+        $o = $this->currentNode;
+        $this->currentNode->addChild($r);
+        $this->currentNode = $r;
+
+        $this->match(ControlFunctionLexer::NAME);
+        $this->match(ControlFunctionLexer::LPARENTH);
+        $this->cellarray();
+        $this->match(ControlFunctionLexer::RPARENTH);
+
+        $this->currentNode = $o;
+    }
+
 
     public function compare_action()
     {

@@ -9,7 +9,7 @@
             {{--<input id="dataexport" type="button" value="Экспорт данных" />--}}
             <input id="checkform" style="float: left" type="button" value="Контроль формы" />
             <div style="padding: 4px; display: none" id="fc_extrabuttons">
-                <div id="showallfcrule" class="extrabutton" style="float: left"><span>Показать только ошибки</span></div>
+                {{--<div id="showallfcrule" class="extrabutton" style="float: left"><span>Показать только ошибки</span></div>--}}
                 <a id="toggle_formcontrolscreen" style="margin-left: 2px;" target="_blank"><span class='glyphicon glyphicon-fullscreen'></span></a>
                 <a id='printformprotocol' style="margin-left: 2px;" target="_blank" ><span class='glyphicon glyphicon-print'></span></a>
             </div>

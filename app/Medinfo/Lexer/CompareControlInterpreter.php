@@ -56,8 +56,9 @@ class CompareControlInterpreter extends ControlInterpreter
         $rp = $this->writeReadableCellAdresses($this->rpExpressionRoot);
         $this->readableFormula = implode('', $lp) . ' ' . $this->boolean . ' ' . implode('', $rp);
         $this->results['boolean_sign'] = $this->boolean;
-        $this->results['left_part_formula'] = implode('', $lp);
-        $this->results['right_part_formula'] = implode('', $rp);
+        //$this->results['left_part_formula'] = implode('', $lp);
+        //$this->results['right_part_formula'] = implode('', $rp);
+        $this->results['formula'] = $this->readableFormula;
     }
 
     public function exec(Document $document)
@@ -90,13 +91,17 @@ class CompareControlInterpreter extends ControlInterpreter
                 $result[$i]['left_part_value'] = $lp_result;
                 $result[$i]['right_part_value'] = $rp_result;
                 $result[$i]['deviation'] = abs(round($rp_result-$lp_result, 3));
-
                 $result[$i]['valid'] = $this->chekoutRule($lp_result, $rp_result, $this->boolean);
                 $this->results['valid'] = $this->results['valid'] && $result[$i]['valid'];
             }
         } else {
             $this->currentIteration = 0;
+            $result[0]['cells'] = [];
+            $this->currentArgument = 1;
+            $this->reduce_minmaxfunctions($this->lpExpressionRoot);
             $this->rewrite_celladresses($this->lpExpressionRoot);
+            $this->currentArgument = 2;
+            $this->reduce_minmaxfunctions($this->rpExpressionRoot);
             $this->rewrite_celladresses($this->rpExpressionRoot);
             $lp_result = $this->calculate($this->lpExpressionRoot);
             $rp_result = $this->calculate($this->rpExpressionRoot);
