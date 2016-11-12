@@ -33,8 +33,6 @@ class CreateCfunctionsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('cfunctions', function (Blueprint $table) {
-            //
-        });
+        Schema::drop('cfunctions');
     }
 }
