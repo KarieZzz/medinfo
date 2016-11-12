@@ -45,7 +45,7 @@ initdatasources = function() {
     memberDataAdapter = new $.jqx.dataAdapter(membersource);
 };
 inittablelist = function() {
-    $("#AlbumList").jqxGrid(
+    agrid.jqxGrid(
         {
             width: '98%',
             height: '30%',
@@ -62,15 +62,15 @@ inittablelist = function() {
                 { text: 'По умолчанию', datafield: 'default', columntype: 'checkbox', width: '70px' }
             ]
         });
-    $('#AlbumList').on('rowselect', function (event) {
+    agrid.on('rowselect', function (event) {
         var row = event.args.row;
         currentalbum = row.id;
         membersource.url = member_url + currentalbum;
-        $("#memberList").jqxGrid('updatebounddata');
+        mlist.jqxGrid('updatebounddata');
         $("#album_name").val(row.album_name);
         $("#default").val(row.default);
     });
-    $("#memberList").jqxGrid(
+    mlist.jqxGrid(
         {
             width: '98%',
             height: '65%',
@@ -95,16 +95,15 @@ inittablelist = function() {
         });
 };
 setquerystring = function() {
-    return "&group_name=" + $("#group_name").val() +
-        "&slug=" + $("#slug").val() +
-        "&parent_id=" + $("#parent_id").val();
+    return "&album_name=" + $("#album_name").val() +
+        "&default=" + ($("#default").val() ? 1 :0);
 };
-initgroupactions = function() {
+initalbumactions = function() {
     $("#insert").click(function () {
         var data = setquerystring();
         $.ajax({
             dataType: 'json',
-            url: groupcreate_url,
+            url: albumcreate_url,
             method: "POST",
             data: data,
             success: function (data, status, xhr) {
@@ -113,7 +112,7 @@ initgroupactions = function() {
                 } else {
                     raiseInfo(data.message);
                 }
-                $("#unitGroupList").jqxGrid('updatebounddata', 'data');
+                agrid.jqxGrid('updatebounddata', 'data');
             },
             error: function (xhr, status, errorThrown) {
                 $.each(xhr.responseJSON, function(field, errorText) {
@@ -123,12 +122,12 @@ initgroupactions = function() {
         });
     });
     $("#save").click(function () {
-        var row = $('#unitGroupList').jqxGrid('getselectedrowindex');
+        var row = agrid.jqxGrid('getselectedrowindex');
         if (row == -1) {
             raiseError("Выберите запись для изменения/сохранения данных");
             return false;
         }
-        var rowid = $("#unitGroupList").jqxGrid('getrowid', row);
+        var rowid = agrid.jqxGrid('getrowid', row);
         var data = setquerystring();
         $.ajax({
             dataType: 'json',
@@ -141,11 +140,11 @@ initgroupactions = function() {
                 } else {
                     raiseInfo(data.message);
                 }
-                $("#unitGroupList").jqxGrid('updatebounddata', 'data');
-                $("#unitGroupList").on("bindingcomplete", function (event) {
+                agrid.jqxGrid('updatebounddata', 'data');
+                agrid.on("bindingcomplete", function (event) {
                     var newindex = $('#unitGroupList').jqxGrid('getrowboundindexbyid', rowid);
                     console.log(newindex);
-                    $("#unitGroupList").jqxGrid('selectrow', newindex);
+                    agrid.jqxGrid('selectrow', newindex);
 
                 });
             },
@@ -157,12 +156,12 @@ initgroupactions = function() {
         });
     });
     $("#delete").click(function () {
-        var row = $('#unitGroupList').jqxGrid('getselectedrowindex');
+        var row = agrid.jqxGrid('getselectedrowindex');
         if (row == -1) {
             raiseError("Выберите запись для удаления");
             return false;
         }
-        var rowid = $("#unitGroupList").jqxGrid('getrowid', row);
+        var rowid = agrid.jqxGrid('getrowid', row);
         raiseConfirm("<strong>Внимание!</strong> Выбранная группа будет удалена вместе со всеми входящими в состав элементами и созданными документами.", event);
         $("#okButton").click(function () {
             hideConfirm();
@@ -174,8 +173,8 @@ initgroupactions = function() {
                     if (data.group_deleted) {
                         raiseInfo(data.message);
                         $("#form")[0].reset();
-                        $("#unitGroupList").jqxGrid('updatebounddata', 'data');
-                        $("#unitGroupList").jqxGrid('clearselection');
+                        agrid.jqxGrid('updatebounddata', 'data');
+                        agrid.jqxGrid('clearselection');
 
                     } else {
                         raiseError(data.message);
@@ -191,7 +190,7 @@ initgroupactions = function() {
 
 getcheckedunits = function() {
     var ids = [];
-    var checkedRows = $('#moTree').jqxTreeGrid('getCheckedRows');
+    var checkedRows = $('#Forms').jqxGrid('getselectedrowindexes');
     for (var i = 0; i < checkedRows.length; i++) {
         // get a row.
         ids.push(checkedRows[i].uid);
@@ -205,14 +204,14 @@ initmemberactions = function() {
         var data = "&units=" + selectedunits;
         $.ajax({
             dataType: 'json',
-            url: addmembers_url + currentgroup,
+            url: addmembers_url + currentalbum,
             method: "POST",
             data: data,
             success: function (data, status, xhr) {
                 if (data.count_of_inserted > 0) {
                     raiseInfo("Добавлено учреждений в группу " + data.count_of_inserted);
-                    $('#memberList').jqxGrid('clearselection');
-                    $('#memberList').jqxGrid('updatebounddata');
+                    mgrid.jqxGrid('clearselection');
+                    mgrid.jqxGrid('updatebounddata');
                 }
                 else {
                     raiseError("Учреждения не добавлены");
@@ -224,12 +223,12 @@ initmemberactions = function() {
         });
     });
     $("#removemember").click(function() {
-        var row = $('#memberList').jqxGrid('getselectedrowindex');
+        var row = mgrid.jqxGrid('getselectedrowindex');
         if (row == -1) {
             raiseError("Выберите запись для удаления из списка МО, входящих в текущую группу");
             return false;
         }
-        var rowid = $("#memberList").jqxGrid('getrowid', row);
+        var rowid = mlist.jqxGrid('getrowid', row);
         $.ajax({
             dataType: 'json',
             url: removemember_url + rowid,
@@ -237,8 +236,8 @@ initmemberactions = function() {
             success: function (data, status, xhr) {
                 if (data.member_deleted) {
                     raiseInfo(data.message);
-                    $('#memberList').jqxGrid('clearselection');
-                    $('#memberList').jqxGrid('updatebounddata');
+                    mgrid.jqxGrid('clearselection');
+                    mgrid.jqxGrid('updatebounddata');
                 }
                 else {
                     raiseError("Учреждения из группы не удалены");
@@ -251,7 +250,7 @@ initmemberactions = function() {
     });
 }
 
-initmotree = function() {
+initformlist = function() {
     var form_source =
     {
         dataType: "json",
@@ -266,32 +265,32 @@ initmotree = function() {
     };
     FormDataAdapter = new $.jqx.dataAdapter(form_source);
     $("#FormContainer").jqxPanel({width: '100%', height: '350px'});
-    $("#Forms").jqxTreeGrid(
+    $("#Forms").jqxGrid(
         {
             width: '98%',
             height: '99%',
             theme: theme,
-            source: FormDataAdapter,
-            selectionMode: "singleRow",
             localization: localize(),
+            source: FormDataAdapter,
+            columnsresize: true,
+            showfilterrow: true,
             filterable: true,
-            filterMode: "simple",
-            columnsResize: true,
-            checkboxes: true,
-            ready: function () {
-                $("#moTree").jqxTreeGrid('expandRow', 0);
-            },
+            sortable: true,
+            selectionmode: 'checkbox',
             columns: [
-                {text: 'Код', dataField: 'unit_code', width: 150},
-                {text: 'Наименование', dataField: 'unit_name'}
+                {text: 'Код', dataField: 'form_code', width: 150},
+                {text: 'Наименование', dataField: 'form_name'}
             ]
         });
 
-    $('#Forms').on('filter',
-        function (event) {
-            var args = event.args;
-            var filters = args.filters;
-            $('#Forms').jqxTreeGrid('expandAll');
-        }
-    );
+};
+
+initButtons = function() {
+    $('#default').jqxSwitchButton({
+        height: 31,
+        width: 81,
+        onLabel: 'Да',
+        offLabel: 'Нет',
+        checked: false });
+
 };

@@ -11,6 +11,7 @@
             <div class="panel-heading"><h4>Формы, входящие в группу:</h4></div>
             <div class="panel-body">
                 <div id="memberList"></div>
+                <button type="button" id="removemember" class="btn btn-danger">Удалить формы из альбома</button>
             </div>
         </div>
     </div>
@@ -26,9 +27,9 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="slug">По умолчанию:</label>
+                        <label class="control-label col-sm-3" for="default">По умолчанию:</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" id="slug" />
+                            <div id="default"></div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -52,7 +53,6 @@
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-7">
                         <button type="button" id="insertmembers" class="btn btn-default">Добавить формы в альбом</button>
-                        <button type="button" id="removemember" class="btn btn-danger">Удалить формы из альбома</button>
                     </div>
                 </div>
             </div>
@@ -89,23 +89,27 @@
     <script type="text/javascript">
         var currentalbum = 0;
         var membersource;
-        var album_url ='/admin/albums/fetchalbums';
+        var album_url ='/admin/fetchalbums';
         var form_url ='/admin/fetchforms/';
-        var member_url ='/admin/albums/fetchmembers/';
-        var albumcreate_url = '/admin/albums/albumcreate';
-        var albumupdate_url = '/admin/albums/albumupdate/';
-        var albumdelete_url = '/admin/albums/albumdelete/';
+        var member_url ='/admin/albums/fetchformset/';
+        var albumcreate_url = '/admin/albums/create';
+        var albumupdate_url = '/admin/albums/update/';
+        var albumdelete_url = '/admin/albums/delete/';
         var addmembers_url = '/admin/albums/addmembers/';
         var removemember_url = '/admin/albums/removemember/';
         var AlbumDataAdapter;
         var FormDataAdapter;
         var memberDataAdapter;
+        var agrid = $("#AlbumList");
+        var mlist = $("#memberList");
+
         //var mo_dataAdapter;
         initsplitter();
         initdatasources();
-        initmotree();
+        initButtons();
+        initformlist();
         inittablelist();
-        initgroupactions();
+        initalbumactions();
         initmemberactions();
     </script>
 @endsection
