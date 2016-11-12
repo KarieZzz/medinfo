@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\Album;
 
 class AlbumAdminController extends Controller
 {
@@ -17,8 +18,11 @@ class AlbumAdminController extends Controller
 
     public function index()
     {
-        $forms = Form::orderBy('form_index')->get(['id', 'form_code']);
-        $error_levels = DicErrorLevel::all(['code', 'name']);
-        return view('jqxadmin.cfunctions', compact('forms', 'error_levels'));
+        return view('jqxadmin.albums');
+    }
+
+    public function fetchAlbums()
+    {
+        return Album::all();
     }
 }

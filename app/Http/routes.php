@@ -66,6 +66,11 @@ Route::group(['middleware' => ['web']], function () {
     Route::post('admin/periods/create', 'Admin\PeriodAdminController@store');
     Route::patch('admin/periods/update', 'Admin\PeriodAdminController@update');
     Route::delete('admin/periods/delete/{period}', 'Admin\PeriodAdminController@delete');
+
+    //Менеджер альбомов форм
+    Route::get('admin/albums', 'Admin\AlbumAdminController@index' );
+    Route::get('admin/albums/fetchalbums', 'Admin\AlbumAdminController@fetchAlbums' );
+
     // Менеджер отчетных форм/таблиц
     Route::get('admin/forms', 'Admin\FormAdminController@index');
     Route::get('admin/fetchforms', 'Admin\FormAdminController@fetchForms' );
