@@ -73,6 +73,9 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('admin/albums/fetchformset/{album}', 'Admin\AlbumAdminController@fetchFormSet' );
     Route::post('admin/albums/create', 'Admin\AlbumAdminController@store');
     Route::patch('admin/albums/update/{album}', 'Admin\AlbumAdminController@update');
+    Route::delete('admin/albums/delete/{album}', 'Admin\AlbumAdminController@delete');
+    Route::post('admin/albums/addmembers/{album}', 'Admin\AlbumAdminController@addMembers');
+    Route::delete('admin/albums/removemember/{member}', 'Admin\AlbumAdminController@removeMember');
 
     // Менеджер отчетных форм/таблиц
     Route::get('admin/forms', 'Admin\FormAdminController@index');

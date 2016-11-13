@@ -33,9 +33,10 @@ initdatasources = function() {
         datatype: "json",
         datafields: [
             { name: 'id', type: 'int' },
-            { name: 'group_id', type: 'int' },
-            { name: 'uname', map: 'unit>unit_name', type: 'string' },
-            { name: 'ou_id', type: 'int' }
+            { name: 'album_id', type: 'int' },
+            { name: 'form_id', type: 'int' },
+            { name: 'formcode', map: 'form>form_code', type: 'string' },
+            { name: 'formname', map: 'form>form_name', type: 'string' }
         ],
         id: 'id',
         url: member_url + currentalbum,
@@ -68,7 +69,7 @@ inittablelist = function() {
         membersource.url = member_url + currentalbum;
         mlist.jqxGrid('updatebounddata');
         $("#album_name").val(row.album_name);
-        $("#default").val(row.default);
+        $("#default").val(row.default != null);
     });
     mlist.jqxGrid(
         {
@@ -90,7 +91,8 @@ inittablelist = function() {
                         return "<div style='margin:4px;'>" + (value + 1) + "</div>";
                     }
                 },
-                { text: 'МО', datafield: 'uname' , width: '580px'}
+                { text: 'Код', datafield: 'formcode' , width: '100px'},
+                { text: 'Наименование', datafield: 'formname' , width: '580px'}
             ]
         });
 };
@@ -161,46 +163,27 @@ initalbumactions = function() {
             return false;
         }
         var rowid = agrid.jqxGrid('getrowid', row);
-        raiseConfirm("<strong>Внимание!</strong> Выбранная группа будет удалена вместе со всеми входящими в состав элементами и созданными документами.", event);
-        $("#okButton").click(function () {
-            hideConfirm();
-            $.ajax({
-                dataType: 'json',
-                url: groupdelete_url + rowid,
-                method: "DELETE",
-                success: function (data, status, xhr) {
-                    if (data.group_deleted) {
-                        raiseInfo(data.message);
-                        $("#form")[0].reset();
-                        agrid.jqxGrid('updatebounddata', 'data');
-                        agrid.jqxGrid('clearselection');
-
-                    } else {
-                        raiseError(data.message);
-                    }
-                },
-                error: function (xhr, status, errorThrown) {
-                    raiseError('Ошибка удаления группы', xhr);
-                }
-            });
-        });
+        raiseConfirm("<strong>Внимание!</strong> Выбранный альбом будет удален вместе со всеми входящими в состав элементами.");
     });
 };
 
-getcheckedunits = function() {
+getcheckedforms = function() {
     var ids = [];
-    var checkedRows = $('#Forms').jqxGrid('getselectedrowindexes');
-    for (var i = 0; i < checkedRows.length; i++) {
-        // get a row.
-        ids.push(checkedRows[i].uid);
+    var selected = $('#Forms').jqxGrid('getselectedrowindexes');
+    for (i = 0; i < selected.length; i++) {
+        ids[i] =   $('#Forms').jqxGrid('getrowid', selected[i]);
     }
     return ids;
 };
 
 initmemberactions = function() {
     $("#insertmembers").click(function() {
-        var selectedunits = getcheckedunits();
-        var data = "&units=" + selectedunits;
+        if (agrid.jqxGrid('getselectedrowindex') == -1) {
+            raiseError("Выберите альбом для добавления форм");
+            return false;
+        }
+        var selectedforms = getcheckedforms();
+        var data = "&forms=" + selectedforms;
         $.ajax({
             dataType: 'json',
             url: addmembers_url + currentalbum,
@@ -208,12 +191,12 @@ initmemberactions = function() {
             data: data,
             success: function (data, status, xhr) {
                 if (data.count_of_inserted > 0) {
-                    raiseInfo("Добавлено учреждений в группу " + data.count_of_inserted);
-                    mgrid.jqxGrid('clearselection');
-                    mgrid.jqxGrid('updatebounddata');
+                    raiseInfo("Добавлено форм в альбом " + data.count_of_inserted);
+                    mlist.jqxGrid('clearselection');
+                    mlist.jqxGrid('updatebounddata');
                 }
                 else {
-                    raiseError("Учреждения не добавлены");
+                    raiseError("Формы не добавлены");
                 }
             },
             error: function (xhr, status, errorThrown) {
@@ -222,9 +205,9 @@ initmemberactions = function() {
         });
     });
     $("#removemember").click(function() {
-        var row = mgrid.jqxGrid('getselectedrowindex');
+        var row = mlist.jqxGrid('getselectedrowindex');
         if (row == -1) {
-            raiseError("Выберите запись для удаления из списка МО, входящих в текущую группу");
+            raiseError("Выберите запись для удаления из списка форм, входящих в текущий альбом");
             return false;
         }
         var rowid = mlist.jqxGrid('getrowid', row);
@@ -235,11 +218,11 @@ initmemberactions = function() {
             success: function (data, status, xhr) {
                 if (data.member_deleted) {
                     raiseInfo(data.message);
-                    mgrid.jqxGrid('clearselection');
-                    mgrid.jqxGrid('updatebounddata');
+                    mlist.jqxGrid('clearselection');
+                    mlist.jqxGrid('updatebounddata');
                 }
                 else {
-                    raiseError("Учреждения из группы не удалены");
+                    raiseError("Форма из альбома не удалена");
                 }
             },
             error: function (xhr, status, errorThrown) {
@@ -292,4 +275,25 @@ initButtons = function() {
         offLabel: 'Нет',
         checked: false });
 
+};
+
+performAction = function() {
+    $.ajax({
+        dataType: 'json',
+        url: albumdelete_url + currentalbum,
+        method: "DELETE",
+        success: function (data, status, xhr) {
+            if (typeof data.error != 'undefined') {
+                raiseError(data.message);
+            } else {
+                raiseInfo(data.message);
+                $("#form")[0].reset();
+            }
+            agrid.jqxGrid('updatebounddata', 'data');
+            agrid.jqxGrid('clearselection');
+        },
+        error: function (xhr, status, errorThrown) {
+            raiseError('Ошибка удаления записи', xhr);
+        }
+    });
 };

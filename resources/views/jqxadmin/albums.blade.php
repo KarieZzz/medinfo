@@ -8,10 +8,12 @@
     <div>
         <div id="AlbumList" style="margin: 10px"></div>
         <div class="panel panel-default">
-            <div class="panel-heading"><h4>Формы, входящие в группу:</h4></div>
+            <div class="panel-heading"><h4>Формы, входящие в альбом:</h4></div>
             <div class="panel-body">
                 <div id="memberList"></div>
-                <button type="button" id="removemember" class="btn btn-danger">Удалить формы из альбома</button>
+                <div class="col-sm-7">
+                    <button type="button" id="removemember" class="btn btn-danger">Удалить формы из альбома</button>
+                </div>
             </div>
         </div>
     </div>
@@ -51,7 +53,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-7">
+                    <div class="col-sm-7">
                         <button type="button" id="insertmembers" class="btn btn-default">Добавить формы в альбом</button>
                     </div>
                 </div>
@@ -81,7 +83,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/albumadmin.js?v=0003') }}"></script>
+    <script src="{{ asset('/medinfo/admin/albumadmin.js?v=0004') }}"></script>
 @endpush
 
 @section('inlinejs')

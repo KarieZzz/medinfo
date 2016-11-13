@@ -8,6 +8,9 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Album;
 use App\AlbumFormSet;
+use App\AlbumTableSet;
+use App\AlbumRowSet;
+use App\AlbumColumnSet;
 
 class AlbumAdminController extends Controller
 {
@@ -24,12 +27,12 @@ class AlbumAdminController extends Controller
 
     public function fetchAlbums()
     {
-        return Album::all();
+        return Album::orderBy('album_name')->get();
     }
 
     public function fetchFormSet(int $album)
     {
-        return AlbumFormSet::OfAlbum($album)->get();
+        return AlbumFormSet::OfAlbum($album)->with('form')->get();
     }
 
     public function store(Request $request)
@@ -39,10 +42,13 @@ class AlbumAdminController extends Controller
             ]
         );
         try {
-            $newalbum = Album::create($request->all());
+            $newalbum = new Album;
+            $newalbum->album_name = $request->album_name;
+            $newalbum->default = ($request->default == 0 ? null : true);
+            $newalbum->save();
             return ['message' => 'Новая запись создана. Id:' . $newalbum->id];
         } catch (\Illuminate\Database\QueryException $e) {
-            return($e->errorInfo[0]);
+            return($this->error_message($e->errorInfo[0]));
         }
     }
 
@@ -54,12 +60,43 @@ class AlbumAdminController extends Controller
         );
         try {
             $album->album_name = $request->album_name;
-            $album->default = $request->default;
+            $album->default = ($request->default == 0 ? null : true);
             $album->save();
             return ['message' => 'Изменения в альбоме сохранены. Id:' . $album->id];
         } catch (\Illuminate\Database\QueryException $e) {
-            return($e->errorInfo[0]);
+            return($this->error_message($e->errorInfo[0]));
         }
+    }
+
+    public function delete(Album $album)
+    {
+        $forms_deleted = AlbumFormSet::OfAlbum($album->id)->delete();
+        $tables_deleted = AlbumTableSet::OfAlbum($album->id)->delete();
+        $rows_deleted = AlbumRowSet::OfAlbum($album->id)->delete();
+        $columns_deleted = AlbumColumnSet::OfAlbum($album->id)->delete();
+        $records_deleted = $forms_deleted + $tables_deleted + $rows_deleted + $columns_deleted;
+        $album->delete();
+        return ['message' => 'Удален альбом Id' . $album->id . ". Связанных записей удалено: " . $records_deleted ];
+    }
+
+    public function addMembers(Album $album, Request $request)
+    {
+        $forms = explode(",", $request->forms);
+        $newmembers = [];
+        foreach($forms as $form) {
+            $member = AlbumFormSet::firstOrCreate([ 'album_id' => $album->id, 'form_id' => $form ]);
+            $newmembers[] = $member->id;
+        }
+        return [ 'count_of_inserted' => count($newmembers) ];
+    }
+
+    public function removeMember(AlbumFormSet $member)
+    {
+        $member_deleted = $member->delete();
+        if ($member_deleted) {
+            $message = "Выбранная форма удалена из списка";
+        }
+        return compact('member_deleted', 'message');
     }
 
     protected function error_message($errorCode)
