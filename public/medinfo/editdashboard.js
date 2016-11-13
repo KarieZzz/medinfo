@@ -916,7 +916,6 @@ var inittablelist = function() {
         current_table_code = data_for_tables[current_table].tablecode;
         current_row_name_datafield = data_for_tables[current_table].columns[1].dataField;
         current_row_number_datafield = data_for_tables[current_table].columns[2].dataField;
-        //$('#DataGrid').jqxGrid('clearselection');
         dgrid.jqxGrid('beginupdate');
         tablesource.datafields = data_for_tables[current_table].datafields;
         tablesource.url = source_url + current_table;

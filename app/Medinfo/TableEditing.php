@@ -7,11 +7,13 @@
  */
 
 namespace App\Medinfo;
+use App\Album;
+use App\Column;
 use App\Table;
 
 class TableEditing
 {
-    public static function fetchDataForTableRenedering(Table $table, $columntype = 'numberinput', $hiderowid = true)
+    public static function fetchDataForTableRenedering(Table $table, Album $album , $columntype = 'numberinput', $hiderowid = true)
     {
         if (!$table) {
             return [];
@@ -29,7 +31,11 @@ class TableEditing
             'pinned' => true
         );
         $column_groups_arr = array();
-        $cols = $table->columns->where('deleted', 0)->sortBy('column_index');
+        //$cols = $table->columns->where('deleted', 0)->sortBy('column_index');
+        $cols = Column::OfTable($table->id)->whereDoesntHave('excluded', function ($query) use($album) {
+            $query->where('album_id', $album->id);
+        })->get();
+
         foreach ($cols as $col) {
             $datafields_arr[] = ['name'  => $col->id ];
             $width = $col->size * 10;

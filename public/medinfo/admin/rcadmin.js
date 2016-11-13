@@ -23,6 +23,7 @@ initdatasources = function() {
             { name: 'id', type: 'int' },
             { name: 'table_id', type: 'int' },
             { name: 'table_code', map: 'table>table_code', type: 'string' },
+            { name: 'excluded', map: 'excluded>0>album_id', type: 'bool' },
             { name: 'row_index', type: 'int' },
             { name: 'row_code', type: 'string' },
             { name: 'row_name', type: 'string' },
@@ -70,9 +71,10 @@ initRowList = function() {
             columns: [
                 { text: 'Id', datafield: 'id', width: '50px' },
                 { text: '№ п/п', datafield: 'row_index', width: '50px' },
+                { text: 'Исключена из альбома', datafield: 'excluded', columntype: 'checkbox', width: '70px'  },
                 { text: 'Код таблицы', datafield: 'table_code', width: '70px'  },
                 { text: 'Код строки', datafield: 'row_code', width: '70px'  },
-                { text: 'Имя', datafield: 'row_name' , width: '530px'},
+                { text: 'Имя', datafield: 'row_name' , width: '480px'},
                 { text: 'Код Медстат', datafield: 'medstat_code', width: '80px' },
                 { text: 'Мединфо Id', datafield: 'medinfo_id', width: '70px' }
             ]
@@ -84,6 +86,7 @@ initRowList = function() {
         $("#row_code").val(row.row_code);
         $("#row_medstat_code").val(row.medstat_code);
         $("#row_medinfo_id").val(row.medinfo_id);
+        $("#excludedRow").val(row.excluded != null);
     });
 };
 //Таблица граф
@@ -161,6 +164,16 @@ setcolumnquery = function() {
         "&decimal_count=" + $("#decimal_count").val() +
         "&medstat_code=" + $("#column_medstat_code").val() +
         "&medinfo_id=" + $("#column_medinfo_id").val();
+};
+
+initButtons = function() {
+    $('#excludedRow').jqxSwitchButton({
+        height: 31,
+        width: 81,
+        onLabel: 'Да',
+        offLabel: 'Нет',
+        checked: false });
+
 };
 
 // Операции со строками

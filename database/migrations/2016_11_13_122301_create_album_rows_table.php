@@ -17,6 +17,7 @@ class CreateAlbumRowsTable extends Migration
             $table->integer('album_id')->index();
             $table->integer('row_id')->index();
             $table->timestamps();
+            $table->unique(['album_id', 'row_id' ]);
         });
     }
 

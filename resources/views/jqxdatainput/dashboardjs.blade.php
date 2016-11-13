@@ -5,6 +5,7 @@ var doc_id = '{{ $document->id }}';
 var doc_type = '{{ $document->dtype }}';
 var form_name = '{{ $form->form_name }}';
 var form_code = '{{ $form->form_code }}';
+var default_album = '{{ $default_album->id }}';
 var current_user_role = '{{ $worker->role }}';
 var current_table = '{{ $laststate['currenttable']->id }}';
 var current_table_code = '{{ $laststate['currenttable']->table_code }}';
@@ -55,7 +56,7 @@ var marking_mode = 'control';
 var current_edited_cell = {};
 // JSON объект - протокол контроля формы
 var current_protocol_source = [];
-var source_url = "/datainput/fetchvalues/" + doc_id + "/";
+var source_url = "/datainput/fetchvalues/" + doc_id + "/" + default_album + "/";
 var savevalue_url = "/datainput/savevalue/" + doc_id + "/";
 var validate_table_url = "/datainput/tablecontrol/" + doc_id + "/";
 var validate_form_url = "/datainput/formcontrol/" + doc_id;

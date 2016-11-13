@@ -27,6 +27,11 @@ class Table extends Model
         return $this->hasMany('App\Row');
     }
 
+    public function excluded()
+    {
+        return $this->hasMany('App\AlbumTableSet');
+    }
+
     public function scopeOfForm($query, $form)
     {
         return $query

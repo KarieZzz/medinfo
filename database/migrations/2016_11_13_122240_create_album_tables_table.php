@@ -17,6 +17,7 @@ class CreateAlbumTablesTable extends Migration
             $table->integer('album_id')->index();
             $table->integer('table_id')->index();
             $table->timestamps();
+            $table->unique(['album_id', 'table_id' ]);
         });
     }
 

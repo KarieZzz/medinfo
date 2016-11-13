@@ -149,7 +149,7 @@ Route::group(['middleware' => ['web']], function () {
 
     // Рабочий стол - Первичный отчетный документ, ввод данных, журнал изменений
     Route::get('datainput/formdashboard/{document}', 'StatDataInput\FormDashboardController@index');
-    Route::get('datainput/fetchvalues/{document}/{table}', 'StatDataInput\FormDashboardController@fetchValues');
+    Route::get('datainput/fetchvalues/{document}/{album}/{table}', 'StatDataInput\FormDashboardController@fetchValues');
     Route::post('datainput/savevalue/{document}/{table}', 'StatDataInput\FormDashboardController@saveValue');
     Route::get('datainput/valuechangelog/{document}', 'StatDataInput\FormDashboardController@fullValueChangeLog');
 

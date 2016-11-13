@@ -11,6 +11,11 @@ class Column extends Model
         'table_id', 'column_index', 'column_name', 'content_type', 'size', 'decimal_count', 'medstat_code', 'medinfo_id',
     ];
 
+    public function excluded()
+    {
+        return $this->hasMany('App\AlbumColumnSet');
+    }
+
     public function table()
     {
         return $this->belongsTo('App\Table');

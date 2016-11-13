@@ -11,8 +11,11 @@ use Carbon\Carbon;
 use App\Unit;
 use App\Period;
 use App\Document;
+use App\Album;
 use App\Form;
 use App\Table;
+use App\Column;
+use App\Row;
 use App\Cell;
 use App\NECellsFetch;
 use App\ValuechangingLog;
@@ -22,11 +25,16 @@ use App\Medinfo\TableEditing;
 
 class DashboardController extends Controller
 {
+    public $default_album;
 
     //
     public function index(Document $document)
     {
         $worker = Auth::guard('datainput')->user();
+        $default_album = Album::Default()->first(['id']);
+        if (!$default_album) {
+            $default_album = Album::find(config('app.default_album'));
+        }
         $statelabel = Document::$state_labels[$document->state];
         $form = Form::find($document->form_id);
         $current_unit = Unit::find($document->ou_id);
@@ -36,12 +44,12 @@ class DashboardController extends Controller
         $editedtables = Table::editedTables($document->id);
         //$noteditablecells = NECellsFetch::where('f', $form->id)->select('t', 'r', 'c')->get();
         $noteditablecells = NECellsFetch::byOuId($current_unit->id, $form->id);
-        $renderingtabledata = $this->composeDataForTablesRendering($form, $editedtables);
+        $renderingtabledata = $this->composeDataForTablesRendering($form, $editedtables, $default_album);
         $laststate = $this->getLastState($worker, $document, $form);
         //return $datafortables;
         //return $renderingtabledata;
         return view($this->dashboardView(), compact(
-            'current_unit', 'document', 'worker', 'statelabel', 'editpermission', 'editmode',
+            'current_unit', 'document', 'worker', 'default_album', 'statelabel', 'editpermission', 'editmode',
             'form', 'period', 'editedtables', 'noteditablecells', 'forformtable', 'renderingtabledata',
             'laststate'
         ));
@@ -89,16 +97,20 @@ class DashboardController extends Controller
      * @param array $editedtables
      * @return mixed
      */
-    protected function composeDataForTablesRendering(Form $form, array $editedtables)
+    protected function composeDataForTablesRendering(Form $form, array $editedtables, Album $default_album)
     {
-        $tables = Table::where('form_id', $form->id)->where('deleted', 0)->orderBy('table_code')->get();
+        //$tables = Table::where('form_id', $form->id)->where('deleted', 0)->orderBy('table_code')->get();
+        $tables = Table::OfForm($form->id)->whereDoesntHave('excluded', function ($query) use($default_album) {
+            $query->where('album_id', $default_album->id);
+        })->get();
+        //dd($tables);
         $forformtable = [];
         $datafortables = [];
         foreach ($tables as $table) {
             in_array($table->id, $editedtables) ? $edited = 1 : $edited = 0;
             // данные для таблицы-фильтра для навигации по отчетным таблицам в форме
             $forformtable[] = "{ id: " . $table->id . ", code: '" . $table->table_code . "', name: '" . $table->table_name . "', edited: " . $edited . " }";
-            $datafortables[$table->id] = TableEditing::fetchDataForTableRenedering($table);
+            $datafortables[$table->id] = TableEditing::fetchDataForTableRenedering($table, $default_album);
         }
         $datafortables_json = addslashes(json_encode($datafortables));
         $composedata['tablelist'] = $forformtable;
@@ -107,10 +119,16 @@ class DashboardController extends Controller
         return $composedata;
     }
 
-    public function fetchValues(int $document, Table $table)
+    public function fetchValues(int $document, int $album, Table $table)
     {
-        $rows = $table->rows->where('deleted', 0)->sortBy('row_index');
-        $cols = $table->columns->where('deleted', 0)->sortBy('column_index');
+        //$rows = $table->rows->where('deleted', 0)->sortBy('row_index');
+        $rows = Row::OfTable($table->id)->whereDoesntHave('excluded', function ($query) use($album) {
+            $query->where('album_id', $album);
+        })->get();
+        //$cols = $table->columns->where('deleted', 0)->sortBy('column_index');
+        $cols = Column::OfTable($table->id)->whereDoesntHave('excluded', function ($query) use($album) {
+            $query->where('album_id', $album);
+        })->get();
         $data = array();
         $i=0;
         foreach ($rows as $r) {

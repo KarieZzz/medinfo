@@ -17,6 +17,7 @@ class CreateAlbumFormsTable extends Migration
             $table->integer('album_id')->index();
             $table->integer('form_id')->index();
             $table->timestamps();
+            $table->unique(['album_id', 'form_id' ]);
         });
     }
 

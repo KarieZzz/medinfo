@@ -43,6 +43,12 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label class="control-label col-sm-3" for="excludedRow">Исключена из текущего альбома:</label>
+                        <div class="col-sm-8">
+                            <div id="excludedRow"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-7">
                             <button type="button" id="saverow" class="btn btn-default">Сохранить изменения</button>
                             <button type="button" id="insertrow" class="btn btn-default">Вставить новую запись</button>
@@ -136,7 +142,7 @@
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
     <script src="{{ asset('/medinfo/admin/tablepicker.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/rcadmin.js') }}"></script>
+    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=001') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -163,6 +169,7 @@
         initRowList();
         initColumnList();
         initFormTableFilter();
+        initButtons();
         initRowActions();
         initColumnActions();
     </script>
