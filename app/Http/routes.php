@@ -72,6 +72,7 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('admin/fetchalbums', 'Admin\AlbumAdminController@fetchAlbums' );
     Route::get('admin/albums/fetchformset/{album}', 'Admin\AlbumAdminController@fetchFormSet' );
     Route::post('admin/albums/create', 'Admin\AlbumAdminController@store');
+    Route::patch('admin/albums/update/{album}', 'Admin\AlbumAdminController@update');
 
     // Менеджер отчетных форм/таблиц
     Route::get('admin/forms', 'Admin\FormAdminController@index');

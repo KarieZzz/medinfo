@@ -131,7 +131,7 @@ initalbumactions = function() {
         var data = setquerystring();
         $.ajax({
             dataType: 'json',
-            url: groupupdate_url + rowid,
+            url: albumupdate_url + rowid,
             method: "PATCH",
             data: data,
             success: function (data, status, xhr) {
@@ -142,8 +142,7 @@ initalbumactions = function() {
                 }
                 agrid.jqxGrid('updatebounddata', 'data');
                 agrid.on("bindingcomplete", function (event) {
-                    var newindex = $('#unitGroupList').jqxGrid('getrowboundindexbyid', rowid);
-                    console.log(newindex);
+                    var newindex = agrid.jqxGrid('getrowboundindexbyid', rowid);
                     agrid.jqxGrid('selectrow', newindex);
 
                 });
