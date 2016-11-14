@@ -58,7 +58,7 @@ class RowColumnAdminController extends Controller
     {
         $this->validate($request, [
                 'row_index' => 'integer',
-                'row_name' => 'required|max:128',
+                'row_name' => 'required|max:256',
                 'row_code' => 'required|max:16',
                 'medstat_code' => 'digits:3',
                 'medinfo_id' => 'integer',
@@ -94,7 +94,7 @@ class RowColumnAdminController extends Controller
         $this->validate($request, [
                 'table_id' => 'required|exists:tables,id',
                 'row_index' => 'integer',
-                'row_name' => 'required|max:128',
+                'row_name' => 'required|max:256',
                 'row_code' => 'required|max:16',
                 'medstat_code' => 'digits:3',
                 'medinfo_id' => 'integer',

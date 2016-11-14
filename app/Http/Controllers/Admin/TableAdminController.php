@@ -84,7 +84,6 @@ class TableAdminController extends Controller
         $table->medinfo_id = empty($request->medinfo_id) ? null : $request->medinfo_id;
         $table->transposed = $request->transposed;
         $result = [];
-        //$exclude = AlbumTableSet::excludeTable($request->excluded, $table->id);
         try {
             $table->save();
             $exclude = AlbumTableSet::excludeTable($request->excluded, $table->id);
