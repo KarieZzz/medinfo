@@ -58,4 +58,6 @@ class Table extends Model
         return $editedtables;
     }
 
+
+
 }

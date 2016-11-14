@@ -98,7 +98,7 @@ inittablelist = function() {
 };
 setquerystring = function() {
     return "&album_name=" + $("#album_name").val() +
-        "&default=" + ($("#default").val() ? 1 :0);
+        "&default=" + ($("#default").val() ? 1 : 0);
 };
 initalbumactions = function() {
     $("#insert").click(function () {

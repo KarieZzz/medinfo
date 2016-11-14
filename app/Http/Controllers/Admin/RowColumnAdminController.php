@@ -6,10 +6,13 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\Album;
 use App\Form;
 use App\Table;
 use App\Row;
+use App\AlbumRowSet;
 use App\Column;
+use App\AlbumColumnSet;
 use App\Cell;
 
 class RowColumnAdminController extends Controller
@@ -37,14 +40,18 @@ class RowColumnAdminController extends Controller
     public function fetchRows(int $table)
     {
         //return Row::OfTable($table)->with('table')->get();
-        return Row::OfTable($table)->with('table')->with(['excluded' => function ($query) {
-            $query->where('album_id', 1);
+        $default_album = Album::Default()->first()->id;
+        return Row::OfTable($table)->with('table')->with(['excluded' => function ($query) use ($default_album) {
+            $query->where('album_id', $default_album);
         }])->get();
     }
 
     public function fetchColumns(int $table)
     {
-        return Column::OfTable($table)->with('table')->get();
+        $default_album = Album::Default()->first()->id;
+        return Column::OfTable($table)->with('table')->with(['excluded' => function ($query) use ($default_album) {
+            $query->where('album_id', $default_album);
+        }])->get();
     }
 
     public function rowUpdate(Row $row, Request $request)
@@ -55,6 +62,7 @@ class RowColumnAdminController extends Controller
                 'row_code' => 'required|max:16',
                 'medstat_code' => 'digits:3',
                 'medinfo_id' => 'integer',
+                'excluded' => 'required|in:1,0',
             ]
         );
         $row->row_index = $request->row_index;
@@ -65,7 +73,12 @@ class RowColumnAdminController extends Controller
         $result = [];
         try {
             $row->save();
-            $result = ['message' => 'Запись id ' . $row->id . ' сохранена'];
+            $exclude = AlbumRowSet::setRow($request->excluded, $row->id);
+            $add = '';
+            if ($exclude === 1) {
+                $add = "Строка удалена из списка исключенных в текущем альбоме форм";
+            }
+            $result = ['message' => 'Запись id ' . $row->id . ' сохранена. ' . $add];
         } catch (\Illuminate\Database\QueryException $e) {
             $errorCode = $e->errorInfo[0];
             // duplicate key value - код ошибки 7 при использовании PostgreSQL
@@ -85,6 +98,7 @@ class RowColumnAdminController extends Controller
                 'row_code' => 'required|max:16',
                 'medstat_code' => 'digits:3',
                 'medinfo_id' => 'integer',
+                'excluded' => 'required|in:1,0',
             ]
         );
         $newrow = new Row;
@@ -132,6 +146,7 @@ class RowColumnAdminController extends Controller
                 'decimal_count' => 'integer',
                 'medstat_code' => 'digits:2',
                 'medinfo_id' => 'integer',
+                'excluded' => 'required|in:1,0',
             ]
         );
         $column->column_index = $request->column_index;
@@ -144,7 +159,12 @@ class RowColumnAdminController extends Controller
         $result = [];
         try {
             $column->save();
-            $result = ['message' => 'Запись id ' . $column->id . ' сохранена'];
+            $exclude = AlbumColumnSet::setColumn($request->excluded, $column->id);
+            $add = '';
+            if ($exclude === 1) {
+                $add = "Графа удалена из списка исключенных в текущем альбоме форм";
+            }
+            $result = ['message' => 'Запись id ' . $column->id . ' сохранена ' . $add];
         } catch (\Illuminate\Database\QueryException $e) {
             $errorCode = $e->errorInfo[0];
             // duplicate key value - код ошибки 7 при использовании PostgreSQL
@@ -166,6 +186,7 @@ class RowColumnAdminController extends Controller
                 'decimal_count' => 'integer',
                 'medstat_code' => 'digits:2',
                 'medinfo_id' => 'integer',
+                'excluded' => 'required|in:1,0',
             ]
         );
         $newcolumn = new Column;

@@ -34,6 +34,7 @@ initdatasources = function() {
         datatype: "json",
         datafields: [
             { name: 'form_code', map: 'form>form_code', type: 'string' },
+            { name: 'excluded', map: 'excluded>0>album_id', type: 'bool' },
             { name: 'id', type: 'int' },
             { name: 'table_index', type: 'int' },
             { name: 'form_id', type: 'int' },
@@ -50,7 +51,7 @@ initdatasources = function() {
     tableDataAdapter = new $.jqx.dataAdapter(tablesource);
 };
 inittablelist = function() {
-    $("#tableList").jqxGrid(
+    tlist.jqxGrid(
         {
             width: '98%',
             height: '90%',
@@ -64,8 +65,8 @@ inittablelist = function() {
             columns: [
                 { text: 'Id', datafield: 'id', width: '30px' },
                 { text: '№ п/п', datafield: 'table_index', width: '50px' },
-/*                { text: 'Форма (Id)', datafield: 'form_id', width: '70px'  },*/
                 { text: 'Код формы', datafield: 'form_code', width: '100px'  },
+                { text: 'Исключена из альбома', datafield: 'excluded', columntype: 'checkbox', width: '90px'  },
                 { text: 'Код таблицы', datafield: 'table_code', width: '100px'  },
                 { text: 'Имя', datafield: 'table_name' , width: '400px'},
                 { text: 'Транспонирование', datafield: 'transposed', width: '70px' },
@@ -73,7 +74,7 @@ inittablelist = function() {
                 { text: 'Мединфо Id', datafield: 'medinfo_id', width: '70px' }
             ]
         });
-    $('#tableList').on('rowselect', function (event) {
+    tlist.on('rowselect', function (event) {
         var row = event.args.row;
         $("#table_index").val(row.table_index);
         $("#table_name").val(row.table_name);
@@ -82,6 +83,7 @@ inittablelist = function() {
         $("#transposed").val( row.transposed == 1 );
         $("#medstat_code").val(row.medstat_code);
         $("#medinfo_id").val(row.medinfo_id);
+        $("#excluded").val(row.excluded != null);
     });
 };
 initformactions = function() {
@@ -101,6 +103,12 @@ initformactions = function() {
         onLabel: 'Да',
         offLabel: 'Нет',
         checked: false });
+    $('#excluded').jqxSwitchButton({
+        height: 31,
+        width: 81,
+        onLabel: 'Да',
+        offLabel: 'Нет',
+        checked: false });
     $("#insert").click(function () {
         var data = "&form_id=" + $("#form_id").val() +
             "&table_index=" + $("#table_index").val() +
@@ -109,6 +117,7 @@ initformactions = function() {
             "&medstat_code=" + $("#medstat_code").val() +
             "&medinfo_id=" + $("#medinfo_id").val() +
             "&transposed=" + ($("#transposed").val() ? 1 :0);
+
         $.ajax({
             dataType: 'json',
             url: '/admin/tables/create',
@@ -130,14 +139,13 @@ initformactions = function() {
         });
     });
     $("#save").click(function () {
-        var row = $('#tableList').jqxGrid('getselectedrowindex');
+        var row = tlist.jqxGrid('getselectedrowindex');
         console.log(row);
         if (row == -1) {
             raiseError("Выберите запись для изменения/сохранения данных");
             return false;
         }
-        var rowid = $("#tableList").jqxGrid('getrowid', row);
-
+        var rowid = tlist.jqxGrid('getrowid', row);
         var data = "&id=" + rowid +
             "&form_id=" + $("#form_id").val() +
             "&table_index=" + $("#table_index").val() +
@@ -145,7 +153,8 @@ initformactions = function() {
             "&table_name=" + $("#table_name").val() +
             "&medstat_code=" + $("#medstat_code").val() +
             "&medinfo_id=" + $("#medinfo_id").val() +
-            "&transposed=" + ($("#transposed").val() ? 1 :0);
+            "&transposed=" + ($("#transposed").val() ? 1 :0) +
+            "&excluded=" + ($("#excluded").val() ? 1 :0);
         $.ajax({
             dataType: 'json',
             url: '/admin/tables/update',
@@ -157,11 +166,10 @@ initformactions = function() {
                 } else {
                     raiseInfo(data.message);
                 }
-                $("#tableList").jqxGrid('updatebounddata', 'data');
-                $("#tableList").on("bindingcomplete", function (event) {
-                    var newindex = $('#tableList').jqxGrid('getrowboundindexbyid', rowid);
-                    console.log(newindex);
-                    $("#tableList").jqxGrid('selectrow', newindex);
+                tlist.jqxGrid('updatebounddata', 'data');
+                tlist.on("bindingcomplete", function (event) {
+                    var newindex = tlist.jqxGrid('getrowboundindexbyid', rowid);
+                    tlist.jqxGrid('selectrow', newindex);
 
                 });
             },
@@ -173,12 +181,12 @@ initformactions = function() {
         });
     });
     $("#delete").click(function () {
-        var row = $('#tableList').jqxGrid('getselectedrowindex');
+        var row = tlist.jqxGrid('getselectedrowindex');
         if (row == -1) {
             raiseError("Выберите запись для удаления");
             return false;
         }
-        var rowid = $("#tableList").jqxGrid('getrowid', row);
+        var rowid = tlist.jqxGrid('getrowid', row);
         $.ajax({
             dataType: 'json',
             url: '/admin/tables/delete/' + rowid,
@@ -190,8 +198,8 @@ initformactions = function() {
                     raiseInfo(data.message);
                     $("#form")[0].reset();
                 }
-                $("#tableList").jqxGrid('updatebounddata', 'data');
-                $("#tableList").jqxGrid('clearselection');
+                tlist.jqxGrid('updatebounddata', 'data');
+                tlist.jqxGrid('clearselection');
             },
             error: function (xhr, status, errorThrown) {
                 raiseError('Ошибка удаления отчетного периода', xhr);

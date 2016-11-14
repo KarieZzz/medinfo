@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\Album;
+use App\AlbumTableSet;
 use App\Form;
 use App\Table;
 use App\Cell;
@@ -27,7 +29,11 @@ class TableAdminController extends Controller
 
     public function fetchTables()
     {
-        return Table::orderBy('form_id')->orderBy('table_index')->with('form')->get();
+        $default_album = Album::Default()->first()->id;
+        return Table::orderBy('form_id')->orderBy('table_index')->with('form')->with(['excluded' => function ($query) use ($default_album) {
+            $query->where('album_id', $default_album);
+        }])->get();
+
         //return Form::all();
     }
 
@@ -66,6 +72,7 @@ class TableAdminController extends Controller
                 'transposed' => 'boolean',
                 'medstat_code' => 'digits:4',
                 'medinfo_id' => 'integer',
+                'excluded' => 'required|in:1,0',
             ]
         );
         $table = Table::find($request->id);
@@ -77,14 +84,19 @@ class TableAdminController extends Controller
         $table->medinfo_id = empty($request->medinfo_id) ? null : $request->medinfo_id;
         $table->transposed = $request->transposed;
         $result = [];
+        //$exclude = AlbumTableSet::excludeTable($request->excluded, $table->id);
         try {
             $table->save();
-            $result = ['message' => 'Запись id ' . $table->id . ' сохранена'];
+            $exclude = AlbumTableSet::excludeTable($request->excluded, $table->id);
+            $add = '';
+            if ($exclude === 1) {
+                $add = "Таблица удалена из списка исключенных в текущем альбоме форм";
+            }
+            $result = ['message' => 'Запись id ' . $table->id . ' сохранена. ' . $add];
         } catch (\Illuminate\Database\QueryException $e) {
-            $errorCode = $e->errorInfo[1];
-            // duplicate key value - код ошибки 7 при использовании PostgreSQL
-            if($errorCode == 7){
-                $result = ['error' => 422, 'message' => 'Запись не сохранена. Дублирование формы/кода таблицы.'];
+            $errorCode = $e->errorInfo[0];
+            if($errorCode == '23505'){
+                $result = ['error' => 422, 'message' => 'Запись не сохранена. Дублирование данных.'];
             }
         }
         return $result;

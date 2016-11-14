@@ -16,4 +16,15 @@ class AlbumColumnSet extends Model
             ->where('album_id', $album);
     }
 
+    public static function setColumn($excluded = false, int $column)
+    {
+        $default_album = Album::Default()->first()->id;
+        if (!$excluded) {
+            $proccessed = self::where('album_id', $default_album)->where('column_id', $column)->delete();
+        } else {
+            $proccessed = self::firstOrCreate([ 'album_id' => $default_album, 'column_id' => $column ]);
+        }
+        return $proccessed;
+    }
+
 }

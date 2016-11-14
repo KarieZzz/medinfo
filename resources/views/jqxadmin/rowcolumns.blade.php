@@ -74,7 +74,7 @@
                     <div class="form-group">
                         <label class="control-label col-sm-3" for="column_name">Имя:</label>
                         <div class="col-sm-8">
-                            <textarea rows="3" class="form-control" id="column_name"></textarea>
+                            <textarea rows="2" class="form-control" id="column_name"></textarea>
                         </div>
                     </div>
                     <div class="form-group">
@@ -105,6 +105,12 @@
                         <label class="control-label col-sm-3" for="column_medinfo_id">Мединфо Id:</label>
                         <div class="col-sm-2">
                             <input type="text" class="form-control" id="column_medinfo_id">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-3" for="excludedColumn">Исключена из текущего альбома:</label>
+                        <div class="col-sm-8">
+                            <div id="excludedColumn"></div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -142,7 +148,7 @@
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
     <script src="{{ asset('/medinfo/admin/tablepicker.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=001') }}"></script>
+    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=002') }}"></script>
 @endpush
 
 @section('inlinejs')

@@ -40,6 +40,7 @@ initdatasources = function() {
             { name: 'id', type: 'int' },
             { name: 'table_id', type: 'int' },
             { name: 'table_code', map: 'table>table_code', type: 'string' },
+            { name: 'excluded', map: 'excluded>0>album_id', type: 'bool' },
             { name: 'column_index', type: 'int' },
             { name: 'column_name', type: 'string' },
             { name: 'content_type', type: 'int' },
@@ -71,9 +72,9 @@ initRowList = function() {
             columns: [
                 { text: 'Id', datafield: 'id', width: '50px' },
                 { text: '№ п/п', datafield: 'row_index', width: '50px' },
-                { text: 'Исключена из альбома', datafield: 'excluded', columntype: 'checkbox', width: '70px'  },
-                { text: 'Код таблицы', datafield: 'table_code', width: '70px'  },
-                { text: 'Код строки', datafield: 'row_code', width: '70px'  },
+                { text: 'Исключена из альбома', datafield: 'excluded', columntype: 'checkbox', width: '90px'  },
+                //{ text: 'Код таблицы', datafield: 'table_code', width: '70px'  },
+                { text: 'Код', datafield: 'row_code', width: '70px'  },
                 { text: 'Имя', datafield: 'row_name' , width: '480px'},
                 { text: 'Код Медстат', datafield: 'medstat_code', width: '80px' },
                 { text: 'Мединфо Id', datafield: 'medinfo_id', width: '70px' }
@@ -105,11 +106,12 @@ initColumnList = function() {
             columns: [
                 { text: 'Id', datafield: 'id', width: '50px' },
                 { text: '№ п/п', datafield: 'column_index', width: '50px' },
-                { text: 'Код таблицы', datafield: 'table_code', width: '70px'  },
+                { text: 'Исключена из альбома', datafield: 'excluded', columntype: 'checkbox', width: '90px'  },
+                //{ text: 'Код таблицы', datafield: 'table_code', width: '70px'  },
                 { text: 'Имя', datafield: 'column_name' , width: '300px'},
-                { text: 'Тип', datafield: 'content_type', width: '100px' },
-                { text: 'Размер', datafield: 'size', width: '100px' },
-                { text: 'Десятичные', datafield: 'decimal_count', width: '100px' },
+                { text: 'Тип', datafield: 'content_type', width: '50px' },
+                { text: 'Размер', datafield: 'size', width: '70px' },
+                { text: 'Десятичные', datafield: 'decimal_count', width: '90px' },
                 { text: 'Код Медстат', datafield: 'medstat_code', width: '70px' },
                 { text: 'Мединфо Id', datafield: 'medinfo_id', width: '70px' }
             ]
@@ -123,6 +125,7 @@ initColumnList = function() {
         $("#decimal_count").val(row.decimal_count);
         $("#column_medstat_code").val(row.medstat_code);
         $("#column_medinfo_id").val(row.medinfo_id);
+        $("#excludedColumn").val(row.excluded != null);
     });
 };
 // функция для обновления связанных объектов после выбора таблицы
@@ -152,7 +155,8 @@ setrowquery = function() {
         "&row_code=" + $("#row_code").val() +
         "&row_name=" + $("#row_name").val() +
         "&medstat_code=" + $("#row_medstat_code").val() +
-        "&medinfo_id=" + $("#row_medinfo_id").val();
+        "&medinfo_id=" + $("#row_medinfo_id").val() +
+        "&excluded=" + ($("#excludedRow").val() ? 1 : 0);
 };
 
 setcolumnquery = function() {
@@ -163,7 +167,8 @@ setcolumnquery = function() {
         "&size=" + $("#size").val() +
         "&decimal_count=" + $("#decimal_count").val() +
         "&medstat_code=" + $("#column_medstat_code").val() +
-        "&medinfo_id=" + $("#column_medinfo_id").val();
+        "&medinfo_id=" + $("#column_medinfo_id").val() +
+        "&excluded=" + ($("#excludedColumn").val() ? 1 : 0);
 };
 
 initButtons = function() {
@@ -173,7 +178,12 @@ initButtons = function() {
         onLabel: 'Да',
         offLabel: 'Нет',
         checked: false });
-
+    $('#excludedColumn').jqxSwitchButton({
+        height: 31,
+        width: 81,
+        onLabel: 'Да',
+        offLabel: 'Нет',
+        checked: false });
 };
 
 // Операции со строками
