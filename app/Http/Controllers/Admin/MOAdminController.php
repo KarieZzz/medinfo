@@ -56,7 +56,7 @@ class MOAdminController extends Controller
         $newunit->aggregate = $request->aggregate;
         $newunit->blocked = $request->blocked;
         $newunit->medinfo_id = empty($request->medinfo_id) ? null : $request->medinfo_id;
-        //$newunit->save();
+        $newunit->save();
         try {
             $newunit->save();
             return ['message' => 'Новая запись создана. Id:' . $newunit->id];

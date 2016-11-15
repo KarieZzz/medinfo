@@ -48,21 +48,22 @@ class TableAdminController extends Controller
                 'medinfo_id' => 'integer',
             ]
         );
-        try {
+        $newtable = Table::create($request->all());
+/*        try {
             $newtable = Table::create($request->all());
             return ['message' => 'Новая запись создана. Id:' . $newtable->id];
         } catch (\Illuminate\Database\QueryException $e) {
-            $errorCode = $e->errorInfo[1];
+            $errorCode = $e->errorInfo[0];
             switch ($errorCode) {
-                case 7:
-                    $message = 'Запись не сохранена. В форме не должно быть двух и более таблиц с повторяющимися кодами.';
+                case '23505':
+                    $message = 'Запись не сохранена. Дублирование данных.';
                     break;
                 default:
                     $message = 'Новая запись не создана. Код ошибки ' . $errorCode . '.';
                     break;
             }
             return ['error' => 422, 'message' => $message];
-        }
+        }*/
     }
 
     public function update(Request $request)
