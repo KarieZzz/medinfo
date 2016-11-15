@@ -246,5 +246,5 @@ return [
     ],
     'control_disabled' => false,
     'miac_emails' => 'nuv@miac-io.ru,zhsa@miac-io.ru',
-    'director_emails' => 'aiz@miac-io.ru,shameev@miac-io.ru,evb@miac-io.ru',
+    'director_emails' => 'shameev@miac-io.ru,evb@miac-io.ru',
 ];
