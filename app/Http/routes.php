@@ -177,6 +177,8 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('lexer/test_celllexer', 'StatDataInput\DataCheckController@test_celllexer');
     Route::get('lexer/test_cellparser', 'StatDataInput\DataCheckController@test_cellparser');
 
+    // mail test
+    Route::get('mailtest', 'StatDataInput\DocumentMessageController@testmail');
 });
 
 // Эксперименты с шаблоном AdminLTE

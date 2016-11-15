@@ -78,4 +78,26 @@ class DocumentMessageController extends Controller
         }
         return $data;
     }
+
+    public function testmail()
+    {
+        $remark = "Тестовое сообщение";
+        $document = Document::find(7011);
+        $form = Form::find($document->form_id);
+        $unit = Unit::find($document->ou_id);
+        $worker = Auth::guard('datainput')->user();
+        $for_mail_body = compact('document', 'remark', 'worker','form', 'unit');
+        Mail::send('emails.documentmessage', $for_mail_body, function ($m) {
+            $m->from('medinfo@miac-io.ru', 'Email оповещение Мединфо');
+            $m->to('shameev@miac-io.ru')->subject('Сообщение/комментарий к отчетному документу Мединфо');
+        });
+        if( count(Mail::failures()) > 0 ) {
+            foreach (Mail::failures as $email_address) {
+                echo 'Не доставлено ' . $email_address;
+            }
+        } else {
+            echo 'Вроде ушло';
+        }
+    }
+
 }
