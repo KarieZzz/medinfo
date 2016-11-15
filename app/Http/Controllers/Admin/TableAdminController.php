@@ -48,9 +48,17 @@ class TableAdminController extends Controller
                 'medinfo_id' => 'integer',
             ]
         );
-        $newtable = Table::create($request->all());
-/*        try {
-            $newtable = Table::create($request->all());
+        $newtable = new Table;
+        $newtable->form_id = $request->form_id;
+        $newtable->table_index = $request->table_index;
+        $newtable->table_code = $request->table_code;
+        $newtable->table_name = $request->table_name;
+        $newtable->medstat_code = empty($request->medstat_code) ? null : $request->medstat_code;
+        $newtable->medinfo_id = empty($request->medinfo_id) ? null : $request->medinfo_id;
+        $newtable->transposed = $request->transposed;
+
+        try {
+            $newtable->save();
             return ['message' => 'Новая запись создана. Id:' . $newtable->id];
         } catch (\Illuminate\Database\QueryException $e) {
             $errorCode = $e->errorInfo[0];
@@ -63,7 +71,7 @@ class TableAdminController extends Controller
                     break;
             }
             return ['error' => 422, 'message' => $message];
-        }*/
+        }
     }
 
     public function update(Request $request)
