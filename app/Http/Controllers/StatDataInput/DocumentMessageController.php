@@ -89,7 +89,7 @@ class DocumentMessageController extends Controller
         $for_mail_body = compact('document', 'remark', 'worker','form', 'unit');
         Mail::send('emails.documentmessage', $for_mail_body, function ($m) {
             $m->from('medinfo@miac-io.ru', 'Email оповещение Мединфо');
-            $m->to('shameev@miac-io.ru')->subject('Сообщение/комментарий к отчетному документу Мединфо');
+            $m->to('shameev@miac-io.ru', 'pea@miac-io.ru')->subject('Сообщение/комментарий к отчетному документу Мединфо');
         });
         if( count(Mail::failures()) > 0 ) {
             foreach (Mail::failures as $email_address) {
