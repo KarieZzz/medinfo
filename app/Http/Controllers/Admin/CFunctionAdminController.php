@@ -38,7 +38,7 @@ class CFunctionAdminController extends Controller
 
     public function fetchControlFunctions(int $table)
     {
-        return CFunction::OfTable($table)->with('table')->get();
+        return CFunction::OfTable($table)->orderBy('updated_at')->with('table')->get();
     }
 
     public function store(Table $table, Request $request)

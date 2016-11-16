@@ -430,10 +430,19 @@ class ControlInterpreter
     public function row_codes($start, $end)
     {
         $top = Row::ofTable($this->table->id)->where('row_code', $start)->first();
+        if (!$top) {
+            throw new InterpreterException("Задана неправильная несуществующая строка в начале диапазона в таблице " . $this->table->table_code, 1005);
+        }
         $bottom = Row::ofTable($this->table->id)->where('row_code', $end)->first();
-        $rows = Row::OfTable($this->table->id)->where('row_index', '>=', $top->row_index)->where('row_index', '<=', $bottom->row_index)->pluck('row_code');
+        if (!$bottom) {
+            throw new InterpreterException("Задана неправильная несуществующая строка в конце диапазона в таблице " . $this->table->table_code, 1005);
+        }
+        $rows = Row::OfTable($this->table->id)->where('row_index', '>=', $top->row_index)->where('row_index', '<=', $bottom->row_index);
+        if (!$rows) {
+            throw new InterpreterException("Задан неправильный диапазон строк. Искомые строки не найдены в таблице " . $this->table->table_code, 1005);
+        }
         //dd($rows);
-        return $rows;
+        return $rows->pluck('row_code');
     }
 
     public function inflate_matrix(array $rows = [], array $columns = [])
