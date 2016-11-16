@@ -2,6 +2,8 @@
 
 namespace App\Medinfo\Lexer;
 
+use App\Medinfo\Lexer\ParserException;
+
 class ControlFunctionParser extends Parser {
 
     public $functionIndex;
@@ -17,7 +19,7 @@ class ControlFunctionParser extends Parser {
             $functionName = FunctionDispatcher::$structNames[$this->functionIndex];
             return $this->$functionName();
         } else {
-            throw new \Exception("Ожидалось объявление функции. Обнаружено " .  $this->input->getTokenName($this->lookahead->type));
+            throw new ParserException("Ожидалось объявление функции. Обнаружено " .  $this->input->getTokenName($this->lookahead->type));
         }
     }
     
@@ -69,8 +71,7 @@ class ControlFunctionParser extends Parser {
         return $this->root;
     }
 
-    // Первый аргумент в функции. В выражении может несколько элементов, разделенных (пока) знаком плюс
-    function expression() {
+    public function interannual() {
         $r = new ControlFunctionParseTree(__FUNCTION__);
         $o = $this->currentNode; // сохраняем текущий узел, что бы вернутся к нему в конце функции
         if ($this->root == null) {
@@ -78,6 +79,22 @@ class ControlFunctionParser extends Parser {
         } else {
             $this->currentNode->addChild($r);
         }
+        $this->currentNode = $r;
+        $this->match(ControlFunctionLexer::NAME);
+        $this->match(ControlFunctionLexer::LPARENTH);
+        $this->diapason(); // Первый аргумент - диапазон ячеек
+        $this->match(ControlFunctionLexer::COMMA);
+        $this->match(ControlFunctionLexer::NUMBER); // Второй аргумент - пороговое значение отклонения
+        $this->match(ControlFunctionLexer::RPARENTH);
+        $this->currentNode = $o;
+        return $this->root;
+    }
+
+    // Первый аргумент в функции. В выражении может несколько элементов, разделенных (пока) знаком плюс
+    public function expression() {
+        $r = new ControlFunctionParseTree(__FUNCTION__);
+        $o = $this->currentNode;
+        $this->currentNode->addChild($r);
         $this->currentNode = $r;
 
         if ($this->lookahead->type == ControlFunctionLexer::OPERATOR) {
@@ -99,14 +116,32 @@ class ControlFunctionParser extends Parser {
         //$this->currentNode = $r;
         if ($this->lookahead->type == ControlFunctionLexer::NUMBER ) {
             $this->number();
-        } elseif ($this->lookahead->type == ControlFunctionLexer::FORMADRESS ) {
+        } elseif ($this->lookahead->type == ControlFunctionLexer::CELLADRESS ) {
             $this->celladress();
         } elseif ($this->lookahead->type == ControlFunctionLexer::NAME && $this->lookahead->text == 'сумма') {
             $this->summfunction();
         } elseif ($this->lookahead->type == ControlFunctionLexer::NAME && $this->lookahead->text == 'меньшее') {
             $this->minmaxfunctions();
         } else {
-            throw new \Exception("Ожидалось число, адрес ячейки или функция 'сумма'. Найдено: " . $this->lookahead);
+            throw new ParserException("Ожидалось число, адрес ячейки или функции 'сумма', 'меньшее'. Найдено: " . $this->lookahead, 1);
+        }
+
+        //$this->currentNode = $o;
+    }
+
+    public function diapasonelement() {
+        //$r = new ControlFunctionParseTree(__FUNCTION__);
+        //$o = $this->currentNode;
+        //$this->currentNode->addChild($r);
+        //$this->currentNode = $r;
+        if ($this->lookahead->type == ControlFunctionLexer::FORMADRESS ) {
+            $this->celladress();
+        } elseif ($this->lookahead->type == ControlFunctionLexer::NAME && $this->lookahead->text == 'сумма') {
+            $this->summfunction();
+        } elseif ($this->lookahead->type == ControlFunctionLexer::NAME && $this->lookahead->text == 'меньшее') {
+            $this->minmaxfunctions();
+        } else {
+            throw new ParserException("Ожидалось адрес ячейки или диапазон ячеек. Найдено: " . $this->lookahead, 1);
         }
 
         //$this->currentNode = $o;
@@ -143,10 +178,11 @@ class ControlFunctionParser extends Parser {
         $this->currentNode->addChild($r);
         $this->currentNode = $r;
 
-        $this->match(ControlFunctionLexer::FORMADRESS);
+        $this->match(ControlFunctionLexer::CELLADRESS);
+/*        $this->match(ControlFunctionLexer::FORMADRESS);
         $this->match(ControlFunctionLexer::TABLEADRESS);
         $this->match(ControlFunctionLexer::ROWADRESS);
-        $this->match(ControlFunctionLexer::COLUMNADRESS);
+        $this->match(ControlFunctionLexer::COLUMNADRESS);*/
 
         $this->currentNode = $o;
     }
@@ -172,12 +208,19 @@ class ControlFunctionParser extends Parser {
         $this->currentNode->addChild($r);
         $this->currentNode = $r;
 
-        $this->celladress();
+        $this->diapasonelement();
+        while ($this->lookahead->type == ControlFunctionLexer::OPERATOR ) {
+            $this->operator();
+            $this->element();
+        }
+
+
+/*        $this->celladress();
         while ($this->lookahead->type == ControlFunctionLexer::COMMA ) {
             //while ($this->lookahead['type'] == CellLexer::COMMA ) {
             $this->match(ControlFunctionLexer::COMMA);
             $this->celladress();
-        }
+        }*/
 
         $this->currentNode = $o;
     }
@@ -196,6 +239,23 @@ class ControlFunctionParser extends Parser {
 
         $this->currentNode = $o;
     }
+
+    public function diapason()
+    {
+        $r = new ControlFunctionParseTree(__FUNCTION__);
+        $o = $this->currentNode;
+        $this->currentNode->addChild($r);
+        $this->currentNode = $r;
+
+        $this->match(ControlFunctionLexer::NAME);
+        $this->match(ControlFunctionLexer::LPARENTH);
+        $this->cellarray();
+        $this->match(ControlFunctionLexer::RPARENTH);
+
+        $this->currentNode = $o;
+    }
+
+
 
     public function minmaxfunctions()
     {
@@ -280,8 +340,9 @@ class ControlFunctionParser extends Parser {
         if ($this->lookahead->type == ControlFunctionLexer::MULTIPLY ) {
             $this->all_rc();
         } elseif ($this->lookahead->type == ControlFunctionLexer::NUMBER) {
-
             $this->iteration_range();
+        } else {
+            throw new ParserException("Ожидался знак '*', число или диапазон чисел Найдено: " . $this->lookahead, 1 );
         }
 
         $this->currentNode = $o;
@@ -321,9 +382,10 @@ class ControlFunctionParser extends Parser {
                 $this->currentNode = $o;
                 $this->iteration_range();
             }
+        } else {
+            throw new ParserException("Ожидалось число или диапазон чисел Найдено: " . $this->lookahead, 1 );
         }
     }
-
 }
 
 ?>

@@ -1,21 +1,16 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: shameev
- * Date: 27.10.2016
- * Time: 21:04
- */
 
 namespace App\Medinfo\Lexer;
 
 
 class FunctionDispatcher
 {
-    const COMPARE   = 1;
-    const DEPENDENCY = 2;
-    const PRESENCE  = 3;
-    const ABSENS    = 4;
-    const CEIL      = 5;
+    const COMPARE       = 1;
+    const DEPENDENCY    = 2;
+    const PRESENCE      = 3;
+    const ABSENS        = 4;
+    const CEIL          = 5;
+    const INTERANNUAL   = 6;
 
     const INTERPRETERNS = 'App\\Medinfo\\Lexer\\';
 
@@ -26,6 +21,7 @@ class FunctionDispatcher
         "наличие" => self::PRESENCE ,
         "отсутствие" => self::ABSENS,
         "кратность" => self::CEIL,
+        "межгодовой" => self::INTERANNUAL,
     ];
 
     public static $structNames = [
@@ -35,6 +31,7 @@ class FunctionDispatcher
         "presens",
         "absence",
         "ceil",
+        "interannual",
     ];
 
     public static $interpreterNames = [
@@ -44,6 +41,7 @@ class FunctionDispatcher
         "Presens",
         "Absence",
         "Ceil",
+        "InterannualControlInterpreter",
     ];
 
     public static function functionIndex($function_name)
@@ -54,12 +52,10 @@ class FunctionDispatcher
             case 'наличе':
             case 'отсутствие':
             case 'кратность':
+            case 'межгодовой':
                 return self::$functionNames[$function_name];
             default :
                 throw new \Exception("Неизвестная функция контроля");
         }
     }
-
-
-
 }

@@ -20,6 +20,7 @@ class ControlFunctionLexer extends Lexer {
     const ROWADRESS     = 15;
     const COLUMNADRESS  = 16;
     const NUMBER        = 17;
+    const CELLADRESS    = 18;
 
     public static $tokenNames = [
         "n/a",
@@ -40,6 +41,7 @@ class ControlFunctionLexer extends Lexer {
         "ROWADRESS",
         "COLUMNADRESS",
         "NUMBER",
+        "CELLADRESS",
     ];
     
     public function getTokenName($x)
@@ -142,13 +144,19 @@ class ControlFunctionLexer extends Lexer {
                 case $this->c >= '0' && $this->c <= '9':
                     return $this->number();
                 case 'Ф':
+                case 'Т':
+                case 'С':
+                case 'Г':
+                    return $this->cellAdress();
+
+/*                case 'Ф':
                     return $this->formAdress();
                 case 'Т':
                     return $this->tableAdress();
                 case 'С':
                     return $this->rowAdress();
                 case 'Г':
-                    return $this->columnAdress();
+                    return $this->columnAdress();*/
                 default :
                     throw new \Exception("Неверный символ: " . $this->c);
             }
@@ -241,6 +249,37 @@ class ControlFunctionLexer extends Lexer {
         } while ($this->isCODE());
         return $this->tokenstack->push(self::COLUMNADRESS, $buf);
     }
+
+    public function cellAdress()
+    {
+        $buf = '';
+        if ($this->c == 'Ф') {
+            do {
+                $buf .= $this->c;
+                $this->consume();
+            } while ($this->isFORMCODE());
+        }
+        if ($this->c == 'Т') {
+            do {
+                $buf .= $this->c;
+                $this->consume();
+            } while ($this->isCODE());
+        }
+        if ($this->c == 'С') {
+            do {
+                $buf .= $this->c;
+                $this->consume();
+            } while ($this->isROWCODE());
+        }
+        if ($this->c == 'Г') {
+            do {
+                $buf .= $this->c;
+                $this->consume();
+            } while ($this->isCODE());
+        }
+        return $this->tokenstack->push(self::CELLADRESS, $buf);
+    }
+
     /** WS : (' '|'\t'|'\n'|'\r')* ; // ignore any whitespace */
     public function ws()
     {

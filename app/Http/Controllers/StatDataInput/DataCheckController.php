@@ -76,18 +76,16 @@ class DataCheckController extends Controller
 
     }
 
-
-
-
     public function test_celllexer()
     {
         //$input = '[ F30T1100, F12T2000, F121T1010, F162T3000 ]';
-        $input = '[ Ф30Т1100, Ф12Т2000, Ф121Т1010 ]';
+        //$input = '[ Ф30Т1100, Ф12Т2000, Ф121Т1010 ]';
+        $input = "сравнение(меньшее(С16, Ф32Т2120С18Г3),  Ф32Т2120С22Г3, >=, группы(*), графы())";
 
-        $lexer = new CellLexer($input);
+        $lexer = new ControlFunctionLexer($input);
         $token = $lexer->nextToken();
         echo '<pre>';
-        while($token->type != CellLexer::EOF_TYPE) {
+        while($token->type != ControlFunctionLexer::EOF_TYPE) {
             echo $token . "\n";
             $token = $lexer->nextToken();
         }
