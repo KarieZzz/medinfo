@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: shameev
- * Date: 20.10.2016
- * Time: 9:38
- */
 
 namespace App\Medinfo\Lexer;
 use App\Document;
@@ -38,16 +32,28 @@ class CompareControlInterpreter extends ControlInterpreter
         $this->rewrite_summfunctions($this->lpExpressionRoot);
         $this->rewrite_summfunctions($this->rpExpressionRoot);
 
+
         if ($this->iterationMode) {
             foreach($this->iterationRange as $iteration) {
                 //var_dump($iteration);
+                $this->currentIterationLink = $iteration;
                 $lpRootCopy = unserialize(serialize($this->lpExpressionRoot)); // clone не работает, нужно разобраться
                 $rpRootCopy = unserialize(serialize($this->rpExpressionRoot));
-
-                $this->lpStack[] = $this->fillIncompleteLinks($lpRootCopy, $iteration);
-                $this->rpStack[] = $this->fillIncompleteLinks($rpRootCopy, $iteration);
+                //dd($lpRootCopy);
+                //$this->rewrite_minmaxfunctions($lpRootCopy);
+                //$this->rewrite_minmaxfunctions($rpRootCopy);
+                $this->lpStack[] = $this->fillIncompleteLinks($lpRootCopy);
+                $this->rpStack[] = $this->fillIncompleteLinks($rpRootCopy);
             }
+        } else {
+            $this->currentIterationLink = 0;
+            //$this->rewrite_minmaxfunctions($this->lpExpressionRoot);
+            //$this->rewrite_minmaxfunctions($this->rpExpressionRoot);
+            $this->lpStack[] = $this->fillIncompleteLinks($this->lpExpressionRoot);
+            $this->rpStack[] = $this->fillIncompleteLinks($this->rpExpressionRoot);
+
         }
+        //dd($this->lpStack);
     }
 
     public function prepareReadable()
@@ -56,8 +62,6 @@ class CompareControlInterpreter extends ControlInterpreter
         $rp = $this->writeReadableCellAdresses($this->rpExpressionRoot);
         $this->readableFormula = implode('', $lp) . ' ' . $this->boolean . ' ' . implode('', $rp);
         $this->results['boolean_sign'] = $this->boolean;
-        //$this->results['left_part_formula'] = implode('', $lp);
-        //$this->results['right_part_formula'] = implode('', $rp);
         $this->results['formula'] = $this->readableFormula;
     }
 
@@ -70,56 +74,46 @@ class CompareControlInterpreter extends ControlInterpreter
             $this->results['not_in_scope'] = true;
             return $this->results;
         }
-        $result = &$this->results['iterations'];
         $this->results['iteration_mode'] = $this->iterationMode;
         if ($this->iterationMode) {
             for($i = 0; $i < count($this->iterationRange); $i++) {
-                $this->currentIteration = $i;
-                $result[$i]['cells'] = [];
-                $this->currentArgument = 1;
-                $this->rewrite_celladresses($this->lpStack[$i]);
-                $this->currentArgument = 2;
-                $this->rewrite_celladresses($this->rpStack[$i]);
-                $lp_result = $this->calculate($this->lpStack[$i]);
-                $rp_result = $this->calculate($this->rpStack[$i]);
-                if (count($this->errorStack) > 0) {
-                    $result[$i]['errors'] = $this->errorStack;
-                    $this->errors = array_merge($this->errors, $this->errorStack);
-                    $this->errorStack = [];
-                }
-                $result[$i]['code'] = $this->iterationRange[$i];
-                $result[$i]['left_part_value'] = $lp_result;
-                $result[$i]['right_part_value'] = $rp_result;
-                $result[$i]['deviation'] = abs(round($rp_result-$lp_result, 3));
-                $result[$i]['valid'] = $this->chekoutRule($lp_result, $rp_result, $this->boolean);
-                $this->results['valid'] = $this->results['valid'] && $result[$i]['valid'];
+                $this->execIteration($i);
             }
         } else {
-            $this->currentIteration = 0;
-            $result[0]['cells'] = [];
-            $this->currentArgument = 1;
-            $this->reduce_minmaxfunctions($this->lpExpressionRoot);
-            $this->rewrite_celladresses($this->lpExpressionRoot);
-            $this->currentArgument = 2;
-            $this->reduce_minmaxfunctions($this->rpExpressionRoot);
-            $this->rewrite_celladresses($this->rpExpressionRoot);
-            $lp_result = $this->calculate($this->lpExpressionRoot);
-            $rp_result = $this->calculate($this->rpExpressionRoot);
-            if (count($this->errorStack) > 0) {
-                $result[0]['errors'] = $this->errorStack;
-                $this->errors = array_merge($this->errors, $this->errorStack);
-                $this->errorStack = [];
-            }
-            $result[0]['left_part_value'] = $lp_result;
-            $result[0]['right_part_value'] = $rp_result;
-            $result[0]['deviation'] = abs(round($rp_result-$lp_result, 3));
-            $result[0]['valid'] = $this->chekoutRule($lp_result, $rp_result, $this->boolean);
-            $this->results['valid'] = $result[0]['valid'];
+            $this->execIteration(0);
         }
         if (count($this->errors) > 0) {
             $this->results['errors'] = $this->errors;
         }
         return $this->results;
+    }
+
+    public function execIteration($i)
+    {
+        $this->currentIteration = $i;
+        $r = &$this->results['iterations'][$i];
+        $r['cells'] = [];
+        $this->currentArgument = 1;
+        $this->reduce_minmaxfunctions($this->lpStack[$i]);
+        $this->rewrite_celladresses($this->lpStack[$i]);
+        $this->currentArgument = 2;
+        $this->reduce_minmaxfunctions($this->rpStack[$i]);
+        $this->rewrite_celladresses($this->rpStack[$i]);
+        $lp_result = $this->calculate($this->lpStack[$i]);
+        $rp_result = $this->calculate($this->rpStack[$i]);
+        if (count($this->errorStack) > 0) {
+            $r['errors'] = $this->errorStack;
+            $this->errors = array_merge($this->errors, $this->errorStack);
+            $this->errorStack = [];
+        }
+        if ($this->iterationMode) {
+            $r['code'] = $this->iterationRange[$i];
+        }
+        $r['left_part_value'] = $lp_result;
+        $r['right_part_value'] = $rp_result;
+        $r['deviation'] = abs(round($rp_result-$lp_result, 3));
+        $r['valid'] = $this->chekoutRule($lp_result, $rp_result, $this->boolean);
+        $this->results['valid'] = $this->results['valid'] && $r['valid'];
     }
 
 }

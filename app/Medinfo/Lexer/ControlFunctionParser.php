@@ -208,19 +208,19 @@ class ControlFunctionParser extends Parser {
         $this->currentNode->addChild($r);
         $this->currentNode = $r;
 
-        $this->diapasonelement();
+/*        $this->diapasonelement();
         while ($this->lookahead->type == ControlFunctionLexer::OPERATOR ) {
             $this->operator();
             $this->element();
-        }
+        }*/
 
 
-/*        $this->celladress();
+        $this->celladress();
         while ($this->lookahead->type == ControlFunctionLexer::COMMA ) {
             //while ($this->lookahead['type'] == CellLexer::COMMA ) {
             $this->match(ControlFunctionLexer::COMMA);
             $this->celladress();
-        }*/
+        }
 
         $this->currentNode = $o;
     }
@@ -341,9 +341,10 @@ class ControlFunctionParser extends Parser {
             $this->all_rc();
         } elseif ($this->lookahead->type == ControlFunctionLexer::NUMBER) {
             $this->iteration_range();
-        } else {
-            throw new ParserException("Ожидался знак '*', число или диапазон чисел Найдено: " . $this->lookahead, 1 );
         }
+/*        else {
+            throw new ParserException("Ожидался знак '*', число или диапазон чисел. Найдено: " . $this->lookahead, 1 );
+        }*/
 
         $this->currentNode = $o;
     }
@@ -382,9 +383,10 @@ class ControlFunctionParser extends Parser {
                 $this->currentNode = $o;
                 $this->iteration_range();
             }
-        } else {
-            throw new ParserException("Ожидалось число или диапазон чисел Найдено: " . $this->lookahead, 1 );
         }
+        /*else {
+            throw new ParserException("Ожидалось число или диапазон чисел Найдено: " . $this->lookahead, 1 );
+        }*/
     }
 }
 

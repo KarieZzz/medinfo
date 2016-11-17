@@ -51,21 +51,26 @@ class DataCheckController extends Controller
     public function func_parser()
     {
 
-        $i = "сравнение(меньшее(Ф32Т2120С16Г3, Ф32Т2120С18Г3),  Ф32Т2120С22Г3, >=, группы(*), графы())";
+        //$i = "сравнение(сумма(Ф32Т2120С1Г3:Ф32Т2120С18Г3),  Ф32Т2120С22Г3, >=, группы(*), графы())";
+        //$i = "сравнение(сумма(С1Г3:С18Г3),  С22Г3, <=, группы(*), графы())";
+        $i = "сравнение(меньшее(С16, С18),  Ф32Т2120С22Г3, <=, группы(*), графы(3))";
+        //$i = "сравнение(сумма(Ф32Т2120С16Г3:Ф32Т2120С18Г3),  Ф32Т2120С22Г3, >=, группы(*), графы())";
 
         //try {
             //$table = Table::find(10);
-            $table = Table::find(113); // т. 3000 12 формы
+            $table = Table::find(115); // т. 2120 32 формы
+            //$table = Table::find(113); // т. 3000 12 формы
             //$document = Document::find(7011);
             //$document = Document::find(7062);
             //$document = Document::find(7758); // 12 форма
             $document = Document::find(10634); // 32 форма
             $lexer = new ControlFunctionLexer($i);
             $parser = new ControlFunctionParser($lexer);
-        $r = $parser->run();
-        //dd($r);
+            $r = $parser->run();
+            //dd($r);
             $interpret = new CompareControlInterpreter($r, $table);
-        dd( $interpret->exec($document));
+            //dd($interpret);
+            dd( $interpret->exec($document));
             $result = $interpret->exec($document) ? 'Правильно' : 'Ошибка';
             echo 'Результат выполнения контроля: ' . $result;
             //dd($interpret);

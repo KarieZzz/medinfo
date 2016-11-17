@@ -172,8 +172,7 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('reports/by_mo', 'ReportController@consolidateIndexes');
 
     // Работа с lexer-parser
-    Route::get('lexer/test_lexer', 'StatDataInput\DataCheckController@func_parser');
-    Route::get('lexer/test_parser', 'StatDataInput\DataCheckController@test_parser');
+    Route::get('lexer/test_parser', 'StatDataInput\DataCheckController@func_parser');
     Route::get('lexer/test_celllexer', 'StatDataInput\DataCheckController@test_celllexer');
     Route::get('lexer/test_cellparser', 'StatDataInput\DataCheckController@test_cellparser');
 

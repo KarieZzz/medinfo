@@ -15,7 +15,7 @@ class InterpreterException extends Exception
 
     private $error_code;
 
-    public function __construct($message, int $error_code)
+    public function __construct($message, int $error_code = 0)
     {
         parent::__construct($message);
         $this->error_code = $error_code;
