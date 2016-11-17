@@ -53,8 +53,9 @@ class DataCheckController extends Controller
 
         //$i = "сравнение(сумма(Ф32Т2120С1Г3:Ф32Т2120С18Г3),  Ф32Т2120С22Г3, >=, группы(*), графы())";
         //$i = "сравнение(сумма(С1Г3:С18Г3),  С22Г3, <=, группы(*), графы())";
-        $i = "сравнение(меньшее(С16, С18),  Ф32Т2120С22Г3, <=, группы(*), графы(3))";
+        //$i = "сравнение(меньшее(С11, С16:С18, С20),  Ф32Т2120С22Г3, <=, группы(*), графы(3,4))";
         //$i = "сравнение(сумма(Ф32Т2120С16Г3:Ф32Т2120С18Г3),  Ф32Т2120С22Г3, >=, группы(*), графы())";
+        $i = "межгодовой(диапазон(С11, С16:С18, С20),  20)";
 
         //try {
             //$table = Table::find(10);
@@ -67,7 +68,7 @@ class DataCheckController extends Controller
             $lexer = new ControlFunctionLexer($i);
             $parser = new ControlFunctionParser($lexer);
             $r = $parser->run();
-            //dd($r);
+            dd($r);
             $interpret = new CompareControlInterpreter($r, $table);
             //dd($interpret);
             dd( $interpret->exec($document));

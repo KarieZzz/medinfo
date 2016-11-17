@@ -84,7 +84,7 @@ class ControlFunctionParser extends Parser {
         $this->match(ControlFunctionLexer::LPARENTH);
         $this->diapason(); // Первый аргумент - диапазон ячеек
         $this->match(ControlFunctionLexer::COMMA);
-        $this->match(ControlFunctionLexer::NUMBER); // Второй аргумент - пороговое значение отклонения
+        $this->threshold(); // Второй аргумент - пороговое значение отклонения
         $this->match(ControlFunctionLexer::RPARENTH);
         $this->currentNode = $o;
         return $this->root;
@@ -129,24 +129,6 @@ class ControlFunctionParser extends Parser {
         //$this->currentNode = $o;
     }
 
-    public function diapasonelement() {
-        //$r = new ControlFunctionParseTree(__FUNCTION__);
-        //$o = $this->currentNode;
-        //$this->currentNode->addChild($r);
-        //$this->currentNode = $r;
-        if ($this->lookahead->type == ControlFunctionLexer::FORMADRESS ) {
-            $this->celladress();
-        } elseif ($this->lookahead->type == ControlFunctionLexer::NAME && $this->lookahead->text == 'сумма') {
-            $this->summfunction();
-        } elseif ($this->lookahead->type == ControlFunctionLexer::NAME && $this->lookahead->text == 'меньшее') {
-            $this->minmaxfunctions();
-        } else {
-            throw new ParserException("Ожидалось адрес ячейки или диапазон ячеек. Найдено: " . $this->lookahead, 1);
-        }
-
-        //$this->currentNode = $o;
-    }
-
     public function operator()
     {
         $r = new ControlFunctionParseTree(__FUNCTION__);
@@ -166,10 +148,23 @@ class ControlFunctionParser extends Parser {
         $this->currentNode->addChild($r);
         $this->currentNode = $r;
 
-        $this->match(ControlFunctionLexer::NUMBER); // Пока предусмотрено только сложение и вычитание
+        $this->match(ControlFunctionLexer::NUMBER);
 
         $this->currentNode = $o;
     }
+
+    public function threshold()
+    {
+        $r = new ControlFunctionParseTree(__FUNCTION__);
+        $o = $this->currentNode;
+        $this->currentNode->addChild($r);
+        $this->currentNode = $r;
+
+        $this->match(ControlFunctionLexer::NUMBER);
+
+        $this->currentNode = $o;
+    }
+
 
     public function celladress()
     {
@@ -208,20 +203,18 @@ class ControlFunctionParser extends Parser {
         $this->currentNode->addChild($r);
         $this->currentNode = $r;
 
-/*        $this->diapasonelement();
-        while ($this->lookahead->type == ControlFunctionLexer::OPERATOR ) {
-            $this->operator();
-            $this->element();
-        }*/
-
-
-        $this->celladress();
+/*        $this->celladress();
         while ($this->lookahead->type == ControlFunctionLexer::COMMA ) {
             //while ($this->lookahead['type'] == CellLexer::COMMA ) {
             $this->match(ControlFunctionLexer::COMMA);
             $this->celladress();
-        }
+        }*/
 
+        if ($this->lookahead->type == ControlFunctionLexer::MULTIPLY ) {
+            $this->all_rc();
+        } elseif ($this->lookahead->type == ControlFunctionLexer::CELLADRESS) {
+            $this->cellarray_element();
+        }
         $this->currentNode = $o;
     }
 
@@ -388,6 +381,34 @@ class ControlFunctionParser extends Parser {
             throw new ParserException("Ожидалось число или диапазон чисел Найдено: " . $this->lookahead, 1 );
         }*/
     }
+
+    public function cellarray_element() {
+        $r = new ControlFunctionParseTree(__FUNCTION__);
+        $o = $this->currentNode;
+        $this->currentNode->addChild($r);
+        $this->currentNode = $r;
+        $this->currentNode->rule = 'celladress';
+        $this->match(ControlFunctionLexer::CELLADRESS);
+
+        if ($this->lookahead->type == ControlFunctionLexer::COMMA ) {
+            $this->match(ControlFunctionLexer::COMMA);
+            $this->currentNode = $o;
+            $this->cellarray_element();
+        } elseif ($this->lookahead->type == ControlFunctionLexer::COLON) {
+            $this->currentNode->rule = 'cellrange';
+            $this->match(ControlFunctionLexer::COLON);
+            $this->match(ControlFunctionLexer::CELLADRESS);
+            if ($this->lookahead->type == ControlFunctionLexer::COMMA ) {
+                $this->match(ControlFunctionLexer::COMMA);
+                $this->currentNode = $o;
+                $this->cellarray_element();
+            }
+        }
+        /*else {
+            throw new ParserException("Ожидалось число или диапазон чисел Найдено: " . $this->lookahead, 1 );
+        }*/
+    }
+
 }
 
 ?>
