@@ -90,6 +90,25 @@ class ControlFunctionParser extends Parser {
         return $this->root;
     }
 
+    public function fold() {
+        $r = new ControlFunctionParseTree(__FUNCTION__);
+        $o = $this->currentNode; // сохраняем текущий узел, что бы вернутся к нему в конце функции
+        if ($this->root == null) {
+            $this->root = $r;
+        } else {
+            $this->currentNode->addChild($r);
+        }
+        $this->currentNode = $r;
+        $this->match(ControlFunctionLexer::NAME);
+        $this->match(ControlFunctionLexer::LPARENTH);
+        $this->diapason(); // Первый аргумент - диапазон проверяемых ячеек
+        $this->match(ControlFunctionLexer::COMMA);
+        $this->number(); // Второй аргумент - делитель для проверки кратности
+        $this->match(ControlFunctionLexer::RPARENTH);
+        $this->currentNode = $o;
+        return $this->root;
+    }
+
     // Первый аргумент в функции. В выражении может несколько элементов, разделенных (пока) знаком плюс или минус
     public function expression() {
         $r = new ControlFunctionParseTree(__FUNCTION__);

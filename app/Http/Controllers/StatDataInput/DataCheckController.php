@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\StatDataInput;
 
 use App\Document;
+use App\Medinfo\Lexer\FoldControlInterpreter;
 use App\Medinfo\Lexer\InterannualControlInterpreter;
 use Illuminate\Http\Request;
 
@@ -52,12 +53,14 @@ class DataCheckController extends Controller
     public function func_parser()
     {
 
+
         //$i = "сравнение(сумма(Ф32Т2120С1Г3:Ф32Т2120С18Г3),  Ф32Т2120С22Г3, >=, группы(*), графы())";
         //$i = "сравнение(сумма(С1Г3:С18Г3),  С22Г3, <=, группы(*), графы())";
-        $i = "сравнение(меньшее(С11, С16:С18, С20),  Ф32Т2120С22Г3, <=, группы(*), графы(3))";
+        //$i = "сравнение(меньшее(С11, С16:С18, С20),  Ф32Т2120С22Г3, <=, группы(*), графы(3))";
         //$i = "сравнение(сумма(С11, С16:С18, С20) - сумма(Ф30Т1100С11Г3, Ф30Т1100С13Г3:Ф30Т1100С15Г3)- сумма(Ф30Т1100С11Г3, Ф30Т1100С13Г3:Ф30Т1100С15Г3),  Ф32Т2120С22Г3, <=, группы(*), графы(3))";
         //$i = "сравнение(сумма(Ф32Т2120С16Г3:Ф32Т2120С18Г3),  Ф32Т2120С22Г3, >=, группы(*), графы())";
         //$i = "межгодовой(диапазон(С11Г3, С16Г3:С18Г3, С20Г3, С32Г3, С16Г3:С18Г3),  20)";
+        $i = "кратность(диапазон(С11Г3, С16Г3:С18Г3, С20Г3, С32Г3, С16Г3:С18Г3),  .26)";
 
         //try {
             //$table = Table::find(10);
@@ -71,8 +74,9 @@ class DataCheckController extends Controller
             $parser = new ControlFunctionParser($lexer);
             $r = $parser->run();
             //dd($r);
-            $interpret = new CompareControlInterpreter($r, $table);
+            //$interpret = new CompareControlInterpreter($r, $table);
             //$interpret = new InterannualControlInterpreter($r, $table);
+            $interpret = new FoldControlInterpreter($r, $table);
             //dd($interpret);
             dd( $interpret->exec($document));
             $result = $interpret->exec($document) ? 'Правильно' : 'Ошибка';
@@ -87,9 +91,12 @@ class DataCheckController extends Controller
 
     public function test_celllexer()
     {
+        //$c = '0';
+        //dd($c >= 'а' && $c <= 'я');
         //$input = '[ F30T1100, F12T2000, F121T1010, F162T3000 ]';
         //$input = '[ Ф30Т1100, Ф12Т2000, Ф121Т1010 ]';
-        $input = "сравнение(меньшее(С16, Ф32Т2120С18Г3),  Ф32Т2120С22Г3, >=, группы(*), графы())";
+        //$input = "сравнение(меньшее(С16, Ф32Т2120С18Г3),  Ф32Т2120С22Г3, >=, группы(*), графы())";
+        $input = "кратность(диапазон(С11Г3, С16Г3:С18Г3, С20Г3, С32Г3, С16Г3:С18Г3), .25 )";
 
         $lexer = new ControlFunctionLexer($input);
         $token = $lexer->nextToken();

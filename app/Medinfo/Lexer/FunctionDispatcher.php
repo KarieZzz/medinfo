@@ -9,7 +9,7 @@ class FunctionDispatcher
     const DEPENDENCY    = 2;
     const PRESENCE      = 3;
     const ABSENS        = 4;
-    const CEIL          = 5;
+    const FOLD          = 5;
     const INTERANNUAL   = 6;
 
     const INTERPRETERNS = 'App\\Medinfo\\Lexer\\';
@@ -20,7 +20,7 @@ class FunctionDispatcher
         "зависимость" => self::DEPENDENCY,
         "наличие" => self::PRESENCE ,
         "отсутствие" => self::ABSENS,
-        "кратность" => self::CEIL,
+        "кратность" => self::FOLD,
         "межгодовой" => self::INTERANNUAL,
     ];
 
@@ -30,7 +30,7 @@ class FunctionDispatcher
         "dependency",
         "presens",
         "absence",
-        "ceil",
+        "fold",
         "interannual",
     ];
 
@@ -40,7 +40,7 @@ class FunctionDispatcher
         "DependencyControlInterpreter",
         "Presens",
         "Absence",
-        "CeilControlInterpreter",
+        "FoldControlInterpreter",
         "InterannualControlInterpreter",
     ];
 

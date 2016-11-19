@@ -134,15 +134,17 @@ class ControlFunctionLexer extends Lexer {
                     return $this->tokenstack->push(self::MULTIPLY, '*');
                 case '/' :
                     $this->consume();
-                    return $this->tokenstack->push(self::DIVIDE, '*');
+                    return $this->tokenstack->push(self::DIVIDE, '/');
                 case '=' :
                 case '>' :
                 case '<' :
                     return $this->boolean_sign();
+                case '.' :
+                case $this->c >= '1' && $this->c <= '9':
+                    return $this->number();
                 case $this->c >= 'а' && $this->c <= 'я':
                     return $this->function_name();
-                case $this->c >= '0' && $this->c <= '9':
-                    return $this->number();
+                //case $this->c === '0':
                 case 'Ф':
                 case 'Т':
                 case 'С':
