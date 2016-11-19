@@ -40,6 +40,15 @@ class Document extends Model
             ->where('form_id', $form);
     }
 
+    public function scopeOfTUPF($query, $type, $ou, $period, $form)
+    {
+        return $query
+            ->where('dtype', $type)
+            ->where('ou_id', $ou)
+            ->where('period_id', $period)
+            ->where('form_id', $form);
+    }
+
     public function scopeOfUnit($query, $ou)
     {
         return $query->where('ou_id', $ou);

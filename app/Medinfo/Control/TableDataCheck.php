@@ -20,8 +20,6 @@ use App\Medinfo\Lexer\FunctionDispatcher;
 class TableDataCheck
 {
 
-
-
     public static function execute(Document $document, Table $table, $force_reload = false)
     {
         if (ControlHelper::CashedProtocolActual($document->id, $table->id) && !$force_reload) {

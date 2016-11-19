@@ -412,7 +412,7 @@ class TableControlMM
             $row_protocol['boolean_readable'] = self::$boolean_readable[self::$boolean_sign[$crow->boolean_sign]];
             // В случае межформенного контроля получаем id "контролирующего" документа
             if ($rule_type == 3) {
-                $controlling_document = Document::OfUPF($this->document->ou_id, $this->document->period_id, $crow->form_id)->first();
+                $controlling_document = Document::OfTUPF($this->document->dtype, $this->document->ou_id, $this->document->period_id, $crow->form_id)->first();
                 if (is_null($controlling_document)) {
                     $right_part_value = 0;
                     $right_part_formula .= ' Контролирующий документ не существует (' . self::$number_sign[$crow->number_sign] . 'ф.'

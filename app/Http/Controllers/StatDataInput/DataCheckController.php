@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\StatDataInput;
 
 use App\Document;
+use App\Medinfo\Lexer\InterannualControlInterpreter;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -53,9 +54,10 @@ class DataCheckController extends Controller
 
         //$i = "сравнение(сумма(Ф32Т2120С1Г3:Ф32Т2120С18Г3),  Ф32Т2120С22Г3, >=, группы(*), графы())";
         //$i = "сравнение(сумма(С1Г3:С18Г3),  С22Г3, <=, группы(*), графы())";
-        //$i = "сравнение(меньшее(С11, С16:С18, С20),  Ф32Т2120С22Г3, <=, группы(*), графы(3,4))";
+        $i = "сравнение(меньшее(С11, С16:С18, С20),  Ф32Т2120С22Г3, <=, группы(*), графы(3))";
+        //$i = "сравнение(сумма(С11, С16:С18, С20) - сумма(Ф30Т1100С11Г3, Ф30Т1100С13Г3:Ф30Т1100С15Г3)- сумма(Ф30Т1100С11Г3, Ф30Т1100С13Г3:Ф30Т1100С15Г3),  Ф32Т2120С22Г3, <=, группы(*), графы(3))";
         //$i = "сравнение(сумма(Ф32Т2120С16Г3:Ф32Т2120С18Г3),  Ф32Т2120С22Г3, >=, группы(*), графы())";
-        $i = "межгодовой(диапазон(С11, С16:С18, С20),  20)";
+        //$i = "межгодовой(диапазон(С11Г3, С16Г3:С18Г3, С20Г3, С32Г3, С16Г3:С18Г3),  20)";
 
         //try {
             //$table = Table::find(10);
@@ -64,12 +66,13 @@ class DataCheckController extends Controller
             //$document = Document::find(7011);
             //$document = Document::find(7062);
             //$document = Document::find(7758); // 12 форма
-            $document = Document::find(10634); // 32 форма
+            $document = Document::find(7015); // 32 форма
             $lexer = new ControlFunctionLexer($i);
             $parser = new ControlFunctionParser($lexer);
             $r = $parser->run();
-            dd($r);
+            //dd($r);
             $interpret = new CompareControlInterpreter($r, $table);
+            //$interpret = new InterannualControlInterpreter($r, $table);
             //dd($interpret);
             dd( $interpret->exec($document));
             $result = $interpret->exec($document) ? 'Правильно' : 'Ошибка';

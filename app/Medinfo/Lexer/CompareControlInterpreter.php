@@ -29,26 +29,20 @@ class CompareControlInterpreter extends ControlInterpreter
             $this->setIterationRange($this->root->children[4]->children[0]->children);
         }
         $this->prepareReadable();
-        $this->rewrite_summfunctions($this->lpExpressionRoot);
-        $this->rewrite_summfunctions($this->rpExpressionRoot);
-
-
+        $translater = new ExpressionTranslater($this->form, $this->table);
+        $translater->translate($this->lpExpressionRoot);
+        $translater->translate($this->rpExpressionRoot);
         if ($this->iterationMode) {
             foreach($this->iterationRange as $iteration) {
-                //var_dump($iteration);
                 $this->currentIterationLink = $iteration;
                 $lpRootCopy = unserialize(serialize($this->lpExpressionRoot)); // clone не работает, нужно разобраться
                 $rpRootCopy = unserialize(serialize($this->rpExpressionRoot));
-                //dd($lpRootCopy);
-                //$this->rewrite_minmaxfunctions($lpRootCopy);
-                //$this->rewrite_minmaxfunctions($rpRootCopy);
                 $this->lpStack[] = $this->fillIncompleteLinks($lpRootCopy);
                 $this->rpStack[] = $this->fillIncompleteLinks($rpRootCopy);
+
             }
         } else {
             $this->currentIterationLink = 0;
-            //$this->rewrite_minmaxfunctions($this->lpExpressionRoot);
-            //$this->rewrite_minmaxfunctions($this->rpExpressionRoot);
             $this->lpStack[] = $this->fillIncompleteLinks($this->lpExpressionRoot);
             $this->rpStack[] = $this->fillIncompleteLinks($this->rpExpressionRoot);
 
@@ -114,6 +108,40 @@ class CompareControlInterpreter extends ControlInterpreter
         $r['deviation'] = abs(round($rp_result-$lp_result, 3));
         $r['valid'] = $this->chekoutRule($lp_result, $rp_result, $this->boolean);
         $this->results['valid'] = $this->results['valid'] && $r['valid'];
+    }
+
+    protected function completeAdress($celladressNode)
+    {
+        $celladress = $celladressNode->tokens[0]->text;
+        $matches = ExpressionTranslater::parseCelladress($celladress);
+        //dd($matches);
+        if (!$matches['f']) {
+            $matches['f'] = $this->form->form_code;
+        }
+        if (!$matches['t']) {
+            $matches['t'] = $this->table->table_code;
+        }
+        switch (true) {
+            case !$matches['r'] && $this->iterationMode == 1 :
+                $matches['r'] = $this->currentIterationLink;
+                break;
+            case !$matches['c'] && $this->iterationMode == 2 :
+                $matches['c'] = $this->currentIterationLink;
+                break;
+            case !$matches['r'] && $this->iterationMode == 2 :
+                throw new InterpreterException("Неполная ссылка по строке при режиме итерации по графам по ячейке " . $celladress);
+                break;
+            case !$matches['c'] && $this->iterationMode == 1 :
+                throw new InterpreterException("Неполная ссылка по графе при режиме итерации по строкам по ячейке " . $celladress);
+                break;
+            case (!$matches['r'] || !$matches['c']) && $this->iterationMode == null :
+                throw new InterpreterException("Неполная ссылка при отсутствии режима итерации. Адрес ячейки " . $celladress);
+                break;
+        }
+
+        $celladress = 'Ф'. $matches['f'] . 'Т' . $matches['t'] . 'С'. $matches['r'] . 'Г' . $matches['c'];
+        $celladressNode->tokens[0]->text = $celladress;
+        return $celladress;
     }
 
 }

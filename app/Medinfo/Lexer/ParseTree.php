@@ -12,7 +12,7 @@ namespace App\Medinfo\Lexer;
 abstract class ParseTree
 {
     public $rule;
-    public $tokens = [];
+    public $tokens;
     public $children; // normalized child list
 
     public function __construct($rule)
@@ -36,6 +36,5 @@ abstract class ParseTree
         }
         $this->children[] = $pt;
     }
-
 
 }

@@ -24,6 +24,10 @@ class ControlInterpreter
     public $errorStack = [];
     public $unitScope = []; // область приложения функции (группы учреждений)
     public $readableFormula; // отображение формулы контроля в более удобочитаемом виде
+    //public $pad = '&thinsp;'; // тонкая шпация
+    //public $pad = '&#8197;'; // четверть круглой
+    //public $pad = '&#8202;'; // волосяная шпация
+    //public $pad = '&ensp;'; // полукруглая шпация
     public $pad = ' ';
     public $results; // Протокол выполнения функции
     public $iterationMode; // режим перебора - без перебора(null) по строкам(1) и графам(2) при внутритабличном контроле
@@ -85,49 +89,54 @@ class ControlInterpreter
         $expession_elements = [];
         foreach($expression->children as $element) {
             switch ($element->rule) {
-                case  'celladress' :
-                    $expession_elements = array_merge( $expession_elements, $this->rewriteCodes($element->tokens));
+                case 'celladress' :
+                    $expession_elements = array_merge( $expession_elements, $this->rewriteCodes($element->tokens[0]));
                     break;
                 case 'operator' :
                 case 'number' :
-                    $expession_elements[] = $this->pad . $element->tokens[0]->text . $this->pad;
+                    $expession_elements[] = ' ' . $element->tokens[0]->text . ' ';
                     break;
                 case 'summfunction' :
-                    $expession_elements[] = 'сумма';
-                    $expession_elements[] = '(';
-                    $expession_elements = array_merge(
-                        $expession_elements,
-                        $this->rewriteCodes($element->children[0]->children[0]->tokens),
-                        [' по '],
-                        $this->rewriteCodes($element->children[0]->children[1]->tokens));
-                    $expession_elements[] = ')';
+                    $cellarray = $element->children[0];
+                    $func_name = 'сумма(';
+                    $function_elements = $this->writeReadableCellArray($cellarray);
+                    $expession_elements[] = $func_name . implode(', ', $function_elements) . ')';
                     break;
                 case 'minmaxfunctions' :
-                    $expession_elements[] = 'меньшее';
-                    $expession_elements[] = '(';
-                    $arguments = [];
-                    foreach($element->children[0]->children as $arg) {
-                        $arguments[]  = $this->rewriteCodes($arg->tokens);
-                    }
-                    $arg_text = [];
-                    foreach($arguments as $arg) {
-                        $arg_texts[] = implode('', $arg);
-                    }
-
-                    $expession_elements[] = implode(', ', $arg_texts);
-                    $expession_elements[] = ')';
-                    //dd($expession_elements);
+                    $cellarray = $element->children[0];
+                    $func_name = 'меньшее(';
+                    $function_elements = $this->writeReadableCellArray($cellarray);
+                    $expession_elements[] = $func_name . implode(', ', $function_elements) . ')';
+                    break;
+                case 'diapason' :
+                    $cellarray = $element->children[0];
+                    $func_name = 'диапазон(';
+                    $function_elements = $this->writeReadableCellArray($cellarray);
+                    $expession_elements[] = $func_name . implode(', ', $function_elements) . ')';
                     break;
             }
         }
         return $expession_elements;
     }
 
-    public function rewriteCodes($elements)
+    protected function writeReadableCellArray(ParseTree $cellarray)
+    {
+        $function_elements = [];
+        foreach($cellarray->children as $arrayelement) {
+            if ($arrayelement->rule == 'cellrange') {
+                //dd($arrayelement);
+                $function_elements[] = implode($this->rewriteCodes($arrayelement->tokens[0])) . ' по ' . implode($this->rewriteCodes($arrayelement->tokens[2]));
+            } elseif ($arrayelement->rule == 'celladress') {
+                $function_elements[] = implode($this->rewriteCodes($arrayelement->tokens[0]));
+            }
+        }
+        return $function_elements;
+    }
+
+    public function rewriteCodes($adress_token)
     {
         $expession_elements = [];
-        $matches = $this->parseCelladress($celladress = $elements[0]->text);
-        //dd($matches);
+        $matches = ExpressionTranslater::parseCelladress($adress_token->text);
         $form_code = $matches['f'];
         $table_code = $matches['t'];
         $row_code = $matches['r'];
@@ -157,7 +166,7 @@ class ControlInterpreter
         return $expession_elements;
     }
 
-    protected function parseCelladress($celladress)
+/*    protected function parseCelladress($celladress)
     {
         $correct = preg_match('/(?:Ф(?P<f>[\w.-]*))?(?:Т(?P<t>[\w.-]*))?(?:С(?P<r>[\w.-]*))?(?:Г(?P<c>\d{1,2}))?/', $celladress, $matches);
         if (!$correct) {
@@ -167,7 +176,7 @@ class ControlInterpreter
             $matches['c'] = '';
         }
         return $matches;
-    }
+    }*/
 
     public function setIterationRange(array $iteration_nodes)
     {
@@ -186,7 +195,7 @@ class ControlInterpreter
                     $start = $node->tokens[0]->text;
                     $end = $node->tokens[2]->text;
                     if ($this->iterationMode == 1) {
-                        $codes = $this->row_codes($start, $end)->toArray();
+                        $codes = ExpressionTranslater::row_codes($start, $end, $this->table);
                         //dd($codes);
                     } elseif ($this->iterationMode == 2) {
                         $i = (int)$start;
@@ -203,63 +212,37 @@ class ControlInterpreter
 
     public function fillIncompleteLinks($expression)
     {
-       if (isset($expression->children)) {
-           foreach($expression->children as $element) {
-               //dd($element);
-               if ($element->rule == 'celladress') {
-                   $element->tokens[0]->text = $this->completeAdress($element);
-                   /*if ($element->rule == 'celladress' && empty(mb_substr($element->tokens[$token_index]->text, 1))) {
-                       $element->tokens[$token_index]->text = $prefix . $link;
-                   }*/
-               }
-               if (count($element->children > 0)) {
-                   //dd(count($element->children));
-                   $this->fillIncompleteLinks($element);
-               }
+       if (!isset($expression->children)) { return $expression; }
+       foreach($expression->children as $element) {
+           if ($element->rule == 'celladress') {
+               $this->completeAdress($element);
            }
+           $this->fillIncompleteLinks($element);
        }
-        //dd($expression);
         return $expression;
     }
 
     protected function completeAdress($celladressNode)
     {
-        $f = $this->form->form_code;
-        $t = $this->table->table_code;
         $celladress = $celladressNode->tokens[0]->text;
-        $matches = $this->parseCelladress($celladress);
+        $matches = ExpressionTranslater::parseCelladress($celladress);
         //dd($matches);
         if (!$matches['f']) {
-            $matches['f'] = $f;
+            $matches['f'] = $this->form->form_code;
         }
         if (!$matches['t']) {
-            $matches['t'] = $t;
+            $matches['t'] = $this->table->table_code;
         }
-        switch (true) {
-            case !$matches['r'] && $this->iterationMode == 1 :
-                $matches['r'] = $this->currentIterationLink;
-                break;
-            case !$matches['c'] && $this->iterationMode == 2 :
-                $matches['c'] = $this->currentIterationLink;
-                break;
-            case !$matches['r'] && $this->iterationMode == 2 :
-                throw new InterpreterException("Неполная ссылка по строке при режиме итерации по графам по ячейке " . $celladress);
-                break;
-            case !$matches['c'] && $this->iterationMode == 1 :
-                throw new InterpreterException("Неполная ссылка по графе при режиме итерации по строкам по ячейке " . $celladress);
-                break;
-            case (!$matches['r'] || !$matches['c']) && $this->iterationMode == null :
-                throw new InterpreterException("Неполная ссылка при отсутствии режима итерации. Адрес ячейки " . $celladress);
-                break;
+        if ((!$matches['r'] || !$matches['c']) && $this->iterationMode == null) {
+            throw new InterpreterException("Неполная ссылка на строку/графу при отсутствии режима итерации. Адрес ячейки " . $celladress);
         }
-
         $celladress = 'Ф'. $matches['f'] . 'Т' . $matches['t'] . 'С'. $matches['r'] . 'Г' . $matches['c'];
+        $celladressNode->tokens[0]->text = $celladress;
         return $celladress;
     }
 
     public function calculate(ParseTree $expression)
     {
-        //dd($expression);
         $eval_stack = [];
         foreach($expression->children as $element) {
             if ($element->rule == 'operator' || $element->rule == 'number' ) {
@@ -267,7 +250,6 @@ class ControlInterpreter
             }
         }
         $inline = implode('', $eval_stack). ';';
-        //dd($inline);
         $result = eval('return ' . $inline);
         return $result;
     }
@@ -352,8 +334,15 @@ class ControlInterpreter
         //for ($i = 0; $i < $elementcount; $i++) {
         foreach ( $expression->children as $key => $element) {
             if ($element->rule == 'minmaxfunctions') {
-                foreach($element->children[0]->children as $celladress) {
-                    $valuenodes[] = $this->reduce_celladress($celladress);
+                $cellarray = $element->children[0];
+                //dd($cellarray);
+                foreach($cellarray->children as $celladress) {
+                    try {
+                        $valuenodes[] = $this->reduce_celladress($celladress);
+                    }
+                    catch (InterpreterException $e) {
+                        $this->errorStack[] = ['code' => $e->getErrorCode(), 'message' => $e->getMessage() ];
+                    }
                 }
                 $minmaxfunctions_ids[] = $key;
             }
@@ -367,7 +356,7 @@ class ControlInterpreter
         foreach ($valuenodes as $valuenode) {
             $values[] = (float)$valuenode->tokens[0]->text;
         }
-        // TODO: дописать для выбора функции "большее". Пока только минимальное значение из масива ячеек
+        // TODO: дописать для выбора функции "большее". Пока только минимальное значение из масcива ячеек
         if (count($values) > 0) {
             $minvalue = min($values);
             $newnode = new ControlFunctionParseTree('number');
@@ -391,6 +380,7 @@ class ControlInterpreter
             }
         }
         $this->currentArgument = null;
+        //dd($expression);
     }
 
     public function reduce_summfunction(ParseTree $sf, $operator)
@@ -402,7 +392,7 @@ class ControlInterpreter
 
 
         //$left_upper_corner_row = mb_substr($sf->children[0]->children[0]->tokens[2]->text, 1);
-        $left_upper_corner = $this->parseCelladress($sf->children[0]->children[0]->tokens[0]->text);
+        $left_upper_corner = ExpressionTranslater::parseCelladress($sf->children[0]->children[0]->tokens[0]->text);
 
         $left_upper_corner_row = $left_upper_corner['r'];
         //dd($left_upper_corner_row);
@@ -414,7 +404,7 @@ class ControlInterpreter
         if ( !$left_upper_corner_column) $incomplete_column_adresses = true;
         //dd($left_upper_corner_column);
 
-        $right_down_corner = $this->parseCelladress($sf->children[0]->children[1]->tokens[0]->text);
+        $right_down_corner = ExpressionTranslater::parseCelladress($sf->children[0]->children[1]->tokens[0]->text);
 
         //$right_down_corner_row = mb_substr($sf->children[0]->children[1]->tokens[2]->text, 1);
         $right_down_corner_row = $right_down_corner['r'];
@@ -432,7 +422,7 @@ class ControlInterpreter
             throw new InterpreterException("Указан неправильный диапазон в функции 'сумма'. Допускаются неполные ссылки либо по строкам, либо по графам, но не одновременно");
         }
         if (!$incomplete_row_adresses) {
-            $rows = $this->row_codes($left_upper_corner_row, $right_down_corner_row)->toArray();
+            $rows = ExpressionTranslater::row_codes($left_upper_corner_row, $right_down_corner_row, $this->table);
         }
 
         if (!$incomplete_column_adresses) {
@@ -441,7 +431,7 @@ class ControlInterpreter
                 $columns[] = $i++;
             }
         }
-        $cell_adresses = $this->inflate_matrix($rows, $columns);
+        $cell_adresses = ExpressionTranslater::inflate_matrix($rows, $columns);
         foreach($cell_adresses as $cell_adress) {
             $plus = new ControlFunctionParseTree('operator');
             $plus->addToken(new Token(ControlFunctionLexer::OPERATOR, $operator));
@@ -461,7 +451,7 @@ class ControlInterpreter
 
     public function reduce_celladress(ParseTree $celladress)
     {
-        $parsed_adress = $this->parseCelladress($celladress->tokens[0]->text);
+        $parsed_adress = ExpressionTranslater::parseCelladress($celladress->tokens[0]->text);
         if (empty($parsed_adress['f']) || empty($parsed_adress['t']) || empty($parsed_adress['c']) || empty($parsed_adress['c'] ) ) {
             throw new InterpreterException("На этом этапе интерпретации функции контроля не допускаются неполные ссылки. Адрес ячейки " . $celladress->tokens[0]->text);
         }
@@ -474,9 +464,10 @@ class ControlInterpreter
         } else {
             $form = Form::OfCode($parsed_adress['f'])->first();
             if (is_null($form)) {
+                ExpressionTranslater::numberizeCelladress($celladress);
                 throw new InterpreterException("Форма " . $parsed_adress['f'] . " не существует", 1001);
             }
-            $document = Document::OfUPF($this->document->ou_id, $this->document->period_id, $form->id)->first();
+            $document = Document::OfTUPF($this->document->dtype, $this->document->ou_id, $this->document->period_id, $form->id)->first();
             if (is_null($document)) {
                 $celladress->rule = 'number';
                 $celladress->tokens = [];
@@ -493,6 +484,7 @@ class ControlInterpreter
         } else {
             $table = Table::OfFormTableCode($f_id, $parsed_adress['t'])->first();
             if (is_null($table)) {
+                ExpressionTranslater::numberizeCelladress($celladress);
                 throw new InterpreterException("Таблицы " . $parsed_adress['t'] . " нет в составе формы " . $parsed_adress['f'], 1002);
             }
             $t_id = $table->id;
@@ -500,11 +492,16 @@ class ControlInterpreter
 
         $row = Row::ofTable($t_id)->where('row_code', $parsed_adress['r'])->first();
         if (is_null($row)) {
-            throw new InterpreterException("Строка с кодом " . $parsed_adress['r'] . " не найдена в таблице (" . $table->table_code . ") \"" . $table->table_name . "\" в форме " . $form->form_code, 1005);
+            ExpressionTranslater::numberizeCelladress($celladress);
+            throw new InterpreterException("Строка с кодом " . $parsed_adress['r'] . " не найдена в таблице (" . $table->table_code . ") \"" . $table->table_name
+                . "\" в форме " . $form->form_code, 1005);
         }
         $column = Column::ofTable($t_id)->where('column_index', $parsed_adress['c'])->first();
+
         if (is_null($column)) {
-            throw new InterpreterException("Графа с индексом " . $parsed_adress['c'] . " не найдена в таблице " . $table->table_code, 1006);
+            ExpressionTranslater::numberizeCelladress($celladress);
+            throw new InterpreterException("Графа с индексом " . $parsed_adress['c'] . " не найдена в таблице " . $table->table_code . ") \"" . $table->table_name
+                . "\" в форме " . $this->form->form_code, 1006);
         }
         $cell = Cell::ofDTRC($doc_id, $t_id, $row->id, $column->id)->first();
 
@@ -514,129 +511,7 @@ class ControlInterpreter
         }
         //$this->results['iterations'][$this->currentIteration]['cells'][] = ['row' => $row->id, 'column' => $column->id ];
         is_null($cell) ? $value = 0 : $value = $cell->value;
-        if (is_null($value)) $value = 0; // NULL значения трактуются как равные нулю
-        $celladress->rule = 'number';
-        $celladress->tokens = [];
-        $celladress->addToken(new Token(ControlFunctionLexer::NUMBER, $value));
-        return $celladress;
-    }
-
-    /*public function reduce_celladress(ParseTree $celladress)
-    {
-        $form_code = mb_substr($celladress->tokens[0]->text, 1);
-        $table_code = mb_substr($celladress->tokens[1]->text, 1);
-        // Проверяем относится ли редуцируемая ячейка к текущей таблице
-        if ($this->form->form_code == $form_code || empty($form_code)) {
-            $doc_id = $this->document->id;
-            $form = $this->form;
-            $f_id = $this->form->id;
-        } else {
-            $form = Form::OfCode($form_code)->first();
-            if (is_null($form)) {
-                throw new InterpreterException("Форма " . $form_code . " не существует", 1001);
-            }
-
-            $document = Document::OfUPF($this->document->ou_id, $this->document->period_id, $form->id)->first();
-            if (is_null($document)) {
-                $celladress->rule = 'number';
-                $celladress->tokens = [];
-                $celladress->addToken(new Token(ControlFunctionLexer::NUMBER, 0));
-                $this->results['iterations'][$this->currentIteration]['documents_absent'] =  ['ou_id' => $this->document->ou_id, 'period_id' => $this->document->period_id, 'form_id' => $form->id];
-                return $celladress;
-            }
-            $doc_id = $document->id;
-            $f_id = $form->id;
-        }
-        if ($this->table->table_code == $table_code || empty($table_code)) {
-            $t_id = $this->table->id;
-            $table = $this->table;
-        } else {
-            $table = Table::OfFormTableCode($f_id, $table_code)->first();
-            if (is_null($table)) {
-                throw new InterpreterException("Таблицы " . $table_code . " нет в составе формы " . $form_code, 1002);
-            }
-            $t_id = $table->id;
-        }
-        $row_code = mb_substr($celladress->tokens[2]->text, 1);
-        if (!$row_code) {
-            throw new InterpreterException("Неполная ссылка (при отстутствии функции итерации по строкам). Не указан код строки. Получить значение ячейки невозможно", 1003);
-        }
-        $column_index = mb_substr($celladress->tokens[3]->text, 1);
-        if (!$column_index) {
-            throw new InterpreterException("Не указан индекс графы (при отстутствии функции итерации по графам). Получить значение ячейки невозможно", 1004);
-        }
-
-        $row = Row::ofTable($t_id)->where('row_code', $row_code)->first();
-        if (is_null($row)) {
-            throw new InterpreterException("Строка с кодом " . $row_code . " не найдена в таблице (" . $table->table_code . ") \"" . $table->table_name . "\" в форме " . $form->form_code, 1005);
-        }
-        $column = Column::ofTable($t_id)->where('column_index', $column_index)->first();
-        if (is_null($column)) {
-            throw new InterpreterException("Графа с индексом " . $column_index . " не найдена в таблице " . $t_id, 1006);
-        }
-        $cell = Cell::ofDTRC($doc_id, $t_id, $row->id, $column->id)->first();
-
-        // Записываем только левую (или единственную) часть сравнения
-        if($this->currentArgument == 1) {
-            $this->results['iterations'][$this->currentIteration]['cells'][] = ['row' => $row->id, 'column' => $column->id ];
-        }
-        //$this->results['iterations'][$this->currentIteration]['cells'][] = ['row' => $row->id, 'column' => $column->id ];
-        is_null($cell) ? $value = 0 : $value = $cell->value;
-        if (is_null($value)) $value = 0; // NULL значения трактуются как равные нулю
-        $celladress->rule = 'number';
-        $celladress->tokens = [];
-        $celladress->addToken(new Token(ControlFunctionLexer::NUMBER, $value));
-        return $celladress;
-    }*/
-
-    public function row_codes($start, $end)
-    {
-        //dd($this->table->id);
-        $top = Row::ofTable($this->table->id)->where('row_code', $start)->first();
-        if (!$top) {
-            throw new InterpreterException("Задана несуществующая строка в начале диапазона в таблице " . $this->table->table_code, 1005);
-        }
-        $bottom = Row::ofTable($this->table->id)->where('row_code', $end)->first();
-        if (!$bottom) {
-            throw new InterpreterException("Задана несуществующая строка в конце диапазона в таблице " . $this->table->table_code, 1005);
-        }
-        $rows = Row::OfTable($this->table->id)->where('row_index', '>=', $top->row_index)->where('row_index', '<=', $bottom->row_index);
-        if (!$rows) {
-            throw new InterpreterException("Задан неправильный диапазон строк. Искомые строки не найдены в таблице " . $this->table->table_code, 1005);
-        }
-        //dd($rows);
-        return $rows->pluck('row_code');
-    }
-
-    public function inflate_matrix(array $rows = [], array $columns = [], $f = null, $t = null)
-    {
-        // TODO: На этом этапе можно дополнить неполные ссылки
-        $matrix = [];
-        if (!$f) {
-            $f = $this->form->form_code;
-        }
-        if (!$t) {
-            $t = $this->table->table_code;
-        }
-        if (count($columns) === 0) { // Неполная ссылка по графам
-            foreach($rows as $row) {
-                //$matrix[] = [ $f, $t, $r , 'Г' ];
-                $matrix[] = 'Ф'. $f . 'Т' . $t . 'С' . $row . 'Г' ;
-            }
-        } elseif(count($rows) === 0) { // неполная ссылка по строкам
-            foreach($columns as $column) {
-                //$matrix[] = [ $f, $t, 'С' , $c ];
-                $matrix[] = 'Ф'. $f . 'Т' . $t . 'С' . 'Г' . $column;
-            }
-        } else {
-            foreach($rows as $row) {
-                foreach($columns as $column) {
-                    //$matrix[] = [ $f, $t, $r , $c ];
-                    $matrix[] = 'Ф'. $f . 'Т' . $t . 'С'. $row . 'Г' . $column;
-                }
-            }
-        }
-        return $matrix;
+        return ExpressionTranslater::numberizeCelladress($celladress, $value);
     }
 
 }

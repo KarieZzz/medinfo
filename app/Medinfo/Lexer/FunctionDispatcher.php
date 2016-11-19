@@ -40,7 +40,7 @@ class FunctionDispatcher
         "DependencyControlInterpreter",
         "Presens",
         "Absence",
-        "Ceil",
+        "CeilControlInterpreter",
         "InterannualControlInterpreter",
     ];
 
