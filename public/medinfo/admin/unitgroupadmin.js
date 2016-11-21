@@ -23,6 +23,7 @@ initdatasources = function() {
             { name: 'id', type: 'int' },
             { name: 'parent_id', type: 'int' },
             { name: 'parent', map: 'parent>group_name', type: 'string' },
+            { name: 'group_code', type: 'string' },
             { name: 'group_name', type: 'string' },
             { name: 'slug', type: 'string' }
         ],
@@ -60,9 +61,10 @@ inittablelist = function() {
             sortable: true,
             columns: [
                 { text: 'Id Группы', datafield: 'id', width: '70px' },
-                { text: 'Входит в', datafield: 'parent', width: '120px' },
+                { text: 'Входит в', datafield: 'parent', width: '90px' },
+                { text: 'Код', datafield: 'group_code' , width: '70px'},
                 { text: 'Наименование', datafield: 'group_name' , width: '400px'},
-                { text: 'Псевдоним', datafield: 'slug' , width: '400px'}
+                { text: 'Псевдоним', datafield: 'slug' , width: '200px'}
             ]
         });
     $('#unitGroupList').on('rowselect', function (event) {
@@ -72,6 +74,7 @@ inittablelist = function() {
         //console.log(row.id);
         membersource.url = member_url + currentgroup;
         $("#memberList").jqxGrid('updatebounddata');
+        $("#group_code").val(row.group_code);
         $("#group_name").val(row.group_name);
         $("#slug").val(row.slug);
         $("#parent_id").val(row.parent_id);
@@ -103,6 +106,7 @@ inittablelist = function() {
 };
 setquerystring = function() {
     return "&group_name=" + $("#group_name").val() +
+        "&group_code=" + $("#group_code").val() +
         "&slug=" + $("#slug").val() +
         "&parent_id=" + $("#parent_id").val();
 };

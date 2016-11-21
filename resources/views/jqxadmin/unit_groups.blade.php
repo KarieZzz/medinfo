@@ -26,8 +26,14 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label class="control-label col-sm-3" for="group_code">Код группы:</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="group_code" />
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label class="control-label col-sm-3" for="slug">Псевдоним:</label>
-                        <div class="col-sm-8">
+                        <div class="col-sm-6">
                             <input type="text" class="form-control" id="slug" />
                         </div>
                     </div>
@@ -87,7 +93,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/unitgroupadmin.js?v=0001') }}"></script>
+    <script src="{{ asset('/medinfo/admin/unitgroupadmin.js?v=0002') }}"></script>
 @endpush
 
 @section('inlinejs')
