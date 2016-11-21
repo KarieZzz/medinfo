@@ -50,7 +50,8 @@ class DocumentDashboardController extends Controller
 
     public function fetch_mo_hierarchy($parent = 0)
     {
-        return UnitTree::getSimpleTree($parent);
+        //return UnitTree::getSimpleTree($parent);
+        return UnitTree::getMoTree($parent);
     }
 
     public function fetchdocuments(Request $request)

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class UnitGroup extends Model
 {
     //
-    protected $fillable = ['parent_id', 'group_name', 'slug'];
+    protected $fillable = ['parent_id', 'group_code', 'group_name', 'slug'];
 
     public function members()
     {

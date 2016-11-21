@@ -39,12 +39,14 @@ class UnitGroupAdminController extends Controller
     {
         $this->validate($request, [
                 'parent_id' => 'exists:unit_groups,id',
+                'group_code' => 'required|max:32|unique:unit_groups',
                 'group_name' => 'required|max:128|unique:unit_groups',
                 'slug' => 'max:128|unique:unit_groups',
             ]
         );
         $newgroup = new UnitGroup();
         $newgroup->parent_id = empty($request->parent_id) ? null : $request->parent_id;
+        $newgroup->group_name = $request->group_code;
         $newgroup->group_name = $request->group_name;
         $newgroup->slug = empty($request->slug) ?  str_slug($newgroup->group_name) : $request->slug;
         $newgroup->save();
@@ -69,11 +71,13 @@ class UnitGroupAdminController extends Controller
     {
         $this->validate($request, [
                 'parent_id' => 'exists:unit_groups,id',
+                'group_code' => 'required|max:32',
                 'group_name' => 'required|max:128',
-                'slug' => 'required|max:128|unique:unit_groups',
+                'slug' => 'required|max:128',
             ]
         );
         $group->parent_id = empty($request->parent_id) ? null : $request->parent_id;
+        $group->group_name = $request->group_code;
         $group->group_name = $request->group_name;
         $group->slug = $request->slug;
         $result = [];

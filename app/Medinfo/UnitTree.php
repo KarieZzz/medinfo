@@ -26,21 +26,42 @@ class UnitTree
 
     public static function getSimpleTree($parent = 0)
     {
-        if ($parent == 0) {
-            $mo_tree = \DB::select("select id, parent_id, unit_code, unit_name from mo_hierarchy where blocked = 0 ORDER BY unit_code");
-        } else {
+        //if ($parent == 0) {
+            //$mo_tree = \DB::select("select id, parent_id, unit_code, unit_name from mo_hierarchy where blocked = 0 ORDER BY unit_code");
+        //} else {
             $mo_tree = self::getChilds($parent);
-            $this_one = \DB::select("select id, parent_id, unit_code, unit_name from mo_hierarchy where id = $parent");
+            $this_one = \DB::select("SELECT id, parent_id, unit_code, unit_name FROM mo_hierarchy WHERE id = $parent");
             $mo_tree = array_merge($mo_tree, $this_one);
-        }
+        //}
         return $mo_tree;
     }
 
     public static function getChilds($parent)
     {
-        $lev_query = "select id, parent_id, unit_code, unit_name from mo_hierarchy where parent_id = $parent";
+        $lev_query = "SELECT id, parent_id, unit_code, unit_name FROM mo_hierarchy WHERE blocked = 0 AND parent_id = $parent
+            UNION SELECT id, parent_id, group_code AS unit_code, group_name FROM unit_groups WHERE parent_id = $parent
+            ORDER BY unit_code";
         $res = \DB::select($lev_query);
         $units = array();
+        if (count($res) > 0) {
+            foreach ($res as $r) {
+                $units[] = $r;
+                $units = array_merge($units, self::getChilds($r->id));
+            }
+        }
+        return $units;
+    }
+
+    public static function getMoTree($parent)
+    {
+        $units = array();
+        $this_one = \DB::select("SELECT id, parent_id, unit_code, unit_name FROM mo_hierarchy WHERE id = $parent
+          UNION SELECT id, parent_id, group_code AS unit_code, group_name FROM unit_groups WHERE id = $parent");
+        $units = array_merge($units, $this_one);
+        $lev_query = "SELECT id, parent_id, unit_code, unit_name FROM mo_hierarchy WHERE blocked = 0 AND parent_id = $parent
+            UNION SELECT id, parent_id, group_code AS unit_code, group_name FROM unit_groups WHERE parent_id = $parent
+            ORDER BY unit_code";
+        $res = \DB::select($lev_query);
         if (count($res) > 0) {
             foreach ($res as $r) {
                 $units[] = $r;

@@ -16,6 +16,7 @@ class CreateUnitGroupsTable extends Migration
         Schema::create('unit_groups', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('parent_id')->index()->nullable();
+            $table->string('group_code', 32)->unique();
             $table->string('group_name', 128)->index();
             $table->string('slug', 128)->index();
             $table->timestamps();
