@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\StatDataInput;
 
+use App\UnitGroup;
 use Illuminate\Http\Request;
 use Illuminate\Auth\GenericUser;
 use Illuminate\Support\Facades\Auth;
@@ -38,6 +39,9 @@ class DashboardController extends Controller
         $statelabel = Document::$state_labels[$document->state];
         $form = Form::find($document->form_id);
         $current_unit = Unit::find($document->ou_id);
+        if (!$current_unit) {
+            $current_unit = UnitGroup::find($document->ou_id);
+        }
         $editpermission = $this->isEditPermission($worker->permission, $document->state);
         $editpermission ? $editmode = 'Редактирование' : $editmode = 'Только чтение';
         $period = Period::find($document->period_id);

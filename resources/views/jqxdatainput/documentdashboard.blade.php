@@ -7,16 +7,18 @@
     <div id="mainSplitter">
         <div>
             <div id="filterPanelSplitter">
-                <div class="jqx-hideborder jqx-hidescrollbars" id="motabs">
-                    <ul>
-                        <li style="margin-left: 30px;"> Медицинские организации по территориям</li>
-                        <li>По группам</li>
-                    </ul>
-                    <div>
-                        <div class="jqx-hideborder" id="moTree"></div>
-                    </div>
-                    <div>
-                        <div class="jqx-hideborder" id="groupTree"></div>
+                <div>
+                    <div class="jqx-hideborder jqx-hidescrollbars" id="motabs">
+                        <ul>
+                            <li style="margin-left: 30px;"> Медицинские организации по территориям</li>
+                            <li>По группам</li>
+                        </ul>
+                        <div>
+                            <div class="jqx-hideborder" id="moTree"></div>
+                        </div>
+                        <div>
+                            <div class="jqx-hideborder" id="groupTree"></div>
+                        </div>
                     </div>
                 </div>
                 <div id="filtertabs" class="jqx-hideborder jqx-hidescrollbars">
@@ -116,7 +118,7 @@
 <script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxnotification.js') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/documentdashboard.js?v=001') }}"></script>
+<script src="{{ asset('/medinfo/documentdashboard.js?v=002') }}"></script>
 @endpush
 
 @section('inlinejs')

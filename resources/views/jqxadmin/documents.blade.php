@@ -12,9 +12,17 @@
     <div>
         <div id="leftPanel">
             <div>
-                <h4>Территории/Медицинские организации</h4>
-                <div id="moTreeContainer">
-                    <div id="moTree"></div>
+                <div class="jqx-hideborder jqx-hidescrollbars" id="motabs">
+                    <ul>
+                        <li style="margin-left: 30px;"> Медицинские организации по территориям</li>
+                        <li>По группам</li>
+                    </ul>
+                    <div>
+                        <div class="jqx-hideborder" id="moTree"></div>
+                    </div>
+                    <div>
+                        <div class="jqx-hideborder" id="groupTree"></div>
+                    </div>
                 </div>
             </div>
             <div id="filtertabs">
@@ -124,7 +132,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/documentadmin.js') }}"></script>
+    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=001') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -135,7 +143,9 @@
         var deletedocuments_url = '/admin/deletedocuments';
         var erasedocuments_url = '/admin/erasedocuments';
         var changestate_url = '/admin/documentstatechange';
+        var group_tree_url = '/admin/fetchugroups';
         var current_top_level_node = 0;
+        var filter_mode = 1; // 1 - по территориям; 2 - по группам
         var checkeddtypes = {!! $dtype_ids !!};
         var forms = {!! $forms  !!};
         var states = {!! $states !!};
@@ -145,11 +155,16 @@
         var checkedstates = {!! $state_ids !!};
         var checkedperiods = [{!! $period_ids !!}];
         var checkeddtypes = {!! $dtype_ids !!};
+        var grouptree = $("#groupTree");
+        var motree = $("#moTree");
+        var dlist = $('#documentList');
         datasources();
         initfilterdatasources();
         initnewdocumentwindow();
+        initmotabs();
         initsplitters();
         initmotree();
+        initgrouptree();
         initfiltertabs();
         initdocumentslist();
         initdocumentactions();

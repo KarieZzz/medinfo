@@ -5,6 +5,7 @@ namespace App\Http\Controllers\StatDataInput;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Unit;
+use App\UnitGroupMember;
 use App\Document;
 use App\Aggregate;
 use App\Row;
@@ -21,12 +22,17 @@ class AggregatesDashboardController extends DashboardController
         $this->middleware('datainputauth');
     }
 
-    public function aggregateData(Document $document)
+    public function aggregateData(Document $document, int $unitgroup)
     {
         $result = [];
         // перед сведением данных удаление старых данных
         Cell::where('doc_id', $document->id)->delete();
-        $units = Unit::getDescendants($document->ou_id);
+        if ($unitgroup == 1) {
+            $units = Unit::getDescendants($document->ou_id);
+        } else {
+            $units = UnitGroupMember::OfGroup($document->ou_id)->pluck('ou_id');
+        }
+        //dd($units);
         $included_documents = Document::whereIn('ou_id', $units)
             ->where('dtype', 1)
             ->where('form_id', $document->form_id)

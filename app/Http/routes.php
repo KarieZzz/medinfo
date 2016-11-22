@@ -128,6 +128,7 @@ Route::group(['middleware' => ['web']], function () {
 
     // Менеджер отчетных документов
     Route::get('admin/documents', 'Admin\DocumentAdminController@index');
+    Route::get('admin/fetchugroups', 'Admin\DocumentAdminController@fetch_unitgroups');
     Route::get('admin/fetchdocuments', 'Admin\DocumentAdminController@fetchDocuments');
     Route::post('admin/createdocuments', 'Admin\DocumentAdminController@createDocuments');
     Route::delete('admin/deletedocuments', 'Admin\DocumentAdminController@deleteDocuments');
@@ -146,7 +147,7 @@ Route::group(['middleware' => ['web']], function () {
     Route::post('datainput/sendmessage', 'StatDataInput\DocumentMessageController@sendMessage');
     Route::post('datainput/changestate', 'StatDataInput\DocumentStateController@changeState');
     Route::post('datainput/changeaudition', 'StatDataInput\DocumentAuditionController@changeAudition');
-    Route::patch('datainput/aggregatedata/{document}', 'StatDataInput\AggregatesDashboardController@aggregateData' );
+    Route::patch('datainput/aggregatedata/{document}/{unitgroup}', 'StatDataInput\AggregatesDashboardController@aggregateData' );
 
     // Рабочий стол - Первичный отчетный документ, ввод данных, журнал изменений
     Route::get('datainput/formdashboard/{document}', 'StatDataInput\FormDashboardController@index');

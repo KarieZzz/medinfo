@@ -70,16 +70,16 @@ class DocumentTree
             $p[] = substr($period, 1);
         }*/
         if (count($this->dtypes) > 0 ) {
-            $this->scopes[] = !empty(implode(",", $this->dtypes)) ?  ' AND d.dtype in (' . implode(",", $this->dtypes) . ')' : ' AND d.type = 0 ';
+            $this->scopes['t'] = !empty(implode(",", $this->dtypes)) ?  ' AND d.dtype in (' . implode(",", $this->dtypes) . ')' : ' AND d.type = 0 ';
         }
         if (count($this->states) > 0 ) {
-            $this->scopes[] = !empty(implode(",", $this->states)) ? ' AND d.state in (' . implode(",", $this->states) . ')' : ' AND d.state = 0';
+            $this->scopes['s'] = !empty(implode(",", $this->states)) ? ' AND d.state in (' . implode(",", $this->states) . ')' : ' AND d.state = 0';
         }
         if (count($this->forms) > 0 ) {
-            $this->scopes[] = !empty(implode(",", $this->forms)) ?  ' AND f.id in (' . implode(",", $this->forms) . ')' : ' AND f.id = 0 ';
+            $this->scopes['f'] = !empty(implode(",", $this->forms)) ?  ' AND f.id in (' . implode(",", $this->forms) . ')' : ' AND f.id = 0 ';
         }
         if (count($this->periods) > 0 ) {
-            $this->scopes[] = !empty(implode(",", $this->periods)) ?  ' AND d.period_id in (' . implode(",", $this->periods) . ')' : ' AND d.period_id = 0 ';
+            $this->scopes['p'] = !empty(implode(",", $this->periods)) ?  ' AND d.period_id in (' . implode(",", $this->periods) . ')' : ' AND d.period_id = 0 ';
         }
     }
 
@@ -107,9 +107,9 @@ class DocumentTree
             $units = array_merge($units, $this->tree_element($node));
             if (count($units) > 0) {
                 $strigified = implode(",", $units);
-                $this->scopes[] = " AND d.ou_id in ($strigified) ";
+                $this->scopes['u'] = " AND d.ou_id in ($strigified) ";
             } else {
-                $this->scopes[] = " AND 1=0 ";
+                $this->scopes['u'] = " AND 1=0 ";
             }
         }
     }
@@ -120,9 +120,9 @@ class DocumentTree
         //dd($units);
         if (count($units) > 0) {
             $strigified = $units->implode(',');
-            $this->scopes[] = " AND d.ou_id in ($strigified) ";
+            $this->scopes['g'] = " AND d.ou_id in ($strigified) ";
         } else {
-            $this->scopes[] = " AND 1=0 ";
+            $this->scopes['g'] = " AND 1=0 ";
         }
     }
 
@@ -164,7 +164,7 @@ class DocumentTree
               CASE WHEN (SELECT sum(v.value) FROM statdata v where d.id = v.doc_id) > 0 THEN 1 ELSE 0 END filled
               FROM documents d
                 JOIN forms f on d.form_id = f.id
-                JOIN mo_hierarchy u on d.ou_id = u.id
+                LEFT JOIN mo_hierarchy u on d.ou_id = u.id
                 JOIN dic_document_states s on d.state = CAST(s.code AS numeric)
                 JOIN dic_document_types t on d.dtype = CAST(t.code AS numeric)
                 JOIN periods p on d.period_id = p.id
@@ -173,6 +173,29 @@ class DocumentTree
               ORDER BY u.unit_code, f.form_code, p.name";
             //echo $doc_query;
             $this->documents = DB::select($doc_query);
+
+            if ($this->filter_mode == 2 ) {
+                $group_doc_query = "SELECT d.id, u.group_code AS unit_code, u.group_name AS unit_name, f.form_code,
+                  f.form_name, s.name state, p.name period, t.name doctype,
+                  CASE WHEN (SELECT sum(v.value) FROM statdata v where d.id = v.doc_id) > 0 THEN 1 ELSE 0 END filled
+                  FROM documents d
+                    JOIN forms f on d.form_id = f.id
+                    LEFT JOIN unit_groups u on d.ou_id = u.id
+                    JOIN dic_document_states s on d.state = CAST(s.code AS numeric)
+                    JOIN dic_document_types t on d.dtype = CAST(t.code AS numeric)
+                    JOIN periods p on d.period_id = p.id
+                  WHERE d.ou_id = {$this->top_node} {$this->scopes['f']} {$this->scopes['p']} {$this->scopes['s']}
+                  GROUP BY d.id, u.group_code, u.group_name, f.form_code, f.form_name, p.name, s.name, t.name
+                  ORDER BY f.form_code, p.name";
+                //echo $group_doc_query;
+                $documents_by_groups = DB::select($group_doc_query);
+                //dd($documents_by_groups );
+                $this->documents = array_merge($this->documents, $documents_by_groups);
+
+
+            }
+
+            //dd($this->documents);
             return $this->documents;
         }
         else {
@@ -195,6 +218,25 @@ class DocumentTree
               WHERE 1=1 $scopes ORDER BY u.unit_code, f.form_code, p.name";
             //dd($doc_query);
             $res = DB::select($doc_query);
+
+            if ($this->filter_mode == 2 ) {
+                $group_doc_query = "SELECT d.id, u.group_code AS unit_code, u.group_name AS unit_name, f.form_code, f.form_name, p.name period, a.aggregated_at,
+                    CASE WHEN (SELECT sum(v.value) FROM statdata v where d.id = v.doc_id) > 0 THEN 1 ELSE 0 END filled
+                  FROM documents d
+                  LEFT JOIN forms f on d.form_id = f.id
+                  LEFT JOIN unit_groups u on d.ou_id = u.id
+                  LEFT JOIN aggregates a ON d.id = a.doc_id
+                  JOIN periods p on d.period_id = p.id
+                   WHERE d.ou_id = {$this->top_node} {$this->scopes['f']} {$this->scopes['p']}
+                   ORDER BY f.form_code, p.name";
+                $aggregates_by_groups = DB::select($group_doc_query);
+                //dd($documents_by_groups );
+                $res = array_merge($res, $aggregates_by_groups);
+
+            }
+
+
+
             return $res;
         }
         else {

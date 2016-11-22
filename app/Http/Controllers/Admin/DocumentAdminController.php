@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 
 use App\Medinfo\DocumentTree;
 use App\Medinfo\UnitTree;
+use App\UnitGroup;
 use App\Period;
 use App\Document;
 use App\DicDocumentState;
@@ -47,14 +48,22 @@ class DocumentAdminController extends Controller
         return UnitTree::getSimpleTree($parent);
     }
 
+    public function fetch_unitgroups()
+    {
+        //return UnitTree::getSimpleTree($parent);
+        return UnitGroup::all();
+    }
+
     public function fetchDocuments(Request $request)
     {
         $top_node = $request->ou;
+        $worker_scope = 0;
+        $filter_mode = $request->filter_mode;
         $dtypes = explode(",", $request->dtypes);
         $states = explode(",", $request->states);
         $forms = explode(",", $request->forms);
         $periods = explode(",", $request->periods);
-        $scopes = compact('top_node', 'dtypes', 'states', 'forms', 'periods');
+        $scopes = compact('worker_scope',  'filter_mode', 'top_node', 'dtypes', 'states', 'forms', 'periods');
         $d = new DocumentTree($scopes);
         $data = $d->get_documents();
         return $data;
