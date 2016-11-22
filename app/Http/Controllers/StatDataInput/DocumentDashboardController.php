@@ -63,13 +63,15 @@ class DocumentDashboardController extends Controller
 
     public function fetchdocuments(Request $request)
     {
+        $worker = Auth::guard('datainput')->user();
+        $worker_scope = WorkerScope::where('worker_id', $worker->id)->first()->ou_id;
         $top_node = $request->ou;
         $filter_mode = $request->filter_mode;
         $dtypes[] = 1;
         $states = explode(",", $request->states);
         $forms = explode(",", $request->forms);
         $periods = explode(",", $request->periods);
-        $scopes = compact('filter_mode', 'top_node', 'dtypes', 'states', 'forms', 'periods');
+        $scopes = compact('worker_scope', 'filter_mode', 'top_node', 'dtypes', 'states', 'forms', 'periods');
         $d = new DocumentTree($scopes);
         $data = $d->get_documents();
         return $data;
@@ -77,12 +79,15 @@ class DocumentDashboardController extends Controller
 
     public function fetchaggregates(Request $request)
     {
+        $worker = Auth::guard('datainput')->user();
+        $worker_scope = WorkerScope::where('worker_id', $worker->id)->first()->ou_id;
         $top_node = $request->ou;
+        $filter_mode = $request->filter_mode;
         $dtypes[] = 2;
         $states = array();
         $forms = explode(",", $request->forms);
         $periods = explode(",", $request->periods);
-        $scopes = compact('top_node', 'dtypes', 'states', 'forms', 'periods');
+        $scopes = compact('worker_scope', 'filter_mode', 'top_node', 'dtypes', 'states', 'forms', 'periods');
         $d = new DocumentTree($scopes);
         $data = $d->get_aggregates();
         return $data;

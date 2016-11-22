@@ -13,6 +13,7 @@ class DocumentTree
 {
     private $top_node;
     private $filter_mode = 1;
+    private $worker_scope;
     private $o_units = [];
     private $states = array();
     private $forms = array();
@@ -23,13 +24,14 @@ class DocumentTree
 
     public function __construct($scopes = null)
     {
-
+        //dd($scopes);
         if (is_array($scopes)) {
             if ($scopes['top_node'] == 'null') {
                 throw new \Exception("Не определен перечень доступа к медицинским организациям");
             }
             $this->top_node = (int)$scopes['top_node'];
-
+            $this->worker_scope = (int)$scopes['worker_scope'];
+            //dd($this->worker_scope);
             if (isset($scopes['filter_mode'])) {
                 $this->filter_mode = $scopes['filter_mode'];
             }
@@ -83,29 +85,33 @@ class DocumentTree
 
     public function get_descendants()
     {
+        $this->by_territory($this->worker_scope);
+        //dd($this->scopes);
         if ($this->filter_mode == 1) {
-            $this->by_territory();
+            $this->by_territory($this->top_node);
         } elseif ($this->filter_mode == 2) {
             $this->by_groups();
         } else {
             throw new \Exception("Недопустимый режим выбора документов");
         }
+        //dd($this->scopes);
     }
 
-    public function by_territory()
+
+
+    public function by_territory($node)
     {
-        if ($this->top_node !== 0) {
-            $this->o_units[] = $this->top_node;
-            $this->o_units = array_merge($this->o_units, $this->tree_element($this->top_node));
-            if (count($this->o_units) > 0) {
-                $strigified = implode(",", $this->o_units);
+        $units = [];
+        if ($node !== 0) {
+            $units[] = $node;
+            $units = array_merge($units, $this->tree_element($node));
+            if (count($units) > 0) {
+                $strigified = implode(",", $units);
                 $this->scopes[] = " AND d.ou_id in ($strigified) ";
             } else {
                 $this->scopes[] = " AND 1=0 ";
             }
         }
-        //dd($this->scopes);
-        return $this->o_units;
     }
 
     public function by_groups()
