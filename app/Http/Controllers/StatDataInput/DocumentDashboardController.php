@@ -8,6 +8,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 use App\WorkerScope;
+use App\UnitGroup;
 use App\Medinfo\UnitTree;
 use App\Medinfo\DocumentTree;
 use App\Period;
@@ -54,14 +55,21 @@ class DocumentDashboardController extends Controller
         return UnitTree::getMoTree($parent);
     }
 
+    public function fetch_unitgroups()
+    {
+        //return UnitTree::getSimpleTree($parent);
+        return UnitGroup::all();
+    }
+
     public function fetchdocuments(Request $request)
     {
         $top_node = $request->ou;
+        $filter_mode = $request->filter_mode;
         $dtypes[] = 1;
         $states = explode(",", $request->states);
         $forms = explode(",", $request->forms);
         $periods = explode(",", $request->periods);
-        $scopes = compact('top_node', 'dtypes', 'states', 'forms', 'periods');
+        $scopes = compact('filter_mode', 'top_node', 'dtypes', 'states', 'forms', 'periods');
         $d = new DocumentTree($scopes);
         $data = $d->get_documents();
         return $data;

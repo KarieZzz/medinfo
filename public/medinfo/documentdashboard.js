@@ -21,6 +21,26 @@ var datasources = function() {
         root: '',
         url: mo_tree_url + current_top_level_node
     };
+
+    ugroup_source =
+    {
+        dataType: "json",
+        dataFields: [
+            { name: 'id', type: 'int' },
+            { name: 'parent_id', type: 'int' },
+            { name: 'group_code', type: 'string' },
+            { name: 'group_name', type: 'string' }
+        ],
+        hierarchy:
+        {
+            keyDataField: { name: 'id' },
+            parentDataField: { name: 'parent_id' }
+        },
+        id: 'id',
+        root: '',
+        url: group_tree_url
+    };
+
     docsource =
     {
         datatype: "json",
@@ -35,7 +55,8 @@ var datasources = function() {
             { name: 'filled', type: 'bool' }
         ],
         id: 'id',
-        url: docsource_url+'&ou='+current_top_level_node+'&states='+checkedstates.join()+'&forms='+checkedforms.join()+'&periods='+checkedperiods.join(),
+        url: docsource_url+'&filter_mode='+filter_mode+'&ou='+current_top_level_node+'&states='
+            +checkedstates.join()+'&forms='+checkedforms.join()+'&periods='+checkedperiods.join(),
         root: 'data'
     };
     aggregate_source =
@@ -52,10 +73,11 @@ var datasources = function() {
             { name: 'filled', type: 'bool' }
         ],
         id: 'id',
-        url: aggrsource_url + '&ou=' + current_top_level_node + '&forms=' + checkedforms.join()+'&periods='+checkedperiods.join(),
+        url: aggrsource_url + '&filter_mode='+ filter_mode + '&ou=' + current_top_level_node + '&forms=' + checkedforms.join()+'&periods='+checkedperiods.join(),
         root: 'data'
     }
     mo_dataAdapter = new $.jqx.dataAdapter(mo_source);
+    ugroup_dataAdapter = new $.jqx.dataAdapter(ugroup_source);
     dataAdapter = new $.jqx.dataAdapter(docsource, {
         loadError: function(jqXHR, status, error) {
             if (jqXHR.status == 401) {
@@ -96,7 +118,7 @@ var updatedocumenttable = function() {
     var states = checkedstates.join();
     var forms = checkedforms.join();
     var periods = checkedperiods.join();
-    var new_filter =  '&ou=' +current_top_level_node +'&states='+states+'&forms='+forms+'&periods=' + periods;
+    var new_filter =  '&filter_mode=' + filter_mode + '&ou=' +current_top_level_node + '&states='+states + '&forms='+forms + '&periods=' + periods;
     var new_doc_url = docsource_url + new_filter;
     var new_aggr_url = aggrsource_url + new_filter;
     if (new_doc_url != old_doc_url) {
@@ -479,9 +501,60 @@ var renderaggregatetoolbar = function(toolbar) {
         agrid.jqxGrid('updatebounddata');
     });
 };
+
+var initmotabs = function() {
+    $("#motabs").jqxTabs({  height: '100%', width: '100%', theme: theme });
+};
+
+var initgrouptree = function() {
+    grouptree.jqxTreeGrid(
+        {
+            width: '100%',
+            height: '100%',
+            theme: theme,
+            source: ugroup_dataAdapter,
+            selectionMode: "singleRow",
+            filterable: true,
+            filterMode: "simple",
+            localization: localize(),
+            columnsResize: true,
+            ready: function()
+            {
+                // expand row with 'EmployeeKey = 32'
+                grouptree.jqxTreeGrid('expandRow', 0);
+            },
+            columns: [
+                { text: 'Код', dataField: 'group_code', width: 120 },
+                { text: 'Наименование', dataField: 'group_name', width: 545 }
+            ]
+        });
+    grouptree.on('filter',
+        function (event)
+        {
+            var args = event.args;
+            var filters = args.filters;
+            grouptree.jqxTreeGrid('expandAll');
+        }
+    );
+    grouptree.on('rowSelect',
+        function (event)
+        {
+            var args = event.args;
+            var new_top_level_node = args.key;
+            if (new_top_level_node == current_top_level_node && filter_mode == 2) {
+                return false;
+            }
+            filter_mode = 2; // режим отбора документов по группам
+            current_top_level_node =  new_top_level_node;
+            updatedocumenttable();
+            return true;
+        }
+    );
+};
+
 // инициализация дерева Территорий/Медицинских организаций
 var initmotree = function() {
-    $("#moTree").jqxTreeGrid(
+    motree.jqxTreeGrid(
         {
             width: '100%',
             height: '100%',
@@ -495,31 +568,31 @@ var initmotree = function() {
             ready: function()
             {
                 // expand row with 'EmployeeKey = 32'
-                $("#moTree").jqxTreeGrid('expandRow', 0);
+                motree.jqxTreeGrid('expandRow', 0);
             },
             columns: [
                 { text: 'Код', dataField: 'unit_code', width: 120 },
                 { text: 'Наименование', dataField: 'unit_name', width: 545 }
             ]
         });
-    $('#moTree').on('filter',
+    motree.on('filter',
         function (event)
         {
             var args = event.args;
             var filters = args.filters;
-            $('#moTree').jqxTreeGrid('expandAll');
+            motree.jqxTreeGrid('expandAll');
         }
     );
-    $('#moTree').on('rowSelect',
+    motree.on('rowSelect',
         function (event)
         {
             var args = event.args;
-            var key = args.key;
-            var new_top_level_node = key;
-            if (new_top_level_node == current_top_level_node) {
+            var new_top_level_node = args.key;
+            if (new_top_level_node == current_top_level_node && filter_mode == 1) {
                 return false;
             }
-            current_top_level_node =  key;
+            current_top_level_node =  new_top_level_node;
+            filter_mode = 1; // режим отбора документов по территориям
             updatedocumenttable();
             return true;
         }

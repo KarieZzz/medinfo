@@ -7,14 +7,16 @@
     <div id="mainSplitter">
         <div>
             <div id="filterPanelSplitter">
-                <div class="jqx-hideborder">
-                    <div id="moExpander">
-                        <div class="jqx-hideborder">Медицинские организации</div>
-                        <div class="jqx-hideborder  jqx-hidescrollbars">
-                            <div class="jqx-hideborder" id="moTree">
-
-                            </div>
-                        </div>
+                <div class="jqx-hideborder jqx-hidescrollbars" id="motabs">
+                    <ul>
+                        <li style="margin-left: 30px;"> Медицинские организации по территориям</li>
+                        <li>По группам</li>
+                    </ul>
+                    <div>
+                        <div class="jqx-hideborder" id="moTree"></div>
+                    </div>
+                    <div>
+                        <div class="jqx-hideborder" id="groupTree"></div>
                     </div>
                 </div>
                 <div id="filtertabs" class="jqx-hideborder jqx-hidescrollbars">
@@ -114,7 +116,7 @@
 <script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxnotification.js') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/documentdashboard.js') }}"></script>
+<script src="{{ asset('/medinfo/documentdashboard.js?v=001') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -125,8 +127,15 @@
         var current_user_id = '{{ $worker->id }}';
         var audit_permission = {{ $audit_permission ? 'true' : 'false' }};
         var periods = {!! $periods !!};
+        var forms = {!! $forms  !!};
+        var states = {!! $states !!};
+        var checkedforms = {!! $form_ids !!};
+        var checkedstates = {!! $state_ids !!};
+        var checkedperiods = [{{ $period_ids }}];
         var disabled_states = [{!! $disabled_states !!}];
+        var filter_mode = 1; // 1 - по территориям; 2 - по группам
         var mo_tree_url = 'datainput/fetch_mo_tree/';
+        var group_tree_url = 'datainput/fetch_ugroups';
         var docsource_url = 'datainput/fetchdocuments?';
         var docmessages_url = 'datainput/fetchmessages?';
         var changestate_url = 'datainput/changestate';
@@ -138,13 +147,10 @@
         var edit_aggregate_url = 'datainput/aggregatedashboard';
         var aggregatedata_url = "/datainput/aggregatedata/";
         var export_form_url = "/datainput/formexport/";
-        var forms = {!! $forms  !!};
-        var states = {!! $states !!};
-        var checkedforms = {!! $form_ids !!};
-        var checkedstates = {!! $state_ids !!};
         //var checkedform = ['f30','f17','f12','f14','f14дс','f16','f57','f1-РБ','f15','f16-вн','f13','f31','f32','f32_вкл','f19','f1-ДЕТИ','f10','f11','f36','f36-ПЛ','f37','f9','f34','f7','f35','f8','f33','f7-Т','f39','f41', 'f53','f55','f56','f61','f70'];
         //var checkedstates = ['st2', 'st4', 'st8', 'st16', 'st32'];
-        var checkedperiods = [{{ $period_ids }}];
+        var motree = $("#moTree");
+        var grouptree = $("#groupTree");
         var dgrid = $("#Documents"); // сетка для первичных документов
         var agrid = $("#Aggregates"); // сетка для сводных документов
         var current_document_form_code;
@@ -167,6 +173,7 @@
             audit_incorrect: 3
         };
         datasources();
+        initmotabs();
         $("#mainSplitter").jqxSplitter(
                 {
                     width: '99%',
@@ -181,12 +188,11 @@
         );
         $('#filterPanelSplitter').jqxSplitter({
             width: '100%',
-            height: '100%',
+            height: '99%',
             theme: theme,
             orientation: 'horizontal',
             panels: [{ size: '50%', min: 100, collapsible: false }, { min: '100px', collapsible: true}]
         });
-        $("#moExpander").jqxExpander({toggleMode: 'none', showArrow: false, width: "100%", height: "100%", theme: theme  });
         initfiltertabs();
         $('#DocumentPanelSplitter').jqxSplitter({
             width: '100%',
@@ -196,6 +202,7 @@
             panels: [{ size: '50%', min: 100, collapsible: false }, { min: '100px', collapsible: true}]
         });
         initmotree();
+        initgrouptree();
         initdocumentstabs();
         initdocumentproperties();
         initpopupwindows();

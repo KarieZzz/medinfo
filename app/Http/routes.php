@@ -138,6 +138,7 @@ Route::group(['middleware' => ['web']], function () {
     // Рабочий стол - Первичные и сводные отчеты, сообщения, проверки и экспорт в эксель
     Route::get('datainput', 'StatDataInput\DocumentDashboardController@index' );
     Route::get('datainput/fetch_mo_tree/{parent}', 'StatDataInput\DocumentDashboardController@fetch_mo_hierarchy');
+    Route::get('datainput/fetch_ugroups', 'StatDataInput\DocumentDashboardController@fetch_unitgroups');
     Route::get('datainput/fetchdocuments', 'StatDataInput\DocumentDashboardController@fetchdocuments');
     Route::get('datainput/fetchaggregates', 'StatDataInput\DocumentDashboardController@fetchaggregates');
     Route::get('datainput/fetchmessages', 'StatDataInput\DocumentMessageController@fetchMessages');

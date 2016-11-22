@@ -12,7 +12,8 @@ use DB;
 class DocumentTree
 {
     private $top_node;
-    private $o_units = array();
+    private $filter_mode = 1;
+    private $o_units = [];
     private $states = array();
     private $forms = array();
     private $periods = array();
@@ -22,12 +23,17 @@ class DocumentTree
 
     public function __construct($scopes = null)
     {
+
         if (is_array($scopes)) {
-            $this->top_node = $scopes['top_node'];
-            if ($this->top_node == 'null') {
+            if ($scopes['top_node'] == 'null') {
                 throw new \Exception("Не определен перечень доступа к медицинским организациям");
             }
-            if (isset ($scopes['states'])) {
+            $this->top_node = (int)$scopes['top_node'];
+
+            if (isset($scopes['filter_mode'])) {
+                $this->filter_mode = $scopes['filter_mode'];
+            }
+            if (isset($scopes['states'])) {
                 $this->states = $scopes['states'];
             }
             if (isset($scopes['forms'])) {
@@ -36,7 +42,7 @@ class DocumentTree
             if (isset($scopes['periods'])) {
                 $this->periods = $scopes['periods'];
             }
-            if (isset ($scopes['dtypes'])) {
+            if (isset($scopes['dtypes'])) {
                 $this->dtypes = $scopes['dtypes'];
             }
         }
@@ -62,33 +68,56 @@ class DocumentTree
             $p[] = substr($period, 1);
         }*/
         if (count($this->dtypes) > 0 ) {
-            $this->scopes[] = !empty(implode(",", $this->dtypes)) ?  ' and d.dtype in (' . implode(",", $this->dtypes) . ')' : ' and d.type = 0 ';
+            $this->scopes[] = !empty(implode(",", $this->dtypes)) ?  ' AND d.dtype in (' . implode(",", $this->dtypes) . ')' : ' AND d.type = 0 ';
         }
         if (count($this->states) > 0 ) {
-            $this->scopes[] = !empty(implode(",", $this->states)) ? ' and d.state in (' . implode(",", $this->states) . ')' : ' and d.state = 0';
+            $this->scopes[] = !empty(implode(",", $this->states)) ? ' AND d.state in (' . implode(",", $this->states) . ')' : ' AND d.state = 0';
         }
         if (count($this->forms) > 0 ) {
-            $this->scopes[] = !empty(implode(",", $this->forms)) ?  ' and f.id in (' . implode(",", $this->forms) . ')' : ' and f.id = 0 ';
+            $this->scopes[] = !empty(implode(",", $this->forms)) ?  ' AND f.id in (' . implode(",", $this->forms) . ')' : ' AND f.id = 0 ';
         }
         if (count($this->periods) > 0 ) {
-            $this->scopes[] = !empty(implode(",", $this->periods)) ?  ' and d.period_id in (' . implode(",", $this->periods) . ')' : ' and d.period_id = 0 ';
+            $this->scopes[] = !empty(implode(",", $this->periods)) ?  ' AND d.period_id in (' . implode(",", $this->periods) . ')' : ' AND d.period_id = 0 ';
         }
     }
 
     public function get_descendants()
     {
-        if ($this->top_node === '0') {
-            $lev_1_query = "select id from mo_hierarchy where parent_id is NULL";
-            $res = DB::selectOne($lev_1_query);
-            $this->o_units[] = $res->id;
-            $this->o_units = array_merge($this->o_units, $this->tree_element($res->id));
+        if ($this->filter_mode == 1) {
+            $this->by_territory();
+        } elseif ($this->filter_mode == 2) {
+            $this->by_groups();
+        } else {
+            throw new \Exception("Недопустимый режим выбора документов");
         }
-        else {
+    }
+
+    public function by_territory()
+    {
+        if ($this->top_node !== 0) {
             $this->o_units[] = $this->top_node;
             $this->o_units = array_merge($this->o_units, $this->tree_element($this->top_node));
+            if (count($this->o_units) > 0) {
+                $strigified = implode(",", $this->o_units);
+                $this->scopes[] = " AND d.ou_id in ($strigified) ";
+            } else {
+                $this->scopes[] = " AND 1=0 ";
+            }
         }
-        //var_dump($this->o_units);
+        //dd($this->scopes);
         return $this->o_units;
+    }
+
+    public function by_groups()
+    {
+        $units = \App\UnitGroupMember::OfGroup($this->top_node)->pluck('ou_id');
+        //dd($units);
+        if (count($units) > 0) {
+            $strigified = $units->implode(',');
+            $this->scopes[] = " AND d.ou_id in ($strigified) ";
+        } else {
+            $this->scopes[] = " AND 1=0 ";
+        }
     }
 
     public function getUnits()
@@ -97,31 +126,33 @@ class DocumentTree
     }
 
     private function tree_element($parent) {
-        $lev_query = "select id from mo_hierarchy where parent_id = $parent";
-        //echo $lev_query;
+
+        $lev_query = "SELECT id FROM mo_hierarchy WHERE parent_id = $parent";
+
+/*        $lev_query = "SELECT id FROM mo_hierarchy WHERE parent_id = $parent
+          UNION SELECT id FROM unit_groups WHERE parent_id = $parent
+          UNION SELECT ou_id FROM unit_group_members WHERE group_id = $parent";*/
+
+/*        $lev_query = "
+          SELECT ou_id AS id FROM unit_group_members WHERE group_id = $parent";*/
+        //dd($lev_query);
         $res = DB::select($lev_query);
-        $units = array();
+        $units = [];
+        //var_dump($res);
         if (count($res) > 0) {
             foreach ($res as $r) {
                 $units[] = $r->id;
                 $units = array_merge($units, $this->tree_element($r->id));
             }
         }
+        //var_dump($units);
         return $units;
     }
 
     public function get_documents()
     {
-        if (count($this->o_units) > 0) {
-            $unit_scope = '';
-            if ($this->top_node !== '0') {
-                $strigified = implode(",", $this->o_units);
-                $unit_scope .= "and d.ou_id in ($strigified)";
-            }
-            $scopes = '';
-            if (count($this->scopes) > 0 ) {
-                $scopes = implode(" ", $this->scopes);
-            }
+        if (count($this->scopes) > 0 ) {
+            $scopes = implode(" ", $this->scopes);
             $doc_query = "SELECT d.id, u.unit_code, u.unit_name, f.form_code,
               f.form_name, s.name state, p.name period, t.name doctype,
               CASE WHEN (SELECT sum(v.value) FROM statdata v where d.id = v.doc_id) > 0 THEN 1 ELSE 0 END filled
@@ -131,11 +162,10 @@ class DocumentTree
                 JOIN dic_document_states s on d.state = CAST(s.code AS numeric)
                 JOIN dic_document_types t on d.dtype = CAST(t.code AS numeric)
                 JOIN periods p on d.period_id = p.id
-              WHERE 1=1 $unit_scope $scopes
+              WHERE 1=1 $scopes
               GROUP BY d.id, u.unit_code, u.unit_name, f.form_code, f.form_name, p.name, s.name, t.name
               ORDER BY u.unit_code, f.form_code, p.name";
             //echo $doc_query;
-
             $this->documents = DB::select($doc_query);
             return $this->documents;
         }
@@ -147,16 +177,8 @@ class DocumentTree
     public function get_aggregates()
     {
         //$aggregates = array();
-        if (count($this->o_units) > 0) {
-            $unit_scope = '';
-            if ($this->top_node !== '0') {
-                $strigified = implode(",", $this->o_units);
-                $unit_scope .= "and d.ou_id in ($strigified)";
-            }
-            $scopes = '';
-            if (count($this->scopes) > 0 ) {
-                $scopes = implode(" ", $this->scopes);
-            }
+        if (count($this->scopes) > 0 ) {
+            $scopes = implode(" ", $this->scopes);
             $doc_query = "SELECT d.id, u.unit_code, u.unit_name, f.form_code, f.form_name, p.name period, a.aggregated_at,
                 CASE WHEN (SELECT sum(v.value) FROM statdata v where d.id = v.doc_id) > 0 THEN 1 ELSE 0 END filled
               FROM documents d
@@ -164,7 +186,7 @@ class DocumentTree
               LEFT JOIN mo_hierarchy u on d.ou_id = u.id
               LEFT JOIN aggregates a ON d.id = a.doc_id
               JOIN periods p on d.period_id = p.id
-              WHERE 1=1 $unit_scope $scopes ORDER BY u.unit_code, f.form_code, p.name";
+              WHERE 1=1 $scopes ORDER BY u.unit_code, f.form_code, p.name";
             //dd($doc_query);
             $res = DB::select($doc_query);
             return $res;

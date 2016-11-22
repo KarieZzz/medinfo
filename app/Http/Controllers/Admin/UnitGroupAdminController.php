@@ -45,7 +45,7 @@ class UnitGroupAdminController extends Controller
             ]
         );
         $newgroup = new UnitGroup();
-        $newgroup->parent_id = empty($request->parent_id) ? null : $request->parent_id;
+        //$newgroup->parent_id = empty($request->parent_id) ? null : $request->parent_id;
         $newgroup->group_code = $request->group_code;
         $newgroup->group_name = $request->group_name;
         $newgroup->slug = empty($request->slug) ?  str_slug($newgroup->group_name) : $request->slug;
@@ -76,7 +76,7 @@ class UnitGroupAdminController extends Controller
                 'slug' => 'required|max:128',
             ]
         );
-        $group->parent_id = empty($request->parent_id) ? null : $request->parent_id;
+        //$group->parent_id = empty($request->parent_id) ? null : $request->parent_id;
         $group->group_code = $request->group_code;
         $group->group_name = $request->group_name;
         $group->slug = $request->slug;
