@@ -93,7 +93,6 @@ class ControlFunctionParser extends Parser {
         } elseif ($this->lookahead->type == ControlFunctionLexer::CELLADRESS) {
             $this->celladress(); // / либо адрес ячейки прошлогоднего документа
         }
-
         //dd($this);
         if ($this->lookahead->type == ControlFunctionLexer::COMMA ) {
             $this->match(ControlFunctionLexer::COMMA);

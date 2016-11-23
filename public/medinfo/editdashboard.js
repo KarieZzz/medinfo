@@ -172,7 +172,7 @@ var renderRowProtocol = function (container, table_id, protocol_by_type, header_
     return info;
 };
 // Отображение результатов контроля (новый формат) по каждой итерации
-var renderIterationProtocol = function(result, boolean_sign, mode, level) {
+var renderCompareControl = function(result, boolean_sign, mode, level) {
     //console.log(result.cells);
     var explanation_intro = mode == 1 ? 'По строке' : 'По графе';
     var error_level_mark = 'invalid';
@@ -208,6 +208,73 @@ var renderIterationProtocol = function(result, boolean_sign, mode, level) {
     }
     return row;
 };
+
+var renderInterannualControl = function(result, level) {
+    //console.log(result.cells);
+    var error_level_mark = 'invalid';
+    switch (level) {
+        case 1 :
+            error_level_mark = 'invalid';
+            break;
+        case 2 :
+            error_level_mark = 'alerted';
+            break;
+    }
+    var row = $("<div class='control-row'></div>");
+    result.valid ? valid = 'верно' : valid = 'не верно';
+    if (typeof result.code !== 'undefined') {
+        var rule = $("<div class='showrule'><span class='text-info'><strong> По ячейке </strong></span> <em>" + result.code + "</em>:</div>");
+        row.append(rule);
+    }
+    var t = "<table class='control-result'><tr><td>Текущее</td>";
+    t += "<td>Прошлогоднее</td><td>Отклонение (%)</td>";
+    t += "<td>Результат контроля</td></tr>";
+    t += "<tr><td>" + result.left_part_value + "</td>" ;
+    t += "<td>" + result.right_part_value + "</td>";
+    t += "<td>"+result.deviation_relative + "</td> <td class='check'>" + valid + "</td></tr></table>";
+    var explanation = $(t);
+
+    row.append(explanation);
+    if (!result.valid) {
+        explanation.addClass(error_level_mark);
+    } else {
+        explanation.addClass('bg-success');
+    }
+    return row;
+};
+
+var renderFoldControl = function(result, level) {
+    //console.log(result.cells);
+    var error_level_mark = 'invalid';
+    switch (level) {
+        case 1 :
+            error_level_mark = 'invalid';
+            break;
+        case 2 :
+            error_level_mark = 'alerted';
+            break;
+    }
+    var row = $("<div class='control-row'></div>");
+    result.valid ? valid = 'верно' : valid = 'не верно';
+    if (typeof result.code !== 'undefined') {
+        var rule = $("<div class='showrule'><span class='text-info'><strong> По ячейке </strong></span> <em>" + result.code + "</em>:</div>");
+        row.append(rule);
+    }
+    var t = "<table class='control-result'><tr><td>Текущее значение</td>";
+    t += "<td>Результат контроля</td></tr>";
+    t += "<tr><td>" + result.left_part_value + "</td>" ;
+    t += "<td class='check'>" + valid + "</td></tr></table>";
+    var explanation = $(t);
+
+    row.append(explanation);
+    if (!result.valid) {
+        explanation.addClass(error_level_mark);
+    } else {
+        explanation.addClass('bg-success');
+    }
+    return row;
+};
+
 // Отображение результатов контроля (новый формат) по каждой функции контроля
 var renderFunctionProtocol = function (container, table_id, rule) {
     var rule_valid = rule.valid ? 'rule-valid' : 'rule-invalid';
@@ -234,11 +301,23 @@ var renderFunctionProtocol = function (container, table_id, rule) {
     header.append("<strong>Правило контроля: </strong><span class='" + error_level_mark +"'>" + rule.formula + "</span> ");
     var r = 0;
     var i = 0;
+
     $.each(rule.iterations, function(i_index, result) {
         if ( typeof result.valid !=='undefined' ) {
-
             var valid = '';
-            var row = renderIterationProtocol(result, rule.boolean_sign, rule.iteration_mode, rule.level);
+            var row;
+
+            switch (rule.function) {
+                case 'compare' :
+                    row = renderCompareControl(result, rule.boolean_sign, rule.iteration_mode, rule.level);
+                    break;
+                case 'fold' :
+                    row = renderFoldControl(result, rule.level);
+                    break;
+                case 'interannual' :
+                    row = renderInterannualControl(result, rule.level);
+                    break;
+            }
             content.append(row);
             if (!result.valid) {
                 if (rule.level == 1) {
@@ -250,7 +329,6 @@ var renderFunctionProtocol = function (container, table_id, rule) {
                         alertedCells[table_id].push({r: cell.row, c: cell.column});
                     });
                 }
-
                 i++;
             } else {
                 row.addClass('control-valid');
@@ -261,8 +339,6 @@ var renderFunctionProtocol = function (container, table_id, rule) {
     });
     var badge = "<span class='badge' title='Всего выполнено / Обнаружены ошибки'>" + r + " / " + i + "</span>";
     header.append(badge);
-
-
     //content.append(info);
     return content;
 };
@@ -488,7 +564,8 @@ var checkform = function () {
             formprotocolheader +="<h2>Протокол контроля формы № "+ form_code +": \"" + form_name +"\" </h2>";
             formprotocolheader +="<h3>Учреждение: " + ou_code + " " + ou_name + "</h3>";
             var print_style = "<style>.tableprotocol-header { margin-top: 20px; font-size: 1.1em; font-weight: bold }";
-            print_style += ".badge { background-color: #cbcbcb }";
+            //print_style += ".badge { background-color: #cbcbcb }";
+            print_style += ".badge { display:none }";
             print_style += ".rule-valid { display:none }";
             print_style += ".control-valid { display:none }";
             print_style += ".rule-comment { text-indent: 20px; font-style: italic }";
@@ -677,6 +754,7 @@ var gettableprotocol = function (data, status, xhr) {
         printprotocolheader += "\" формы № "+ form_code + "</h2>";
         printprotocolheader +="<h4>Учреждение: " + ou_code + " " + ou_name + "</h4>";
         var print_style = "<style>.badge { background-color: #cbcbcb }";
+        print_style += ".badge { display:none }";
         print_style += ".rule-valid { display:none }";
         print_style += ".rule-comment { text-indent: 20px; font-style: italic }";
         print_style += ".rule-header { border-bottom: 1px solid; margin-top: 10px}";
@@ -1070,48 +1148,6 @@ var initdatagrid = function() {
                             + ", г." + readable_coordinates.column + ". (" + oldvalue +
                             " >> " + value + ").</br>");
                         editedCells.push({ t: current_table, r: rowBoundIndex, c: colid});
-/*                        if (data.valid === false) {
-                            current_edited_cell.valid = false;
-                        }
-                        else {
-                            //console.log(invalidCells);
-                            for (var i = 0; i < invalidCells.length; i++) {
-                                if (invalidCells[i].r == rowid && invalidCells[i].c == colid && invalidCells[i].t == current_table ) {
-                                    invalidCells.splice(i,1);
-                                }
-                            }
-                        }
-                        var protocol = '<div>Строка №' + row_number + ', графа №' + colid + '</div>';
-                        i = 1;
-                        if (typeof data.protocol !== 'undefined') {
-                            $.each(data.protocol, function(key, value) {
-                                if (value.result) {
-                                    b_color = "#9ddc97";
-                                    result = "Верно";
-                                }
-                                else {
-                                    b_color = "#ffa3a8";
-                                    result = "Ошибка";
-                                }
-                                rule = value.rule.trim();
-                                protocol += "<div id='showrule"+ i +"'><div class='showrule'>" + i + ". " + rule + "</div></div>";
-                                protocol += "<table class='control_result' style='border-color: "+ b_color +"; background-color:"+ b_color +";'><tr><td>Значение</td>";
-                                protocol += "<td>Знак сравнения</td><td>Контрольная сумма</td><td>Отклонение</td><th rowspan='2'>"+result+"</th></tr>";
-                                protocol += "<tr style='text-align: center'><td>"+value.left_part+"</td><td>"+value.boolean_readable+"</td><td>"+value.right_part_value+"</td>";
-                                protocol += "<td>"+value.deviation+"</td></tr></table>";
-
-                                i++;
-                            });
-                        }
-                        else {
-                            protocol += "Для данной ячейки правила контроля не определены</br>";
-                        }
-                        $("#cellvalidationprotocol").html(protocol);
-                        for (var j = 1; j < i; j++) {
-                            if ($("#showrule"+j).text().length > 300) {
-                                $("#showrule"+j).jqxPanel({ width: '100%', height: 50, theme: theme});
-                            }
-                        }*/
                         if (protocol_control_created) {
                             $(".inactual-protocol").show();
                             //$("#protocolcomment").html();
@@ -1121,9 +1157,6 @@ var initdatagrid = function() {
             },
             error: function (xhr, status, errorThrown) {
                 raiseError("Ошибка сохранения данных на сервере. " + xhr.status + ' (' + xhr.statusText + ') - ' + status + ". Обратитесь к администратору.");
-                //$("#currentError").text("Ошибка сохранения данных на сервере. " + xhr.status + ' (' + xhr.statusText + ') - '
-                  //  + status + ". Обратитесь к администратору.");
-                //$("#serverErrorNotification").jqxNotification("open");
             }
         });
     });
@@ -1157,10 +1190,19 @@ var initdatagrid = function() {
             cell_protocol_panel.append(header);
             for (i = 0; i < count_of_rules ; i++) {
 
-                cell_protocol_panel.append("<strong>Правило контроля: </strong><span>" + cellprotocol[i].rule.left_part_formula + ' '
-                    + cellprotocol[i].rule.boolean_sign + ' '
-                    + cellprotocol[i].rule.right_part_formula + "</span> ");
-                cell_protocol_panel.append(renderIterationProtocol(cellprotocol[i].result, cellprotocol[i].rule.boolean_sign, cellprotocol[i].rule.iteration_mode, cellprotocol[i].rule.level));
+                cell_protocol_panel.append("<strong>Правило контроля: </strong><span>" + cellprotocol[i].rule.formula + "</span>");
+
+                switch (cellprotocol[i].rule.function) {
+                    case 'compare' :
+                        cell_protocol_panel.append(renderCompareControl(cellprotocol[i].result, cellprotocol[i].rule.boolean_sign, cellprotocol[i].rule.iteration_mode, cellprotocol[i].rule.level));
+                        break;
+                    case 'fold' :
+                        cell_protocol_panel.append(renderFoldControl(cellprotocol[i].result, cellprotocol[i].rule.level));
+                        break;
+                    case 'interannual' :
+                        cell_protocol_panel.append(renderInterannualControl(cellprotocol[i].result, cellprotocol[i].rule.level));
+                        break;
+                }
                 if (cellprotocol[i].rule.comment !== '') {
                     cell_protocol_panel.append("<div style='margin-bottom: 5px'><strong>^ </strong><small>" + cellprotocol[i].rule.comment + "</small></div>");
                 }

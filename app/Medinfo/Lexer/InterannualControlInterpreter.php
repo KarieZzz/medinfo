@@ -62,7 +62,7 @@ class InterannualControlInterpreter extends ControlInterpreter
             $this->readableFormula = 'межгодовой контроль ячеек ' . implode(', ', $function_elements) ;
         } else {
             $function_elements = $this->writeReadableCellArray($this->root);
-            $this->readableFormula = 'межгодовой контроль ячеек ' .  implode(', ', $function_elements);
+            $this->readableFormula = 'межгодовой контроль ячеек ' .  $function_elements[0] . ' <=> ' . $function_elements[1];
 
 
         }

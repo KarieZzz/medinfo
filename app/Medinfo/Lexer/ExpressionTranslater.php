@@ -140,7 +140,6 @@ class ExpressionTranslater
             $currentNode->children[] = $operatorNode;
             $currentNode->children[] = $celladress;
         }
-
     }
 
     public function unsetStacked()
