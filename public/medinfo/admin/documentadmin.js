@@ -164,10 +164,18 @@ var getselecteddocuments = function () {
 };
 var getcheckedunits = function() {
     var ids = [];
-    var checkedRows = motree.jqxTreeGrid('getCheckedRows');
-    for (var i = 0; i < checkedRows.length; i++) {
-        // get a row.
-        ids.push(checkedRows[i].uid);
+    var checkedRows;
+    var i;
+    if (filter_mode == 1) {
+        checkedRows = motree.jqxTreeGrid('getCheckedRows');
+        for (i = 0; i < checkedRows.length; i++) {
+            ids.push(checkedRows[i].uid);
+        }
+    } else if (filter_mode == 2) {
+        checkedRows = grouptree.jqxTreeGrid('getCheckedRows');
+        for (i = 0; i < checkedRows.length; i++) {
+            ids.push(checkedRows[i].uid);
+        }
     }
     return ids;
 };
@@ -194,12 +202,12 @@ var initnewdocumentwindow = function () {
         cancelButton: $('#cancelButton'),
         position: { x: 310, y: 125 },
         initContent: function () {
-            $('#selectPrimary').jqxCheckBox({ width: '150px' });
-            $('#selectAggregate').jqxCheckBox({ width: '150px' });
             savebutton.jqxButton({ width: '80px', disabled: false });
             $('#cancelButton').jqxButton({ width: '80px', disabled: false });
         }
     });
+    $('#selectPrimary').jqxCheckBox({ width: '150px' });
+    $('#selectAggregate').jqxCheckBox({ width: '150px' });
     $("#selectForm").jqxDropDownList({
         theme: theme,
         checkboxes: true,
@@ -254,8 +262,8 @@ var initnewdocumentwindow = function () {
             raiseError("Не выбрано ни одного типа создаваемых документов (первичные, сводные");
             return false;
         }
-        data = "&units=" + selectedunits + "&forms=" + selectedforms + "&period=" + selectedperiod + "&state=" + selectedstate;
-        data += "&primary=" + primary + "&aggregate=" + aggregate;
+        data = "&filter_mode=" + filter_mode + "&units=" + selectedunits + "&forms=" + selectedforms + "&period=" + selectedperiod;
+        data += "&state=" + selectedstate + "&primary=" + primary + "&aggregate=" + aggregate;
         $.ajax({
             dataType: 'json',
             url: createdocuments_url,
@@ -318,6 +326,8 @@ var rendermotreetoolbar = function() {
     container.append(newdocument);
     //var newdocument = $("#newdocument");
     newdocument.on('click', function() {
+        $('#selectPrimary').jqxCheckBox('enable');
+        $('#selectAggregate').jqxCheckBox('uncheck');
         newdoc_form.jqxWindow('open');
     });
     toolbar.append(container);
@@ -325,14 +335,18 @@ var rendermotreetoolbar = function() {
 
 var rendergrouptreetoolbar = function() {
     var toolbar = $("#filtergroupTree");
-    var container = $("<div style='display: none' id='buttonplus'></div>");
+    var container = $("<div style='display: none' id='groupbuttonplus'></div>");
     var newdoc_form = $('#newForm');
     var newdocument = $("<i style='height: 14px' class='fa fa-wpforms fa-lg' title='Новый документ'></i>");
     newdocument.jqxButton({ theme: theme });
     container.append(newdocument);
     //var newdocument = $("#newdocument");
     newdocument.on('click', function() {
+        $("#selectForm").jqxDropDownList('uncheckAll');
+        $('#selectPrimary').jqxCheckBox('disable');
+        $('#selectAggregate').jqxCheckBox('check');
         newdoc_form.jqxWindow('open');
+
     });
     toolbar.append(container);
 };
@@ -415,7 +429,7 @@ var initgrouptree = function() {
             columnsResize: true,
             ready: function()
             {
-                // expand row with 'EmployeeKey = 32'
+                rendergrouptreetoolbar();
                 grouptree.jqxTreeGrid('expandRow', 0);
             },
             columns: [
@@ -445,6 +459,22 @@ var initgrouptree = function() {
             return true;
         }
     );
+    grouptree.on('rowCheck', function (event) {
+        //$(this).jqxTreeGrid({ showToolbar: true });
+        $("#groupbuttonplus").show();
+    });
+    grouptree.on('rowUncheck', function (event) {
+        var checked = $(this).jqxTreeGrid('getCheckedRows');
+        if (checked.length > 0) {
+            //$(this).jqxTreeGrid({ showToolbar: true });
+            $("#groupbuttonplus").show();
+        } else {
+            //$(this).jqxTreeGrid({ showToolbar: false });
+            $("#groupbuttonplus").hide();
+        }
+
+    });
+
 };
 // инициализация вкладок-фильтров с элементами управления
 var initfiltertabs = function() {

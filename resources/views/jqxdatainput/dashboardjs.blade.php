@@ -1,6 +1,6 @@
 <script type="text/javascript">
-var ou_name = '{{ $current_unit->unit_name }}';
-var ou_code = '{{ $current_unit->unit_code }}';
+var ou_name = "{{ preg_replace('/[\r\n\t]/', '', $current_unit->unit_name) }}";
+var ou_code = "{{ $current_unit->unit_code }}";
 var doc_id = '{{ $document->id }}';
 var doc_type = '{{ $document->dtype }}';
 var form_name = '{{ $form->form_name }}';

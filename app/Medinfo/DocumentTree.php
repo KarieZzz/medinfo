@@ -57,18 +57,6 @@ class DocumentTree
     }
 
     public function setScopes() {
-        //$s = array();
-        //$f = array();
-        //$p = array();
-/*        foreach($this->states as $state) {
-            $s[] = substr($state, 2);
-        }*/
-/*        foreach($this->forms as $form) {
-            $f[] = substr($form, 1);
-        }*/
-/*        foreach($this->periods as $period) {
-            $p[] = substr($period, 1);
-        }*/
         if (count($this->dtypes) > 0 ) {
             $this->scopes['t'] = !empty(implode(",", $this->dtypes)) ?  ' AND d.dtype in (' . implode(",", $this->dtypes) . ')' : ' AND d.type = 0 ';
         }
@@ -86,7 +74,6 @@ class DocumentTree
     public function get_descendants()
     {
         $this->by_territory($this->worker_scope);
-        //dd($this->scopes);
         if ($this->filter_mode == 1) {
             $this->by_territory($this->top_node);
         } elseif ($this->filter_mode == 2) {
@@ -94,7 +81,6 @@ class DocumentTree
         } else {
             throw new \Exception("Недопустимый режим выбора документов");
         }
-        //dd($this->scopes);
     }
 
 
@@ -134,11 +120,9 @@ class DocumentTree
     private function tree_element($parent) {
 
         $lev_query = "SELECT id FROM mo_hierarchy WHERE parent_id = $parent";
-
 /*        $lev_query = "SELECT id FROM mo_hierarchy WHERE parent_id = $parent
           UNION SELECT id FROM unit_groups WHERE parent_id = $parent
           UNION SELECT ou_id FROM unit_group_members WHERE group_id = $parent";*/
-
 /*        $lev_query = "
           SELECT ou_id AS id FROM unit_group_members WHERE group_id = $parent";*/
         //dd($lev_query);
@@ -173,7 +157,6 @@ class DocumentTree
               ORDER BY u.unit_code, f.form_code, p.name";
             //echo $doc_query;
             $this->documents = DB::select($doc_query);
-
             if ($this->filter_mode == 2 ) {
                 $group_doc_query = "SELECT d.id, u.group_code AS unit_code, u.group_name AS unit_name, f.form_code,
                   f.form_name, s.name state, p.name period, t.name doctype,
@@ -191,10 +174,7 @@ class DocumentTree
                 $documents_by_groups = DB::select($group_doc_query);
                 //dd($documents_by_groups );
                 $this->documents = array_merge($this->documents, $documents_by_groups);
-
-
             }
-
             //dd($this->documents);
             return $this->documents;
         }
@@ -234,29 +214,10 @@ class DocumentTree
                 $res = array_merge($res, $aggregates_by_groups);
 
             }
-
-
-
             return $res;
         }
         else {
             return null;
         }
     }
-
-/*    public function get_filled_documents()
-    {
-        foreach ($this->periods as $period) {
-            $edited_documents = array();
-            $filled_docs_query = "SELECT d.nl2, t.table_code FROM $period d
-              LEFT JOIN mi_table t on (d.nl2 = t.table_id)
-              LEFT JOIN mi_form f on (t.form_id = f.form_id)
-              LEFT JOIN mi_document doc on (f.form_id = doc.form_id)
-              WHERE d.nl0 = {$lpu->ou_id} AND f.form_id = {$form->form_id} GROUP BY d.nl2";
-            $filled_tables_exec = $this->dba->query($filled_docs_query);
-            while ($row = $filled_tables_exec->fetch_row()) {
-                $edited_documents[] = $row[0];
-            }
-        }
-    }*/
 }

@@ -55,8 +55,7 @@ var datasources = function() {
             { name: 'filled', type: 'bool' }
         ],
         id: 'id',
-        url: docsource_url+'&filter_mode='+filter_mode+'&ou='+current_top_level_node+'&states='
-            +checkedstates.join()+'&forms='+checkedforms.join()+'&periods='+checkedperiods.join(),
+        url: docsource_url + filtersource(),
         root: 'data'
     };
     aggregate_source =
@@ -118,7 +117,7 @@ var updatedocumenttable = function() {
     var states = checkedstates.join();
     var forms = checkedforms.join();
     var periods = checkedperiods.join();
-    var new_filter =  '&filter_mode=' + filter_mode + '&ou=' +current_top_level_node + '&states='+states + '&forms='+forms + '&periods=' + periods;
+    var new_filter =  filtersource();
     var new_doc_url = docsource_url + new_filter;
     var new_aggr_url = aggrsource_url + new_filter;
     if (new_doc_url != old_doc_url) {
@@ -147,14 +146,14 @@ var aggregatedata = function() {
         method: "PATCH",
         //data: data,
         success: function (data, status, xhr) {
-            if (data.affected_cells) {
+            if (typeof data.affected_cells !== 'undefined') {
                 if (data.affected_cells > 0) {
                     raiseInfo("Сведение данных завершено");
                     rowdata.aggregated_at = data.aggregated_at;
                     agrid.jqxGrid('updaterow', row_id, rowdata);
                 }
                 else {
-                    raiseError("Сведение данных не выполнено! Отсутствуют данные в первичных документах");
+                    raiseError("Отсутствуют данные в первичных документах");
                 }
             }
             else {
@@ -377,17 +376,22 @@ var rendertoolbar = function (toolbar) {
      }
      });*/
     refresh_list.click(function () {
-        var states = checkedstates.join();
-        var forms = checkedforms.join();
-        var periods = checkedperiods.join();
-        var new_filter =  '&ou=' +current_top_level_node +'&states='+states+'&forms='+forms+'&periods=' + periods;
-        var new_doc_url = docsource_url + new_filter;
+        var new_doc_url = docsource_url + filtersource();
         docsource.url = new_doc_url;
         dgrid.jqxGrid('updatebounddata');
         $("#DocumentMessages").html('');
         $("#DocumentAuditions").html('');
     });
 };
+
+var filtersource = function() {
+    var states = checkedstates.join();
+    var forms = checkedforms.join();
+    var periods = checkedperiods.join();
+    return '&filter_mode=' + filter_mode + '&ou=' +current_top_level_node +'&states='+states+'&forms='+forms+'&periods=' + periods;
+
+};
+
 // рендеринг панели инструментов для таблицы сводных документов
 var renderaggregatetoolbar = function(toolbar) {
     var me = this;
@@ -494,10 +498,7 @@ var renderaggregatetoolbar = function(toolbar) {
         }
     });
     refresh_list.click(function () {
-        var forms = checkedforms.join();
-        var periods = checkedperiods.join();
-        var new_filter =  '&ou=' +current_top_level_node +'&forms='+forms+'&periods=' + periods;
-        aggregate_source.url = aggrsource_url + new_filter;
+        aggregate_source.url = aggrsource_url + filtersource();
         agrid.jqxGrid('updatebounddata');
     });
 };

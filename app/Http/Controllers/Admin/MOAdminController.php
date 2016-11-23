@@ -49,7 +49,7 @@ class MOAdminController extends Controller
         $newunit = new Unit();
         $newunit->parent_id = $request->parent_id;
         $newunit->unit_code = $request->unit_code;
-        $newunit->unit_name = $request->unit_name;
+        $newunit->unit_name = preg_replace('/[\r\n\t]/', '', $request->unit_name);
         $newunit->inn =  empty($request->inn) ? null : $request->inn;
         $newunit->node_type = $request->node_type;
         $newunit->report = $request->report;
@@ -91,7 +91,7 @@ class MOAdminController extends Controller
         );
         $unit->parent_id = $request->parent_id;
         $unit->unit_code = $request->unit_code;
-        $unit->unit_name = $request->unit_name;
+        $unit->unit_name = preg_replace('/[\r\n\t]/', '', $request->unit_name);
         $unit->inn =  empty($request->inn) ? null : $request->inn;
         $unit->node_type = $request->node_type;
         $unit->report = $request->report;

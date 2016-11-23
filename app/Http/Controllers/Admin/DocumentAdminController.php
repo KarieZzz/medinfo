@@ -71,6 +71,9 @@ class DocumentAdminController extends Controller
 
     public function createDocuments(Request $request)
     {
+        $mode = $request->filter_mode;
+        $allowprimary = false;
+        $allowaggregate = false;
         $units = explode(",", $request->units);
         $forms = explode(",", $request->forms);
         $create_primary = $request->primary;
@@ -80,30 +83,39 @@ class DocumentAdminController extends Controller
         $i = 0;
         $duplicate = 0;
         foreach ($units as $unit_id) {
-            $unit = Unit::find($unit_id);
+            if ($mode == 1) {
+                $unit = Unit::find($unit_id);
+                $unit->report ? $allowprimary = true : $allowprimary = false;
+                $unit->aggregate ? $allowaggregate = true : $allowaggregate = false;
+            }  elseif ($mode == 2) {
+                $allowprimary = false;
+                $allowaggregate = true;
+                $unit = UnitGroup::find($unit_id);
+            }
             foreach ($forms as $form_id) {
-                $newdoc = ['ou_id' => $unit_id, 'form_id' => $form_id , 'period_id' => $period_id, 'state' => $initial_state ];
-                if ($create_primary && $unit->report) {
+                $newdoc = ['ou_id' => $unit->id, 'form_id' => $form_id , 'period_id' => $period_id, 'state' => $initial_state ];
+
+                if ($create_primary && $allowprimary) {
                     $newdoc['dtype'] = 1;
                     try {
                         Document::create($newdoc);
                         $i++;
                     } catch (\Illuminate\Database\QueryException $e) {
-                        $errorCode = $e->errorInfo[1];
-                        // duplicate key value - код ошибки 7 при использовании PostgreSQL
-                        if($errorCode == 7){
+                        $errorCode = $e->errorInfo[0];
+                        // duplicate key value - код ошибки при использовании PostgreSQL
+                        if($errorCode == '23505'){
                             $duplicate++;
                         }
                     }
                 }
-                if ($create_aggregate && $unit->aggregate) {
+                if ($create_aggregate && $allowaggregate) {
                     $newdoc['dtype'] = 2;
                     try {
                         Document::create($newdoc);
                         $i++;
                     } catch (\Illuminate\Database\QueryException $e) {
-                        $errorCode = $e->errorInfo[1];
-                        if($errorCode == 7){
+                        $errorCode = $e->errorInfo[0];
+                        if($errorCode == '23505'){
                             $duplicate++;
                         }
                     }

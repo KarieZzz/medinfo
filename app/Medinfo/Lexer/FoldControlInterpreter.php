@@ -49,10 +49,10 @@ class FoldControlInterpreter extends ControlInterpreter
 
     public function exec(Document $document)
     {
-
+        //dd("Функция проверки кратности");
         $this->document = $document;
-
         $this->results['valid'] = true;
+        $this->results['not_in_scope'] = false;
         $this->results['iteration_mode'] = $this->iterationMode;
         foreach($this->cellarray as $key => $cell) {
             try {

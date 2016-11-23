@@ -82,9 +82,23 @@ class ControlFunctionParser extends Parser {
         $this->currentNode = $r;
         $this->match(ControlFunctionLexer::NAME);
         $this->match(ControlFunctionLexer::LPARENTH);
-        $this->diapason(); // Первый аргумент - диапазон ячеек
+        if ($this->lookahead->type == ControlFunctionLexer::NAME ) {
+            $this->diapason(); // Первый аргумент - диапазон ячеек
+        } elseif ($this->lookahead->type == ControlFunctionLexer::CELLADRESS) {
+            $this->celladress(); // либо адрес ячейки текущего документа
+        }
         $this->match(ControlFunctionLexer::COMMA);
-        $this->threshold(); // Второй аргумент - пороговое значение отклонения
+        if ($this->lookahead->type == ControlFunctionLexer::NUMBER ) {
+            $this->threshold(); // Второй аргумент - пороговое значение отклонения
+        } elseif ($this->lookahead->type == ControlFunctionLexer::CELLADRESS) {
+            $this->celladress(); // / либо адрес ячейки прошлогоднего документа
+        }
+
+        //dd($this);
+        if ($this->lookahead->type == ControlFunctionLexer::COMMA ) {
+            $this->match(ControlFunctionLexer::COMMA);
+            $this->threshold(); // Третий аргумент - пороговое значение отклонения
+        }
         $this->match(ControlFunctionLexer::RPARENTH);
         $this->currentNode = $o;
         return $this->root;

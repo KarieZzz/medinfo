@@ -132,7 +132,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=001') }}"></script>
+    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=003') }}"></script>
 @endpush
 
 @section('inlinejs')
