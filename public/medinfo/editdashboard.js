@@ -1189,9 +1189,7 @@ var initdatagrid = function() {
 
             cell_protocol_panel.append(header);
             for (i = 0; i < count_of_rules ; i++) {
-
                 cell_protocol_panel.append("<strong>Правило контроля: </strong><span>" + cellprotocol[i].rule.formula + "</span>");
-
                 switch (cellprotocol[i].rule.function) {
                     case 'compare' :
                         cell_protocol_panel.append(renderCompareControl(cellprotocol[i].result, cellprotocol[i].rule.boolean_sign, cellprotocol[i].rule.iteration_mode, cellprotocol[i].rule.level));

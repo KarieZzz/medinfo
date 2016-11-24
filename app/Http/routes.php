@@ -36,6 +36,8 @@ Route::group(['middleware' => ['web']], function () {
 
     // Шаблоны на основе jQWidgets для администрирования
     Route::get('admin', 'Admin\AdminController@index');
+    Route::get('test_export', 'Admin\MedstatExportController@test_export');
+
     // Менеджер пользователей - исполнителей
     Route::get('admin/workers', 'Admin\WorkerAdmin@index' );
     Route::get('admin/fetch_workers', 'Admin\WorkerAdmin@fetch_workers');
@@ -88,6 +90,7 @@ Route::group(['middleware' => ['web']], function () {
     Route::post('admin/tables/create', 'Admin\TableAdminController@store');
     Route::patch('admin/tables/update', 'Admin\TableAdminController@update');
     Route::delete('admin/tables/delete/{table}', 'Admin\TableAdminController@delete');
+
     // Менеджер строк и граф
     Route::get('admin/rc', 'Admin\RowColumnAdminController@index');
     Route::get('admin/rc/fetchrows/{table}', 'Admin\RowColumnAdminController@fetchRows');
@@ -99,6 +102,7 @@ Route::group(['middleware' => ['web']], function () {
     Route::patch('admin/rc/columnupdate/{column}', 'Admin\RowColumnAdminController@columnUpdate');
     Route::delete('admin/rc/columndelete/{column}', 'Admin\RowColumnAdminController@columnDelete');
     Route::post('admin/rc/columncreate', 'Admin\RowColumnAdminController@columnStore');
+
     // Менеджер нередактируемых ячеек
     Route::get('admin/necells/list', 'Admin\NECellAdminController@list');
     Route::get('admin/necells/conditions', 'Admin\NECellAdminController@conditions');

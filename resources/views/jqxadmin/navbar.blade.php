@@ -10,6 +10,7 @@
                     <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a href="/datainput">Ввод и корректировка</a></li>
+                        <li><a href="/medstatexport">Экспорт в Медстат</a></li>
                     </ul>
             </li>
             <li class="dropdown">
