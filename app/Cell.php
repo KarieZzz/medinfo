@@ -12,6 +12,21 @@ class Cell extends Model
         'doc_id', 'table_id', 'row_id', 'col_id', 'value',
     ];
 
+    public function table()
+    {
+        return $this->belongsTo('App\Table');
+    }
+
+    public function row()
+    {
+        return $this->belongsTo('App\Row');
+    }
+
+    public function column()
+    {
+        return $this->belongsTo('App\Column', 'col_id');
+    }
+
     public function scopeOfDTRC($query, $document, $table, $row, $column)
     {
         return $query
@@ -19,6 +34,27 @@ class Cell extends Model
             ->where('table_id', $table)
             ->where('row_id', $row)
             ->where('col_id', $column);
+    }
+
+    public function scopeOfDTR($query, $document, $table, $row)
+    {
+        return $query
+            ->where('doc_id', $document)
+            ->where('table_id', $table)
+            ->where('row_id', $row);
+    }
+
+    public function scopeOfDocument($query, $document)
+    {
+        return $query
+            ->where('doc_id', $document);
+    }
+
+    public function scopeOfDocumentTable($query, $document, $table)
+    {
+        return $query
+            ->where('doc_id', $document)
+            ->where('table_id', $table);
     }
 
     public static function countOfCellsByTable(int $table)

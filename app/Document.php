@@ -23,6 +23,21 @@ class Document extends Model
     ];
     protected $dates = ['state_changed_at'];
 
+    public function form()
+    {
+        return $this->belongsTo('App\Form');
+    }
+
+    public function period()
+    {
+        return $this->belongsTo('App\Period');
+    }
+
+    public function unit()
+    {
+        return $this->belongsTo('App\Unit', 'ou_id');
+    }
+
     public function scopePrimary($query)
     {
         return $query->where('dtype', 1);

@@ -16,7 +16,9 @@ class ExcelExportController extends Controller
         $excel = new ExcelExport($document);
         //$excel->fillTables();
         $output = $excel->output();
-        return response()->download($output['storage_path'], $output['file_name'], $output['headers']);
+        return response()->download($output['storage_path'], $output['file_name']);
+        //return response()->download($output['storage_path'], $output['file_name'], $output['headers']);
+        //return response()->download($output['storage_path']);
     }
 
     public function dataTableExport(int $document, int $table)

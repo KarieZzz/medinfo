@@ -73,6 +73,12 @@ return [
             'visibility' => 'public',
         ],
 
+        'medstat_exports' => [
+            'driver' => 'local',
+            'root' => storage_path('app/exports/medstat'),
+            'visibility' => 'public',
+        ],
+
     ],
 
 ];

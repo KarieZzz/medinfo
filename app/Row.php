@@ -25,4 +25,10 @@ class Row extends Model
             ->orderBy('row_index')
             ->where('table_id', $table);
     }
+
+    public function scopeInMedstat($query)
+    {
+        return $query
+            ->whereNotNull('medstat_code');
+    }
 }
