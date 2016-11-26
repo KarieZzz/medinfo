@@ -91,7 +91,7 @@ initTableGrid = function() {
         //console.log(cells.length);
     //});
 
-    $('#tableGrid').on('cellselect',  function() {
+    grid.on('cellselect',  function() {
         var cells = $('#tableGrid').jqxGrid('getselectedcells');
         if (cellbeginedit) {
             clearTimeout(cellbeginedit);
@@ -101,7 +101,7 @@ initTableGrid = function() {
         }, 500);
     });
 
-    $('#tableGrid').on('cellvaluechanged', function (event) {
+    grid.on('cellvaluechanged', function (event) {
         var rowBoundIndex = args.rowindex;
         var rowid = $('#tableGrid').jqxGrid('getrowid', rowBoundIndex);
         var condition = $("#condition").val() !== ''  ? $("#condition").val() : 0 ;
@@ -134,13 +134,13 @@ initTableGrid = function() {
 fetchcellcondition = function() {
     $("#conditionInfo").html('Выделено ячеек: 0');
     var range = [];
-    var cells = $('#tableGrid').jqxGrid('getselectedcells');
+    var cells = grid.jqxGrid('getselectedcells');
     var selected_count = cells.length;
     var rowid;
     var cell;
     for (i = 0; i < selected_count; i++) {
-        rowid = $('#tableGrid').jqxGrid('getrowid', cells[i].rowindex);
-        cell = $('#tableGrid').jqxGrid('getcell', cells[i].rowindex, cells[i].datafield);
+        rowid = grid.jqxGrid('getrowid', cells[i].rowindex);
+        cell = grid.jqxGrid('getcell', cells[i].rowindex, cells[i].datafield);
         if (cell.value === true) {
             range.push(rowid + '_' + cells[i].datafield);
         }
@@ -209,13 +209,13 @@ updateTableGrid = function() {
             datafields = data.datafields;
             gridsource.datafields = datafields;
             gridsource.url = cellsfetch_url + current_table;
-            $("#tableGrid").jqxGrid( { columns: columns } );
-            $("#tableGrid").jqxGrid( { columngroups: columngroups } );
-            $('#tableGrid').jqxGrid('updatebounddata');
-            $("#tableGrid").jqxGrid('endupdate');
+            grid.jqxGrid( { columns: columns } );
+            grid.jqxGrid( { columngroups: columngroups } );
+            grid.jqxGrid('updatebounddata');
+            grid.jqxGrid('endupdate');
         },
         error: function (xhr, status, errorThrown) {
-            console.log("Ошибка загрузки данных по структуре таблиц");
+            raiseError("Ошибка загрузки данных по структуре таблиц");
         }
     });
 
@@ -236,7 +236,7 @@ setcellrange = function(noedit) {
     var newstate = noedit ? 1 : 0;
     var condition = $("#condition").val() !== ''  ? $("#condition").val() : 0 ;
     var range = [];
-    var cells = $('#tableGrid').jqxGrid('getselectedcells');
+    var cells = grid.jqxGrid('getselectedcells');
     var selected_count = cells.length;
     var rowid;
     for (i = 0; i < selected_count; i++) {
@@ -256,8 +256,8 @@ setcellrange = function(noedit) {
             } else {
                 raiseInfo(data.message);
             }
-            $("#tableGrid").jqxGrid('clearselection');
-            $("#tableGrid").jqxGrid('updatebounddata', 'data');
+            grid.jqxGrid('clearselection');
+            grid.jqxGrid('updatebounddata', 'data');
             $("#selectedInfo").html("Выделено ячеек: 0");
             $("#conditionInfo").html("Условия не определены");
         },

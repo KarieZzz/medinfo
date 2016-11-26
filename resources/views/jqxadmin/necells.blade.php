@@ -57,7 +57,7 @@
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
     <script src="{{ asset('/medinfo/admin/tablepicker.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/necellsadmin.js') }}"></script>
+    <script src="{{ asset('/medinfo/admin/necellsadmin.js?v=001') }}"></script>
 @endpush
 
 @section('inlinejs')

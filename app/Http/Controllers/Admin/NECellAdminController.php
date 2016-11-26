@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
+use App\Album;
 use App\Form;
 use App\Table;
 use App\NECell;
@@ -38,7 +39,11 @@ class NECellAdminController extends Controller
 
     public function fetchGrid(Table $table)
     {
-        return TableEditing::fetchDataForTableRenedering($table, 'checkbox', false);
+        $default_album = Album::Default()->first(['id']);
+        if (!$default_album) {
+            $default_album = Album::find(config('app.default_album'));
+        }
+        return TableEditing::fetchDataForTableRenedering($table, $default_album, 'checkbox', false);
     }
 
     public function fetchValues(Table $table)

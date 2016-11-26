@@ -7,6 +7,7 @@
  */
 
 namespace App\Medinfo;
+
 use App\Album;
 use App\Column;
 use App\Table;
