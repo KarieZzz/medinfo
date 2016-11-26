@@ -137,6 +137,8 @@ class ControlInterpreter
     {
         $expession_elements = [];
         $matches = ExpressionTranslater::parseCelladress($adress_token->text);
+        //var_dump($matches);
+
         $form_code = $matches['f'];
         $table_code = $matches['t'];
         $row_code = $matches['r'];
@@ -147,11 +149,13 @@ class ControlInterpreter
         $row_code = mb_substr($elements[2]->text, 1);
         $column_code = mb_substr($elements[3]->text, 1);*/
 
-        if ( $this->form->form_code !==  $form_code && !empty($form_code)) {
+        //if ( $this->form->form_code !==  $form_code && !empty($form_code)) {
+        if ( $form_code ) {
             $expession_elements[] = 'ф.' . $form_code . $this->pad;
         }
 
-        if ( $this->table->table_code !==  $table_code && !empty($table_code)) {
+        //if ( $this->table->table_code !==  $table_code && !empty($table_code)) {
+        if ( $table_code ) {
             $expession_elements[] = 'т.' . $table_code . $this->pad;
         }
 
@@ -456,13 +460,14 @@ class ControlInterpreter
             throw new InterpreterException("На этом этапе интерпретации функции контроля не допускаются неполные ссылки. Адрес ячейки " . $celladress->tokens[0]->text);
         }
         // Проверяем относится ли редуцируемая ячейка к текущей таблице
-
+        //dd($parsed_adress);
         if ($this->form->form_code == $parsed_adress['f']) {
             $doc_id = $this->document->id;
             $form = $this->form;
             $f_id = $this->form->id;
         } else {
             $form = Form::OfCode($parsed_adress['f'])->first();
+            //dd($form);
             if (is_null($form)) {
                 ExpressionTranslater::numberizeCelladress($celladress);
                 throw new InterpreterException("Форма " . $parsed_adress['f'] . " не существует", 1001);
@@ -478,18 +483,19 @@ class ControlInterpreter
             $doc_id = $document->id;
             $f_id = $form->id;
         }
-        if ($this->table->table_code == $parsed_adress['t']) {
-            $t_id = $this->table->id;
-            $table = $this->table;
-        } else {
-            $table = Table::OfFormTableCode($f_id, $parsed_adress['t'])->first();
-            if (is_null($table)) {
-                ExpressionTranslater::numberizeCelladress($celladress);
-                throw new InterpreterException("Таблицы " . $parsed_adress['t'] . " нет в составе формы " . $parsed_adress['f'], 1002);
-            }
-            $t_id = $table->id;
-        }
 
+        //if ($this->table->table_code == $parsed_adress['t']) {
+          //  $t_id = $this->table->id;
+            //$table = $this->table;
+        //} else {
+        $table = Table::OfFormTableCode($f_id, $parsed_adress['t'])->first();
+        if (is_null($table)) {
+            ExpressionTranslater::numberizeCelladress($celladress);
+            throw new InterpreterException("Таблицы " . $parsed_adress['t'] . " нет в составе формы " . $parsed_adress['f'], 1002);
+        }
+        $t_id = $table->id;
+        //}
+        //dd($table->form);
         $row = Row::ofTable($t_id)->where('row_code', $parsed_adress['r'])->first();
         if (is_null($row)) {
             ExpressionTranslater::numberizeCelladress($celladress);

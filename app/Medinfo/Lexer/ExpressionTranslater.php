@@ -151,7 +151,8 @@ class ExpressionTranslater
 
     public static function parseCelladress($celladress)
     {
-        $correct = preg_match('/(?:Ф(?P<f>[\w.-]*))?(?:Т(?P<t>[\w.-]*))?(?:С(?P<r>[\w.-]*))?(?:Г(?P<c>\d{1,2}))?/', $celladress, $matches);
+        //$correct = preg_match('/(?:Ф(?P<f>[\w.-]*))?(?:Т(?P<t>[\w.-]*))?(?:С(?P<r>[\w.-]*))?(?:Г(?P<c>\d{1,2}))?/u', $celladress, $matches);
+        $correct = preg_match('/(?:Ф(?P<f>[а-я0-9.-]*))?(?:Т(?P<t>[а-я0-9.-]*))?(?:С(?P<r>[0-9.-]*))?(?:Г(?P<c>\d{1,2}))?/u', $celladress, $matches);
         if (!$correct) {
             throw new InterpreterException("Указан недопустимый адрес ячеейки " . $celladress);
         }

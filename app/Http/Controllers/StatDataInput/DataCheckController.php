@@ -62,14 +62,16 @@ class DataCheckController extends Controller
         //$i = "межгодовой(С1Г3, С3Г3,  0)";
         //$i = "кратность(диапазон(С01Г3:С02Г6),  .25)";
         //$i = "кратность(диапазон(С01Г3:С02Г6),  .25)";
-        $i = 'зависимость(Г3, сумма(Г4:Г8), группы(*), строки(*))';
+        //$i = 'зависимость(Г3, сумма(Г4:Г8), группы(*), строки(*))';
+        $i = 'сравнение(Ф36-плТ2100С6Г4, Ф36-плТ2100С6Г4+Ф36-плТ2140С5Г4, >=, группы(*), графы())4';
 
         //try {
             //$table = Table::find(10);
             //$table = Table::find(115); // т. 2120 32 формы
             //$table = Table::find(950); // т. 2120 54 формы
             //$table = Table::find(948); // т. 2101 54 формы
-            $table = Table::find(420); // т. 2500 37 формы
+            //$table = Table::find(420); // т. 2500 37 формы
+            $table = Table::find(179); // т. 2100 37 формы
             //$table = Table::find(113); // т. 3000 12 формы
             //$document = Document::find(7011);
             //$document = Document::find(7062);
@@ -81,9 +83,9 @@ class DataCheckController extends Controller
             $parser = new ControlFunctionParser($lexer);
             $r = $parser->run();
             //dd($r);
-            //$interpret = new CompareControlInterpreter($r, $table);
+            $interpret = new CompareControlInterpreter($r, $table);
             //$interpret = new InterannualControlInterpreter($r, $table);
-            $interpret = new DependencyControlInterpreter($r, $table);
+            //$interpret = new DependencyControlInterpreter($r, $table);
             //$interpret = new FoldControlInterpreter($r, $table);
             //dd($interpret);
             dd( $interpret->exec($document));
