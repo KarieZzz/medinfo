@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\StatDataInput;
 
 use App\Document;
+use App\Medinfo\Lexer\DependencyControlInterpreter;
 use App\Medinfo\Lexer\FoldControlInterpreter;
 use App\Medinfo\Lexer\InterannualControlInterpreter;
 use Illuminate\Http\Request;
@@ -58,27 +59,31 @@ class DataCheckController extends Controller
         //$i = "сравнение(сумма(С11, С16:С18, С20) - сумма(Ф30Т1100С11Г3, Ф30Т1100С13Г3:Ф30Т1100С15Г3)- сумма(Ф30Т1100С11Г3, Ф30Т1100С13Г3:Ф30Т1100С15Г3),  Ф32Т2120С22Г3, <=, группы(*), графы(3))";
         //$i = "сравнение(сумма(Ф32Т2120С16Г3:Ф32Т2120С18Г3),  Ф32Т2120С22Г3, >=, группы(*), графы())";
         //$i = "межгодовой(диапазон(С11Г3, С16Г3:С18Г3, С20Г3, С32Г3, С16Г3:С18Г3),  20)";
-        $i = "межгодовой(С1Г3, С3Г3,  0)";
+        //$i = "межгодовой(С1Г3, С3Г3,  0)";
         //$i = "кратность(диапазон(С01Г3:С02Г6),  .25)";
         //$i = "кратность(диапазон(С01Г3:С02Г6),  .25)";
+        $i = 'зависимость(Г3, сумма(Г4:Г8), группы(*), строки(*))';
 
         //try {
             //$table = Table::find(10);
             //$table = Table::find(115); // т. 2120 32 формы
-            $table = Table::find(950); // т. 2120 54 формы
-            $table = Table::find(948); // т. 2101 54 формы
+            //$table = Table::find(950); // т. 2120 54 формы
+            //$table = Table::find(948); // т. 2101 54 формы
+            $table = Table::find(420); // т. 2500 37 формы
             //$table = Table::find(113); // т. 3000 12 формы
             //$document = Document::find(7011);
             //$document = Document::find(7062);
             //$document = Document::find(7758); // 12 форма
-            $document = Document::find(12402); // 54 форма
+            //$document = Document::find(12402); // 54 форма
+            $document = Document::find(10654); // 37 форма 2015
             //$document = Document::find(7015); // 32 форма
             $lexer = new ControlFunctionLexer($i);
             $parser = new ControlFunctionParser($lexer);
             $r = $parser->run();
             //dd($r);
             //$interpret = new CompareControlInterpreter($r, $table);
-            $interpret = new InterannualControlInterpreter($r, $table);
+            //$interpret = new InterannualControlInterpreter($r, $table);
+            $interpret = new DependencyControlInterpreter($r, $table);
             //$interpret = new FoldControlInterpreter($r, $table);
             //dd($interpret);
             dd( $interpret->exec($document));

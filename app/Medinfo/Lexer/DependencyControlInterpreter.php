@@ -34,18 +34,22 @@ class DependencyControlInterpreter extends CompareControlInterpreter
             $this->setIterationRange($this->root->children[3]->children[0]->children);
         }
         $this->prepareReadable();
-        $this->rewrite_summfunctions($this->lpExpressionRoot);
-        $this->rewrite_summfunctions($this->rpExpressionRoot);
-
+        $translater = new ExpressionTranslater($this->form, $this->table);
+        $translater->translate($this->lpExpressionRoot);
+        $translater->translate($this->rpExpressionRoot);
         if ($this->iterationMode) {
             foreach($this->iterationRange as $iteration) {
-                //var_dump($iteration);
+                $this->currentIterationLink = $iteration;
                 $lpRootCopy = unserialize(serialize($this->lpExpressionRoot)); // clone не работает, нужно разобраться
                 $rpRootCopy = unserialize(serialize($this->rpExpressionRoot));
-
-                $this->lpStack[] = $this->fillIncompleteLinks($lpRootCopy, $iteration);
-                $this->rpStack[] = $this->fillIncompleteLinks($rpRootCopy, $iteration);
+                $this->lpStack[] = $this->fillIncompleteLinks($lpRootCopy);
+                $this->rpStack[] = $this->fillIncompleteLinks($rpRootCopy);
             }
+        } else {
+            $this->currentIterationLink = 0;
+            $this->lpStack[] = $this->fillIncompleteLinks($this->lpExpressionRoot);
+            $this->rpStack[] = $this->fillIncompleteLinks($this->rpExpressionRoot);
+
         }
     }
 

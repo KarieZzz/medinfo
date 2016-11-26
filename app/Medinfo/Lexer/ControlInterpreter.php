@@ -389,7 +389,7 @@ class ControlInterpreter
         $incomplete_column_adresses = false;
         $rows = [];
         $columns = [];
-
+        //dd($sf);
 
         //$left_upper_corner_row = mb_substr($sf->children[0]->children[0]->tokens[2]->text, 1);
         $left_upper_corner = ExpressionTranslater::parseCelladress($sf->children[0]->children[0]->tokens[0]->text);

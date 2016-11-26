@@ -47,12 +47,14 @@ Route::group(['middleware' => ['web']], function () {
     Route::patch('admin/workers/update/{worker}', 'Admin\WorkerAdmin@worker_update');
     Route::patch('admin/workers/updateuserscope', 'Admin\WorkerAdmin@worker_scope_update');
     Route::delete('admin/workers/delete/{worker}', 'Admin\WorkerAdmin@worker_delete');
+
     // Менеджер организационных единиц
     Route::get('admin/units', 'Admin\MOAdminController@index');
     Route::get('admin/units/fetchunits', 'Admin\MOAdminController@fetchUnits');
     Route::post('admin/units/create', 'Admin\MOAdminController@unitStore');
     Route::patch('admin/units/update/{unit}', 'Admin\MOAdminController@unitUpdate');
     Route::delete('admin/units/delete/{unit}', 'Admin\MOAdminController@unitDelete');
+
     // Менеджер групп организационных единиц
     Route::get('admin/units/groups', 'Admin\UnitGroupAdminController@index');
     Route::get('admin/units/fetchgroups', 'Admin\UnitGroupAdminController@fetchGroups');
@@ -62,6 +64,7 @@ Route::group(['middleware' => ['web']], function () {
     Route::delete('admin/units/groupdelete/{group}', 'Admin\UnitGroupAdminController@delete');
     Route::post('admin/units/addmembers/{group}', 'Admin\UnitGroupAdminController@addMembers');
     Route::delete('admin/units/removemember/{member}', 'Admin\UnitGroupAdminController@removeMember');
+
     // Менеджер отчетных периодов
     Route::get('admin/periods', 'Admin\PeriodAdminController@index' );
     Route::get('admin/fetchperiods', 'Admin\PeriodAdminController@fetchPeriods' );
