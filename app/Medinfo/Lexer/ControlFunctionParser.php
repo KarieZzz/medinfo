@@ -236,7 +236,7 @@ class ControlFunctionParser extends Parser {
         $this->currentNode = $r;
 
         if ($this->lookahead->type == ControlFunctionLexer::MULTIPLY ) {
-            $this->all_rc();
+            $this->all();
         } else {
             while ($this->lookahead->type == ControlFunctionLexer::CELLADRESS) {
                 $this->cellarray_element();
@@ -315,13 +315,13 @@ class ControlFunctionParser extends Parser {
 
         $this->match(ControlFunctionLexer::NAME);
         $this->match(ControlFunctionLexer::LPARENTH);
-        $this->group_name();
+        $this->grouparray();
         $this->match(ControlFunctionLexer::RPARENTH);
 
         $this->currentNode = $o;
     }
 
-    public function group_name()
+    public function grouparray()
     {
         $r = new ControlFunctionParseTree(__FUNCTION__);
         $o = $this->currentNode;
@@ -329,12 +329,40 @@ class ControlFunctionParser extends Parser {
         $this->currentNode = $r;
 
         if ($this->lookahead->type == ControlFunctionLexer::MULTIPLY ) {
-            $this->match(ControlFunctionLexer::MULTIPLY);
-        } elseif ($this->lookahead->type == ControlFunctionLexer::NAME) {
-            $this->match(ControlFunctionLexer::NAME);
+            $this->all();
+        } else {
+            while ($this->lookahead->type == ControlFunctionLexer::NAME || $this->lookahead->type == ControlFunctionLexer::EXCLAMATION) {
+                $this->groupelement();
+                //$this->match(ControlFunctionLexer::NAME);
+                if ($this->lookahead->type !== ControlFunctionLexer::RPARENTH) {
+                    $this->match(ControlFunctionLexer::COMMA);
+                }
+            }
         }
+
         $this->currentNode = $o;
     }
+
+    public function groupelement() {
+        $r = new ControlFunctionParseTree(__FUNCTION__);
+        $o = $this->currentNode;
+        $this->currentNode->addChild($r);
+        $this->currentNode = $r;
+
+        if ($this->lookahead->type == ControlFunctionLexer::EXCLAMATION ) {
+            $this->currentNode->rule = 'excludedgroup';
+            $this->match(ControlFunctionLexer::EXCLAMATION);
+            $this->match(ControlFunctionLexer::NAME);
+        } elseif ($this->lookahead->type == ControlFunctionLexer::NAME ) {
+            $this->currentNode->rule = 'includedgroup';
+            $this->match(ControlFunctionLexer::NAME);
+        } else {
+            throw new ParserException("Ожидалось имя группы, восклицательный знак. Найдено: " . $this->lookahead, 1);
+        }
+
+        $this->currentNode = $o;
+    }
+
 
     public function iterations()
     {
@@ -359,7 +387,7 @@ class ControlFunctionParser extends Parser {
         $this->currentNode = $r;
 
         if ($this->lookahead->type == ControlFunctionLexer::MULTIPLY ) {
-            $this->all_rc();
+            $this->all();
         } elseif ($this->lookahead->type == ControlFunctionLexer::NUMBER) {
             $this->iteration_range();
         }
@@ -370,7 +398,7 @@ class ControlFunctionParser extends Parser {
         $this->currentNode = $o;
     }
 
-    public function all_rc()
+    public function all()
     {
         $r = new ControlFunctionParseTree(__FUNCTION__);
         $o = $this->currentNode;

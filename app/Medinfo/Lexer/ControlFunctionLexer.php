@@ -21,6 +21,7 @@ class ControlFunctionLexer extends Lexer {
     const COLUMNADRESS  = 16;
     const NUMBER        = 17;
     const CELLADRESS    = 18;
+    const EXCLAMATION   = 19;
 
     public static $tokenNames = [
         "n/a",
@@ -42,6 +43,7 @@ class ControlFunctionLexer extends Lexer {
         "COLUMNADRESS",
         "NUMBER",
         "CELLADRESS",
+        "EXCLAMATION",
     ];
     
     public function getTokenName($x)
@@ -132,6 +134,9 @@ class ControlFunctionLexer extends Lexer {
                 case '*' :
                     $this->consume();
                     return $this->tokenstack->push(self::MULTIPLY, '*');
+                case '!' :
+                    $this->consume();
+                    return $this->tokenstack->push(self::EXCLAMATION, '!');
                 case '/' :
                     $this->consume();
                     return $this->tokenstack->push(self::DIVIDE, '/');

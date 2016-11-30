@@ -22,11 +22,24 @@ class Unit extends Model
         return $this->belongsTo('App\Unit', 'parent_id', 'id');
     }
 
+    // Выбор Территорий
+    public function scopeTerritory($query)
+    {
+        return $query->where('node_type', 2);
+    }
+
     // Выбор Юрлиц
     public function scopeLegal($query)
     {
         return $query->where('node_type', 3);
     }
+
+    // Выбор Обособленных подразделений
+    public function scopeSubLegal($query)
+    {
+        return $query->where('node_type', 4);
+    }
+
     // Только незаблокированные единицы
     public function scopeActive($query)
     {

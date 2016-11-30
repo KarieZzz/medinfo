@@ -14,6 +14,7 @@ use App\Row;
 use App\Column;
 use App\Table;
 use App\Cell;
+use App\Unit;
 use App\UnitGroup;
 use App\UnitGroupMember;
 
@@ -23,6 +24,7 @@ class ControlInterpreter
     public $errors = [];
     public $errorStack = [];
     public $unitScope = []; // область приложения функции (группы учреждений)
+    public $allowedDocumentType;
     public $readableFormula; // отображение формулы контроля в более удобочитаемом виде
     //public $pad = '&thinsp;'; // тонкая шпация
     //public $pad = '&#8197;'; // четверть круглой
@@ -61,23 +63,89 @@ class ControlInterpreter
 
     public function exec(Document $document)  { }
 
-    public function setUnitScope($group_alias)
+    public function setUnitScope(ParseTree $grouparray)
     {
-        if ($group_alias == '*') {
-            return null;
+        //dd($grouparray);
+        $included_group = [];
+        $excluded_group = [];
+        $units_in_scope = [];
+        $units_notin_scope = [];
+
+        foreach ($grouparray->children as $element) {
+            if ($element->rule == 'all') {
+                return null;
+            } elseif ($element->rule == 'includedgroup') {
+                $included_group[] = $element->tokens[0]->text;
+            } elseif ($element->rule == 'excludedgroup') {
+                $excluded_group[] = $element->tokens[1]->text;
+            }
         }
-        $group = UnitGroup::OfSlug($group_alias)->first();
-        if (!$group) {
-            throw new \Exception("Группа медицинских организаций <" . $group_alias . "> не найдена");
+
+        //dd($excluded_group);
+
+        foreach ($included_group as $groupalias) {
+            $units_in_scope = array_merge($units_in_scope, $this->get_units($groupalias));
         }
-        return UnitGroupMember::OfGroup($group->id)->pluck('ou_id')->toArray();
+        $units_in_scope = array_unique($units_in_scope);
+
+        // Если нет включенных в контроль групп, убираем исключенные юниты из общего числа юнитов
+        if (count($excluded_group) > 0 && count($included_group) == 0 ) {
+            $units_in_scope = Unit::all()->pluck('id')->toArray(); // все юниты
+            $units_in_scope = array_merge($units_in_scope, UnitGroup::all()->pluck('id')->toArray()); // плюс все группы, что бы не выпали из контроля
+        }
+
+        foreach ($excluded_group as $groupalias) {
+            $units_notin_scope = array_merge($units_notin_scope, $this->get_units($groupalias));
+
+        }
+        $units_in_scope = array_diff($units_in_scope, $units_notin_scope); // отнимаем все исключаемые юниты;
+        //dd($units_in_scope);
+        return $units_in_scope;
+    }
+
+    public function get_units($groupalias)
+    {
+        $units = [];
+        switch ($groupalias) {
+            case 'сводные' :
+                $this->allowedDocumentType = 2;
+                break;
+            case 'первичные' :
+                $this->allowedDocumentType = 1;
+                break;
+            case 'оп' :
+            case 'обособподр' :
+                $units = Unit::SubLegal()->pluck('id')->toArray();
+                break;
+            case 'юл' :
+            case 'юрлица' :
+                $units = Unit::Legal()->pluck('id')->toArray();
+                break;
+            case 'тер' :
+            case 'территории' :
+                $units = Unit::Territory()->pluck('id')->toArray();
+                break;
+            default:
+                $group = UnitGroup::OfSlug($groupalias)->first();
+                if (!$group) {
+                    throw new \Exception("Группа медицинских организаций <" . $groupalias . "> не найдена");
+                }
+                $units = UnitGroupMember::OfGroup($group->id)->pluck('ou_id')->toArray();
+                break;
+        }
+        return $units;
     }
 
     public function inScope()
     {
+        if (!is_null($this->allowedDocumentType) && $this->document->dtype !== $this->allowedDocumentType) {
+            return false;
+        }
+
         if (is_null($this->unitScope)) {
             return true;
         }
+
         if (!in_array($this->document->ou_id, $this->unitScope)) {
             return false;
         }

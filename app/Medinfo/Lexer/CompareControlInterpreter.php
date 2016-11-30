@@ -21,8 +21,8 @@ class CompareControlInterpreter extends ControlInterpreter
         $this->lpExpressionRoot = $this->root->children[0];
         $this->rpExpressionRoot = $this->root->children[1];
         $this->boolean = $this->root->children[2]->tokens[0]->text;
-        if (isset($this->root->children[3]->children[0]->tokens[0])) {
-            $this->unitScope = $this->setUnitScope($this->root->children[3]->children[0]->tokens[0]->text);
+        if (isset($this->root->children[3]->children[0]->children[0])) {
+            $this->unitScope = $this->setUnitScope($this->root->children[3]->children[0]);
         }
         if (count($this->root->children[4]->children[0]->children)) {
             $this->iterationMode = $this->root->children[4]->tokens[0]->text == 'строки' ? 1 : 2;

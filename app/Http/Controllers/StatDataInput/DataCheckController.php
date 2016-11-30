@@ -63,7 +63,8 @@ class DataCheckController extends Controller
         //$i = "кратность(диапазон(С01Г3:С02Г6),  .25)";
         //$i = "кратность(диапазон(С01Г3:С02Г6),  .25)";
         //$i = 'зависимость(Г3, сумма(Г4:Г8), группы(*), строки(*))';
-        $i = 'сравнение(Ф36-плТ2100С6Г4, Ф36-плТ2100С6Г4+Ф36-плТ2140С5Г4, >=, группы(*), графы())4';
+        $i = 'сравнение(Ф36-плТ2100С6Г4, Ф36-плТ2100С6Г4+Ф36-плТ2140С5Г4, >=, группы(первичные, село, !оп), графы())';
+        //$i = 'сравнение(Ф36-плТ2100С6Г4, Ф36-плТ2100С6Г4+Ф36-плТ2140С5Г4, >=, группы(!юрлица), графы())';
 
         //try {
             //$table = Table::find(10);
@@ -77,7 +78,8 @@ class DataCheckController extends Controller
             //$document = Document::find(7062);
             //$document = Document::find(7758); // 12 форма
             //$document = Document::find(12402); // 54 форма
-            $document = Document::find(10654); // 37 форма 2015
+            //$document = Document::find(10654); // 37 форма 2015
+            $document = Document::find(8429); // 37 форма 2015 - Ольхонская районная больница
             //$document = Document::find(7015); // 32 форма
             $lexer = new ControlFunctionLexer($i);
             $parser = new ControlFunctionParser($lexer);

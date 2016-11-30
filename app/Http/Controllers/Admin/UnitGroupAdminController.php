@@ -49,7 +49,10 @@ class UnitGroupAdminController extends Controller
         $newgroup->group_code = $request->group_code;
         $newgroup->group_name = $request->group_name;
         $newgroup->slug = empty($request->slug) ?  str_slug($newgroup->group_name) : $request->slug;
-        $newgroup->save();
+        if (in_array($newgroup->slug, UnitGroup::$reserved_slugs)) {
+            return ['error' => 422, 'message' => 'Запись не сохранена. Псевдоним не должен совпадать с зарезервированными наименованиями '];
+        }
+        //$newgroup->save();
         try {
             $newgroup->save();
             return ['message' => 'Новая запись создана. Id:' . $newgroup->id];
@@ -80,7 +83,13 @@ class UnitGroupAdminController extends Controller
         $group->group_code = $request->group_code;
         $group->group_name = $request->group_name;
         $group->slug = $request->slug;
+
+        if (in_array($group->slug, UnitGroup::$reserved_slugs)) {
+            return ['error' => 422, 'message' => 'Запись не сохранена. Псевдоним не должен совпадать с зарезервированными наименованиями '];
+        }
+
         $result = [];
+
         try {
             $group->save();
             $result = ['message' => 'Запись id ' . $group->id . ' сохранена'];
