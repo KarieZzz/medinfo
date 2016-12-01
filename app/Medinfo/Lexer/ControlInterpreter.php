@@ -252,7 +252,7 @@ class ControlInterpreter
 
     public function setIterationRange(array $iteration_nodes)
     {
-        if ($iteration_nodes[0]->rule == 'all_rc') { // итерация по всем строкам или графам
+        if ($iteration_nodes[0]->rule == 'all') { // итерация по всем строкам или графам
             if ($this->iterationMode == 1) {
                 $this->iterationRange = Row::OfTable($this->table->id)->where('deleted', 0)->pluck('row_code')->toArray();
             } elseif ($this->iterationMode == 2) {
