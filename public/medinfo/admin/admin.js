@@ -67,4 +67,4 @@ initConfirmWindow = function() {
         confirm_action = event.args.dialogResult.OK;
     });
 
-}
+};

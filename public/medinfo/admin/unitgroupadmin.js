@@ -173,30 +173,8 @@ initgroupactions = function() {
             raiseError("Выберите запись для удаления");
             return false;
         }
-        var rowid = $("#unitGroupList").jqxGrid('getrowid', row);
+        currentgroup = $("#unitGroupList").jqxGrid('getrowid', row);
         raiseConfirm("<strong>Внимание!</strong> Выбранная группа будет удалена вместе со всеми входящими в состав элементами и созданными документами.", event);
-        $("#okButton").click(function () {
-            hideConfirm();
-            $.ajax({
-                dataType: 'json',
-                url: groupdelete_url + rowid,
-                method: "DELETE",
-                success: function (data, status, xhr) {
-                    if (data.group_deleted) {
-                        raiseInfo(data.message);
-                        $("#form")[0].reset();
-                        $("#unitGroupList").jqxGrid('updatebounddata', 'data');
-                        $("#unitGroupList").jqxGrid('clearselection');
-
-                    } else {
-                        raiseError(data.message);
-                    }
-                },
-                error: function (xhr, status, errorThrown) {
-                    raiseError('Ошибка удаления группы', xhr);
-                }
-            });
-        });
     });
 };
 
@@ -335,5 +313,26 @@ initdropdowns = function() {
         placeHolder: "Выберите группу:",
         width: 500,
         height: 34
+    });
+};
+
+performAction = function() {
+    $.ajax({
+        dataType: 'json',
+        url: groupdelete_url + currentgroup,
+        method: "DELETE",
+        success: function (data, status, xhr) {
+            if (typeof data.error != 'undefined') {
+                raiseError(data.message);
+            } else {
+                raiseInfo(data.message);
+                $("#form")[0].reset();
+                $("#unitGroupList").jqxGrid('updatebounddata', 'data');
+                $("#unitGroupList").jqxGrid('clearselection');
+            }
+        },
+        error: function (xhr, status, errorThrown) {
+            raiseError('Ошибка удаления группы', xhr);
+        }
     });
 };

@@ -48,6 +48,7 @@ class DashboardController extends Controller
         $editedtables = Table::editedTables($document->id);
         //$noteditablecells = NECellsFetch::where('f', $form->id)->select('t', 'r', 'c')->get();
         $noteditablecells = NECellsFetch::byOuId($current_unit->id, $form->id);
+        //dd($noteditablecells );
         $renderingtabledata = $this->composeDataForTablesRendering($form, $editedtables, $default_album);
         $laststate = $this->getLastState($worker, $document, $form);
         //return $datafortables;
