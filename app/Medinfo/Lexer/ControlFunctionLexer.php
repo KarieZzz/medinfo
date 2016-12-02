@@ -22,6 +22,7 @@ class ControlFunctionLexer extends Lexer {
     const NUMBER        = 17;
     const CELLADRESS    = 18;
     const EXCLAMATION   = 19;
+    const CODE          = 20;
 
     public static $tokenNames = [
         "n/a",
@@ -44,6 +45,7 @@ class ControlFunctionLexer extends Lexer {
         "NUMBER",
         "CELLADRESS",
         "EXCLAMATION",
+        "CODE",
     ];
     
     public function getTokenName($x)
@@ -203,10 +205,12 @@ class ControlFunctionLexer extends Lexer {
     {
         $buf = '';
         $decimal_separator = false;
+        $token_type = self::NUMBER;
         do {
             if ($this->c === '.') {
                 if ($decimal_separator) {
-                    throw new \Exception("Лишний десятичный разделитель в числе " . $buf);
+                    //$token_type = self::CODE;
+                    //throw new \Exception("Лишний десятичный разделитель в числе " . $buf);
                 } else {
                     $decimal_separator = true;
                 }
@@ -214,7 +218,7 @@ class ControlFunctionLexer extends Lexer {
             $buf .= $this->c;
             $this->consume();
         } while ($this->isNUMBER());
-        return $this->tokenstack->push(self::NUMBER, $buf);
+        return $this->tokenstack->push($token_type, $buf);
     }
 
     public function formAdress()
