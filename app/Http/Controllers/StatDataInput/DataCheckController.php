@@ -30,6 +30,7 @@ class DataCheckController extends Controller
 
     public function check_document(Document $document)
     {
+        set_time_limit(0);
         $form_protocol = [];
         $form_protocol['valid'] = true;
         $form_protocol['no_alerts'] = true;
