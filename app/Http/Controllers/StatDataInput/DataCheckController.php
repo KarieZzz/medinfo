@@ -63,8 +63,9 @@ class DataCheckController extends Controller
         //$i = "кратность(диапазон(С01Г3:С02Г6),  .25)";
         //$i = "кратность(диапазон(С01Г3:С02Г6),  .25)";
         //$i = 'зависимость(Г3, сумма(Г4:Г8), группы(*), строки(*))';
-        $i = 'сравнение(Ф36-плТ2100С6Г4, Ф36-плТ2100С6Г4+Ф36-плТ2140С5Г4, >=, группы(первичные, село, !оп), графы())';
+        //$i = 'сравнение(Ф36-плТ2100С6Г4, Ф36-плТ2100С6Г4+Ф36-плТ2140С5Г4, >=, группы(первичные, село, !оп), графы())';
         //$i = 'сравнение(Ф36-плТ2100С6Г4, Ф36-плТ2100С6Г4+Ф36-плТ2140С5Г4, >=, группы(!юрлица), графы())';
+        $i = 'зависимость(Г3, Г4, группы(*),  строки(*))';
 
         //try {
             //$table = Table::find(10);
@@ -72,22 +73,24 @@ class DataCheckController extends Controller
             //$table = Table::find(950); // т. 2120 54 формы
             //$table = Table::find(948); // т. 2101 54 формы
             //$table = Table::find(420); // т. 2500 37 формы
-            $table = Table::find(179); // т. 2100 37 формы
+            //$table = Table::find(179); // т. 2100 37 формы
+            $table = Table::find(5); // т. 2100 37 формы
             //$table = Table::find(113); // т. 3000 12 формы
             //$document = Document::find(7011);
             //$document = Document::find(7062);
             //$document = Document::find(7758); // 12 форма
             //$document = Document::find(12402); // 54 форма
             //$document = Document::find(10654); // 37 форма 2015
-            $document = Document::find(8429); // 37 форма 2015 - Ольхонская районная больница
+            //$document = Document::find(8429); // 37 форма 2015 - Ольхонская районная больница
+            $document = Document::find(9158); // 30 форма 2015 - Шелеховская районная больница
             //$document = Document::find(7015); // 32 форма
             $lexer = new ControlFunctionLexer($i);
             $parser = new ControlFunctionParser($lexer);
             $r = $parser->run();
             //dd($r);
-            $interpret = new CompareControlInterpreter($r, $table);
+            //$interpret = new CompareControlInterpreter($r, $table);
             //$interpret = new InterannualControlInterpreter($r, $table);
-            //$interpret = new DependencyControlInterpreter($r, $table);
+            $interpret = new DependencyControlInterpreter($r, $table);
             //$interpret = new FoldControlInterpreter($r, $table);
             //dd($interpret);
             dd( $interpret->exec($document));
