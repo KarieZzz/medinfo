@@ -130,6 +130,9 @@ class CeLLIterator
             }
         }
         $this->current_cell = 0;
+        //if (count($this->_all_cells == 0)) {
+          //  throw new \Exception("В текущей таблице \"" . $this->table->id . "\" нет ячеек с данными для итерации");
+        //}
         return $this->_all_cells;
     }
 

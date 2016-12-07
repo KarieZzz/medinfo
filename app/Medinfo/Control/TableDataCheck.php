@@ -22,6 +22,7 @@ class TableDataCheck
 
     public static function execute(Document $document, Table $table, $force_reload = false)
     {
+        set_time_limit(240);
         if (ControlHelper::CashedProtocolActual($document->id, $table->id) && !$force_reload) {
             $table_protocol = ControlHelper::loadProtocol($document->id, $table->id);
             return $table_protocol;

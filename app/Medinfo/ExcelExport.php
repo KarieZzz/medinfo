@@ -147,7 +147,12 @@ class ExcelExport
 
     private function fill_table($cellArrayToWrite, $cell_iterator)
     {
-        $cell_iterator->first();
+        try {
+            $cell_iterator->first();
+        } catch (\Exception $e) {
+            dd($cell_iterator);
+        }
+
         foreach ($cellArrayToWrite as $excel_cell) {
             $c['excel'] = $excel_cell;
             $c['mi'] = $cell_iterator->current();
