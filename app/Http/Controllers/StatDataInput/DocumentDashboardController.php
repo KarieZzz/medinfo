@@ -44,7 +44,8 @@ class DocumentDashboardController extends Controller
         $state_ids = $states->pluck('code');
         $periods = Period::orderBy('begin_date', 'desc')->get(['id', 'name']);
         // Периоды отображаемые по умолчанию (поставил последний и предпоследний по датам убывания)
-        $period_ids = $periods[0]->id . ',' . $periods[1]->id;
+        //$period_ids = $periods[0]->id . ',' . $periods[1]->id;
+        $period_ids = $periods[0]->id;
         return view('jqxdatainput.documentdashboard', compact('mo_tree', 'worker', 'worker_scope', 'periods', 'period_ids',
             'disabled_states', 'audit_permission', 'forms', 'form_ids', 'states', 'state_ids'));
     }
