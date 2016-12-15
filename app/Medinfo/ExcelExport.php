@@ -99,7 +99,7 @@ class ExcelExport
     {
         $path = storage_path('app/templates/excel/s' . $code .'.xlsx');
         if (!is_file($path)) {
-            throw new Exception('Файл шаблона отчета не существует');
+            throw new \Exception('Файл шаблона отчета не существует');
         }
         return $path;
     }

@@ -8,6 +8,9 @@
 
 namespace App\Medinfo;
 use App\Table;
+use App\Row;
+use App\Column;
+use App\Album;
 
 class CeLLIterator
 {
@@ -26,8 +29,22 @@ class CeLLIterator
     public function __construct(Table $table)
     {
         $this->table = $table;
-        $this->_rows = $this->table->rows->where('deleted', 0)->sortBy('row_index');
-        $this->_columns = $this->table->columns->where('deleted', 0)->sortBy('column_index');
+        $default_album = Album::Default()->first(['id']);
+        if (!$default_album) {
+            $default_album = Album::find(config('app.default_album'));
+        }
+        //$this->_rows = $this->table->rows->where('deleted', 0)->sortBy('row_index');
+
+        $this->_rows = Row::OfTable($table->id)->whereDoesntHave('excluded', function ($query) use($default_album) {
+            $query->where('album_id', $default_album->id)->orderBy('row_index');
+        })->get();
+
+        //$this->_columns = $this->table->columns->where('deleted', 0)->sortBy('column_index');
+        $this->_columns = Column::OfTable($table->id)->whereDoesntHave('excluded', function ($query) use($default_album) {
+            $query->where('album_id', $default_album->id)->orderBy('column_index');
+        })->get();
+
+
         $this->setCollection();
         //dd($this->_all_cells);
     }
