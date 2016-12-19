@@ -38,6 +38,11 @@ class Document extends Model
         return $this->belongsTo('App\Unit', 'ou_id');
     }
 
+    public function aggregate()
+    {
+        return $this->hasOne('App\Aggregate', 'doc_id');
+    }
+
     public function scopePrimary($query)
     {
         return $query->where('dtype', 1);

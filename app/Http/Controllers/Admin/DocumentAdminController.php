@@ -168,6 +168,7 @@ class DocumentAdminController extends Controller
     public function protect_aggregated(Request $request)
     {
         $documents = explode(",", $request->documents );
+        // TODO: Нужно решить устанавливать защищаемый статус только для сводных документов, или может быть пригодится для любых документов
         foreach ($documents as $document) {
             $aggregate = \App\Aggregate::firstOrCreate(['doc_id' => $document]);
             $aggregate->protected = 1;

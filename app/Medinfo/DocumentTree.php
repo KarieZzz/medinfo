@@ -144,22 +144,23 @@ class DocumentTree
         if (count($this->scopes) > 0 ) {
             $scopes = implode(" ", $this->scopes);
             $doc_query = "SELECT d.id, u.unit_code, u.unit_name, f.form_code,
-              f.form_name, s.name state, p.name period, t.name doctype,
+              f.form_name, s.name state, p.name period, t.name doctype, a.protected,
               CASE WHEN (SELECT sum(v.value) FROM statdata v where d.id = v.doc_id) > 0 THEN 1 ELSE 0 END filled
               FROM documents d
                 JOIN forms f on d.form_id = f.id
-                LEFT JOIN mo_hierarchy u on d.ou_id = u.id
-                JOIN dic_document_states s on d.state = CAST(s.code AS numeric)
-                JOIN dic_document_types t on d.dtype = CAST(t.code AS numeric)
-                JOIN periods p on d.period_id = p.id
+                LEFT JOIN mo_hierarchy u ON d.ou_id = u.id
+                JOIN dic_document_states s ON d.state = CAST(s.code AS numeric)
+                JOIN dic_document_types t ON d.dtype = CAST(t.code AS numeric)
+                JOIN periods p ON d.period_id = p.id
+                LEFT JOIN aggregates a ON a.doc_id = d.id
               WHERE 1=1 $scopes
-              GROUP BY d.id, u.unit_code, u.unit_name, f.form_code, f.form_name, p.name, s.name, t.name
+              GROUP BY d.id, u.unit_code, u.unit_name, f.form_code, f.form_name, p.name, s.name, t.name, a.protected
               ORDER BY u.unit_code, f.form_code, p.name";
             //echo $doc_query;
             $this->documents = DB::select($doc_query);
             if ($this->filter_mode == 2 ) {
                 $group_doc_query = "SELECT d.id, u.group_code AS unit_code, u.group_name AS unit_name, f.form_code,
-                  f.form_name, s.name state, p.name period, t.name doctype,
+                  f.form_name, s.name state, p.name period, t.name doctype, a.protected,
                   CASE WHEN (SELECT sum(v.value) FROM statdata v where d.id = v.doc_id) > 0 THEN 1 ELSE 0 END filled
                   FROM documents d
                     JOIN forms f on d.form_id = f.id
@@ -167,8 +168,9 @@ class DocumentTree
                     JOIN dic_document_states s on d.state = CAST(s.code AS numeric)
                     JOIN dic_document_types t on d.dtype = CAST(t.code AS numeric)
                     JOIN periods p on d.period_id = p.id
+                    LEFT JOIN aggregates a ON a.doc_id = d.id
                   WHERE d.ou_id = {$this->top_node} {$this->scopes['f']} {$this->scopes['p']} {$this->scopes['s']}
-                  GROUP BY d.id, u.group_code, u.group_name, f.form_code, f.form_name, p.name, s.name, t.name
+                  GROUP BY d.id, u.group_code, u.group_name, f.form_code, f.form_name, p.name, s.name, t.name, a.protected
                   ORDER BY f.form_code, p.name";
                 //echo $group_doc_query;
                 $documents_by_groups = DB::select($group_doc_query);

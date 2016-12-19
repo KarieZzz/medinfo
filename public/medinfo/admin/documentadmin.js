@@ -56,6 +56,7 @@ var datasources = function() {
             { name: 'period', type: 'string' },
             { name: 'form_code', type: 'string' },
             { name: 'state', type: 'string' },
+            { name: 'protected', type: 'bool' },
             { name: 'filled', type: 'bool' }
         ],
         id: 'id',
@@ -580,10 +581,11 @@ var initdocumentslist = function() {
             columns: [
                 { text: '№', datafield: 'id', width: '60px', cellsrenderer: linkrenderer },
                 { text: 'Тип', datafield: 'doctype' , width: '100px'},
-                { text: 'МО', datafield: 'unit_name', width: '400px' },
+                { text: 'МО', datafield: 'unit_name', width: '300px' },
                 { text: 'Период', datafield: 'period', width: '100px' },
                 { text: 'Форма', datafield: 'form_code', width: '100px'  },
                 { text: 'Статус', datafield: 'state' },
+                { text: 'Защищен', datafield: 'protected', columntype: 'checkbox', width: 100 },
                 { text: 'Данные', datafield: 'filled', columntype: 'checkbox', width: 100 }
             ]
         });

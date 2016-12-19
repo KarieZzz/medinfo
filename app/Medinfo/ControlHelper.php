@@ -16,8 +16,10 @@ class ControlHelper
 
     public static function CashedProtocolActual(int $document, int $table)
     {
-        $updated_at =  self::dataUpdatedAt($document, $table);
-
+        //$updated_at =  self::dataUpdatedAt($document, $table);
+        // Актуальность будем проверять по последней дате обновления всего документа по всем таблицам
+        // Иначе неадекватно используется кэш
+        $updated_at =  self::dataUpdatedAt($document);
         $cahed_at = self::protocolCashedAt($document, $table);
 
         return $cahed_at->gt($updated_at);
@@ -80,12 +82,13 @@ class ControlHelper
         return $protocol ? $protocol->cashed_at : Carbon::create(1900, 1, 1);
     }
 
-    public static function dataUpdatedAt(int $document, int $table)
+    public static function dataUpdatedAt(int $document)
     {
-        if (!$document || !$table) {
-            throw new \Exception("Не указан идентификатор таблицы для получения даты и времени сохранения данных");
+        if (!$document) {
+            throw new \Exception("Не указан идентификатор документа для получения даты и времени сохранения данных");
         }
-        $q = "SELECT MAX(updated_at) latest_edited FROM statdata WHERE doc_id = {$document} AND table_id = {$table}";
+        //$q = "SELECT MAX(updated_at) latest_edited FROM statdata WHERE doc_id = {$document} AND table_id = {$table}";
+        $q = "SELECT MAX(updated_at) latest_edited FROM statdata WHERE doc_id = {$document}";
         $updated_at = \DB::selectOne($q)->latest_edited;
         return $updated_at ? new Carbon($updated_at) : Carbon::create(1900, 1, 1);
     }
