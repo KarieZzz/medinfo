@@ -24,6 +24,12 @@ class AggregatesDashboardController extends DashboardController
 
     public function aggregateData(Document $document, int $unitgroup)
     {
+        $aggregate = Aggregate::find($document->id);
+        if ($aggregate->protected) {
+            $result['aggregate_status'] = 500;
+            $result['error_message'] =  'Данный документ защищен от повторного сведения';
+            return $result;
+        }
         $result = [];
         // перед сведением данных удаление старых данных
         Cell::where('doc_id', $document->id)->delete();

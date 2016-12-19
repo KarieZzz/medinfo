@@ -695,6 +695,36 @@ var initdocumentactions = function() {
             }
         });
     });
+    $("#protectAggregates").jqxButton ({ theme: theme});
+    $("#protectAggregates").click(function () {
+        var row_ids = noselected_error("Не выбрано ни одного документа защиты от повторного свода");
+        if (!row_ids) {
+            return false;
+        }
+        var data = "documents=" + row_ids;
+        var confirm_text = 'Подтвердите установку защиты от повторного свода для документов №№ ' + row_ids + '. \n';
+        if (!confirm(confirm_text)) {
+            return false;
+        }
+        $.ajax({
+            dataType: 'json',
+            url: protectaggregate_url,
+            method: "PATCH",
+            data: data,
+            success: function (data, status, xhr) {
+                if (data.statdata_erased == 1) {
+                    raiseInfo(data.comment);
+                }
+                dlist.jqxGrid('clearselection');
+                dlist.jqxGrid('updatebounddata');
+            },
+            error: function (xhr, status, errorThrown) {
+                var error_text = "Ошибка сохранения данных на сервере. " + xhr.status + ' (' + xhr.statusText + ') - ' + status + ". Обратитесь к администратору.";
+                raiseError(error_text);
+            }
+        });
+    });
+
 };
 var linkrenderer = function (row, column, value) {
     var html = "<div class='jqx-grid-cell-left-align' style='margin-top: 6px'>";

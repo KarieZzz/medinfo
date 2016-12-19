@@ -115,6 +115,7 @@ class CFunctionAdminController extends Controller
             $r = $parser->run();
             $callInterpreter = FunctionDispatcher::INTERPRETERNS . FunctionDispatcher::$interpreterNames[$parser->functionIndex];
             $interpreter = new $callInterpreter($r, $table);
+            //dd($interpreter);
             $compiled_cache = serialize($interpreter);
             $this->functionIndex = $parser->functionIndex;
             return $compiled_cache;

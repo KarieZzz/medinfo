@@ -141,6 +141,7 @@ Route::group(['middleware' => ['web']], function () {
     Route::delete('admin/deletedocuments', 'Admin\DocumentAdminController@deleteDocuments');
     Route::patch('admin/erasedocuments', 'Admin\DocumentAdminController@eraseStatData');
     Route::patch('admin/documentstatechange', 'Admin\DocumentAdminController@changeState');
+    Route::patch('admin/protectaggregates', 'Admin\DocumentAdminController@protect_aggregated');
 
     // Ввод и корректировка статданных
     // Рабочий стол - Первичные и сводные отчеты, сообщения, проверки и экспорт в эксель

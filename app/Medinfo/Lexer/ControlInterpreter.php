@@ -217,12 +217,10 @@ class ControlInterpreter
         $row_code = mb_substr($elements[2]->text, 1);
         $column_code = mb_substr($elements[3]->text, 1);*/
 
-        //if ( $this->form->form_code !==  $form_code && !empty($form_code)) {
         if ( $form_code ) {
             $expession_elements[] = 'ф.' . $form_code . $this->pad;
         }
 
-        //if ( $this->table->table_code !==  $table_code && !empty($table_code)) {
         if ( $table_code ) {
             $expession_elements[] = 'т.' . $table_code . $this->pad;
         }
@@ -237,18 +235,6 @@ class ControlInterpreter
         //dd($expession_elements);
         return $expession_elements;
     }
-
-/*    protected function parseCelladress($celladress)
-    {
-        $correct = preg_match('/(?:Ф(?P<f>[\w.-]*))?(?:Т(?P<t>[\w.-]*))?(?:С(?P<r>[\w.-]*))?(?:Г(?P<c>\d{1,2}))?/', $celladress, $matches);
-        if (!$correct) {
-            throw new InterpreterException("Указан недопустимый адрес ячеейки " . $celladress);
-        }
-        if (!isset($matches['c'])) {
-            $matches['c'] = '';
-        }
-        return $matches;
-    }*/
 
     public function setIterationRange(array $iteration_nodes)
     {
@@ -383,18 +369,6 @@ class ControlInterpreter
         }
         //dd($this->currentNode);
     }
-
-/*    public function rewrite_minmaxfunctions(ParseTree $expression)
-    {
-
-        foreach($expression->children as $element) {
-            if ($element->rule == 'minmaxfunctions') {
-                foreach($element->children[0]->children as $celladress) {
-                    $celladress->tokens[0]->text = $this->completeAdress($celladress);
-                }
-            }
-        }
-    }*/
 
     public function reduce_minmaxfunctions(ParseTree $expression)
     {

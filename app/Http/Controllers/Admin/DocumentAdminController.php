@@ -165,6 +165,18 @@ class DocumentAdminController extends Controller
         return $data;
     }
 
+    public function protect_aggregated(Request $request)
+    {
+        $documents = explode(",", $request->documents );
+        foreach ($documents as $document) {
+            $aggregate = \App\Aggregate::firstOrCreate(['doc_id' => $document]);
+            $aggregate->protected = 1;
+            $aggregate->save();
+        }
+        $data['affected_documents'] = count($documents);
+        return $data;
+    }
+
     public function bulkDocumentMessage(array $documents, int $worker, $message)
     {
         foreach ($documents as $d) {

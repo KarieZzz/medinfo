@@ -64,6 +64,7 @@
                     {{--<input class='jqx-input jqx-widget-content jqx-rc-all' id='changeStates' type='text' value='Сменить статус' style='height: 25px; float: left; width: 150px; margin-left: 10px;' />--}}
                     <i style='height: 14px' class="fa fa-eraser fa-lg" id='eraseData' title="Очистить данные"></i>
                     <i style='height: 14px' class="fa fa-trash-o fa-lg" id='deleteDocuments' title="Удалить документы"></i>
+                    <i style='height: 14px' class="fa fa-product-hunt fa-lg" id='protectAggregates' title="Защитить сводный документ"></i>
                 </div>
             </div>
             <div class="row" id="documentList"></div>
@@ -132,7 +133,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=003') }}"></script>
+    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=004') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -144,6 +145,7 @@
         var erasedocuments_url = '/admin/erasedocuments';
         var changestate_url = '/admin/documentstatechange';
         var group_tree_url = '/admin/fetchugroups';
+        var protectaggregate_url = '/admin/protectaggregates';
         var current_top_level_node = 0;
         var filter_mode = 1; // 1 - по территориям; 2 - по группам
         var checkeddtypes = {!! $dtype_ids !!};
