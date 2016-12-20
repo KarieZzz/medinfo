@@ -18,14 +18,15 @@ class ExpressionTranslater
 
     public $form;
     public $table;
+    public $period;
     public $expression;
     public $nodeStack = [];
 
-    public function __construct(Form $form, Table $table)
+    public function __construct(Form $form, Table $table, int $period = 1)
     {
         $this->form = $form;
         $this->table = $table;
-
+        $this->period = $period;
     }
 
     public function translate(ParseTree $expression)
@@ -103,6 +104,11 @@ class ExpressionTranslater
             $table = Table::OfFormTableCode($form->id, $left_upper_corner['t'])->first();
         }
 
+        // Предыдущий период проверим по верхнему левому углу
+        if ( isset($left_upper_corner['p'])) {
+            $left_upper_corner['p'] === '0' ? $this->period = '0' : $this->period = '1';
+        }
+
         // Проверка на неполные ссылки.
         if ($incomplete_row_adresses && $incomplete_column_adresses)  {
             throw new InterpreterException("Указан неправильный диапазон в функции 'сумма'. Допускаются неполные ссылки либо по строкам, либо по графам, но не одновременно");
@@ -117,7 +123,8 @@ class ExpressionTranslater
                 $columns[] = $i++;
             }
         }
-        $cell_adresses = self::inflate_matrix($rows, $columns, $form->form_code, $table->table_code);
+        $cell_adresses = self::inflate_matrix($rows, $columns, $form->form_code, $table->table_code, $this->period);
+        //dd($cell_adresses );
         foreach($cell_adresses as $cell_adress) {
             $cell = new ControlFunctionParseTree('celladress');
             $cell->addToken(new Token(ControlFunctionLexer::CELLADRESS, $cell_adress['string']));
@@ -151,10 +158,11 @@ class ExpressionTranslater
 
     public static function parseCelladress($celladress)
     {
+        //dd($celladress);
         //$correct = preg_match('/(?:Ф(?P<f>[\w.-]*))?(?:Т(?P<t>[\w.-]*))?(?:С(?P<r>[\w.-]*))?(?:Г(?P<c>\d{1,2}))?/u', $celladress, $matches);
-        $correct = preg_match('/(?:Ф(?P<f>[а-я0-9.-]*))?(?:Т(?P<t>[а-я0-9.-]*))?(?:С(?P<r>[0-9.-]*))?(?:Г(?P<c>\d{1,2}))?/u', $celladress, $matches);
+        $correct = preg_match('/(?:Ф(?P<f>[а-я0-9.-]*))?(?:Т(?P<t>[а-я0-9.-]*))?(?:С(?P<r>[0-9.-]*))?(?:Г(?P<c>\d{1,2}))?(?:П(?P<p>[01]))?/u', $celladress, $matches);
         if (!$correct) {
-            throw new InterpreterException("Указан недопустимый адрес ячеейки " . $celladress);
+            throw new InterpreterException("Указан недопустимый адрес ячейки " . $celladress);
         }
         if (!isset($matches['r'])) {
             $matches['r'] = '';
@@ -162,6 +170,10 @@ class ExpressionTranslater
         if (!isset($matches['c'])) {
             $matches['c'] = '';
         }
+/*        if (!isset($matches['p'])) {
+            $matches['p'] = '';
+        }*/
+        //dd($matches);
         return $matches;
     }
 
@@ -183,27 +195,27 @@ class ExpressionTranslater
         return $rows->pluck('row_code')->toArray();
     }
 
-    public static function inflate_matrix(array $rows, array $columns, $form = null, $table = null)
+    public static function inflate_matrix(array $rows, array $columns, $form = null, $table = null, $period)
     {
         $matrix = [];
             if (count($columns) === 0) { // Неполная ссылка по графам
             foreach($rows as $row) {
                 //$matrix[] = [ $f, $t, $r , 'Г' ];
-                $matrix[] = [ 'string' => 'Ф'. $form . 'Т' . $table . 'С' . $row . 'Г',
-                'f' => $form, 't' => $table, 'r' => $row , 'c' => ''] ;
+                $matrix[] = [ 'string' => 'Ф'. $form . 'Т' . $table . 'С' . $row . 'Г' . 'П' . $period,
+                'f' => $form, 't' => $table, 'r' => $row , 'c' => '', 'p' => $period] ;
             }
         } elseif(count($rows) === 0) { // неполная ссылка по строкам
             foreach($columns as $column) {
                 //$matrix[] = [ $f, $t, 'С' , $c ];
-                $matrix[] = [ 'string' => 'Ф'. $form . 'Т' . $table . 'С' . 'Г' . $column,
-                    'f' => $form, 't' => $table, 'r' => '' , 'c' =>  $column ];
+                $matrix[] = [ 'string' => 'Ф'. $form . 'Т' . $table . 'С' . 'Г' . $column . 'П' . $period ,
+                    'f' => $form, 't' => $table, 'r' => '' , 'c' =>  $column, 'p' => $period ];
             }
         } else {
             foreach($rows as $row) {
                 foreach($columns as $column) {
                     //$matrix[] = [ $f, $t, $r , $c ];
-                    $matrix[] = [ 'string' => 'Ф'. $form . 'Т' . $table . 'С'. $row . 'Г' . $column,
-                        'f' => $form, 't' => $table, 'r' => $row , 'c' =>  $column ];
+                    $matrix[] = [ 'string' => 'Ф'. $form . 'Т' . $table . 'С'. $row . 'Г' . $column . 'П' . $period,
+                        'f' => $form, 't' => $table, 'r' => $row , 'c' =>  $column , 'p' => $period];
                 }
             }
         }

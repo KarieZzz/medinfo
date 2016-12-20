@@ -102,6 +102,11 @@ class ControlFunctionLexer extends Lexer {
             );
     }
 
+    public function isPERIODCODE()
+    {
+        return $this->c == '0' || $this->c == '1';
+    }
+
     public function nextToken()
     {
         while ( $this->c != self::EOF ) {
@@ -287,6 +292,12 @@ class ControlFunctionLexer extends Lexer {
                 $buf .= $this->c;
                 $this->consume();
             } while ($this->isCODE());
+        }
+        if ($this->c == 'П') {
+            do {
+                $buf .= $this->c;
+                $this->consume();
+            } while ($this->isPERIODCODE());
         }
         return $this->tokenstack->push(self::CELLADRESS, $buf);
     }

@@ -31,6 +31,7 @@ class CompareControlInterpreter extends ControlInterpreter
         $this->prepareReadable();
         $translater = new ExpressionTranslater($this->form, $this->table);
         $translater->translate($this->lpExpressionRoot);
+        //dd($this->lpExpressionRoot);
         $translater->translate($this->rpExpressionRoot);
         if ($this->iterationMode) {
             foreach($this->iterationRange as $iteration) {
@@ -45,7 +46,6 @@ class CompareControlInterpreter extends ControlInterpreter
             $this->currentIterationLink = 0;
             $this->lpStack[] = $this->fillIncompleteLinks($this->lpExpressionRoot);
             $this->rpStack[] = $this->fillIncompleteLinks($this->rpExpressionRoot);
-
         }
         //dd($this->lpStack);
     }
@@ -115,11 +115,15 @@ class CompareControlInterpreter extends ControlInterpreter
         $celladress = $celladressNode->tokens[0]->text;
         $matches = ExpressionTranslater::parseCelladress($celladress);
         //dd($matches);
+        //var_dump($matches);
         if (!$matches['f']) {
             $matches['f'] = $this->form->form_code;
         }
         if (!$matches['t']) {
             $matches['t'] = $this->table->table_code;
+        }
+        if (!isset($matches['p'])) {
+            $matches['p'] = $this->currentPeriod;
         }
         switch (true) {
             case !$matches['r'] && $this->iterationMode == 1 :
@@ -138,8 +142,9 @@ class CompareControlInterpreter extends ControlInterpreter
                 throw new InterpreterException("Неполная ссылка при отсутствии режима итерации. Адрес ячейки " . $celladress);
                 break;
         }
-
-        $celladress = 'Ф'. $matches['f'] . 'Т' . $matches['t'] . 'С'. $matches['r'] . 'Г' . $matches['c'];
+        //dd($matches['p']);
+        //var_dump($matches);
+        $celladress = 'Ф'. $matches['f'] . 'Т' . $matches['t'] . 'С'. $matches['r'] . 'Г' . $matches['c'] . 'П' . $matches['p'];
         $celladressNode->tokens[0]->text = $celladress;
         return $celladress;
     }

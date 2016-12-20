@@ -48,6 +48,7 @@ class ControlInterpreter
     public $currentForm; // ORM Model обрабатываемой формы
     public $currentTable; // ORM Model обрабатываемой таблицы
     public $currentNode; // текущий узел ParseTreeNode - для обработки
+    public $currentPeriod = '1'; // По умолчанию отчетный период проверяемого документа
 
     public function __construct(ParseTree $root, Table $table)
     {
@@ -232,6 +233,12 @@ class ControlInterpreter
         if ( $column_code) {
             $expession_elements[] = 'г.' . $column_code;
         }
+
+        if (isset($matches['p'])) {
+            if ($matches['p'] === '0') {
+                $expession_elements[] = ' (пред. период)';
+            }
+        }
         //dd($expession_elements);
         return $expession_elements;
     }
@@ -270,9 +277,12 @@ class ControlInterpreter
 
     public function fillIncompleteLinks($expression)
     {
+        //dd($expression);
        if (!isset($expression->children)) { return $expression; }
        foreach($expression->children as $element) {
+
            if ($element->rule == 'celladress') {
+               //dd($element);
                $this->completeAdress($element);
            }
            $this->fillIncompleteLinks($element);
@@ -282,9 +292,12 @@ class ControlInterpreter
 
     protected function completeAdress($celladressNode)
     {
+        //dd($celladressNode);
         $celladress = $celladressNode->tokens[0]->text;
+        //dd($celladress );
         $matches = ExpressionTranslater::parseCelladress($celladress);
         //dd($matches);
+
         if (!$matches['f']) {
             $matches['f'] = $this->form->form_code;
         }
@@ -294,7 +307,12 @@ class ControlInterpreter
         if ((!$matches['r'] || !$matches['c']) && $this->iterationMode == null) {
             throw new InterpreterException("Неполная ссылка на строку/графу при отсутствии режима итерации. Адрес ячейки " . $celladress);
         }
-        $celladress = 'Ф'. $matches['f'] . 'Т' . $matches['t'] . 'С'. $matches['r'] . 'Г' . $matches['c'];
+        //if (!isset($matches['p'])) {
+        if (!isset($matches['p'])) {
+            $matches['p'] = $this->currentPeriod;
+        }
+        $celladress = 'Ф'. $matches['f'] . 'Т' . $matches['t'] . 'С'. $matches['r'] . 'Г' . $matches['c'] . 'П' . $matches['p'];
+        //dd($celladress);
         $celladressNode->tokens[0]->text = $celladress;
         return $celladress;
     }
@@ -415,6 +433,7 @@ class ControlInterpreter
     public function rewrite_celladresses(ParseTree $expression)
     {
         $this->currentNode = $expression;
+        //dd($this->currentNode);
         foreach($expression->children as $element) {
             if ($element->rule == 'celladress') {
                 try {
@@ -477,7 +496,8 @@ class ControlInterpreter
                 $columns[] = $i++;
             }
         }
-        $cell_adresses = ExpressionTranslater::inflate_matrix($rows, $columns);
+        $cell_adresses = ExpressionTranslater::inflate_matrix($rows, $columns, null, null, $this->currentPeriod);
+        //dd($cell_adresses);
         foreach($cell_adresses as $cell_adress) {
             $plus = new ControlFunctionParseTree('operator');
             $plus->addToken(new Token(ControlFunctionLexer::OPERATOR, $operator));
@@ -497,34 +517,71 @@ class ControlInterpreter
 
     public function reduce_celladress(ParseTree $celladress)
     {
+        //dd($celladress);
         $parsed_adress = ExpressionTranslater::parseCelladress($celladress->tokens[0]->text);
-        if (empty($parsed_adress['f']) || empty($parsed_adress['t']) || empty($parsed_adress['c']) || empty($parsed_adress['c'] ) ) {
+
+        if ( empty($parsed_adress['f']) || empty($parsed_adress['t']) || empty($parsed_adress['c']) || empty($parsed_adress['c']) &&
+            ($parsed_adress['p'] !== '0' ||  $parsed_adress['p'] !== '1')) {
             throw new InterpreterException("На этом этапе интерпретации функции контроля не допускаются неполные ссылки. Адрес ячейки " . $celladress->tokens[0]->text);
         }
-        // Проверяем относится ли редуцируемая ячейка к текущей таблице
         //dd($parsed_adress);
-        if ($this->form->form_code == $parsed_adress['f']) {
-            $doc_id = $this->document->id;
-            $form = $this->form;
-            $f_id = $this->form->id;
-        } else {
-            $form = Form::OfCode($parsed_adress['f'])->first();
-            //dd($form);
-            if (is_null($form)) {
-                ExpressionTranslater::numberizeCelladress($celladress);
-                throw new InterpreterException("Форма " . $parsed_adress['f'] . " не существует", 1001);
+        // Проверяем в текущем периоде находится редуцируемая ячейка?
+        // Текущий период
+
+        if ($parsed_adress['p'] === '1') {
+            // Проверяем относится ли редуцируемая ячейка к текущей таблице
+            //dd($parsed_adress);
+            if ($this->form->form_code == $parsed_adress['f']) {
+                $doc_id = $this->document->id;
+                $form = $this->form;
+                $f_id = $this->form->id;
+            } else {
+                $form = Form::OfCode($parsed_adress['f'])->first();
+                //dd($form);
+                if (is_null($form)) {
+                    ExpressionTranslater::numberizeCelladress($celladress);
+                    throw new InterpreterException("Форма " . $parsed_adress['f'] . " не существует", 1001);
+                }
+                $document = Document::OfTUPF($this->document->dtype, $this->document->ou_id, $this->document->period_id, $form->id)->first();
+                if (is_null($document)) {
+                    $celladress->rule = 'number';
+                    $celladress->tokens = [];
+                    $celladress->addToken(new Token(ControlFunctionLexer::NUMBER, 0));
+                    $this->results['iterations'][$this->currentIteration]['documents_absent'] =  ['ou_id' => $this->document->ou_id, 'period_id' => $this->document->period_id, 'form_id' => $form->id];
+                    return $celladress;
+                }
+                $doc_id = $document->id;
+                $f_id = $form->id;
             }
-            $document = Document::OfTUPF($this->document->dtype, $this->document->ou_id, $this->document->period_id, $form->id)->first();
-            if (is_null($document)) {
+        } elseif($parsed_adress['p'] === '0') {
+
+
+            if ($this->form->form_code == $parsed_adress['f']) {
+                $form = $this->form;
+            } else {
+                $form = Form::OfCode($parsed_adress['f'])->first();
+                //dd($form);
+                if (is_null($form)) {
+                    ExpressionTranslater::numberizeCelladress($celladress);
+                    throw new InterpreterException("Форма " . $parsed_adress['f'] . " не существует", 1001);
+                }
+            }
+
+            $current_period = Period::find($this->document->period_id);
+            $previous_period = Period::LastYear($current_period->begin_date->year)->first();
+            $previous_document = Document::OfTUPF($this->document->dtype, $this->document->ou_id, $previous_period->id, $this->document->form_id)->first();
+            if (is_null($previous_document)) {
                 $celladress->rule = 'number';
                 $celladress->tokens = [];
                 $celladress->addToken(new Token(ControlFunctionLexer::NUMBER, 0));
                 $this->results['iterations'][$this->currentIteration]['documents_absent'] =  ['ou_id' => $this->document->ou_id, 'period_id' => $this->document->period_id, 'form_id' => $form->id];
                 return $celladress;
             }
-            $doc_id = $document->id;
+            $doc_id = $previous_document->id;
             $f_id = $form->id;
         }
+
+
 
         //if ($this->table->table_code == $parsed_adress['t']) {
           //  $t_id = $this->table->id;

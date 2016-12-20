@@ -21,7 +21,9 @@ class InterannualControlInterpreter extends ControlInterpreter
     public $threshold; // порог срабатывания - число (%)
     public $cellarray = [];
     public $this_year_cell;
+    public $this_year_expression;
     public $last_year_cell;
+    public $last_year_expression;
     public $previous_document;
     public $compare_by_diapason;
     public $iterationMode = 3; // Режим итерации по ячейкам
@@ -35,18 +37,27 @@ class InterannualControlInterpreter extends ControlInterpreter
             $this->compare_by_diapason = true;
             $this->diapason = $this->root->children[0];
             $this->threshold = $this->root->children[1]->tokens[0]->text;
-            $this->fillIncompleteLinks($this->diapason);
             $translater->translate($this->diapason);
+            $this->fillIncompleteLinks($this->diapason);
             foreach ($this->diapason->children[0]->children as $cellNode) {
                 $this->cellarray[] = $cellNode->tokens[0]->text;
             }
         } elseif (count($this->root->children) == 3) {
             $this->compare_by_diapason = false;
-            $this->fillIncompleteLinks($this->root);
             //dd($this->root);
-            $this->this_year_cell = $this->root->children[0]->tokens[0]->text;
-            $this->last_year_cell = $this->root->children[1]->tokens[0]->text;
+            //$this->this_year_cell = $this->root->children[0]->tokens[0]->text;
+            $this->this_year_expression = $this->root->children[0];
+            //$this->last_year_cell = $this->root->children[1]->tokens[0]->text;
+            $this->last_year_expression = $this->root->children[1];
             $this->threshold = $this->root->children[2]->tokens[0]->text;
+            $translater->translate($this->this_year_expression);
+            $translater->translate($this->last_year_expression);
+            $this->currentPeriod = '1';
+            $this->fillIncompleteLinks($this->this_year_expression);
+            $this->currentPeriod = '0';
+            $this->fillIncompleteLinks($this->last_year_expression);
+            $this->currentPeriod = '1';
+            //dd($this->last_year_expression);
         } else {
 
         }
@@ -61,10 +72,13 @@ class InterannualControlInterpreter extends ControlInterpreter
             $function_elements = $this->writeReadableCellArray($this->diapason->children[0]);
             $this->readableFormula = 'межгодовой контроль ячеек ' . implode(', ', $function_elements) ;
         } else {
-            $function_elements = $this->writeReadableCellArray($this->root);
-            $this->readableFormula = 'межгодовой контроль ячеек ' .  $function_elements[0] . ' <=> ' . $function_elements[1];
-
-
+            //dd($this->root);
+            //$function_elements = $this->writeReadableCellArray($this->root);
+            $tp = $this->writeReadableCellAdresses($this->this_year_expression);
+            $lp = $this->writeReadableCellAdresses($this->last_year_expression);
+            //$this->readableFormula = 'межгодовой контроль ячеек ' .  $function_elements[0] . ' <=> ' . $function_elements[1];
+            $this->readableFormula = 'межгодовой контроль ячеек: текущий период ' .  implode('', $tp) . ', предыдущий период ' .  implode('', $lp)
+            . ', порог отклонения ' . $this->threshold . '%';
         }
 
         $this->results['formula'] = $this->readableFormula;
@@ -100,7 +114,9 @@ class InterannualControlInterpreter extends ControlInterpreter
             }
         } else {
             try {
-                $this->results['iterations'][0] =  $this->compare_periods_by_cellpair();
+                $this->currentIteration = 0;
+                //$this->results['iterations'][0] =  $this->compare_by_expressions();
+                $this->compare_by_expressions();
                 $this->results['valid'] = $this->results['iterations'][0]['valid'];
             }
             catch (InterpreterException $e) {
@@ -152,7 +168,7 @@ class InterannualControlInterpreter extends ControlInterpreter
         return $r;
     }
 
-    public function compare_periods_by_cellpair()
+/*    public function compare_periods_by_cellpair()
     {
         $r = [];
         $r['valid'] = true;
@@ -207,6 +223,35 @@ class InterannualControlInterpreter extends ControlInterpreter
 
 
         $r['cells'][] = ['row' => $row_ty->id, 'column' => $column_ty->id ];
+        return $r;
+    }*/
+
+    public function compare_by_expressions()
+    {
+        $this->currentIteration = 0;
+        $r = &$this->results['iterations'][0];
+        $r['valid'] = true;
+        $this->currentArgument = 1;
+        $this->rewrite_celladresses($this->this_year_expression);
+        $this->currentArgument = 2;
+        $this->rewrite_celladresses($this->last_year_expression);
+        //dd($this->last_year_expression);
+        $tp_result = $this->calculate($this->this_year_expression);
+        $lp_result = $this->calculate($this->last_year_expression);
+
+        $r['left_part_value'] = $tp_result;
+        $r['right_part_value'] = $lp_result;
+        $r['deviation'] = abs($tp_result - $lp_result);
+        if ($r['deviation'] == 0) {
+            $r['deviation_relative'] = 0;
+        } elseif ($tp_result !== 0)  {
+            $r['deviation_relative'] = round($r['deviation'] / $tp_result * 100, 2);
+        } else {
+            $r['deviation_relative'] = round($r['deviation'] * 100, 2);
+        }
+        if ($r['deviation_relative'] > $this->threshold) {
+            $r['valid'] = false;
+        }
         return $r;
     }
 

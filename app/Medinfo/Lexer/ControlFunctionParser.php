@@ -85,13 +85,15 @@ class ControlFunctionParser extends Parser {
         if ($this->lookahead->type == ControlFunctionLexer::NAME ) {
             $this->diapason(); // Первый аргумент - диапазон ячеек
         } elseif ($this->lookahead->type == ControlFunctionLexer::CELLADRESS) {
-            $this->celladress(); // либо адрес ячейки текущего документа
+            //$this->celladress(); // либо адрес ячейки текущего документа
+            $this->expression(); // либо выражение
         }
         $this->match(ControlFunctionLexer::COMMA);
         if ($this->lookahead->type == ControlFunctionLexer::NUMBER ) {
             $this->threshold(); // Второй аргумент - пороговое значение отклонения
         } elseif ($this->lookahead->type == ControlFunctionLexer::CELLADRESS) {
-            $this->celladress(); // / либо адрес ячейки прошлогоднего документа
+            //$this->celladress(); //  либо адрес ячейки прошлогоднего документа
+            $this->expression(); //  либо выражение
         }
         //dd($this);
         if ($this->lookahead->type == ControlFunctionLexer::COMMA ) {
