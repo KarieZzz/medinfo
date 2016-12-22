@@ -25,7 +25,8 @@ class AggregatesDashboardController extends DashboardController
     public function aggregateData(Document $document, int $unitgroup)
     {
         $aggregate = Aggregate::find($document->id);
-        if ($aggregate->protected) {
+        $protected = is_null($aggregate) ? 0 : $aggregate->protected;
+        if ($protected) {
             $result['aggregate_status'] = 500;
             $result['error_message'] =  'Данный документ защищен от повторного сведения';
             return $result;
