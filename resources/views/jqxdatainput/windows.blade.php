@@ -1,5 +1,5 @@
 <div id="changeStateWindow">
-    <div>Изменение статуса документа</div>
+    <div>Изменение статуса документа (код формы: <span id="changeStateFormCode"></span>, код МО: <span id="changeStateMOCode"></span>)</div>
     <div style="overflow: hidden;">
         <div id="changeStateAlertMessage" style="display: none" class="alert alert-danger"></div>
         <div style='margin-top: 10px;' class="stateradio" id='performed'>

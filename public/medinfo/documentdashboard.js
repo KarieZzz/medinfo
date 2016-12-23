@@ -320,6 +320,7 @@ var rendertoolbar = function (toolbar) {
         var offset = dgrid.offset();
         $("#changeStateWindow").jqxWindow({ position: { x: parseInt(offset.left) + 100, y: parseInt(offset.top) + 100 } });
         var data = dgrid.jqxGrid('getrowdata', rowindex);
+        //console.log(data);
         var radiostates = $('.stateradio');
         radiostates.each(function() {
             var state = $(this).attr('id');
@@ -337,8 +338,10 @@ var rendertoolbar = function (toolbar) {
             alert_message = '<strong>Внимание!</strong> Смена статуса документа допускается только в то случае если ВСЕ правки документа выполнены! <br />';
             alert_message += 'Если Вы не уверены, что закончили редактирование - отмените действие!';
             if (!data.filled) {
-                alert_message += '<strong>Внимание!</strong> Если документ не содержит данные, необходимо, В ОБЯЗАТЕЛЬНОМ ПОРЯДКЕ, пояснить в комментарии по какой причине! <br />';
+                alert_message += '<strong>Внимание!</strong> Если документ не содержит данные, необходимо, В ОБЯЗАТЕЛЬНОМ ПОРЯДКЕ, пояснить в сообщении по какой причине! <br />';
             }
+            $('#changeStateFormCode').html(data.form_code);
+            $('#changeStateMOCode').html(data.unit_code);
             $('#changeStateAlertMessage').html(alert_message);
             $('#changeStateAlertMessage').show();
             $('#prepared').jqxRadioButton('enable');
@@ -870,7 +873,7 @@ var initpopupwindows = function() {
     $("#accepted").jqxRadioButton({ width: 250, height: 25, theme: theme });
     $("#declined").jqxRadioButton({ width: 250, height: 25, theme: theme });
     $("#approved").jqxRadioButton({ width: 250, height: 25, theme: theme });
-    $('#statusChangeMessage').jqxTextArea({ placeHolder: 'Оставьте свой комментарий к смене статуса документа', height: 90, width: 400, minLength: 1 });
+    $('#statusChangeMessage').jqxTextArea({ placeHolder: 'Оставьте свой комментарий к смене статуса документа', height: 90, width: 450, minLength: 1 });
     $("#CancelStateChanging").jqxButton({ theme: theme });
     $("#SaveState").jqxButton({ theme: theme });
     $("#SaveState").click(function () {
@@ -901,9 +904,8 @@ var initpopupwindows = function() {
                     dgrid.jqxGrid('updaterow', row_id, rowdata);
                     dgrid.jqxGrid('selectrow', rowindex);
                 }
-                else {
-                    raiseError("Статус не изменен!", xhr);
-                    // TODO: Обработать ошибку изменения статуса
+                else if(data.status_changed == 0) {
+                    raiseError("Статус не изменен! " + data.comment, xhr);
                 }
             },
             error: function (xhr, status, errorThrown) {

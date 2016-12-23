@@ -128,7 +128,8 @@ class CFunctionAdminController extends Controller
     public function delete(CFunction $cfunction)
     {
         $cfunction->delete();
-        return ['message' => 'Удалена функция Id' . $cfunction->id ];
+        $deleted_protocols =  ControlCashe::where('table_id', $cfunction->id)->delete();
+        return ['message' => 'Удалена функция Id' . $cfunction->id . 'Удалено кэшированных протоколов контроля: ' . $deleted_protocols];
     }
 
     protected function validateRules()

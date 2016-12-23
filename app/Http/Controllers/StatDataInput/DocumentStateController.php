@@ -38,6 +38,11 @@ class DocumentStateController extends Controller
                 $data['comment'] = "При контроле документа перед сменой статуса выявлены критические ошибки требующие исправлений. Смена статуса невозможна.";
                 return $data;
             }
+            if ($protocol['no_data'] && empty($remark)) {
+                $data['status_changed'] = 0;
+                $data['comment'] = "Документ не содержит данных. Нужно заполнить сообщение при смена статуса по какой причине он не заполнен.";
+                return $data;
+            }
         }
         $form = Form::find($document->form_id);
         $current_unit = Unit::find($document->ou_id);
