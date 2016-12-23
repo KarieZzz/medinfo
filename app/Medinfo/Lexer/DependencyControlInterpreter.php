@@ -58,7 +58,8 @@ class DependencyControlInterpreter extends CompareControlInterpreter
     {
         $lp = $this->writeReadableCellAdresses($this->lpExpressionRoot);
         $rp = $this->writeReadableCellAdresses($this->rpExpressionRoot);
-        $this->readableFormula = implode('', $lp) . ' зависит от ' . implode('', $rp);
+        //$this->readableFormula = implode('', $lp) . ' зависит от ' . implode('', $rp);
+        $this->readableFormula = "Зависимость: если " . implode('', $lp) . " &ne; 0, то " . implode('', $rp) . " &ne; 0 и наоборот ";
         $this->results['formula'] = $this->readableFormula;
 
     }

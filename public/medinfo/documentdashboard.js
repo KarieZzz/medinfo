@@ -905,7 +905,7 @@ var initpopupwindows = function() {
                     dgrid.jqxGrid('selectrow', rowindex);
                 }
                 else if(data.status_changed == 0) {
-                    raiseError("Статус не изменен! " + data.comment, xhr);
+                    raiseError("Статус не изменен! " + data.comment);
                 }
             },
             error: function (xhr, status, errorThrown) {
