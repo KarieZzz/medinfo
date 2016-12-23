@@ -36,8 +36,8 @@ class InterannualControlInterpreter extends ControlInterpreter
         if (count($this->root->children) == 2) {
             $this->compare_by_diapason = true;
             $this->diapason = $this->root->children[0];
-            $this->prepareReadable();
             $this->threshold = $this->root->children[1]->tokens[0]->text;
+            $this->prepareReadable();
             $translater->translate($this->diapason);
             $this->fillIncompleteLinks($this->diapason);
             foreach ($this->diapason->children[0]->children as $cellNode) {
@@ -69,10 +69,7 @@ class InterannualControlInterpreter extends ControlInterpreter
     public function prepareReadable()
     {
         if ($this->compare_by_diapason) {
-            //dd($this->diapason->children[0]);
             $function_elements = $this->writeReadableCellArray($this->diapason->children[0]);
-
-            //dd($function_elements);
             $this->readableFormula = 'межгодовой контроль ячеек ' . implode(', ', $function_elements) . ', порог отклонения ' . $this->threshold . '%';
         } else {
             //dd($this->root);
@@ -83,7 +80,6 @@ class InterannualControlInterpreter extends ControlInterpreter
             $this->readableFormula = 'межгодовой контроль ячеек: текущий период ' .  implode('', $tp) . ', предыдущий период ' .  implode('', $lp)
             . ', порог отклонения ' . $this->threshold . '%';
         }
-
         $this->results['formula'] = $this->readableFormula;
     }
 
