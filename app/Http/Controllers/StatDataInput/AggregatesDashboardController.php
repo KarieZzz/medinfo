@@ -76,7 +76,7 @@ class AggregatesDashboardController extends DashboardController
         $aggregate = Aggregate::find($document->id);
         $decimal = $column->decimal_count > 0 ?  'D' . str_pad('9', $column->decimal_count - 1, '9') . '0' : '';
         $format_mask = 'FM' . str_pad('9', 12, '9') . $decimal;
-        $lquery ="select h.unit_code, h.unit_name, v.doc_id, to_char(v.value, '$format_mask') AS value from statdata v
+        $lquery ="select h.id, h.unit_code, h.unit_name, v.doc_id, to_char(v.value, '$format_mask') AS value from statdata v
           join documents d on d.id = v.doc_id
           join mo_hierarchy h on d.ou_id = h.id
           where v.doc_id in ({$aggregate->include_docs})

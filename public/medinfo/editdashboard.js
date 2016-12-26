@@ -972,8 +972,8 @@ var fetchcelllayer = function(row, column) {
     var fetch_url = cell_layer_url + row + '/' + column;
     $.getJSON( fetch_url, function( data ) {
         $.each(data.layers, function (i, layer) {
-            var row = $("<tr><td>" + layer.unit_code
-                + "</td><td>" + layer.unit_name
+            var row = $("<tr class='rowdocument' id='"+ layer.doc_id +"'><td>" + layer.unit_code
+                + "</td><td><a href='/datainput/formdashboard/" + layer.doc_id +"' target='_blank' title='Открыть для редактирования'>" + layer.unit_name + "</a>"
                 + "</td><td style='min-width: 40px' class='text-primary text-right'>" + layer.value
                 + "</td></tr>");
             layer_container.append(row);
