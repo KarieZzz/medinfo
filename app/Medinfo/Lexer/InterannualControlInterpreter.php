@@ -152,7 +152,7 @@ class InterannualControlInterpreter extends ControlInterpreter
         $r['deviation'] = abs($current_value - $previous_value);
         if ($r['deviation'] == 0) {
             $r['deviation_relative'] = 0;
-        } elseif ($current_value !== 0)  {
+        } elseif ((int)$current_value !== 0)  {
             $r['deviation_relative'] = round($r['deviation'] / $current_value * 100, 2);
         } else {
             $r['deviation_relative'] = round($r['deviation'] * 100, 2);
