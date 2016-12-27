@@ -104,8 +104,14 @@ class ControlInterpreter
         return $units_in_scope;
     }
 
+    public function get_static_scope()
+    {
+
+    }
+
     public function get_units($groupalias)
     {
+        //dd($groupalias);
         $units = [];
         switch ($groupalias) {
             case 'сводные' :
@@ -139,15 +145,21 @@ class ControlInterpreter
 
     public function inScope()
     {
+        //dd($this->document->dtype);
         if (!is_null($this->allowedDocumentType) && $this->document->dtype !== $this->allowedDocumentType) {
+            //dd($this->document->dtype);
             return false;
+        } elseif (!is_null($this->allowedDocumentType) && $this->document->dtype == $this->allowedDocumentType) {
+            return true;
         }
 
         if (is_null($this->unitScope)) {
+            //dd($this->document->dtype);
             return true;
         }
 
         if (!in_array($this->document->ou_id, $this->unitScope)) {
+            //dd($this->document->dtype);
             return false;
         }
         return true;

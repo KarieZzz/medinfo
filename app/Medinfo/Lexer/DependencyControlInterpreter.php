@@ -27,7 +27,7 @@ class DependencyControlInterpreter extends CompareControlInterpreter
         $this->lpExpressionRoot = $this->root->children[0];
         $this->rpExpressionRoot = $this->root->children[1];
         if (isset($this->root->children[3]->children[0]->children[0])) {
-            $this->unitScope = $this->setUnitScope($this->root->children[3]->children[0]);
+            $this->unitScope = $this->setUnitScope($this->root->children[2]->children[0]);
             //dd($this->unitScope);
         }
         if (count($this->root->children[3]->children[0]->children)) {

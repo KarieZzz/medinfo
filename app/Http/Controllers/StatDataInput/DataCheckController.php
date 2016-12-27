@@ -58,7 +58,8 @@ class DataCheckController extends Controller
         //$i = "сравнение(меньшее(С11, С16:С18, С20),  Ф32Т2120С22Г3, <=, группы(*), графы(3))";
         //$i = "сравнение(сумма(С11, С16:С18, С20) - сумма(Ф30Т1100С11Г3, Ф30Т1100С13Г3:Ф30Т1100С15Г3)- сумма(Ф30Т1100С11Г3, Ф30Т1100С13Г3:Ф30Т1100С15Г3),  Ф32Т2120С22Г3, <=, группы(*), графы(3))";
         //$i = "сравнение(сумма(Ф32Т2120С16Г3:Ф32Т2120С18Г3),  Ф32Т2120С22Г3, >=, группы(*), графы())";
-        $i = "межгодовой(диапазон(С9Г4:С9Г16), 0)";
+        //$i = "межгодовой(диапазон(С9Г4:С9Г16), 0)";
+        $i = "зависимость(Г3, Г4+Г5, группы(оп), строки(*))";
         //$i = "межгодовой(диапазон(С11Г3, С16Г3:С18Г3, С20Г3, С32Г3, С16Г3:С18Г3),  20)";
         //$i = "межгодовой(С1Г3+С4Г3, С1Г3,  20)";
         //$i = "кратность(диапазон(С01Г3:С02Г6),  .25)";
@@ -69,7 +70,8 @@ class DataCheckController extends Controller
         //$i = 'зависимость(Г3, Г4, группы(*),  строки(*))';
 
         //try {
-            $table = Table::find(254); // т. 8000 30 формы
+            //$table = Table::find(254); // т. 8000 30 формы
+            $table = Table::find(4); // т. 1001 30 формы
             //$table = Table::find(10);
             //$table = Table::find(115); // т. 2120 32 формы
             //$table = Table::find(950); // т. 2120 54 формы
@@ -85,15 +87,17 @@ class DataCheckController extends Controller
             //$document = Document::find(10654); // 37 форма 2015
             //$document = Document::find(8429); // 37 форма 2015 - Ольхонская районная больница
             //$document = Document::find(9158); // 30 форма 2015 - Шелеховская районная больница
-            $document = Document::find(15105); // 30 форма 2016 - ПАБ
+            //$document = Document::find(15105); // 30 форма 2016 - ПАБ
+            $document = Document::find(11433); // 30 форма 2016 - Листвянка
+            //$document = Document::find(12268); // 30 форма 2016 - все
             //$document = Document::find(7015); // 32 форма
             $lexer = new ControlFunctionLexer($i);
             $parser = new ControlFunctionParser($lexer);
             $r = $parser->run();
             //dd($r);
             //$interpret = new CompareControlInterpreter($r, $table);
-            $interpret = new InterannualControlInterpreter($r, $table);
-            //$interpret = new DependencyControlInterpreter($r, $table);
+            //$interpret = new InterannualControlInterpreter($r, $table);
+            $interpret = new DependencyControlInterpreter($r, $table);
             //$interpret = new FoldControlInterpreter($r, $table);
             //dd($interpret);
             dd( $interpret->exec($document));
