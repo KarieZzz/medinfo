@@ -9,6 +9,7 @@
 namespace App\Medinfo;
 
 use App\Table;
+use App\UnitGroup;
 use PHPExcel_IOFactory;
 use PHPExcel_Cell;
 use Storage;
@@ -35,6 +36,8 @@ class ExcelExport
     private $force_reload_exports = false;
     private $_phpexcel; // объект PHPexcel
     private $_ranges; // именованные диапазоны excel
+    private $unitgroupName;
+    private $unitgroupCode;
 
     public function __construct($doc_id)
     {
@@ -45,6 +48,15 @@ class ExcelExport
         $this->doc_id = $doc_id;
         $document = Document::find($doc_id);
         $this->_unit = Unit::find($document->ou_id);
+        if (!$this->_unit) {
+            $this->_unit = UnitGroup::find($document->ou_id);
+            $this->unitgroupCode = $this->_unit->group_code;
+            $this->unitgroupName = $this->_unit->group_name;
+
+        } else {
+            $this->unitgroupCode = $this->_unit->unit_code;
+            $this->unitgroupName = $this->_unit->unit_name;
+        }
         $this->_form = Form::find($document->form_id);
         $this->_period = Period::find($document->period_id); // Год в формате YYYY
         $this->previous_export_actual = $this->exportCasheActual();
@@ -239,7 +251,7 @@ class ExcelExport
         if (!$this->previous_export_actual || $this->force_reload_exports) {
             $this->_phpexcel = $this->openTemplate();
             $this->_ranges   = $this->_phpexcel->getNamedRanges();
-            $this->fillSubject($this->_unit->unit_name);
+            $this->fillSubject($this->unitgroupName);
             $this->fillPeriod($this->_period->name);
             $this->fillTables();
             $objWriter = PHPExcel_IOFactory::createWriter($this->_phpexcel, 'Excel2007');
@@ -247,7 +259,8 @@ class ExcelExport
         }
         //$excel_file = Storage::disk('excel_exports')->get($this->doc_id . '.xlsx');
         $template_cached = $this->template_cached ? '_tc' : '';
-        $output['file_name'] =  $this->_unit->unit_code . '_' . $this->_form->form_code . $template_cached . $excel_cashed .'.xlsx';
+
+        $output['file_name'] =  $this->unitgroupCode . '_' . $this->_form->form_code . $template_cached . $excel_cashed .'.xlsx';
         $output['headers'] = [
             'Content-Typ' => 'application/vnd.ms-excel',
             //'Content-Disposition' => 'attachment;filename="' . $file_name . '"',
