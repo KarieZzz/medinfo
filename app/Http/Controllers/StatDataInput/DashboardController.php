@@ -50,7 +50,7 @@ class DashboardController extends Controller
         $noteditablecells = NECellsFetch::byOuId($current_unit->id, $form->id);
         //dd($noteditablecells );
         $renderingtabledata = $this->composeDataForTablesRendering($form, $editedtables, $default_album);
-        $laststate = $this->getLastState($worker, $document, $form);
+        $laststate = $this->getLastState($worker, $document, $form, $default_album);
         //return $datafortables;
         //return $renderingtabledata;
         return view($this->dashboardView(), compact(
@@ -293,10 +293,13 @@ class DashboardController extends Controller
     }
 
     // TODO: Доработать сохранение настроек редактирования отчета (таблица, фильтры, ширина колонок и т.д.)
-    protected function getLastState(GenericUser $worker, Document $document, Form $form)
+    protected function getLastState(GenericUser $worker, Document $document, Form $form, $default_album)
     {
         $laststate = array();
-        $current_table = $form->tables->where('deleted', 0)->sortBy('table_code')->first();
+        $current_table = Table::OfForm($form->id)->whereDoesntHave('excluded', function ($query) use($default_album) {
+            $query->where('album_id', $default_album->id)->orderBy('table_code');
+        })->first();
+        //$current_table = $form->tables->where('deleted', 0)->sortBy('table_code')->first();
         $laststate['currenttable'] = $current_table;
         return $laststate;
     }
