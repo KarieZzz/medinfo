@@ -262,6 +262,7 @@ class ControlInterpreter
                 $this->iterationRange = Row::OfTable($this->table->id)->where('deleted', 0)->pluck('row_code')->toArray();
             } elseif ($this->iterationMode == 2) {
                 $this->iterationRange = Column::OfTable($this->table->id)->OfDataType()->where('deleted', 0)->pluck('column_index')->toArray();
+                //dd($this->iterationRange);
             }
         } else { // подразумевается, что приведено перечисление строк или граф по которым нужно переписать неполные ссылки
             foreach ($iteration_nodes as $node) {
@@ -537,6 +538,7 @@ class ControlInterpreter
             throw new InterpreterException("На этом этапе интерпретации функции контроля не допускаются неполные ссылки. Адрес ячейки " . $celladress->tokens[0]->text);
         }
         //dd($parsed_adress);
+        //var_dump($parsed_adress);
         // Проверяем в текущем периоде находится редуцируемая ячейка?
         // Текущий период
 

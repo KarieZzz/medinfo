@@ -159,10 +159,17 @@ class ExpressionTranslater
     public static function parseCelladress($celladress)
     {
         //dd($celladress);
+        //var_dump($celladress);
         //$correct = preg_match('/(?:Ф(?P<f>[\w.-]*))?(?:Т(?P<t>[\w.-]*))?(?:С(?P<r>[\w.-]*))?(?:Г(?P<c>\d{1,2}))?/u', $celladress, $matches);
-        $correct = preg_match('/(?:Ф(?P<f>[а-я0-9.-]*))?(?:Т(?P<t>[а-я0-9.-]*))?(?:С(?P<r>[0-9.-]*))?(?:Г(?P<c>\d{1,2}))?(?:П(?P<p>[01]))?/u', $celladress, $matches);
+        //$correct = preg_match('/(?:Ф(?P<f>[а-я0-9.-]*))?(?:Т(?P<t>[а-я0-9.-]*))?(?:С(?P<r>[0-9.-]*))?(?:Г(?P<c>\d{1,2}))?(?:П(?P<p>[01]))?/u', $celladress, $matches);
+        $correct = preg_match('/(?:Ф(?P<f>[а-я0-9.-]*))?(?:Т(?P<t>[а-я0-9.-]*))?(?:С(?P<r>[0-9.-]*))?(?:Г(?P<c>\d{1,3}))?(?:П(?P<p>[01]))?/u', $celladress, $matches);
+        // TODO: Что делать с неправильными адресами типа Г1000 - регулярка возвращает true даже если встречает такое выражение? Просто пропускает такую ссылку. Дважды проверять?
+        // Пока допустил три цифровых символа в наименовании графы
+        //var_dump($correct);
+
         if (!$correct) {
             throw new InterpreterException("Указан недопустимый адрес ячейки " . $celladress);
+            //throw new \Exception("Указан недопустимый адрес ячейки " . $celladress);
         }
         if (!isset($matches['r'])) {
             $matches['r'] = '';
