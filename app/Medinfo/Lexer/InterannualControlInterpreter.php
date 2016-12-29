@@ -234,6 +234,7 @@ class InterannualControlInterpreter extends ControlInterpreter
         $this->rewrite_celladresses($this->this_year_expression);
         $this->currentArgument = 2;
         $this->rewrite_celladresses($this->last_year_expression);
+        //dd($this->this_year_expression);
         //dd($this->last_year_expression);
         $tp_result = $this->calculate($this->this_year_expression);
         $lp_result = $this->calculate($this->last_year_expression);
@@ -243,7 +244,7 @@ class InterannualControlInterpreter extends ControlInterpreter
         $r['deviation'] = abs($tp_result - $lp_result);
         if ($r['deviation'] == 0) {
             $r['deviation_relative'] = 0;
-        } elseif ($tp_result !== 0)  {
+        } elseif ((int)$tp_result !== 0)  {
             $r['deviation_relative'] = round($r['deviation'] / $tp_result * 100, 2);
         } else {
             $r['deviation_relative'] = round($r['deviation'] * 100, 2);

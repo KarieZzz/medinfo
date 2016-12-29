@@ -60,7 +60,9 @@ class DataCheckController extends Controller
         //$i = "сравнение(сумма(Ф32Т2120С16Г3:Ф32Т2120С18Г3),  Ф32Т2120С22Г3, >=, группы(*), графы())";
         //$i = "межгодовой(диапазон(С9Г4:С9Г16), 0)";
         //$i = "зависимость(Г3, Г4+Г5, группы(оп), строки(*))";
-        $i = "сравнение(С1, С6, >=, группы(*), графы(*))";
+        //$i = "сравнение(С1, С6, >=, группы(*), графы(*))";
+        $i = "межгодовой(С1.0Г15+С1.0Г14-С1.0Г8,  С1.0Г15, 20)";
+
         //$i = "межгодовой(диапазон(С11Г3, С16Г3:С18Г3, С20Г3, С32Г3, С16Г3:С18Г3),  20)";
         //$i = "межгодовой(С1Г3+С4Г3, С1Г3,  20)";
         //$i = "кратность(диапазон(С01Г3:С02Г6),  .25)";
@@ -73,7 +75,7 @@ class DataCheckController extends Controller
         //try {
             //$table = Table::find(254); // т. 8000 30 формы
             //$table = Table::find(4); // т. 1001 30 формы
-            $table = Table::find(980); // т. 2710 30 формы
+            //$table = Table::find(980); // т. 2710 30 формы
             //$table = Table::find(10);
             //$table = Table::find(115); // т. 2120 32 формы
             //$table = Table::find(950); // т. 2120 54 формы
@@ -81,7 +83,7 @@ class DataCheckController extends Controller
             //$table = Table::find(420); // т. 2500 37 формы
             //$table = Table::find(179); // т. 2100 37 формы
             //$table = Table::find(5); // т. 2100 37 формы
-            //$table = Table::find(113); // т. 3000 12 формы
+            $table = Table::find(113); // т. 3000 12 формы
             //$document = Document::find(7011);
             //$document = Document::find(7062);
             //$document = Document::find(7758); // 12 форма
@@ -91,14 +93,15 @@ class DataCheckController extends Controller
             //$document = Document::find(9158); // 30 форма 2015 - Шелеховская районная больница
             //$document = Document::find(15105); // 30 форма 2016 - ПАБ
             //$document = Document::find(11433); // 30 форма 2016 - Листвянка
-            $document = Document::find(12268); // 30 форма 2016 - все
+            //$document = Document::find(12268); // 30 форма 2016 - все
+            $document = Document::find(13425); // 12 форма 2016 ГБ3 Братск
             //$document = Document::find(7015); // 32 форма
             $lexer = new ControlFunctionLexer($i);
             $parser = new ControlFunctionParser($lexer);
             $r = $parser->run();
             //dd($r);
-            $interpret = new CompareControlInterpreter($r, $table);
-            //$interpret = new InterannualControlInterpreter($r, $table);
+            //$interpret = new CompareControlInterpreter($r, $table);
+            $interpret = new InterannualControlInterpreter($r, $table);
             //$interpret = new DependencyControlInterpreter($r, $table);
             //$interpret = new FoldControlInterpreter($r, $table);
             //dd($interpret);
