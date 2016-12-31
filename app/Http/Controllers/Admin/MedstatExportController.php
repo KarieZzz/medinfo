@@ -170,8 +170,12 @@ class MedstatExportController extends Controller
                         foreach ($cells as $cell) {
                             $insert_data[(int)$cell->column->medstat_code + $offset] = (float)$cell->value;
                         }
-                        //dd($insert_data);
-                        dbase_add_record($db, $insert_data);
+                        try {
+                            dbase_add_record($db, $insert_data);
+                        }
+                        catch ( \ErrorException $e) {
+                            dd($insert_data);
+                        }
                     }
                 }
             } elseif ($table->transposed == 1) {

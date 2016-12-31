@@ -13,7 +13,8 @@ class CreateMsStrTable extends Migration
     public function up()
     {
         Schema::create('ms_str', function (Blueprint $table) {
-            $table->char('a1', 12)->primary();
+            $table->integer('rec_id')->primary();
+            $table->char('a1', 12)->index();
             $table->string('a2', 128);
             $table->char('gt', 2);
             $table->timestamp('syncronized_at');

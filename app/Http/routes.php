@@ -105,6 +105,7 @@ Route::group(['middleware' => ['web']], function () {
     Route::patch('admin/rc/columnupdate/{column}', 'Admin\RowColumnAdminController@columnUpdate');
     Route::delete('admin/rc/columndelete/{column}', 'Admin\RowColumnAdminController@columnDelete');
     Route::post('admin/rc/columncreate', 'Admin\RowColumnAdminController@columnStore');
+    Route::get('admin/rc/msmimatching/{formcode}', 'Admin\RowColumnAdminController@rowsMatching'); // Сопоставление Медстат и Мединфо
 
     // Менеджер нередактируемых ячеек
     Route::get('admin/necells/list', 'Admin\NECellAdminController@list');

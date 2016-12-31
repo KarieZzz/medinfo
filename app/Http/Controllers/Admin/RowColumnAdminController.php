@@ -226,4 +226,102 @@ class RowColumnAdminController extends Controller
         }
     }
 
+    public function rowsMatching($formcode)
+    {
+        $matching_array = [];
+        $errors = [];
+        $default_album = Album::Default()->first(['id']);
+        //$form = Form::find(74);
+        $form = Form::OfCode($formcode)->first();
+        //$form = Form::find(7);
+        // обрабатываем таблицы из Мединфо не исключенные из текущего альбома и имеющие код Медстат;
+        $tables = Table::OfForm($form->id)->whereNotNull('medstat_code')->whereDoesntHave('excluded', function ($query) use($default_album) {
+            $query->where('album_id', $default_album->id);
+        })->get();
+        foreach ($tables as $table) {
+            $count_ms = 0;
+            $errors[$table->id] = [];
+            //if (!$table->medstat_code) break;
+
+            $rows = Row::OfTable($table->id)->whereDoesntHave('excluded', function ($query) use($default_album) {
+                $query->where('album_id', $default_album->id);
+            })->get();
+            $i = 0;
+            $count_mi = count($rows);
+            foreach($rows as $row) {
+                $matching_array[$table->id][$i][0] = $row->row_index;
+                $matching_array[$table->id][$i][1] = $row->row_code;
+                $matching_array[$table->id][$i][2] = $row->row_name;
+                $matching_array[$table->id][$i][3] = $row->medstat_code;
+                $i++;
+            }
+
+            if (!$table->transposed ) {
+                $q_medstat = "SELECT * FROM ms_str WHERE a1 like '{$form->medstat_code}{$table->medstat_code}%' ORDER BY rec_id";
+                $ms_rows = \DB::select($q_medstat);
+                $count_ms = count($ms_rows);
+                if ($count_ms == 0) {
+                    $errors[$table->id][] = 'В словаре Медстат отстутствуют строки по данной таблице';
+                } else {
+                    $j = 0;
+                    foreach($ms_rows as $ms_row) {
+                        $matching_array[$table->id][$j][4] = $ms_row->a1;
+                        $matching_array[$table->id][$j][5] = $ms_row->a2;
+                        $matching_array[$table->id][$j][6] = $ms_row->gt;
+                        $matching_array[$table->id][$j][7] = substr($ms_row->a1, -3);
+                        $j++;
+                    }
+                }
+
+                foreach ($matching_array[$table->id] as $matched_rows) {
+                    if (!isset($matched_rows[7]) || !isset($matched_rows[3]) || $matched_rows[7] !== $matched_rows[3]) {
+                        if (isset($matched_rows[1])) {
+                            $errors[$table->id][] = 'Не совпадает код по строке Мединфо' . $matched_rows[1]  . '!';
+                        } else {
+                            $errors[$table->id][] = 'Не совпадает код по строке Медстат' . $matched_rows[7]  . '!';
+                        }
+
+                        //$errors[$table->id][] = 'Не совпадает код по строке' ;
+                    }
+                }
+
+                //dd($matching_array);
+            } elseif ($table->transposed == 1) {
+                $q_medstat = "SELECT * FROM ms_grf WHERE a1 like '{$form->medstat_code}{$table->medstat_code}%' ORDER BY a1";
+                $ms_grfs = \DB::select($q_medstat);
+                $count_ms = count($ms_grfs);
+                if ($count_ms == 0) {
+                    $errors[$table->id][] = 'В словаре Медстат отстутствуют графы по данной (транспонированной) таблице';
+                } else {
+                    $j = 0;
+                    foreach($ms_grfs as $ms_row) {
+                        $matching_array[$table->id][$j][4] = $ms_row->a1;
+                        $matching_array[$table->id][$j][5] = $ms_row->a2;
+                        $matching_array[$table->id][$j][6] = $ms_row->gt;
+                        $matching_array[$table->id][$j][7] = substr($ms_row->a1, -2);
+                        $j++;
+                    }
+
+                }
+                foreach ($matching_array[$table->id] as $matched_rows) {
+                    //dd($matched_rows[1]);
+                    if (!isset($matched_rows[7]) || !isset($matched_rows[3]) || '0' . $matched_rows[7] !== $matched_rows[3]) {
+
+                        if (isset($matched_rows[1])) {
+                            $errors[$table->id][] = 'Не совпадает код по строке Мединфо' . $matched_rows[1]  . '!';
+                        } else {
+                            $errors[$table->id][] = 'Не совпадает код по строке Медстат' . $matched_rows[7]  . '!';
+                        }
+
+                    }
+                }
+            }
+
+            if ($count_ms <> $count_mi) {
+                $errors[$table->id][] = 'Не совпадает количество строк!';
+            }
+        }
+        return view('jqxdatainput.medstatprotocol', compact('form', 'tables', 'matching_array', 'errors'));
+    }
+
 }
