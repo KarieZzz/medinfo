@@ -19,7 +19,8 @@ class MedstatExportController extends Controller
                     array("email",    "C", 128),
                     array("ismember", "L")
                 );*/
-        $document = \App\Document::find(10658); // 30 форма
+        $document = \App\Document::find($document); 
+        //$document = \App\Document::find(10658); // 30 форма
         //$document = \App\Document::find(10634); // 32 форма
         $form = $document->form;
         $unit = $document->unit;
