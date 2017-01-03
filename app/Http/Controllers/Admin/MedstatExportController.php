@@ -24,10 +24,12 @@ class MedstatExportController extends Controller
         //$document = \App\Document::find(10634); // 32 форма
         $form = $document->form;
         $unit = $document->unit;
-        $code = $unit->unit_code;
+
         if (is_null($unit)) {
             $unit = $document->unitgroup;
             $code = $unit->group_code;
+        } else {
+            $code = $unit->unit_code;
         }
 
         $tables = $form->tables->sortBy('table_index');
