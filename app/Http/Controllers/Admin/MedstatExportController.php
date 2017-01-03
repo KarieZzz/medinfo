@@ -73,7 +73,6 @@ class MedstatExportController extends Controller
             ["a826", "N", 12, 2],
             ["a827", "N", 12, 2],
             ["a828", "N", 12, 2],
-            ["a828", "N", 12, 2],
             ["a829", "N", 12, 2],
             ["a830", "N", 12, 2],
             ["a831", "N", 12, 2],
@@ -196,7 +195,6 @@ class MedstatExportController extends Controller
             0,
             0,
             0,
-            0,
             '',
             0,
             0,
@@ -223,7 +221,9 @@ class MedstatExportController extends Controller
                         $insert_data[3] = '00' . $table->medstat_code;
                         $insert_data[4] = $row->medstat_code;
                         foreach ($cells as $cell) {
-                            $insert_data[(int)$cell->column->medstat_code + $offset] = (float)$cell->value;
+                            if (!is_null($cell->column->medstat_code)) {
+                                $insert_data[(int)$cell->column->medstat_code + $offset] = (float)$cell->value;
+                            }
                         }
                         //dbase_add_record($db, $insert_data);
                         try {
@@ -241,7 +241,9 @@ class MedstatExportController extends Controller
                 if (\App\Cell::OfDocumentTable($document->id, $table->id)->sum('value')) {
                     $cells = \App\Cell::OfDocumentTable($document->id, $table->id)->get();
                     foreach ($cells as $cell) {
-                        $insert_data[(int)$cell->row->medstat_code + $offset] = (float)$cell->value;
+                        if (!is_null($cell->row->medstat_code)) {
+                            $insert_data[(int)$cell->row->medstat_code + $offset] = (float)$cell->value;
+                        }
                     }
                     try {
                         dbase_add_record($db, $insert_data);
