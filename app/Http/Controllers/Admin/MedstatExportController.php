@@ -10,7 +10,7 @@ use App\Http\Controllers\Controller;
 class MedstatExportController extends Controller
 {
     //
-    public function test_export()
+    public function msExport(int $document)
     {
         /*        $def = array(
                     array("date",     "D"),

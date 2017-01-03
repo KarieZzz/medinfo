@@ -36,7 +36,7 @@ Route::group(['middleware' => ['web']], function () {
 
     // Шаблоны на основе jQWidgets для администрирования
     Route::get('admin', 'Admin\AdminController@index');
-    Route::get('test_export', 'Admin\MedstatExportController@test_export');
+    Route::get('medstat_export/{document}', 'Admin\MedstatExportController@msExport');
 
     // Менеджер пользователей - исполнителей
     Route::get('admin/workers', 'Admin\WorkerAdmin@index' );

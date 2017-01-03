@@ -4,15 +4,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Журнал изменний данных по форме . Период  год.</title>
 <link href="{{ asset('/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
-<style>
-    .control_result {
-        border: 1px solid #ddd;
-        border-collapse: collapse;
-        margin-bottom: 10px;
-    }
-    .control_result td { border: 1px solid #ddd; }
-    }
-</style>
 <body>
 <div class="container">
     <h3>Протокол изменений документа № {{ $document->id }}</h3>
