@@ -34,7 +34,7 @@ class MedstatExportController extends Controller
 
         $tables = $form->tables->sortBy('table_index');
 
-        $a1_code = '15'; // код отчетного года
+        $a1_code = '16'; // код отчетного года
         $a2_code = '1125'; // код Иркутской области
         $a4_code = $form->medstat_code . '00'; // код формы
         $offset = 4; // сдвиг до индекса массива, где начинаются данные ячеек
@@ -73,6 +73,29 @@ class MedstatExportController extends Controller
             ["a826", "N", 12, 2],
             ["a827", "N", 12, 2],
             ["a828", "N", 12, 2],
+            ["a828", "N", 12, 2],
+            ["a829", "N", 12, 2],
+            ["a830", "N", 12, 2],
+            ["a831", "N", 12, 2],
+            ["a832", "N", 12, 2],
+            ["a833", "N", 12, 2],
+            ["a834", "N", 12, 2],
+            ["a835", "N", 12, 2],
+            ["a836", "N", 12, 2],
+            ["a837", "N", 12, 2],
+            ["a838", "N", 12, 2],
+            ["a839", "N", 12, 2],
+            ["a840", "N", 12, 2],
+            ["a841", "N", 12, 2],
+            ["a842", "N", 12, 2],
+            ["a843", "N", 12, 2],
+            ["a844", "N", 12, 2],
+            ["a845", "N", 12, 2],
+            ["a846", "N", 12, 2],
+            ["a847", "N", 12, 2],
+            ["a848", "N", 12, 2],
+            ["a849", "N", 12, 2],
+            ["a850", "N", 12, 2],
             ["srt", "C", 25],
             ["n1", "N", 2, 0],
             ["n2", "N", 2, 0],
@@ -151,6 +174,29 @@ class MedstatExportController extends Controller
             0,
             0,
             0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
             '',
             0,
             0,
@@ -179,6 +225,7 @@ class MedstatExportController extends Controller
                         foreach ($cells as $cell) {
                             $insert_data[(int)$cell->column->medstat_code + $offset] = (float)$cell->value;
                         }
+                        //dbase_add_record($db, $insert_data);
                         try {
                             dbase_add_record($db, $insert_data);
                         }
