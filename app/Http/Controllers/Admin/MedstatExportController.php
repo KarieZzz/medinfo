@@ -19,11 +19,17 @@ class MedstatExportController extends Controller
                     array("email",    "C", 128),
                     array("ismember", "L")
                 );*/
-        $document = \App\Document::find($document); 
+        $document = \App\Document::find($document);
         //$document = \App\Document::find(10658); // 30 форма
         //$document = \App\Document::find(10634); // 32 форма
         $form = $document->form;
         $unit = $document->unit;
+        $code = $unit->unit_code;
+        if (is_null($unit)) {
+            $unit = $document->unitgroup;
+            $code = $unit->group_code;
+        }
+
         $tables = $form->tables->sortBy('table_index');
 
         $a1_code = '15'; // код отчетного года
@@ -151,7 +157,7 @@ class MedstatExportController extends Controller
         // создаем
         //$db = dbase_create('/home/vagrant/Code/m.dbf', $medstatsructure);
         //dd(storage_path('app/exports/medstat') . '/m.dbf');
-        $dbf_file = storage_path('app/exports/medstat') . '/' . $unit->unit_code . '_' . $form->form_code . '.dbf';
+        $dbf_file = storage_path('app/exports/medstat') . '/' . $code . '_' . $form->form_code . '.dbf';
         $db = dbase_create($dbf_file, $medstatsructure);
         if (!$db) {
             echo "Ошибка, не получается создать базу данных m.dbf\n";

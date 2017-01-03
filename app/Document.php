@@ -38,6 +38,11 @@ class Document extends Model
         return $this->belongsTo('App\Unit', 'ou_id');
     }
 
+    public function unitgroup()
+    {
+        return $this->belongsTo('App\UnitGroup', 'ou_id');
+    }
+
     public function aggregate()
     {
         return $this->hasOne('App\Aggregate', 'doc_id');
