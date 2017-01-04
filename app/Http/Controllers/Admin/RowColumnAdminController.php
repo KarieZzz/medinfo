@@ -230,6 +230,7 @@ class RowColumnAdminController extends Controller
     {
         $matching_array = [];
         $errors = [];
+        $mode = 'строки';
         $default_album = Album::Default()->first(['id']);
         //$form = Form::find(74);
         $form = Form::OfCode($formcode)->first();
@@ -321,7 +322,75 @@ class RowColumnAdminController extends Controller
                 $errors[$table->id][] = 'Не совпадает количество строк!';
             }
         }
-        return view('jqxdatainput.medstatprotocol', compact('form', 'tables', 'matching_array', 'errors'));
+        return view('jqxdatainput.medstatprotocol', compact('form', 'tables', 'matching_array', 'errors', 'mode'));
+    }
+
+    public function columnsMatching($formcode)
+    {
+        $matching_array = [];
+        $errors = [];
+        $mode = 'графы';
+        $default_album = Album::Default()->first(['id']);
+        $form = Form::OfCode($formcode)->first();
+        // обрабатываем таблицы из Мединфо не исключенные из текущего альбома и имеющие код Медстат;
+        $tables = Table::OfForm($form->id)->whereNotNull('medstat_code')->whereDoesntHave('excluded', function ($query) use($default_album) {
+            $query->where('album_id', $default_album->id);
+        })->get();
+        foreach ($tables as $table) {
+            $count_ms = 0;
+            $errors[$table->id] = [];
+            //if (!$table->medstat_code) break;
+
+            $columns = Column::OfTable($table->id)->whereDoesntHave('excluded', function ($query) use($default_album) {
+                $query->where('album_id', $default_album->id);
+            })->get();
+            $i = 0;
+            $count_mi = count($columns);
+            foreach($columns as $column) {
+                $matching_array[$table->id][$i][0] = $column->column_index;
+                $matching_array[$table->id][$i][1] = $column->column_index;
+                $matching_array[$table->id][$i][2] = $column->column_name;
+                $matching_array[$table->id][$i][3] = $column->medstat_code;
+                $i++;
+            }
+
+            if (!$table->transposed ) {
+                $q_medstat = "SELECT * FROM ms_grf WHERE a1 LIKE '{$form->medstat_code}{$table->medstat_code}%' ORDER BY rec_id";
+                $ms_columns = \DB::select($q_medstat);
+                $count_ms = count($ms_columns);
+                if ($count_ms == 0) {
+                    $errors[$table->id][] = 'В словаре Медстат отстутствуют графы по данной таблице';
+                } else {
+                    $j = 0;
+                    foreach($ms_columns as $ms_column) {
+                        $matching_array[$table->id][$j][4] = $ms_column->a1;
+                        $matching_array[$table->id][$j][5] = $ms_column->a2;
+                        $matching_array[$table->id][$j][6] = $ms_column->gt;
+                        $matching_array[$table->id][$j][7] = substr($ms_column->a1, -2);
+                        $j++;
+                    }
+                }
+
+                foreach ($matching_array[$table->id] as $matched_rows) {
+                    if (!isset($matched_rows[7]) || !isset($matched_rows[3]) || $matched_rows[7] !== $matched_rows[3]) {
+                        if (isset($matched_rows[1])) {
+                            $errors[$table->id][] = 'Не совпадает код по графе Мединфо' . $matched_rows[1]  . '!';
+                        } else {
+                            $errors[$table->id][] = 'Не совпадает код по графе Медстат' . $matched_rows[7]  . '!';
+                        }
+
+                        //$errors[$table->id][] = 'Не совпадает код по строке' ;
+                    }
+                }
+
+                //dd($matching_array);
+            }
+
+            if ($count_ms <> $count_mi) {
+                $errors[$table->id][] = 'Не совпадает количество граф!';
+            }
+        }
+        return view('jqxdatainput.medstatprotocol', compact('form', 'tables', 'matching_array', 'errors', 'mode'));
     }
 
 }

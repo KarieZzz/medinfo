@@ -6,7 +6,7 @@
 <link href="{{ asset('/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
 <body>
 <div class="container">
-    <h3>Протокол сопоставления структуры формы № {{ $form->form_code }}</h3>
+    <h3>Протокол сопоставления структуры формы № {{ $form->form_code }} ({{ $mode }})</h3>
     @foreach( $tables as $t )
     <div id="tableLog">
         <h4>Таблица: ({{ $t->table_code }}) {{ $t->table_name }}. Код медстат: {{ $t->medstat_code }}. Таблица транспонирована: {{ $t->transposed }} </h4>
@@ -26,7 +26,7 @@
                 <th>Словарь Медстат</th>
                 <th>Наименование Медстат</th>
                 <th>Год</th>
-                <th>Код строки</th>
+                <th>Код Медстат</th>
             </tr>
             @foreach( $matching_array[$t->id] as $r )
                 <tr @if (isset($r[3]) && isset($r[7]) && $r[3] <> $r[7]) class="danger" @endif >
