@@ -333,7 +333,7 @@ class RowColumnAdminController extends Controller
         $default_album = Album::Default()->first(['id']);
         $form = Form::OfCode($formcode)->first();
         // обрабатываем таблицы из Мединфо не исключенные из текущего альбома и имеющие код Медстат;
-        $tables = Table::OfForm($form->id)->whereNotNull('medstat_code')->whereDoesntHave('excluded', function ($query) use($default_album) {
+        $tables = Table::OfForm($form->id)->where('transposed', 0)->whereNotNull('medstat_code')->whereDoesntHave('excluded', function ($query) use($default_album) {
             $query->where('album_id', $default_album->id);
         })->get();
         foreach ($tables as $table) {
@@ -341,7 +341,7 @@ class RowColumnAdminController extends Controller
             $errors[$table->id] = [];
             //if (!$table->medstat_code) break;
 
-            $columns = Column::OfTable($table->id)->whereDoesntHave('excluded', function ($query) use($default_album) {
+            $columns = Column::OfTable($table->id)->OfDataType()->whereDoesntHave('excluded', function ($query) use($default_album) {
                 $query->where('album_id', $default_album->id);
             })->get();
             $i = 0;
@@ -354,37 +354,35 @@ class RowColumnAdminController extends Controller
                 $i++;
             }
 
-            if (!$table->transposed ) {
-                $q_medstat = "SELECT * FROM ms_grf WHERE a1 LIKE '{$form->medstat_code}{$table->medstat_code}%' ORDER BY rec_id";
-                $ms_columns = \DB::select($q_medstat);
-                $count_ms = count($ms_columns);
-                if ($count_ms == 0) {
-                    $errors[$table->id][] = 'В словаре Медстат отстутствуют графы по данной таблице';
-                } else {
-                    $j = 0;
-                    foreach($ms_columns as $ms_column) {
-                        $matching_array[$table->id][$j][4] = $ms_column->a1;
-                        $matching_array[$table->id][$j][5] = $ms_column->a2;
-                        $matching_array[$table->id][$j][6] = $ms_column->gt;
-                        $matching_array[$table->id][$j][7] = substr($ms_column->a1, -2);
-                        $j++;
-                    }
+            $q_medstat = "SELECT * FROM ms_grf WHERE a1 LIKE '{$form->medstat_code}{$table->medstat_code}%' ORDER BY rec_id";
+            $ms_columns = \DB::select($q_medstat);
+            $count_ms = count($ms_columns);
+            if ($count_ms == 0) {
+                $errors[$table->id][] = 'В словаре Медстат отстутствуют графы по данной таблице';
+            } else {
+                $j = 0;
+                foreach($ms_columns as $ms_column) {
+                    $matching_array[$table->id][$j][4] = $ms_column->a1;
+                    $matching_array[$table->id][$j][5] = $ms_column->a2;
+                    $matching_array[$table->id][$j][6] = $ms_column->gt;
+                    $matching_array[$table->id][$j][7] = substr($ms_column->a1, -2);
+                    $j++;
                 }
+            }
 
-                foreach ($matching_array[$table->id] as $matched_rows) {
-                    if (!isset($matched_rows[7]) || !isset($matched_rows[3]) || $matched_rows[7] !== $matched_rows[3]) {
-                        if (isset($matched_rows[1])) {
-                            $errors[$table->id][] = 'Не совпадает код по графе Мединфо' . $matched_rows[1]  . '!';
-                        } else {
-                            $errors[$table->id][] = 'Не совпадает код по графе Медстат' . $matched_rows[7]  . '!';
-                        }
-
-                        //$errors[$table->id][] = 'Не совпадает код по строке' ;
+            foreach ($matching_array[$table->id] as $matched_rows) {
+                if (!isset($matched_rows[7]) || !isset($matched_rows[3]) || $matched_rows[7] !== $matched_rows[3]) {
+                    if (isset($matched_rows[1])) {
+                        $errors[$table->id][] = 'Не совпадает код по графе Мединфо' . $matched_rows[1]  . '!';
+                    } else {
+                        $errors[$table->id][] = 'Не совпадает код по графе Медстат' . $matched_rows[7]  . '!';
                     }
+
+                    //$errors[$table->id][] = 'Не совпадает код по строке' ;
                 }
+            }
 
                 //dd($matching_array);
-            }
 
             if ($count_ms <> $count_mi) {
                 $errors[$table->id][] = 'Не совпадает количество граф!';
