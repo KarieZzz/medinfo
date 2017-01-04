@@ -32,7 +32,10 @@ class MedstatExportController extends Controller
             $code = $unit->unit_code;
         }
 
-        $tables = $form->tables->sortBy('table_index');
+        $tables = $form->tables->sortBy('table_index')->filter(function ($table) {
+            return !is_null($table->medstat_code);
+        });
+        //dd($tables);
 
         $a1_code = '16'; // код отчетного года
         $a2_code = '1125'; // код Иркутской области

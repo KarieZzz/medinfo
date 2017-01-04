@@ -8,6 +8,7 @@
 <script src="{{ asset('/jqwidgets/jqxexpander.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxscrollbar.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxbuttons.js') }}"></script>
+<script src="{{ asset('/jqwidgets/jqxswitchbutton.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxinput.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxtextarea.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxcheckbox.js') }}"></script>

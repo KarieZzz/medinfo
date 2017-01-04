@@ -168,8 +168,8 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('datainput/formcontrol/{document}', 'StatDataInput\FormDashboardController@formControl');
     Route::get('datainput/tablecontrol/{document}/{table}', 'StatDataInput\FormDashboardController@tableControl');
 
-    Route::get('datainput/dcheck/table/{document}/{table}', 'StatDataInput\DataCheckController@check_table');
-    Route::get('datainput/dcheck/form/{document}', 'StatDataInput\DataCheckController@check_document');
+    Route::get('datainput/dcheck/table/{document}/{table}/{forcereload}', 'StatDataInput\DataCheckController@check_table');
+    Route::get('datainput/dcheck/form/{document}/{forcereload}', 'StatDataInput\DataCheckController@check_document');
 
     // Эспорт данных в Эксель и заполнение печатных форм-шаблонов
     Route::get('datainput/formexport/{document}', 'StatDataInput\ExcelExportController@formExport');

@@ -46,6 +46,7 @@ $.each(data_for_tables, function(table, content) {
 var current_row_name_datafield = data_for_tables[current_table].columns[1].dataField;
 var current_row_number_datafield = data_for_tables[current_table].columns[2].dataField;
 var protocol_control_created = false;
+var forcereload = 0; // При наличии загружается кэшированный протокол контроля
 var invalidTables = [];
 var editedCells = [];
 var alertedCells = [];

@@ -20,10 +20,10 @@ use App\Medinfo\Lexer\FunctionDispatcher;
 class TableDataCheck
 {
 
-    public static function execute(Document $document, Table $table, $force_reload = false)
+    public static function execute(Document $document, Table $table, $forcereload = 0)
     {
         set_time_limit(240);
-        if (ControlHelper::CashedProtocolActual($document->id, $table->id) && !$force_reload) {
+        if (ControlHelper::CashedProtocolActual($document->id, $table->id) && !$forcereload) {
             $table_protocol = ControlHelper::loadProtocol($document->id, $table->id);
             return $table_protocol;
         }

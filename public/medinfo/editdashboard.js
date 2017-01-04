@@ -505,7 +505,7 @@ var checkform = function () {
     $.ajax({
         dataType: "json",
         //url: validate_form_url,
-        url: formdatacheck_url,
+        url: formdatacheck_url +"/" + forcereload,
         data: data,
         beforeSend: function( xhr ) {
             $('#formprotocolloader').show();
@@ -641,7 +641,7 @@ var checktable = function (table_id) {
     var data ="";
     $.ajax({
         dataType: "json",
-        url: validate_table_url + table_id,
+        url: validate_table_url + table_id + "/" + forcereload,
         data: data,
         beforeSend: beforecheck,
         success: gettableprotocol
@@ -661,7 +661,7 @@ var tabledatacheck = function(table_id) {
     var data ="";
     $.ajax({
         dataType: "json",
-        url: tabledatacheck_url + table_id,
+        url: tabledatacheck_url + table_id + "/" + forcereload,
         data: data,
         beforeSend: beforecheck,
         success: gettableprotocol
@@ -811,7 +811,7 @@ var gettableprotocol = function (data, status, xhr) {
         });
         protocol_control_created = true;
     }
-    if (data.errors.length > 0 && (current_user_role == 3 || current_user_role == 4 )) {
+    if (typeof data.errors != 'undefined' && data.errors.length > 0 && (current_user_role == 3 || current_user_role == 4 )) {
         scripterrors = $("<div class='alert alert-danger'></div>");
         scripterrors.append("<p><strong>Ошибка выполнения!</strong> При выполнения контроля по данной таблицы выявлен ряд ошибок в функциях:</p>");
         $.each(data.errors, function(error_inx, error ) {
@@ -1053,30 +1053,49 @@ var inittablelist = function() {
 var initchecktabletab = function() {
     //$("#checktable").jqxButton({ theme: theme, disabled: control_disabled });
     //$("#checktable").click( function() { checktable(current_table) });
-    $("#datacheck").jqxButton({ theme: theme, disabled: control_disabled });
+    //$("#datacheck").jqxButton({ theme: theme, disabled: control_disabled });
     $("#datacheck").click( function() { tabledatacheck(current_table) });
     //$("#compareprevperiod").jqxButton({ theme: theme });
     //$("#compareprevperiod").click(compare_with_prev);
 
-    if (current_user_role == 3 || current_user_role == 4 ) {
+/*    if (current_user_role == 3 || current_user_role == 4 ) {
         var tk = $("<input id='medstatcontrol' style='float: left' type='button' value='Контроль таблицы (Старый формат)'/>");
         $("#ProtocolToolbar").prepend(tk);
         tk.jqxButton({ theme: theme });
         tk.click(function () {
             checktable(current_table);
         });
-    }
+    }*/
 
 };
 // Инициализация вкладки протокола контроля формы
 var initcheckformtab = function() {
-    $("#checkform").jqxButton({ theme: theme, disabled: control_disabled });
+    //$("#checkform").jqxButton({ theme: theme, disabled: control_disabled });
     $("#checkform").click(function () { checkform() });
+    var refresh_protocol = $("<i style='margin-left: 2px;height: 14px; float: left' class='fa  fa-lg fa-circle-o' title='Обновить/пересоздать протокол контроля'></i>");
+    refresh_protocol.jqxToggleButton({ theme: theme, toggled: false });
+    refresh_protocol.on('click', function () {
+        var toggled = $(this).jqxToggleButton('toggled');
+        if (toggled) {
+            forcereload = 1;
+            $(this).removeClass('fa-circle-o');
+            $(this).addClass('fa-circle');
+            raiseInfo("При следующием запуске контроля формы/таблицы протоколы будут обновлены");
+        } else {
+            forcereload = 0;
+            $(this).removeClass('fa-circle');
+            $(this).addClass('fa-circle-o');
+        }
+
+
+    });
+    $("#fc_extrabuttons").append(refresh_protocol);
+
 /*    $("#dataexport").jqxButton({ theme: theme });
     $("#dataexport").click(function () {
         var dataExportWindow = window.open(export_data_url);
     });*/
-    if (current_user_role == 3 || current_user_role == 4 ) {
+    /*if (current_user_role == 3 || current_user_role == 4 ) {
         var vfk = $("<input id='medstatcontrol' style='float: left' type='button' value='Контроль МC(ВФ)'/>");
         var mfk = $("<input id='medstatcontrol' style='float: left' type='button' value='Контроль МC(МФ)'/>");
         $("#formControlToolbar").prepend(vfk);
@@ -1090,7 +1109,7 @@ var initcheckformtab = function() {
             var ms_cntrl = window.open(medstat_control_url + '&type=mfk');
         });
 
-    }
+    }*/
 };
 var initfilters = function() {
     row_name_filter = function (needle) {

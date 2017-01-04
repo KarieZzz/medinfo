@@ -23,22 +23,25 @@ class DataCheckController extends Controller
 {
     //
 
-    public function check_table(Document $document, Table $table)
+    public function check_table(Document $document, Table $table, int $forcereload = 0)
     {
-        return TableDataCheck::execute($document, $table);
+        return TableDataCheck::execute($document, $table, $forcereload);
     }
 
-    public function check_document(Document $document)
+    public function check_document(Document $document, int $forcereload = 0)
     {
         $form_protocol = [];
         $form_protocol['valid'] = true;
         $form_protocol['no_alerts'] = true;
         $form_protocol['no_data'] = true;
+        if ($forcereload) {
+            $form_protocol['forcereloaded'] = true;
+        }
         $form_id = $document->form_id;
         $tables = Table::OfForm($form_id)->where('deleted', 0)->get();
         foreach ($tables as $table) {
             $offset = $table->table_code;
-            $control = TableDataCheck::execute($document, $table);
+            $control = TableDataCheck::execute($document, $table, $forcereload);
             if ($control['no_data'] == false) {
                 //dd($control);
                 $form_protocol[$offset] = $control;

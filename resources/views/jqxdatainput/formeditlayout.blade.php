@@ -6,12 +6,14 @@
     </div>
     <div data-container="FormControlPanel" id="fcp">
         <div id="formControlToolbar" style="padding: 4px;">
-            {{--<input id="dataexport" type="button" value="Экспорт данных" />--}}
-            <input id="checkform" style="float: left" type="button" value="Контроль формы" />
+            <button type="button" style="float: left" class="btn btn-primary" id="checkform">Контроль формы</button>
+
             <div style="padding: 4px; display: none" id="fc_extrabuttons">
-                {{--<div id="showallfcrule" class="extrabutton" style="float: left"><span>Показать только ошибки</span></div>--}}
-                <a id="toggle_formcontrolscreen" style="margin-left: 2px;" target="_blank"><span class='glyphicon glyphicon-fullscreen'></span></a>
-                <a id='printformprotocol' style="margin-left: 2px;" target="_blank" ><span class='glyphicon glyphicon-print'></span></a>
+                <i style='margin-left: 2px;height: 14px; float: left' id="toggle_formcontrolscreen" title='Обновить/пересоздать протокол контроля'>
+                    <span class='glyphicon glyphicon-fullscreen'></span>
+                </i>
+                {{--<i id="toggle_formcontrolscreen" style="margin-left: 2px;" target="_blank"><span class='glyphicon glyphicon-fullscreen'></span></i>--}}
+                <i id='printformprotocol' style="margin-left: 2px; height: 14px; float: left" ><span class='glyphicon glyphicon-print'></span></i>
             </div>
         </div>
         <div style="clear: both"></div>
@@ -31,7 +33,8 @@
     <div data-container="TableControlPanel" id="TableControlPanel">
         <div style="padding: 4px" id="ProtocolToolbar">
            {{-- <input style="float: left" id="checktable" type="button" value="Контроль таблицы (МИ)" />--}}
-            <input style="float: left" id="datacheck" type="button" value="Контроль таблицы" />
+            <button type="button" style="float: left" class="btn btn-primary" id="datacheck">Контроль таблицы</button>
+           {{-- <input style="float: left" id="datacheck" type="button" value="Контроль таблицы" />--}}
             {{--<input style="float: left" id="compareprevperiod" type="button" value="Сравнить с предыдущим периодом" />--}}
 
             <div style="padding: 4px" id="extrabuttons">
