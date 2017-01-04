@@ -354,7 +354,7 @@ class RowColumnAdminController extends Controller
                 $i++;
             }
 
-            $q_medstat = "SELECT * FROM ms_grf WHERE a1 LIKE '{$form->medstat_code}{$table->medstat_code}%' ORDER BY rec_id";
+            $q_medstat = "SELECT * FROM ms_grf WHERE a1 LIKE '{$form->medstat_code}{$table->medstat_code}%' ORDER BY a1";
             $ms_columns = \DB::select($q_medstat);
             $count_ms = count($ms_columns);
             if ($count_ms == 0) {
