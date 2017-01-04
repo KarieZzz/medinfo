@@ -139,7 +139,7 @@ class RowColumnAdminController extends Controller
     public function columnUpdate(Column $column, Request $request)
     {
         $this->validate($request, [
-                'column_index' => 'digits:2',
+                'column_index' => 'digits_between:1,99',
                 'column_name' => 'required|max:128',
                 'content_type' => 'integer',
                 'size' => 'integer',
@@ -179,7 +179,7 @@ class RowColumnAdminController extends Controller
     {
         $this->validate($request, [
                 'table_id' => 'required|exists:tables,id',
-                'column_index' => 'digits:2',
+                'column_index' => 'digits_between:1,99',
                 'column_name' => 'required|max:128',
                 'content_type' => 'integer',
                 'size' => 'integer',
