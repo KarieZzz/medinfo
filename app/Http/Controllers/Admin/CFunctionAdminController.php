@@ -137,7 +137,7 @@ class CFunctionAdminController extends Controller
         return [
             'level'     => 'integer',
             'script'    => 'required|max:512',
-            'comment'   => 'max:128',
+            'comment'   => 'max:256',
             'blocked'   => 'required|in:1,0',
         ];
     }
