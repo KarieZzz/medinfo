@@ -143,7 +143,7 @@ var aggregatedata = function() {
     $.ajax({
         dataType: 'json',
         url: aggregatedata_url + row_id + '/' + filter_mode,
-        method: "PATCH",
+        method: "GET",
         //data: data,
         success: function (data, status, xhr) {
             if (typeof data.affected_cells !== 'undefined') {

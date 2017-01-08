@@ -157,7 +157,7 @@ Route::group(['middleware' => ['web']], function () {
     Route::post('datainput/sendmessage', 'StatDataInput\DocumentMessageController@sendMessage');
     Route::post('datainput/changestate', 'StatDataInput\DocumentStateController@changeState');
     Route::post('datainput/changeaudition', 'StatDataInput\DocumentAuditionController@changeAudition');
-    Route::patch('datainput/aggregatedata/{document}/{unitgroup}', 'StatDataInput\AggregatesDashboardController@aggregateData' );
+    Route::get('datainput/aggregatedata/{document}/{unitgroup}', 'StatDataInput\AggregatesDashboardController@aggregateData' );
 
     // Рабочий стол - Первичный отчетный документ, ввод данных, журнал изменений
     Route::get('datainput/formdashboard/{document}', 'StatDataInput\FormDashboardController@index');
