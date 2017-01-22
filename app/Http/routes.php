@@ -24,7 +24,7 @@
 // Маршруты с авторизацией вынесены за пределы группы web
 
 
-Route::group(['middleware' => ['web']], function () {
+Route::group(['middleware' => ['medinfo']], function () {
     Route::auth();
     Route::get('admin/logout', 'Auth\AuthController@logout');
     Route::get('workerlogin', 'Auth\DatainputAuthController@getLogin' );
@@ -182,6 +182,7 @@ Route::group(['middleware' => ['web']], function () {
 
     // Аналитика: консолидированные отчеты, справки
     Route::get('reports/by_mo', 'ReportController@consolidateIndexes');
+    Route::get('reports/br/querycomposer', 'Admin\BriefReferenceMaker@compose_query');
 
     // Работа с lexer-parser
     Route::get('lexer/test_parser', 'StatDataInput\DataCheckController@func_parser');

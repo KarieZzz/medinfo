@@ -119,6 +119,7 @@ class ExcelExport
     public function getExcelStoragePath()
     {
         return storage_path('app/exports/excel/' . $this->doc_id .'.xlsx');
+        //return storage_path('app/exports/excel/' . $this->doc_id .'.pdf');
     }
 
     private function fillSubject($subject)
@@ -142,6 +143,7 @@ class ExcelExport
             $cell_iterator = new CellIterator($table);
             $cellArrayToWrite = $this->get_table_cells($table->table_code);
             //dd($cell_iterator);
+            //dd($cellArrayToWrite);
             $this->fill_table($cellArrayToWrite, $cell_iterator);
         }
     }
@@ -255,6 +257,8 @@ class ExcelExport
             $this->fillPeriod($this->_period->name);
             $this->fillTables();
             $objWriter = PHPExcel_IOFactory::createWriter($this->_phpexcel, 'Excel2007');
+            $objWriter->setOffice2003Compatibility(true);
+            //$objWriter = PHPExcel_IOFactory::createWriter($this->_phpexcel, 'PDF');
             $objWriter->save($output['storage_path']);
         }
         //$excel_file = Storage::disk('excel_exports')->get($this->doc_id . '.xlsx');

@@ -56,7 +56,7 @@ class CFunctionAdminController extends Controller
         $newfunction->blocked = $request->blocked;
         $newfunction->function = $this->functionIndex;
         $newfunction->compiled_cashe = $cache;
-        //$newfunction->save();
+        $newfunction->save();
         try {
             $newfunction->save();
             $deleted_protocols =  ControlCashe::where('table_id', $table->id)->delete();

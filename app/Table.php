@@ -46,13 +46,15 @@ class Table extends Model
             ->where('table_code', $table_code);
     }
 
-    public static function editedTables(int $document)
+    public static function editedTables(int $document, int $album)
     {
         $editedtables = \DB::table('statdata')
             ->join('documents', 'documents.id' ,'=', 'statdata.doc_id')
             ->leftJoin('tables', 'tables.id', '=', 'statdata.table_id')
+            ->leftJoin('album_tables', 'album_tables.table_id', '<>', 'statdata.table_id')
             ->where('documents.id', $document)
-            ->where('tables.deleted', 0)
+            ->where('album_tables.album_id', $album)
+            //->where('tables.deleted', 0)
             ->groupBy('statdata.table_id')
             ->pluck('statdata.table_id');
         return $editedtables;
