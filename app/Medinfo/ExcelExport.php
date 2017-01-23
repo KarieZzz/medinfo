@@ -257,7 +257,7 @@ class ExcelExport
             $this->fillPeriod($this->_period->name);
             $this->fillTables();
             $objWriter = PHPExcel_IOFactory::createWriter($this->_phpexcel, 'Excel2007');
-            $objWriter->setOffice2003Compatibility(true);
+            //$objWriter->setOffice2003Compatibility(true);
             //$objWriter = PHPExcel_IOFactory::createWriter($this->_phpexcel, 'PDF');
             $objWriter->save($output['storage_path']);
         }
