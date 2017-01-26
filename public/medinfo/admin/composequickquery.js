@@ -132,11 +132,16 @@ initRowList = function() {
             filterable: true,
             sortable: true,
             columns: [
-                { text: '№ п/п', datafield: 'row_index', width: '50px' },
                 { text: 'Код', datafield: 'row_code', width: '70px'  },
                 { text: 'Имя', datafield: 'row_name' , width: '380px'}
             ]
         });
+    if (groupmode == 1) {
+        rlist.on('rowselect', function (event) { rowtableclick(event); });
+    } else if (groupmode == 2) {
+        rlist.on('rowselect', function (event) { rowtableclick(event); });
+        rlist.on('rowunselect', function (event) { rowtableclick(event); });
+    }
 };
 //Таблица граф
 initColumnList = function() {
@@ -152,16 +157,25 @@ initColumnList = function() {
             showfilterrow: true,
             filterable: true,
             sortable: true,
+            selectionmode: 'multiplerows',
             columns: [
                 { text: '№ п/п', datafield: 'column_index', width: '50px' },
                 { text: 'Имя', datafield: 'column_name' , width: '300px'}
             ]
         });
+    if (groupmode == 2) {
+        clist.on('rowselect', function (event) { columntableclick(event); });
+    } else if (groupmode == 1) {
+        clist.on('rowselect', function (event) { columntableclick(event); });
+        clist.on('rowunselect', function (event) { columntableclick(event); });
+    }
 };
 // функция для обновления связанных объектов после выбора таблицы
 updateRelated = function() {
     updateRowList();
     updateColumnList();
+    $("#rowSelected").html('');
+    $("#columnSelected").html('');
 };
 
 // Обновление списка строк при выборе таблицы
@@ -178,13 +192,11 @@ updateColumnList = function() {
 };
 
 setquery = function() {
-    return "&table_id=" + current_table +
-        "&row_index=" + $("#row_index").val() +
-        "&row_code=" + $("#row_code").val() +
-        "&row_name=" + $("#row_name").val() +
-        "&medstat_code=" + $("#row_medstat_code").val() +
-        "&medinfo_id=" + $("#row_medinfo_id").val() +
-        "&excluded=" + ($("#excludedRow").val() ? 1 : 0);
+    return "?form=" + current_form +
+        "&table=" + current_table +
+        "&rows=" + rows +
+        "&columns=" + columns +
+        "&mode=" + groupmode;
 };
 
 initButtons = function() {
@@ -197,36 +209,94 @@ initButtons = function() {
     modebutton.on( 'unchecked', function (event) {
         $("#rowListContainer").jqxDropDownButton({ disabled: false });
         $("#columnListContainer").jqxDropDownButton({ disabled: true });
+        groupmode = 1;
+        rlist.jqxGrid('clearselection');
+        clist.jqxGrid('clearselection');
+        rlist.jqxGrid('selectionmode', 'singlerow');
+        clist.jqxGrid('selectionmode', 'multiplerows');
+        $("#modeSelected").html('<div class="text-bold text-info" style="margin-left: -100px">Текущий режим группировки "по строке"</div>');
+        $("#rowSelected").html('');
+        $("#columnSelected").html('');
     });
     modebutton.on( 'checked', function (event) {
         $("#rowListContainer").jqxDropDownButton({ disabled: true });
         $("#columnListContainer").jqxDropDownButton({ disabled: false });
+        groupmode = 2;
+        rlist.jqxGrid('clearselection');
+        clist.jqxGrid('clearselection');
+        rlist.jqxGrid('selectionmode', 'multiplerows');
+        clist.jqxGrid('selectionmode', 'singlerow');
+        $("#modeSelected").html('<div class="text-bold text-info" style="margin-left: -100px">Текущий режим группировки "по графе"</div>');
+        $("#rowSelected").html('');
+        $("#columnSelected").html('');
     });
 };
 
 // Операции со строками
 initRowActions = function() {
-    $("#insertrow").click(function () {
-        var data = setrowquery();
-        $.ajax({
-            dataType: 'json',
-            url: '/admin/rc/rowcreate',
-            method: "POST",
-            data: data,
-            success: function (data, status, xhr) {
-                if (typeof data.error != 'undefined') {
-                    raiseError(data.message);
-                } else {
-                    raiseInfo(data.message);
-                }
-                rlist.jqxGrid('updatebounddata', 'data');
-            },
-            error: function (xhr, status, errorThrown) {
-                $.each(xhr.responseJSON, function(field, errorText) {
-                    raiseError(errorText);
-                });
-            }
-        });
+    $("#make").click(function () {
+        var data = setquery();
+        var url = output_url + data;
+        //console.log(url);
+        window.open(url);
     });
 
+};
+
+var getselectedrows = function () {
+    var rowindexes = rlist.jqxGrid('getselectedrowindexes');
+    var indexes_length =  rowindexes.length;
+    rows = [];
+    for (i = 0; i < indexes_length; i++) {
+        rows.push(rlist.jqxGrid('getrowid', rowindexes[i]));
+    }
+    return rows;
+};
+
+var getselectedcolumns = function () {
+    var rowindexes = clist.jqxGrid('getselectedrowindexes');
+    var indexes_length =  rowindexes.length;
+    columns = [];
+    for (i = 0; i < indexes_length; i++) {
+        columns.push(clist.jqxGrid('getrowid', rowindexes[i]));
+    }
+    return columns;
+};
+
+var rowtableclick = function (event) {
+    if (groupmode == 1) {
+        $("#rowListContainer").jqxDropDownButton('close');
+        var args = event.args;
+        if (args.rowindex == -1) {
+            return false;
+        }
+        var r = args.row;
+        rows = [];
+        rows.push(r.id);
+        //console.log(r);
+        $("#rowSelected").html('<div class="text-bold text-danger" style="margin-left: -100px">Справка будет сгруппирована по строке: ' + r.row_code + ' "'+ r.row_name + '"</div>');
+        $("#columnListContainer").jqxDropDownButton({ disabled: false });
+    } else if (groupmode == 2) {
+        var selected = getselectedrows();
+        $("#rowSelected").html('<div class="text-bold text-info" style="margin-left: -100px">Выбрано строк для вывода данных: ' + selected.length + '</div>');
+    }
+};
+
+var columntableclick = function (event) {
+    if (groupmode == 2) {
+        $("#columnListContainer").jqxDropDownButton('close');
+        var args = event.args;
+        if (args.rowindex == -1) {
+            return false;
+        }
+        var r = args.row;
+        columns = [];
+        columns.push(r.id);
+        //console.log(args);
+        $("#columnSelected").html('<div class="text-bold text-danger" style="margin-left: -100px">Справка будет сгруппирована по графе: ' + r.column_index + ' "' + r.column_name + '"</div>');
+        $("#rowListContainer").jqxDropDownButton({ disabled: false });
+    } else if (groupmode == 1) {
+        var selected = getselectedcolumns();
+        $("#columnSelected").html('<div class="text-bold text-info" style="margin-left: -100px">Выбрано граф для вывода данных: ' + selected.length + '</div>');
+    }
 };

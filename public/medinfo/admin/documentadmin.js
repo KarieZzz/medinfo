@@ -156,7 +156,7 @@ var checkdtypefilter = function() {
 // Возвращает массив с идентификаторами выделенных документов
 var getselecteddocuments = function () {
     var rowindexes = dlist.jqxGrid('getselectedrowindexes');
-    indexes_length =  rowindexes.length;
+    var indexes_length =  rowindexes.length;
     var row_ids = [];
     for (i = 0; i < indexes_length; i++) {
         row_ids.push(dlist.jqxGrid('getrowid', rowindexes[i]));

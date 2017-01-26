@@ -39,6 +39,11 @@ class Unit extends Model
     {
         return $query->where('node_type', 4);
     }
+    // Все подразделения с первичными отчетами
+    public function scopePrimary($query)
+    {
+        return $query->where('node_type', 3)->orWhere('node_type', 4);
+    }
 
     // Только незаблокированные единицы
     public function scopeActive($query)

@@ -5,18 +5,18 @@
 
 @section('content')
     <div id="formContainer">
-        <div id="periodPropertiesForm" class="panel panel-default" style="padding-bottom: 3px; width: 90%">
+        <div id="queryPropertiesForm" class="panel panel-default" >
             <div class="panel-heading"><h3>Формирование справки</h3></div>
             <div class="panel-body">
                 <form class="form-horizontal" >
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="name">Выберите форму:</label>
+                        <label class="control-label col-sm-3" for="formList">Выберите форму:</label>
                         <div class="col-sm-3">
                             <div id="formList"></div>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="begin_date">Выберите таблицу:</label>
+                        <label class="control-label col-sm-3" for="tableList">Выберите таблицу:</label>
                         <div class="col-sm-3">
                             <div id="tableListContainer"><div id="tableList"></div></div>
                         </div>
@@ -25,9 +25,12 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="end_date">Гуппировать по:</label>
+                        <label class="control-label col-sm-3" for="groupMode">Гуппировать по:</label>
                         <div class="col-sm-3">
                             <div id="groupMode"></div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div id="modeSelected"><div class="text-bold text-info" style="margin-left: -100px">Текущий режим группировки "по строке"</div></div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -79,7 +82,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
     <script src="{{ asset('/medinfo/admin/tablepicker.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/composequickquery.js?v=001') }}"></script>
+    <script src="{{ asset('/medinfo/admin/composequickquery.js?v=005') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -92,9 +95,12 @@
         var tablesource;
         var rowsource;
         var columnsource;
+        var rows = [];
+        var columns = [];
         var tablefetch_url = '/admin/rc/fetchtables/';
         var rowfetch_url = '/admin/rc/fetchrows/';
         var columnfetch_url = '/admin/rc/fetchcolumns/';
+        var output_url = '/reports/br/output';
         var forms = {!! $forms  !!};
         var flist = $("#formList");
         var tlist = $("#tableList");
@@ -103,9 +109,7 @@
         var modebutton = $("#groupMode");
         var current_form = 0;
         var current_table = 0;
-        var rows = 0;
-        var columns = 0;
-        var groupmode = 0;
+        var groupmode = 1; // по умолчанию группируем по строке
         initFilterDatasources();
         initdatasources();
         initRowList();

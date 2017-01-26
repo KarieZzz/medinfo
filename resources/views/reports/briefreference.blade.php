@@ -1,36 +1,30 @@
 @extends('reports.report_layout')
 
-@section('title')
-    <div class="col-sm-7"><h2>Справка</h2></div>
-@endsection
-
 @section('content')
-    <div class="col-sm-7">
-        <h4>{{ $title }}</h4>
-    </div>
-    <div>
-        <table class="table table-bordered table-striped">
-            <thead>
-            <tr>
-                <th>Учреждение</th>
-                <th>ИНН</th>
-                @foreach( $structure['content'] as $index => $description)
-                    <th>{{ $description['title'] }}</th>
+    <div class="container">
+        <h3>Справка по форме №{{ $form->form_code }}. {{ $form->form_name }} за период "{{ $period->name }}"</h3>
+        <h4>Таблица: {{ $table->table_code }}. {{ $table->table_name  }}. </h4>
+        <h4>{{ $group_title }} {{ $el_name }}</h4>
+        <div id="documentLog">
+            <table class="table table-bordered table-condensed">
+                <tr>
+                    <th>Код</th>
+                    <th>Субъект</th>
+                    @foreach($column_titles as $title)
+                        <th>{{ $title }}</th>
+                    @endforeach
+                </tr>
+                @foreach($units as $unit)
+                    <tr>
+                        <td>{{ $unit->unit_code }}</td>
+                        <td>{{ $unit->unit_name }}</td>
+                        @foreach($values[$unit->id] as $v)
+                            <td>{{ $v }}</td>
+                        @endforeach
+                    </tr>
                 @endforeach
-            </tr>
-            </thead>
-            <tbody>
-            @foreach($indexes as $index)
-            <tr>
-                <td>{{ $index['unit_name'] }}</td>
-                <td>{{ $index['inn'] }}</td>
-                @for($i = 0; $i < $count_of_indexes; $i++)
-                    <td>{{ $index[$i]['value'] }}</td>
-                @endfor
-            </tr>
-            @endforeach
-            </tbody>
-        </table>
+            </table>
+        </div>
     </div>
 @endsection
 

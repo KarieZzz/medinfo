@@ -183,6 +183,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     // Аналитика: консолидированные отчеты, справки
     Route::get('reports/by_mo', 'ReportController@consolidateIndexes');
     Route::get('reports/br/querycomposer', 'Admin\BriefReferenceMaker@compose_query');
+    Route::get('reports/br/output', 'Admin\BriefReferenceMaker@makeBriefReport');
 
     // Работа с lexer-parser
     Route::get('lexer/test_parser', 'StatDataInput\DataCheckController@func_parser');

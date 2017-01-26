@@ -19,4 +19,5 @@ class Period extends Model
             ->where('pattern_id', 1); // 1 - Паттерн годового отчетного периода
     }
 
+
 }
