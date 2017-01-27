@@ -98,8 +98,8 @@
         var rows = [];
         var columns = [];
         var tablefetch_url = '/admin/rc/fetchtables/';
-        var rowfetch_url = '/admin/rc/fetchrows/';
-        var columnfetch_url = '/admin/rc/fetchcolumns/';
+        var rowfetch_url = '/reports/br/fetchrows/';
+        var columnfetch_url = '/reports/br/fetchcolumns/';
         var output_url = '/reports/br/output';
         var forms = {!! $forms  !!};
         var flist = $("#formList");

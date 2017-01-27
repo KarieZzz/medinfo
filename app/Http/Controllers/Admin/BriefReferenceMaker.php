@@ -2,9 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-
-use App\Column;
-use App\Document;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -16,6 +13,8 @@ use App\Unit;
 use App\Album;
 use App\Period;
 use App\Cell;
+use App\Column;
+use App\Document;
 
 class BriefReferenceMaker extends Controller
 {
@@ -31,6 +30,22 @@ class BriefReferenceMaker extends Controller
         return view('reports.composequickquery', compact('forms'));
     }
 
+    public function fetchActualRows(int $table)
+    {
+        $default_album = Album::Default()->first()->id;
+        return Row::OfTable($table)->with('table')->whereDoesntHave('excluded', function ($query) use($default_album) {
+            $query->where('album_id', $default_album);
+        })->get();
+    }
+
+    public function fetchDataTypeColumns(int $table)
+    {
+        $default_album = Album::Default()->first()->id;
+        return Column::OfTable($table)->OfDataType()->whereDoesntHave('excluded', function ($query) use($default_album) {
+            $query->where('album_id', $default_album);
+        })->get();
+    }
+
     public function makeBriefReport(Request $request) {
         $default_album = Album::Default()->first(['id']);
         $document_type = 1;
@@ -39,6 +54,7 @@ class BriefReferenceMaker extends Controller
         $mode = $request->mode;
         $rows = explode(',', $request->rows);
         $columns = explode(',', $request->columns);
+        //dd($columns);
         $units = Unit::Primary()->orderBy('unit_code')->get();
         $column_titles = [];
         if ($mode == 1) {
@@ -58,8 +74,8 @@ class BriefReferenceMaker extends Controller
                 $column_titles[] = $r->row_code . ': '  . $r->row_name;
             }
         }
+        //dd($column_titles);
         $period = Period::orderBy('begin_date', 'desc')->first();
-
         $values = [];
         $i = 0;
         foreach ($units as $unit) {

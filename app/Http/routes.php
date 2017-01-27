@@ -184,6 +184,8 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('reports/by_mo', 'ReportController@consolidateIndexes');
     Route::get('reports/br/querycomposer', 'Admin\BriefReferenceMaker@compose_query');
     Route::get('reports/br/output', 'Admin\BriefReferenceMaker@makeBriefReport');
+    Route::get('reports/br/fetchcolumns/{table}', 'Admin\BriefReferenceMaker@fetchDataTypeColumns');
+    Route::get('reports/br/fetchrows/{table}', 'Admin\BriefReferenceMaker@fetchActualRows');
 
     // Работа с lexer-parser
     Route::get('lexer/test_parser', 'StatDataInput\DataCheckController@func_parser');
