@@ -86,7 +86,7 @@ class BriefReferenceMaker extends Controller
                     foreach ($columns as $column) {
                         $cell = Cell::ofDTRC($d->id, $table->id, $rows[0], $column)->first();
                         is_null($cell) ? $value = 0 : $value = $cell->value;
-                        $values[$unit->id][$i] = $value;
+                        $values[$unit->id][$i] = number_format($value, 2, ',', '');
                         $i++;
                     }
                 } elseif ($mode == 2) {
@@ -94,7 +94,7 @@ class BriefReferenceMaker extends Controller
                     foreach ($rows as $row) {
                         $cell = Cell::ofDTRC($d->id, $table->id, $row, $columns[0])->first();
                         is_null($cell) ? $value = 0 : $value = $cell->value;
-                        $values[$unit->id][$i] = $value;
+                        $values[$unit->id][$i] = number_format($value, 2, ',', '');
                         $i++;
                     }
                 }
