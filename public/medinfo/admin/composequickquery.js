@@ -22,6 +22,18 @@ initFilterDatasources = function() {
         url: tablefetch_url + current_form
     };
     tablesDataAdapter = new $.jqx.dataAdapter(tablesource);
+    var levelssource =
+    {
+        datatype: "json",
+        datafields: [
+            { name: 'id' },
+            { name: 'unit_name' }
+        ],
+        id: 'id',
+        localdata: levels
+    };
+    levelsDataAdapter = new $.jqx.dataAdapter(levelssource);
+
 };
 
 initdatasources = function() {
@@ -108,6 +120,22 @@ initFormTableFilter = function() {
         $("#tableSelected").html('<div class="text-bold text-info" style="margin-left: -100px">Таблица: (' + r.table_code + ') ' + r.table_name + '</div>');
         updateRelated();
     });
+    levellist.jqxDropDownList({
+        theme: theme,
+        source: levelsDataAdapter,
+        displayMember: "unit_name",
+        valueMember: "id",
+        selectedIndex: 0,
+        width: 300,
+        height: 32
+    });
+    levellist.on('select', function (event) {
+        var args = event.args;
+        current_level = args.item.value;
+        //console.log(args.item);
+        $("#levelSelected").html('<div class="text-bold text-info" style="margin-left: -100px">Установлено ограничение по: "' + args.item.label + '"</div>');
+    });
+
 };
 
 // Обновление списка таблиц при выборе формы
@@ -196,6 +224,7 @@ setquery = function() {
         "&table=" + current_table +
         "&rows=" + rows +
         "&columns=" + columns +
+        "&level=" + current_level +
         "&mode=" + groupmode;
 };
 

@@ -27,7 +27,8 @@ class BriefReferenceMaker extends Controller
     public function compose_query()
     {
         $forms = Form::orderBy('form_index')->get(['id', 'form_code']);
-        return view('reports.composequickquery', compact('forms'));
+        $upper_levels = Unit::UpperLevels()->orderBy('unit_code')->get(['id', 'unit_name']);
+        return view('reports.composequickquery', compact('forms', 'upper_levels'));
     }
 
     public function fetchActualRows(int $table)
@@ -47,15 +48,35 @@ class BriefReferenceMaker extends Controller
     }
 
     public function makeBriefReport(Request $request) {
-        $default_album = Album::Default()->first(['id']);
+        $this->validate($request, [
+                'form' => 'required|integer',
+                'table' => 'required|integer',
+                'rows' => 'required',
+                'columns' => 'required',
+                'mode' => 'required|in:1,2',
+                'level' => 'integer',
+            ]
+        );
+        //$default_album = Album::Default()->first(['id']);
         $document_type = 1;
         $form = Form::find($request->form);
         $table = Table::find($request->table);
         $mode = $request->mode;
         $rows = explode(',', $request->rows);
         $columns = explode(',', $request->columns);
+        $level = $request->level;
+
         //dd($columns);
-        $units = Unit::Primary()->orderBy('unit_code')->get();
+        if ($level == 0) {
+            $units = Unit::Primary()->orderBy('unit_code')->get();
+            $top = Unit::find(0);
+        } else {
+            //collect($units = Unit::getPrimaryDescendants($level));
+            $units = collect(Unit::getPrimaryDescendants($level));
+            $top = $units->shift();
+        }
+        //dd($units);
+
         $column_titles = [];
         if ($mode == 1) {
             $group_title = 'По строке: ';
@@ -106,9 +127,8 @@ class BriefReferenceMaker extends Controller
                 }
             }
         }
-
         //return $values;
-        return view('reports.briefreference', compact('form', 'table', 'group_title', 'el_name', 'period', 'units', 'column_titles', 'values'));
+        return view('reports.briefreference', compact('form', 'table', 'top','group_title', 'el_name', 'period', 'units', 'column_titles', 'values'));
 
     }
 

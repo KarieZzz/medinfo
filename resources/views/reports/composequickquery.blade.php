@@ -4,6 +4,16 @@
 @section('headertitle', 'Быстрая справка - формирование')
 
 @section('content')
+    @if (count($errors) > 0)
+        <div class="alert alert-danger">
+            <strong>Ошибка!</strong> Не все необходимые поля заполнены.<br><br>
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     <div id="formContainer">
         <div id="queryPropertiesForm" class="panel panel-default" >
             <div class="panel-heading"><h3>Формирование справки</h3></div>
@@ -25,7 +35,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="groupMode">Гуппировать по:</label>
+                        <label class="control-label col-sm-3" for="groupMode">Группировать по:</label>
                         <div class="col-sm-3">
                             <div id="groupMode"></div>
                         </div>
@@ -49,6 +59,15 @@
                         </div>
                         <div class="col-sm-6">
                             <div id="columnSelected"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-3" for="level">Ограничение по территории:</label>
+                        <div class="col-sm-3">
+                            <div id="levelList" style="padding-left: 12px"></div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div id="levelSelected"><div class="text-bold text-info" style="margin-left: -100px">Все организации</div></div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -82,7 +101,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
     <script src="{{ asset('/medinfo/admin/tablepicker.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/composequickquery.js?v=005') }}"></script>
+    <script src="{{ asset('/medinfo/admin/composequickquery.js?v=006') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -102,13 +121,16 @@
         var columnfetch_url = '/reports/br/fetchcolumns/';
         var output_url = '/reports/br/output';
         var forms = {!! $forms  !!};
+        var levels = {!! $upper_levels  !!};
         var flist = $("#formList");
         var tlist = $("#tableList");
         var rlist = $("#rowList");
         var clist = $("#columnList");
+        var levellist = $("#levelList");
         var modebutton = $("#groupMode");
         var current_form = 0;
         var current_table = 0;
+        var current_level = 0;
         var groupmode = 1; // по умолчанию группируем по строке
         initFilterDatasources();
         initdatasources();

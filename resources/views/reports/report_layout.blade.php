@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title id="Description">Админ-страница (Bootstrap и jQWidgets дизайн)</title>
+    <title id="Description">Отчет/Справка </title>
     <!-- Bootstrap core CSS -->
     <link href="{{ asset('/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
     <!-- jQWidgets CSS -->

@@ -5,6 +5,7 @@
         <h3>Справка по форме №{{ $form->form_code }}. {{ $form->form_name }} за период "{{ $period->name }}"</h3>
         <h4>Таблица: {{ $table->table_code }}. {{ $table->table_name  }}. </h4>
         <h4>{{ $group_title }} {{ $el_name }}</h4>
+        <h4>Ограничение по территории: {{ $top->unit_name }}</h4>
         <div id="documentLog">
             <table class="table table-bordered table-condensed">
                 <tr>
