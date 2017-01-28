@@ -110,7 +110,7 @@ class BriefReferenceMaker extends Controller
                     foreach ($columns as $column) {
                         $cell = Cell::ofDTRC($d->id, $table->id, $rows[0], $column)->first();
                         is_null($cell) ? $value = 0 : $value = $cell->value;
-                        $values[$unit->id][$i] = number_format($value, 2, ',', '');
+                        $output == 1 ? $values[$unit->id][$i] = number_format($value, 2, ',', '') : $values[$unit->id][$i] = (float)$value;
                         $i++;
                     }
                 } elseif ($mode == 2) {
@@ -118,7 +118,7 @@ class BriefReferenceMaker extends Controller
                     foreach ($rows as $row) {
                         $cell = Cell::ofDTRC($d->id, $table->id, $row, $columns[0])->first();
                         is_null($cell) ? $value = 0 : $value = $cell->value;
-                        $values[$unit->id][$i] = number_format($value, 2, ',', '');
+                        $output == 1 ? $values[$unit->id][$i] = number_format($value, 2, ',', '') : $values[$unit->id][$i] = (float)$value;
                         $i++;
                     }
                 }
@@ -126,10 +126,12 @@ class BriefReferenceMaker extends Controller
                 $i = 0;
                 foreach ($column_titles as $c) {
                     $values[$unit->id][$i] = 'N/A';
+                    //$values[$unit->id][$i] = 0;
                     $i++;
                 }
             }
         }
+        //dd($values);
         if ($output == 1) {
             return view('reports.briefreference', compact('form', 'table', 'top','group_title', 'el_name', 'period', 'units', 'column_titles', 'values'));
         } elseif ($output == 2) {
