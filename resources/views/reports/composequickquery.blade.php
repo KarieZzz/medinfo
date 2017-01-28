@@ -71,6 +71,17 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label class="control-label col-sm-3" for="level">Формат вывода:</label>
+                        <div class="col-sm-3">
+                            <label class="radio-inline">
+                                <input type="radio" id="html" name="output" value="1" checked="checked" >html
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" id="excel" name="output" value="2">excel
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <div class="col-sm-offset-3 col-sm-6">
                             <button type="button" id="make" class="btn btn-default">Сформировать справку</button>
                         </div>
@@ -101,7 +112,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
     <script src="{{ asset('/medinfo/admin/tablepicker.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/composequickquery.js?v=006') }}"></script>
+    <script src="{{ asset('/medinfo/admin/composequickquery.js?v=007') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -132,6 +143,7 @@
         var current_table = 0;
         var current_level = 0;
         var groupmode = 1; // по умолчанию группируем по строке
+        var output = 1;
         initFilterDatasources();
         initdatasources();
         initRowList();

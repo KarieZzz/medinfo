@@ -225,6 +225,7 @@ setquery = function() {
         "&rows=" + rows +
         "&columns=" + columns +
         "&level=" + current_level +
+        "&output=" + output +
         "&mode=" + groupmode;
 };
 
@@ -258,6 +259,12 @@ initButtons = function() {
         $("#modeSelected").html('<div class="text-bold text-info" style="margin-left: -100px">Текущий режим группировки "по графе"</div>');
         $("#rowSelected").html('');
         $("#columnSelected").html('');
+    });
+    $("#html").on('click', function() {
+        output = 1;
+    });
+    $("#excel").on('click', function() {
+        output = 2;
     });
 };
 

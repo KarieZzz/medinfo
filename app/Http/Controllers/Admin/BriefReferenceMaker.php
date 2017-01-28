@@ -15,6 +15,7 @@ use App\Period;
 use App\Cell;
 use App\Column;
 use App\Document;
+use Maatwebsite\Excel\Facades\Excel;
 
 class BriefReferenceMaker extends Controller
 {
@@ -55,6 +56,7 @@ class BriefReferenceMaker extends Controller
                 'columns' => 'required',
                 'mode' => 'required|in:1,2',
                 'level' => 'integer',
+                'output' => 'required|in:1,2',
             ]
         );
         //$default_album = Album::Default()->first(['id']);
@@ -65,6 +67,7 @@ class BriefReferenceMaker extends Controller
         $rows = explode(',', $request->rows);
         $columns = explode(',', $request->columns);
         $level = $request->level;
+        $output = $request->output;
 
         //dd($columns);
         if ($level == 0) {
@@ -127,9 +130,15 @@ class BriefReferenceMaker extends Controller
                 }
             }
         }
-        //return $values;
-        return view('reports.briefreference', compact('form', 'table', 'top','group_title', 'el_name', 'period', 'units', 'column_titles', 'values'));
-
+        if ($output == 1) {
+            return view('reports.briefreference', compact('form', 'table', 'top','group_title', 'el_name', 'period', 'units', 'column_titles', 'values'));
+        } elseif ($output == 2) {
+            $excel = Excel::create('Reference');
+            $excel->sheet($table->table_code , function($sheet) use ($form, $table, $top, $group_title, $el_name, $period, $units, $column_titles, $values) {
+                $sheet->loadView('reports.br_excel', compact('form', 'table', 'top','group_title', 'el_name', 'period', 'units', 'column_titles', 'values'));
+            });
+            $excel->export('xlsx');
+        }
     }
 
 }
