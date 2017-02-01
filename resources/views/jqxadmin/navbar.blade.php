@@ -40,6 +40,7 @@
                     <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                     <li><a href="/admin/cfunctions">Функции контроля</a></li>
+                    <li><a href="/admin/dcheck/selected">Выборочный контроль</a></li>
                     <li><a href="#">Функции рассчета</a></li>
                     <li><a href="#">Отчеты</a></li>
                     <li><a href="/reports/br/querycomposer">Справка</a></li>

@@ -127,6 +127,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::post('admin/cfunctions/create/{table}', 'Admin\CFunctionAdminController@store');
     Route::patch('admin/cfunctions/update/{cfunction}', 'Admin\CFunctionAdminController@update');
     Route::delete('admin/cfunctions/delete/{cfunction}', 'Admin\CFunctionAdminController@delete');
+    Route::get('admin/dcheck/selected', 'StatDataInput\DataCheckController@selectControlConditions');
 
     Route::get('admin/micontrols/vtk', 'Admin\MedinfoControlsAdminController@index');
     Route::get('admin/micontrols/fetchcontrolledrows/{table}/{scope}', 'Admin\MedinfoControlsAdminController@fetchControlledRows');

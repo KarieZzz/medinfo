@@ -2,27 +2,25 @@
 
 namespace App\Http\Controllers\StatDataInput;
 
-use App\Document;
-use App\Medinfo\Lexer\DependencyControlInterpreter;
-use App\Medinfo\Lexer\FoldControlInterpreter;
-use App\Medinfo\Lexer\InterannualControlInterpreter;
 use Illuminate\Http\Request;
-
-use App\Http\Requests;
+//use App\Http\Requests;
 use App\Http\Controllers\Controller;
-
 
 use App\Medinfo\Control\TableDataCheck;
 use App\Medinfo\Lexer\ControlFunctionLexer;
 use App\Medinfo\Lexer\ControlFunctionParser;
-use App\Medinfo\Lexer\CompareControlInterpreter;
+use App\Form;
 use App\Table;
+
+use App\Medinfo\Lexer\CompareControlInterpreter;
+use App\Medinfo\Lexer\DependencyControlInterpreter;
+use App\Medinfo\Lexer\FoldControlInterpreter;
+use App\Medinfo\Lexer\InterannualControlInterpreter;
 
 
 class DataCheckController extends Controller
 {
     //
-
     public function check_table(Document $document, Table $table, int $forcereload = 0)
     {
         return TableDataCheck::execute($document, $table, $forcereload);
@@ -53,6 +51,30 @@ class DataCheckController extends Controller
         return $form_protocol;
     }
 
+    public function selectControlConditions()
+    {
+        $forms = Form::orderBy('form_index')->get(['id', 'form_code']);
+        return view('jqxadmin.selectedcontrolconditions', compact('forms'));
+    }
+
+    public function selectedControl(Request $request)
+    {
+        $this->validate($request, [
+                'form' => 'required|integer',
+                'cfunctions' => 'required|integer',
+                'mode' => 'required|in:1,2',
+                'level' => 'integer',
+            ]
+        );
+        $form = Form::find($request->form);
+        $level = explode($request->cfunctions);
+        $mode = $request->mode;
+
+        $level = $request->level;
+
+
+
+    }
 
     public function func_parser()
     {

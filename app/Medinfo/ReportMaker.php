@@ -16,7 +16,8 @@ class ReportMaker
     public static function makeReport(array $indexes)
     {
         //$count_of_indexes = count($indexes['content']);
-        $period = 1; // 2015 год
+        //$period = 1; // 2015 год
+        $period = 4; // 2016 год
         $states = [ 2, 4, 8, 16, 32 ]; // Документы со всеми статусами
         $dtype = 1; // Только первичные документв
         $units = Unit::legal()->active()->orderBy('unit_code')->get();
@@ -42,6 +43,7 @@ class ReportMaker
                     if ($unit->aggregate) {
                         $periods[] = $period;
                         $scope['forms'] = [ $form->id ];
+                        $scope['worker_scope'] = 0;
                         $scope['periods'] = [ $period ];
                         $scope['states'] = $states;
                         $scope['dtypes'] = [ $dtype ];
@@ -87,7 +89,7 @@ class ReportMaker
                     $value = $m->e($formula);
                 }
                 catch (\Exception $e) {
-                    dd($e);
+                    //dd($e);
                 }
                 //$value = eval('return ' . $formula . ';' );
                 //echo $formula . PHP_EOL;

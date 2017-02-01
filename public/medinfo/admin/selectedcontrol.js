@@ -35,6 +35,7 @@ initFunctionList = function() {
             showfilterrow: true,
             filterable: true,
             sortable: true,
+            selectionmode: 'checkbox',
             columns: [
                 { text: 'Id', datafield: 'id', width: '50px' },
                 { text: 'Код таблицы', datafield: 'table_code', width: '70px'  },
@@ -44,13 +45,6 @@ initFunctionList = function() {
                 { text: 'Отключена', datafield: 'blocked', columntype: 'checkbox', width: '70px' }
             ]
         });
-    fgrid.on('rowselect', function (event) {
-        var row = event.args.row;
-        $("#level").val(row.level);
-        $("#script").val(row.script);
-        $("#comment").val(row.comment);
-        $("#blocked").val(row.blocked);
-    });
 };
 // Обновление списка строк при выборе таблицы
 updateFunctionList = function() {
@@ -97,36 +91,10 @@ setquerystring = function() {
 };
 
 initFunctionActions = function() {
-    $("#insert").click(function () {
-        if (current_table == 0 ) {
-            raiseError('Выберите форму и таблицу для которых будет применяться функция');
-            return;
-        }
-        var data = setquerystring();
-        $.ajax({
-            dataType: 'json',
-            url: '/admin/cfunctions/create/' + current_table ,
-            method: "POST",
-            data: data,
-            success: function (data, status, xhr) {
-                if (typeof data.error != 'undefined') {
-                    raiseError(data.message);
-                } else {
-                    raiseInfo(data.message);
-                }
-                fgrid.jqxGrid('updatebounddata', 'data');
-            },
-            error: function (xhr, status, errorThrown) {
-                $.each(xhr.responseJSON, function(field, errorText) {
-                    raiseError(errorText);
-                });
-            }
-        });
-    });
-    $("#save").click(function () {
-        var row = fgrid.jqxGrid('getselectedrowindex');
-        if (row == -1 && typeof row !== 'undefined') {
-            raiseError("Выберите запись для изменения/сохранения данных");
+    $("#performControl").click(function () {
+        var functions = getselectedfunctions();
+        if (functions.length == 0) {
+            raiseError("Не выбраны функции для контроля данных");
             return false;
         }
         var id = fgrid.jqxGrid('getrowid', row);
@@ -155,34 +123,14 @@ initFunctionActions = function() {
             }
         });
     });
-    $("#delete").click(function () {
-        var row = fgrid.jqxGrid('getselectedrowindex');
-        if (row == -1) {
-            raiseError("Выберите запись для удаления");
-            return false;
-        }
-        current_function = fgrid.jqxGrid('getrowid', row);
-        raiseConfirm("Удалить функцию контроля № " + current_function + "?" )
-    });
 };
 
-performAction = function() {
-    $.ajax({
-        dataType: 'json',
-        url: '/admin/cfunctions/delete/' + current_function,
-        method: "DELETE",
-        success: function (data, status, xhr) {
-            if (typeof data.error != 'undefined') {
-                raiseError(data.message);
-            } else {
-                raiseInfo(data.message);
-                $("#form")[0].reset();
-            }
-            fgrid.jqxGrid('updatebounddata', 'data');
-            fgrid.jqxGrid('clearselection');
-        },
-        error: function (xhr, status, errorThrown) {
-            raiseError('Ошибка удаления записи', xhr);
-        }
-    });
+var getselectedfunctions = function () {
+    var rowindexes = fgrid.jqxGrid('getselectedrowindexes');
+    var indexes_length =  rowindexes.length;
+    var row_ids = [];
+    for (i = 0; i < indexes_length; i++) {
+        row_ids.push(fgrid.jqxGrid('getrowid', rowindexes[i]));
+    }
+    return row_ids;
 };

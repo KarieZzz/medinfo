@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
+//use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Form;
 use App\Row;
@@ -68,6 +68,8 @@ class BriefReferenceMaker extends Controller
         $columns = explode(',', $request->columns);
         $level = $request->level;
         $output = $request->output;
+        $group_title = '';
+        $el_name = '';
 
         //dd($columns);
         if ($level == 0) {

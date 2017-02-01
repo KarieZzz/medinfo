@@ -20,7 +20,7 @@
             height: 100%;
         }
     </style>
-    <title id="Description">Админ-страница (Bootstrap и jQWidgets дизайн)</title>
+    <title id="Description">Администрирование Мединфо</title>
     <!-- Bootstrap core CSS -->
     <link href="{{ asset('/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
     <!-- jQWidgets CSS -->

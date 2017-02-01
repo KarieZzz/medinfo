@@ -9,7 +9,7 @@
 				<div class="panel-body">
 					@if (count($errors) > 0)
 						<div class="alert alert-danger">
-							<strong>Упс!</strong> Есть проблемы с вводом Ваших данных.<br><br>
+							<strong>Ошибка!</strong> Есть проблемы с вводом Ваших данных.<br><br>
 							<ul>
 								@foreach ($errors->all() as $error)
 									<li>{{ $error }}</li>
