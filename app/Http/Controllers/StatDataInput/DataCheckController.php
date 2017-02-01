@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\StatDataInput;
 
 use Illuminate\Http\Request;
-//use App\Http\Requests;
+use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 use App\Medinfo\Control\TableDataCheck;
@@ -11,7 +11,7 @@ use App\Medinfo\Lexer\ControlFunctionLexer;
 use App\Medinfo\Lexer\ControlFunctionParser;
 use App\Form;
 use App\Table;
-
+use App\Document;
 use App\Medinfo\Lexer\CompareControlInterpreter;
 use App\Medinfo\Lexer\DependencyControlInterpreter;
 use App\Medinfo\Lexer\FoldControlInterpreter;
