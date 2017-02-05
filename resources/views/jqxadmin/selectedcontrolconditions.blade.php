@@ -39,7 +39,7 @@
                 </div>--}}
                 <div class="form-group">
                     <div class="col-sm-offset-1 col-sm-7">
-                        <button type="button" id="performControl" class="btn btn-default">Выполнить контроль</button>
+                        <button type="button" id="performControl" class="btn btn-primary">Выполнить контроль</button>
                     </div>
                 </div>
             </form>

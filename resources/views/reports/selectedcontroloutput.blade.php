@@ -21,7 +21,7 @@
                                 @if (!$f['valid']) <div class="alert alert-danger">Ошибка!</div> @endif
                                 <div @if (!$res['valid']) class="text-danger" @else class="text-success" @endif >Функция: {{ $f['formula'] }}</div>
                                 @foreach($f['iterations'] as $iteration )
-                                    <div class="text-warning small"> @if (!$f['iteration_mode'] == 1) строка: @else графа: @endif {{$iteration['code'] }}</div>
+                                    <div class="text-warning small"> @if ($f['iteration_mode'] == 1) строка: @elseif ($f['iteration_mode'] == 2) графа: @endif {{$iteration['code'] }}</div>
                                 <table class="table-bordered table-condensed">
                                     <tr @if (!$iteration['valid']) class="danger" @else class="success" @endif>
                                         <td>Значение</td>
