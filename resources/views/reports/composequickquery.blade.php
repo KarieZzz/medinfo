@@ -150,6 +150,6 @@
         initColumnList();
         initFormTableFilter();
         initButtons();
-        initRowActions();
+        initActions();
     </script>
 @endsection

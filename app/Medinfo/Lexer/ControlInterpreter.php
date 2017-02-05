@@ -21,6 +21,7 @@ use App\UnitGroupMember;
 class ControlInterpreter
 {
     public $root;
+    public $functionIndex;
     public $errors = [];
     public $errorStack = [];
     public $unitScope = []; // область приложения функции (группы учреждений)
@@ -50,11 +51,12 @@ class ControlInterpreter
     public $currentNode; // текущий узел ParseTreeNode - для обработки
     public $currentPeriod = '1'; // По умолчанию отчетный период проверяемого документа
 
-    public function __construct(ParseTree $root, Table $table)
+    public function __construct(ParseTree $root, Table $table, $fIndex)
     {
         $this->root = $root;
         $this->form = Form::find($table->form_id);
         $this->table = $table;
+        $this->functionIndex = $fIndex;
         $this->setArguments();
     }
 

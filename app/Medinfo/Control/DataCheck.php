@@ -17,10 +17,10 @@ use App\Medinfo\Lexer\ControlFunctionParser;
 //use App\Medinfo\Lexer\CompareControlInterpreter;
 use App\Medinfo\Lexer\FunctionDispatcher;
 
-class TableDataCheck
+class DataCheck
 {
 
-    public static function execute(Document $document, Table $table, $forcereload = 0)
+    public static function tableControl(Document $document, Table $table, $forcereload = 0)
     {
         set_time_limit(240);
         if (ControlHelper::CashedProtocolActual($document->id, $table->id) && !$forcereload) {
@@ -43,15 +43,12 @@ class TableDataCheck
             $valid = true;
             $do_not_alerted = true;
             foreach ($cfunctions as $function) {
-                $lexer = new ControlFunctionLexer($function->script);
-                $parser = new ControlFunctionParser($lexer);
-                $r = $parser->run();
                 try {
-                    $callInterpreter = FunctionDispatcher::INTERPRETERNS . FunctionDispatcher::$interpreterNames[$parser->functionIndex];
-                    $interpreter = new $callInterpreter($r, $table);
+                    $interpreter = self::cacheOrCompile($function, $table);
+                    //dd($interpreter);
                     $rule = $interpreter->exec($document);
-                    $rule['function_id'] = $parser->functionIndex;
-                    $rule['function'] = FunctionDispatcher::$structNames[$parser->functionIndex];
+                    $rule['function_id'] = $interpreter->functionIndex;
+                    $rule['function'] = FunctionDispatcher::$structNames[$interpreter->functionIndex];
                     $rule['level'] = $function->level;
                     $rule['input'] = $function->script;
                     $rule['comment'] = $function->comment;
@@ -84,6 +81,25 @@ class TableDataCheck
         }
         $table_protocol['no_data'] = true;
         return $table_protocol;
+    }
+
+    public static function cacheOrCompile(CFunction $function, Table $table)
+    {
+        //$fo = unserialize(base64_decode($function->compiled_cashe));
+        //if (!$fo) {
+            $lexer = new ControlFunctionLexer($function->script);
+            $parser = new ControlFunctionParser($lexer);
+            $r = $parser->run();
+            $callInterpreter = FunctionDispatcher::INTERPRETERNS . FunctionDispatcher::$interpreterNames[$parser->functionIndex];
+            $interpreter = new $callInterpreter($r, $table, $parser->functionIndex);
+            //$function->compiled_cashe = base64_encode(serialize($interpreter));
+            //$function->save();
+            return $interpreter;
+        //} else {
+            //dd($fo);
+            //return $fo;
+        //}
+
     }
 
 }

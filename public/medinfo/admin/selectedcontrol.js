@@ -1,10 +1,15 @@
-// функция для обновления связанных объектов после выбора таблицы
-updateRelated = function() {
-    updateFunctionList();
-    $("#form")[0].reset();
-};
-
 initdatasources = function() {
+    var formssource =
+    {
+        datatype: "json",
+        datafields: [
+            { name: 'id' },
+            { name: 'form_code' }
+        ],
+        id: 'id',
+        localdata: forms
+    };
+    formsDataAdapter = new $.jqx.dataAdapter(formssource);
     functionsource = {
         datatype: "json",
         datafields: [
@@ -17,17 +22,35 @@ initdatasources = function() {
             { name: 'blocked', type: 'bool' }
         ],
         id: 'id',
-        url: functionfetch_url + current_table,
+        url: functionfetch_url + current_form,
         root: 'f'
     };
     functionsDataAdapter = new $.jqx.dataAdapter(functionsource);
+};
+
+initFormFilter = function() {
+    $("#formList").jqxDropDownList({
+        theme: theme,
+        source: formsDataAdapter,
+        displayMember: "form_code",
+        valueMember: "id",
+        placeHolder: "Выберите форму:",
+        //selectedIndex: 2,
+        width: 200,
+        height: 32
+    });
+    $('#formList').on('select', function (event) {
+        var args = event.args;
+        current_form = args.item.value;
+        updateFunctionList();
+    });
 };
 // Таблица функций
 initFunctionList = function() {
     fgrid.jqxGrid(
         {
             width: '98%',
-            height: '300px',
+            height: '500px',
             theme: theme,
             localization: localize(),
             source: functionsDataAdapter,
@@ -48,80 +71,23 @@ initFunctionList = function() {
 };
 // Обновление списка строк при выборе таблицы
 updateFunctionList = function() {
-    functionsource.url = functionfetch_url + current_table;
+    functionsource.url = functionfetch_url + current_form;
     fgrid.jqxGrid('clearselection');
     fgrid.jqxGrid('updatebounddata');
 };
 // Операции с функциями контроля
 
-initButtons = function() {
-    $('#blocked').jqxSwitchButton({
-        height: 31,
-        width: 81,
-        onLabel: 'Да',
-        offLabel: 'Нет',
-        checked: false });
-    var errorlevelsource =
-    {
-        datatype: "json",
-        datafields: [
-            { name: 'code' },
-            { name: 'name' }
-        ],
-        id: 'code',
-        localdata: errorLevels
-    };
-    errorLevelsDataAdapter = new $.jqx.dataAdapter(errorlevelsource);
-    $("#level").jqxDropDownList({
-        theme: theme,
-        source: errorLevelsDataAdapter,
-        displayMember: "name",
-        valueMember: "code",
-        placeHolder: "Выберите уровень ошибки:",
-        width: 300,
-        height: 34
-    });
+setquery = function() {
+    return "?form=" + current_form +
+        "&cfunctions=" + getselectedfunctions();
 };
 
-setquerystring = function() {
-    return "&level=" + $("#level").val() +
-        "&script=" + encodeURIComponent($("#script").val()) +
-        "&comment=" + $("#comment").val() +
-        "&blocked=" + ($("#blocked").val() ? 1 :0);
-};
-
-initFunctionActions = function() {
+initAction = function() {
     $("#performControl").click(function () {
-        var functions = getselectedfunctions();
-        if (functions.length == 0) {
-            raiseError("Не выбраны функции для контроля данных");
-            return false;
-        }
-        var id = fgrid.jqxGrid('getrowid', row);
-        var data = setquerystring();
-        $.ajax({
-            dataType: 'json',
-            url: '/admin/cfunctions/update/' + id,
-            method: "PATCH",
-            data: data,
-            success: function (data, status, xhr) {
-                if (typeof data.error != 'undefined') {
-                    raiseError(data.message);
-                } else {
-                    raiseInfo(data.message);
-                    fgrid.jqxGrid('updatebounddata', 'data');
-                    fgrid.on("bindingcomplete", function (event) {
-                        var newindex = fgrid.jqxGrid('getrowboundindexbyid', id);
-                        fgrid.jqxGrid('selectrow', newindex);
-                    });
-                }
-            },
-            error: function (xhr, status, errorThrown) {
-                $.each(xhr.responseJSON, function(field, errorText) {
-                    raiseError(errorText);
-                });
-            }
-        });
+        var data = setquery();
+        var url = output_url + data;
+        //console.log(url);
+        window.open(url);
     });
 };
 

@@ -268,15 +268,13 @@ initButtons = function() {
     });
 };
 
-// Операции со строками
-initRowActions = function() {
+initActions = function() {
     $("#make").click(function () {
         var data = setquery();
         var url = output_url + data;
         //console.log(url);
         window.open(url);
     });
-
 };
 
 var getselectedrows = function () {

@@ -4,38 +4,45 @@
 @section('headertitle', 'Выборочный контроль данных')
 
 @section('content')
+    @if (count($errors) > 0)
+        <div class="alert alert-danger">
+            <strong>Ошибка!</strong> Не все необходимые поля заполнены.<br><br>
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     @include('jqxadmin.table_picker')
     <div>
-        <div id="functionList" style="margin: 10px"></div>
         <div id="propertiesForm" class="panel panel-default" style="padding: 3px; width: 100%">
-            <div class="panel-heading"><h3>Выбор функций контроля</h3></div>
-            <div class="panel-body">
-                <form id="form" class="form-horizontal" >
-                    <div class="form-group">
-                        <label class="control-label col-sm-3" for="level">Типы документов:</label>
-                        <div class="col-sm-2">
-                            <div id="level" style="padding-left: 12px"></div>
-                        </div>
+            <div id="functionList" style="margin: 10px"></div>
+            <form id="form" class="form-horizontal" >
+                {{--<div class="form-group">
+                    <label class="control-label col-sm-3" for="level">Типы документов:</label>
+                    <div class="col-sm-2">
+                        <div id="level" style="padding-left: 12px"></div>
                     </div>
-                    <div class="form-group">
-                        <label class="control-label col-sm-3" for="comment">Ограничение по территории:</label>
-                        <div class="col-sm-8">
-                            <input type="text" class="form-control" id="comment">
-                        </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-3" for="comment">Ограничение по территории:</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" id="comment">
                     </div>
-                    <div class="form-group">
-                        <label class="control-label col-sm-3" for="blocked">Ограничение по группе:</label>
-                        <div class="col-sm-2">
-                            <div id="blocked"></div>
-                        </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-3" for="blocked">Ограничение по группе:</label>
+                    <div class="col-sm-2">
+                        <div id="blocked"></div>
                     </div>
-                    <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-7">
-                            <button type="button" id="performControl" class="btn btn-default">Выполнить контроль</button>
-                        </div>
+                </div>--}}
+                <div class="form-group">
+                    <div class="col-sm-offset-1 col-sm-7">
+                        <button type="button" id="performControl" class="btn btn-default">Выполнить контроль</button>
                     </div>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
 @endsection
@@ -60,31 +67,26 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/tablepicker.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/selectedcontrol.js') }}"></script>
+    <script src="{{ asset('/medinfo/admin/selectedcontrol.js?v=004') }}"></script>
 @endpush
 
 @section('inlinejs')
     @parent
     <script type="text/javascript">
-        var tableDataAdapter;
         var formsDataAdapter;
         var functionsDataAdapter;
         var tablesource;
         var rowsource;
         var columnsource;
-        var tablefetch_url = '/admin/rc/fetchtables/';
-        var functionfetch_url = '/admin/cfunctions/fetchcf/';
+        var functionfetch_url = '/admin/cfunctions/fetchofform/';
+        var output_url = '/admin/dcheck/selectedcheck';
         var forms = {!! $forms  !!};
         var fgrid = $("#functionList");
         var current_form = 0;
-        var current_table = 0;
-        var current_function = 0;
-        initFilterDatasources();
+        var cfselected = [];
         initdatasources();
         initFunctionList();
-        initFormTableFilter();
-        initButtons();
-        initFunctionActions();
+        initFormFilter();
+        initAction();
     </script>
 @endsection

@@ -18,7 +18,9 @@ class CompareControlInterpreter extends ControlInterpreter
 
     public function setArguments()
     {
+        //$this->lpExpressionRoot = unserialize(serialize($this->root->children[0]));
         $this->lpExpressionRoot = $this->root->children[0];
+        //$this->rpExpressionRoot = unserialize(serialize($this->root->children[1]));
         $this->rpExpressionRoot = $this->root->children[1];
         $this->boolean = $this->root->children[2]->tokens[0]->text;
         if (isset($this->root->children[3]->children[0]->children[0])) {

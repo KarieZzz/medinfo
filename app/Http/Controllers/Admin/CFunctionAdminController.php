@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 //use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
+use App\Album;
 use App\Form;
 use App\CFunction;
 use App\ControlCashe;
@@ -39,6 +40,21 @@ class CFunctionAdminController extends Controller
     public function fetchControlFunctions(int $table)
     {
         return CFunction::OfTable($table)->orderBy('updated_at')->with('table')->get();
+    }
+
+    public function fetchCFofForm(int $form)
+    {
+        $cf =[];
+        $default_album = Album::Default()->first()->id;
+        $tables = Table::OfForm($form)->whereDoesntHave('excluded', function ($query) use($default_album) {
+            $query->where('album_id', $default_album);
+        })->get();
+        //dd($tables);
+        foreach ($tables as $table) {
+            //dd(CFunction::OfTable($table->id)->with('table')->get()->toArray());
+            $cf = array_merge($cf, CFunction::OfTable($table->id)->orderBy('updated_at')->with('table')->get()->toArray());
+        }
+        return $cf;
     }
 
     public function store(Table $table, Request $request)
@@ -114,9 +130,9 @@ class CFunctionAdminController extends Controller
             $parser = new ControlFunctionParser($lexer);
             $r = $parser->run();
             $callInterpreter = FunctionDispatcher::INTERPRETERNS . FunctionDispatcher::$interpreterNames[$parser->functionIndex];
-            $interpreter = new $callInterpreter($r, $table);
+            $interpreter = new $callInterpreter($r, $table, $parser->functionIndex);
             //dd($interpreter);
-            $compiled_cache = serialize($interpreter);
+            $compiled_cache = base64_encode(serialize($interpreter));
             $this->functionIndex = $parser->functionIndex;
             return $compiled_cache;
         } catch (\Exception $e) {
