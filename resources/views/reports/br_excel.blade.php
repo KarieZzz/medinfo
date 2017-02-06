@@ -1,4 +1,4 @@
-@extends('reports.report_layout')
+@extends('reports.excelexportlayout')
 
 @section('content')
 <div class="container">
