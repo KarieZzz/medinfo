@@ -69,7 +69,7 @@ class DataCheckController extends Controller
                 //'level' => 'integer',
             ]
         );
-        set_time_limit(300);
+        set_time_limit(1800);
         $form = Form::find($request->form);
         $cfunctions = explode(',', $request->cfunctions);
         $period = Period::orderBy('begin_date', 'desc')->first();
