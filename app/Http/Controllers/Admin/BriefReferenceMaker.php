@@ -11,6 +11,8 @@ use App\Form;
 use App\Row;
 use App\Table;
 use App\Unit;
+use App\UnitGroupMember;
+use App\UnitsView;
 use App\Album;
 use App\Period;
 use App\Cell;
@@ -29,10 +31,10 @@ class BriefReferenceMaker extends Controller
     public function compose_query()
     {
         $forms = Form::orderBy('form_index')->get(['id', 'form_code']);
-        $upper_levels = Unit::UpperLevels()->orderBy('unit_code')->get(['id', 'unit_name']);
-        $groups = UnitGroup::all(['id', 'group_name']);
-        $merged = $upper_levels->merge($groups);
-        dd($merged->all());
+        //$upper_levels = Unit::UpperLevels()->orderBy('unit_code')->get(['id', 'unit_name']);
+        $upper_levels = UnitsView::whereIn('type', [1,2,5])->get();
+
+        //dd($upper_levels);
 
         return view('reports.composequickquery', compact('forms', 'upper_levels'));
     }
@@ -61,6 +63,7 @@ class BriefReferenceMaker extends Controller
                 'columns' => 'required',
                 'mode' => 'required|in:1,2',
                 'level' => 'integer',
+                'type' => 'required|in:1,2,5',
                 'output' => 'required|in:1,2',
             ]
         );
@@ -71,19 +74,28 @@ class BriefReferenceMaker extends Controller
         $mode = $request->mode;
         $rows = explode(',', $request->rows);
         $columns = explode(',', $request->columns);
-        $level = $request->level;
+        $level = (int)$request->level;
+        $type = (int)$request->type;
         $output = $request->output;
         $group_title = '';
         $el_name = '';
 
+        //dd($type);
         //dd($columns);
         if ($level == 0) {
             $units = Unit::Primary()->orderBy('unit_code')->get();
             $top = Unit::find(0);
         } else {
-            //collect($units = Unit::getPrimaryDescendants($level));
-            $units = collect(Unit::getPrimaryDescendants($level));
-            $top = $units->shift();
+            if ($type == 1 || $type == 2) {
+                $units = collect(Unit::getPrimaryDescendants($level));
+                $top = $units->shift();
+            } elseif ($type == 5) {
+                $top = UnitGroup::find($level);
+                $members = UnitGroupMember::OfGroup($level)->get(['ou_id']);
+                $units = Unit::whereIn('id', $members)->get();
+                //dd($members);
+            }
+
         }
         //dd($units);
 
@@ -108,6 +120,8 @@ class BriefReferenceMaker extends Controller
         //dd($column_titles);
         $period = Period::orderBy('begin_date', 'desc')->first();
         $values = [];
+        //$values[999999] = [];
+        //$aggregate = &$values[999999];
         $i = 0;
         foreach ($units as $unit) {
             $d = Document::OfTUPF($document_type, $unit->id, $period->id, $form->id)->first();
@@ -118,6 +132,7 @@ class BriefReferenceMaker extends Controller
                         $cell = Cell::ofDTRC($d->id, $table->id, $rows[0], $column)->first();
                         is_null($cell) ? $value = 0 : $value = $cell->value;
                         $output == 1 ? $values[$unit->id][$i] = number_format($value, 2, ',', '') : $values[$unit->id][$i] = (float)$value;
+                        isset($values[999999][$i]) ? $values[999999][$i] += $value : $values[999999][$i] = $value;
                         $i++;
                     }
                 } elseif ($mode == 2) {
@@ -126,9 +141,11 @@ class BriefReferenceMaker extends Controller
                         $cell = Cell::ofDTRC($d->id, $table->id, $row, $columns[0])->first();
                         is_null($cell) ? $value = 0 : $value = $cell->value;
                         $output == 1 ? $values[$unit->id][$i] = number_format($value, 2, ',', '') : $values[$unit->id][$i] = (float)$value;
+                        isset($values[999999][$i]) ? $values[999999][$i] += $value : $values[999999][$i] = $value;
                         $i++;
                     }
                 }
+
             } else {
                 $i = 0;
                 foreach ($column_titles as $c) {

@@ -13,7 +13,7 @@
             <th colspan="4"><h4>{{ $group_title }} {{ $el_name }}</h4></th>
         </tr>
         <tr>
-            <th colspan="4"><h4>Ограничение по территории: {{ $top->unit_name }}</h4></th>
+            <th colspan="4"><h4>Ограничение по территории/группе: {{ $top->unit_name or $top->group_name }}</h4></th>
         </tr>
         <tr>
             <th>Код</th>
@@ -31,6 +31,12 @@
                 @endforeach
             </tr>
         @endforeach
+        <tr>
+            <td colspan="2"><strong>Итого</strong></td>
+            @foreach($values[999999] as $aggregate)
+                <td><strong>{{ $aggregate }}</strong></td>
+            @endforeach
+        </tr>
     </table>
     </div>
 @endsection

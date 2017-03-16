@@ -5,7 +5,7 @@
         <h3>Справка по форме №{{ $form->form_code }}. {{ $form->form_name }} за период "{{ $period->name }}"</h3>
         <h4>Таблица: {{ $table->table_code }}. {{ $table->table_name  }}. </h4>
         <h4>{{ $group_title }} {{ $el_name }}</h4>
-        <h4>Ограничение по территории: {{ $top->unit_name }}</h4>
+        <h4>Ограничение по территории/группе: {{ $top->unit_name or $top->group_name }}</h4>
         <div id="documentLog">
             <table class="table table-bordered table-condensed">
                 <tr>
@@ -24,6 +24,12 @@
                         @endforeach
                     </tr>
                 @endforeach
+                <tr>
+                    <td colspan="2"><strong>Итого</strong></td>
+                    @foreach($values[999999] as $aggregate)
+                        <td><strong>{{ $aggregate }}</strong></td>
+                    @endforeach
+                </tr>
             </table>
         </div>
     </div>

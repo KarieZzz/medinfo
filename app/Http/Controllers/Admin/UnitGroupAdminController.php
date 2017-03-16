@@ -27,7 +27,7 @@ class UnitGroupAdminController extends Controller
     public function fetchGroups()
     {
        //return UnitGroup::orderBy('group_name')->get();
-       return UnitGroup::all();;
+       return UnitGroup::all();
     }
 
     public function fetchMembers(int $group)

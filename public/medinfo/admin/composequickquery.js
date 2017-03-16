@@ -26,8 +26,10 @@ initFilterDatasources = function() {
     {
         datatype: "json",
         datafields: [
-            { name: 'id' },
-            { name: 'unit_name' }
+            { name: 'id', type: 'int' },
+            { name: 'code', type: 'string' },
+            { name: 'type', type: 'int' },
+            { name: 'name', type: 'string' }
         ],
         id: 'id',
         localdata: levels
@@ -120,10 +122,30 @@ initFormTableFilter = function() {
         $("#tableSelected").html('<div class="text-bold text-info" style="margin-left: -100px">Таблица: (' + r.table_code + ') ' + r.table_name + '</div>');
         updateRelated();
     });
-    levellist.jqxDropDownList({
+    $("#levelListContainer").jqxDropDownButton({ width: 250, height: 32, theme: theme });
+
+    levellist.jqxGrid(
+        {
+            width: '540px',
+            height: '340px',
+            theme: theme,
+            localization: localize(),
+            source: levelsDataAdapter,
+            columnsresize: true,
+            showfilterrow: true,
+            filterable: true,
+            sortable: true,
+            columns: [
+                { text: 'Код', datafield: 'code', width: '70px'  },
+                { text: 'Тип', datafield: 'type', width: '70px'  },
+                { text: 'Имя', datafield: 'name' , width: '380px'}
+            ]
+        });
+
+/*    levellist.jqxDropDownList({
         theme: theme,
         source: levelsDataAdapter,
-        displayMember: "unit_name",
+        displayMember: "name",
         valueMember: "id",
         selectedIndex: 0,
         width: 300,
@@ -134,7 +156,20 @@ initFormTableFilter = function() {
         current_level = args.item.value;
         //console.log(args.item);
         $("#levelSelected").html('<div class="text-bold text-info" style="margin-left: -100px">Установлено ограничение по: "' + args.item.label + '"</div>');
+    });*/
+    levellist.on('rowselect', function (event) {
+        $("#levelListContainer").jqxDropDownButton('close');
+        var args = event.args;
+        if (args.rowindex == -1) {
+            return false;
+        }
+        var r = args.row;
+        current_level = r.id;
+        current_type = r.type;
+        //console.log(current_level);
+        $("#levelSelected").html('<div class="text-bold text-info" style="margin-left: -100px">Установлено ограничение по: "' + r.code + ' "'+ r.name + '"</div>');
     });
+
 
 };
 
@@ -225,6 +260,7 @@ setquery = function() {
         "&rows=" + rows +
         "&columns=" + columns +
         "&level=" + current_level +
+        "&type=" + current_type +
         "&output=" + output +
         "&mode=" + groupmode;
 };

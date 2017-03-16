@@ -62,9 +62,9 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="level">Ограничение по территории:</label>
+                        <label class="control-label col-sm-3" for="level">Ограничение по территории/группе:</label>
                         <div class="col-sm-3">
-                            <div id="levelList" style="padding-left: 12px"></div>
+                            <div id="levelListContainer"><div id="levelList"></div></div>
                         </div>
                         <div class="col-sm-6">
                             <div id="levelSelected"><div class="text-bold text-info" style="margin-left: -100px">Все организации</div></div>
@@ -112,7 +112,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
     <script src="{{ asset('/medinfo/admin/tablepicker.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/composequickquery.js?v=007') }}"></script>
+    <script src="{{ asset('/medinfo/admin/composequickquery.js?v=008') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -142,6 +142,7 @@
         var current_form = 0;
         var current_table = 0;
         var current_level = 0;
+        var current_type = 1;
         var groupmode = 1; // по умолчанию группируем по строке
         var output = 1;
         initFilterDatasources();
