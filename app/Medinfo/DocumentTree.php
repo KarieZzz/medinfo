@@ -83,8 +83,6 @@ class DocumentTree
         }
     }
 
-
-
     public function by_territory($node)
     {
         $units = [];

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\UnitGroup;
 use Illuminate\Http\Request;
 
 //use App\Http\Requests;
@@ -29,6 +30,10 @@ class BriefReferenceMaker extends Controller
     {
         $forms = Form::orderBy('form_index')->get(['id', 'form_code']);
         $upper_levels = Unit::UpperLevels()->orderBy('unit_code')->get(['id', 'unit_name']);
+        $groups = UnitGroup::all(['id', 'group_name']);
+        $merged = $upper_levels->merge($groups);
+        dd($merged->all());
+
         return view('reports.composequickquery', compact('forms', 'upper_levels'));
     }
 

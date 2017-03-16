@@ -14,44 +14,32 @@ class ReportController extends Controller
 <<<JSON
 {
     "header": {
-        "title": "Анализ 30 формы, Сопоставление кол-ва участков со штатами"
+        "title": "Анализ 13 формы за 2016 год"
     },
     "content": {
 		"index1": {
-            "title": "Терапевты",
-            "value": "Ф30Т1100С97Г3"
+            "title": "Абортов, всего",
+            "value": "Ф13Т1000С1Г4+Ф13Т2000С1Г4"
         },
 		"index2": {
-            "title": "Терапевтические участки",
-            "value": "Ф30Т1107С1Г3"
+            "title": "Абортов по медицинским показаниям",
+            "value": "Ф13Т1000С6Г4"
         },
 		"index3": {
-            "title": "Педиатры",
-            "value": "Ф30Т1100С46Г3"
-        },
-		"index4": {
-            "title": "Педиатрические участки",
-            "value": "Ф30Т1107С5Г3"
-        },
-		"index5": {
-            "title": "ВОП",
-            "value": "Ф30Т1100С35Г3"
-        },
-		"index6": {
-            "title": "Участки ВОП",
-            "value": "Ф30Т1107С4Г3"
+            "title": "Население",
+            "value": "Ф100Т1000С8Г3"
         }
     }
 }
 JSON;
 
     // Выбор и расчет показателей для отчета
-    public function consolidateIndexes()
+    public function consolidateIndexes($level, $period)
     {
         $structure = json_decode($this->rep_struct, true);
         $count_of_indexes = count($structure['content']);
         $title = $structure['header']['title'];
-        $indexes = ReportMaker::makeReport($structure);
+        $indexes = ReportMaker::makeReportByLegal($structure, $level, $period);
         return view('reports.report', compact('indexes', 'title', 'structure', 'count_of_indexes'));
     }
 

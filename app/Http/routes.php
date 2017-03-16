@@ -184,7 +184,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('datainput/fetchcelllayers/{document}/{row}/{column}', 'StatDataInput\AggregatesDashboardController@fetchAggregatedCellLayers');
 
     // Аналитика: консолидированные отчеты, справки
-    Route::get('reports/by_mo', 'ReportController@consolidateIndexes');
+    Route::get('reports/map/{level}/{period}', 'ReportController@consolidateIndexes');
     Route::get('reports/br/querycomposer', 'Admin\BriefReferenceMaker@compose_query');
     Route::get('reports/br/output', 'Admin\BriefReferenceMaker@makeBriefReport');
     Route::get('reports/br/fetchcolumns/{table}', 'Admin\BriefReferenceMaker@fetchDataTypeColumns');

@@ -13,25 +13,35 @@ use App\Form;
 
 class ReportMaker
 {
-    public static function makeReport(array $indexes)
+    public static function makeReportByLegal(array $indexes, int $level = 1, int $period = 4)
     {
         //$count_of_indexes = count($indexes['content']);
         //$period = 1; // 2015 год
-        $period = 4; // 2016 год
+        //$period = 4; // 2016 год
         $states = [ 2, 4, 8, 16, 32 ]; // Документы со всеми статусами
         $dtype = 1; // Только первичные документв
-        $units = Unit::legal()->active()->orderBy('unit_code')->get();
+        switch ($level) {
+            case 0:
+                $units = Unit::primary()->active()->orderBy('unit_code')->get();
+                break;
+            case 1:
+                $units = Unit::legal()->active()->orderBy('unit_code')->get();
+                break;
+            case 2:
+                $units = Unit::upperLevels()->active()->orderBy('unit_code')->get();
+                break;
+        }
         $report_units = [];
         foreach ($units as $unit) {
             $report_units[$unit->id]['unit_name'] = $unit->unit_name;
             $report_units[$unit->id]['inn'] = $unit->inn;
-            $scope = ['top_node' => $unit->id ];
+            $scope = ['top_node' => (string)$unit->id ];
             $i = 0;
             $row_sum = 0;
             foreach ($indexes['content'] as $index => $rule) {
                 $report_units[$unit->id][$i] = [];
                 $formula =  $rule['value'];
-                preg_match_all('/Ф([\w.-]+)Т([\w.-]+)С([\w.-]+)Г(\d{1,})/', $formula, $matches, PREG_SET_ORDER);
+                preg_match_all('/Ф([а-я0-9.-]+)Т([\w.-]+)С([\w.-]+)Г(\d{1,})/u', $formula, $matches, PREG_SET_ORDER);
                 //var_dump($matches);
                 $v = 0;
                 foreach ($matches as $c_addr) {
