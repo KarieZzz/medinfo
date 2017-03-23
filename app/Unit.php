@@ -74,13 +74,18 @@ class Unit extends Model
     }
 
     public static function getPrimaryDescendants($parent) {
-        $units[] = Unit::find($parent);
-        $lev_query = "select id from mo_hierarchy where parent_id = $parent AND (node_type = 3 OR node_type = 4)";
+        $units = [];
+        $lev_query = "SELECT * FROM mo_hierarchy WHERE parent_id = $parent";
         $res = \DB::select($lev_query);
         if (count($res) > 0) {
             foreach ($res as $r) {
-                //$o = Unit::find($r->id);
-                $units = array_merge($units, self::getPrimaryDescendants($r->id));
+                //if ($r['node_type'] == 3 || $r['node_type'] == 4) {
+                if ($r->node_type == 3 || $r->node_type == 4) {
+                    $units[] = Unit::find($r->id);
+                }
+                if ($r->aggregate) {
+                    $units = array_merge($units, self::getPrimaryDescendants($r->id));
+                }
             }
         }
         return $units;

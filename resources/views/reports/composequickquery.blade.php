@@ -20,6 +20,15 @@
             <div class="panel-body">
                 <form class="form-horizontal" >
                     <div class="form-group">
+                        <label class="control-label col-sm-3" for="formList">Выберите период:</label>
+                        <div class="col-sm-3">
+                            <div id="periodList"></div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div id="periodSelected"><div class="text-bold text-info" style="margin-left: -100px">Текущий период (по умолчанию): "{{ $last_year->name }}" </div></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label class="control-label col-sm-3" for="formList">Выберите форму:</label>
                         <div class="col-sm-3">
                             <div id="formList"></div>
@@ -71,6 +80,23 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label class="control-label col-sm-3" for="level">Объединение данных:</label>
+                        <div class="col-sm-3">
+                            <label class="radio-inline">
+                                <input type="radio" id="primary" name="aggregate" value="1" checked="checked" >Нет
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" id="legacy" name="aggregate" value="2">Юридические лица
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" id="territory" name="aggregate" value="3">Территории
+                            </label>
+                        </div>
+                        <div class="col-sm-6">
+                            <div id="aggregateNotice"><div class="text-bold text-info" style="margin-left: -100px">Возможно только при отсутствии ограничений по территориям/группам</div></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label class="control-label col-sm-3" for="level">Формат вывода:</label>
                         <div class="col-sm-3">
                             <label class="radio-inline">
@@ -112,7 +138,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
     <script src="{{ asset('/medinfo/admin/tablepicker.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/composequickquery.js?v=008') }}"></script>
+    <script src="{{ asset('/medinfo/admin/composequickquery.js?v=011') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -131,20 +157,24 @@
         var rowfetch_url = '/reports/br/fetchrows/';
         var columnfetch_url = '/reports/br/fetchcolumns/';
         var output_url = '/reports/br/output';
-        var forms = {!! $forms  !!};
+        var periods = {!! $periods !!};
+        var forms = {!! $forms !!};
         var levels = {!! $upper_levels  !!};
+        var plist = $("#periodList");
         var flist = $("#formList");
         var tlist = $("#tableList");
         var rlist = $("#rowList");
         var clist = $("#columnList");
         var levellist = $("#levelList");
         var modebutton = $("#groupMode");
+        var current_period = {{ $last_year->id }};
         var current_form = 0;
         var current_table = 0;
         var current_level = 0;
-        var current_type = 1;
+        var current_type = 1; // по территории - 1, по группе - 2
         var groupmode = 1; // по умолчанию группируем по строке
-        var output = 1;
+        var aggregate = 1; // По умолчанию вывод по первичным документам, 2 - по юрлицам, 3 - по территориям
+        var output = 1; // По умолчанию вывод в html
         initFilterDatasources();
         initdatasources();
         initRowList();

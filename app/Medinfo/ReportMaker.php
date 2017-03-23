@@ -8,16 +8,18 @@
 
 namespace App\Medinfo;
 
+use App\Period;
 use App\Unit;
 use App\Form;
 
 class ReportMaker
 {
-    public static function makeReportByLegal(array $indexes, int $level = 1, int $period = 4)
+    public static function makeReportByLegal(array $indexes, int $level = 1, int $period_id = 4)
     {
         //$count_of_indexes = count($indexes['content']);
         //$period = 1; // 2015 год
         //$period = 4; // 2016 год
+        $period = Period::find($period_id);
         $states = [ 2, 4, 8, 16, 32 ]; // Документы со всеми статусами
         $dtype = 1; // Только первичные документв
         switch ($level) {
@@ -35,7 +37,6 @@ class ReportMaker
         foreach ($units as $unit) {
             $report_units[$unit->id]['unit_name'] = $unit->unit_name;
             $report_units[$unit->id]['inn'] = $unit->inn;
-            $scope = ['top_node' => (string)$unit->id ];
             $i = 0;
             $row_sum = 0;
             foreach ($indexes['content'] as $index => $rule) {
@@ -50,47 +51,7 @@ class ReportMaker
                     $row_code = $c_addr[3];
                     $col_index = $c_addr[4];
                     $form = Form::where('form_code', $form_code)->first();
-                    if ($unit->aggregate) {
-                        $periods[] = $period;
-                        $scope['forms'] = [ $form->id ];
-                        $scope['worker_scope'] = 0;
-                        $scope['periods'] = [ $period ];
-                        $scope['states'] = $states;
-                        $scope['dtypes'] = [ $dtype ];
-                        $doc_tree = new DocumentTree($scope);
-                        $doc_array = $doc_tree->get_documents();
-                        $documents = array();
-                        foreach ($doc_array as $doc) {
-                            $documents[] = $doc->id;
-                        }
-                        $strigified_documents = implode(',', $documents);
-                        if (empty($strigified_documents)) {
-                            $v = 0;
-                        } else {
-                            $val_q = "SELECT SUM(v.value) AS value FROM statdata v
-                                LEFT JOIN documents d ON v.doc_id = d.id
-                                JOIN tables t ON v.table_id = t.id
-                                LEFT JOIN rows r ON v.row_id = r.id
-                                LEFT JOIN columns c ON v.col_id = c.id
-                              WHERE d.id in ({$strigified_documents}) AND t.table_code = '$table_code'
-                                AND r.row_code = '$row_code' AND c.column_index = $col_index
-                              GROUP BY v.table_id, v.row_id, v.col_id";
-                            //dd($val_q);
-                            $val_res = \DB::selectOne($val_q);
-                            $v = $val_res ? $val_res->value :  0;
-                        }
-
-                    } else {
-                        $val_q = "SELECT v.value AS value FROM statdata v
-                          LEFT JOIN documents d on v.doc_id = d.id
-                          JOIN tables t on v.table_id = t.id
-                          LEFT JOIN rows r on v.row_id = r.id
-                          LEFT JOIN columns c on v.col_id = c.id
-                        WHERE d.form_id = {$form->id} AND d.ou_id = {$unit->id} AND d.period_id = $period
-                          AND t.table_code = '$table_code' AND r.row_code = '$row_code' AND c.column_index = $col_index";
-                        $val_res = \DB::selectOne($val_q);
-                        $v = $val_res ? $val_res->value :  0;
-                    }
+                    $v = self::getAggregatedValue($unit, $form, $period, $table_code, $row_code, $col_index);
                     $formula = str_replace($c_addr[0], $v, $formula);
                 }
                 $m = new EvalMath;
@@ -114,4 +75,63 @@ class ReportMaker
         }
         return $report_units;
     }
+
+    public static function getAggregatedValue(
+        Unit $unit,
+        Form $form,
+        Period $period,
+        $table_code,
+        $row_code,
+        $col_index,
+        $states = [ 2, 4, 8, 16, 32 ],
+        $dtype = 1
+    )
+    {
+        // Проверка, нужно ли сводить данные по текущему юниту.
+        // Если вдруг сводить не нужно, в слюбом случае возвращаем значение для упрощения обработки сводного отчета
+        if ($unit->aggregate) {
+            //$periods[] = $period;
+            $scope = ['top_node' => (string)$unit->id ];
+            $scope['forms'] = [ $form->id ];
+            $scope['worker_scope'] = 0;
+            $scope['periods'] = [ $period->id ];
+            $scope['states'] = $states;
+            $scope['dtypes'] = [ $dtype ];
+            $doc_tree = new DocumentTree($scope);
+            $doc_array = $doc_tree->get_documents();
+            $documents = array();
+            foreach ($doc_array as $doc) {
+                $documents[] = $doc->id;
+            }
+            $strigified_documents = implode(',', $documents);
+            if (empty($strigified_documents)) {
+                $v = 0;
+            } else {
+                $val_q = "SELECT SUM(v.value) AS value FROM statdata v
+                                LEFT JOIN documents d ON v.doc_id = d.id
+                                JOIN tables t ON v.table_id = t.id
+                                LEFT JOIN rows r ON v.row_id = r.id
+                                LEFT JOIN columns c ON v.col_id = c.id
+                              WHERE d.id in ({$strigified_documents}) AND t.table_code = '$table_code'
+                                AND r.row_code = '$row_code' AND c.column_index = $col_index
+                              GROUP BY v.table_id, v.row_id, v.col_id";
+                //dd($val_q);
+                $val_res = \DB::selectOne($val_q);
+                $v = $val_res ? $val_res->value :  0;
+            }
+
+        } else {
+            $val_q = "SELECT v.value AS value FROM statdata v
+                          LEFT JOIN documents d on v.doc_id = d.id
+                          JOIN tables t on v.table_id = t.id
+                          LEFT JOIN rows r on v.row_id = r.id
+                          LEFT JOIN columns c on v.col_id = c.id
+                        WHERE d.form_id = {$form->id} AND d.ou_id = {$unit->id} AND d.period_id = {$period->id}
+                          AND t.table_code = '$table_code' AND r.row_code = '$row_code' AND c.column_index = $col_index";
+            $val_res = \DB::selectOne($val_q);
+            $v = $val_res ? $val_res->value :  0;
+        }
+        return $v;
+    }
+
 }

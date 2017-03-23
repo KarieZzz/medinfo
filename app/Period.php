@@ -10,9 +10,9 @@ class Period extends Model
     protected $fillable = ['name', 'begin_date', 'end_date', 'pattern_id', 'medinfo_id'];
     protected $dates = ['begin_date', 'end_date',];
 
-    public function scopeLastYear($query, int $year)
+    public function scopeLastYear($query)
     {
-        $date = ($year - 1 ) . '-01-01';
+        $date = ((int)date("Y") - 1 ) . '-01-01';
         return $query
 
             ->where('begin_date', $date)

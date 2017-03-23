@@ -1,4 +1,15 @@
 initFilterDatasources = function() {
+    var periodsource =
+    {
+        datatype: "json",
+        datafields: [
+            { name: 'id' },
+            { name: 'name' }
+        ],
+        id: 'id',
+        localdata: periods
+    };
+    periodsDataAdapter = new $.jqx.dataAdapter(periodsource);
     var formssource =
     {
         datatype: "json",
@@ -81,6 +92,22 @@ initdatasources = function() {
 
 // Инициализация списков-фильтров форма -> таблица
 initFormTableFilter = function() {
+    plist.jqxDropDownList({
+        theme: theme,
+        source: periodsDataAdapter,
+        displayMember: "name",
+        valueMember: "id",
+        placeHolder: "Выберите период:",
+        //selectedIndex: 2,
+        width: 250,
+        height: 32
+    });
+    plist.on('select', function (event) {
+        var args = event.args;
+        console.log(args.item);
+        current_period = args.item.value;
+        $("#periodSelected").html('<div class="text-bold text-info" style="margin-left: -100px">Выбран период: "'+ args.item.label +'"</div>');
+    });
     flist.jqxDropDownList({
         theme: theme,
         source: formsDataAdapter,
@@ -123,7 +150,6 @@ initFormTableFilter = function() {
         updateRelated();
     });
     $("#levelListContainer").jqxDropDownButton({ width: 250, height: 32, theme: theme });
-
     levellist.jqxGrid(
         {
             width: '540px',
@@ -168,9 +194,15 @@ initFormTableFilter = function() {
         current_type = r.type;
         //console.log(current_level);
         $("#levelSelected").html('<div class="text-bold text-info" style="margin-left: -100px">Установлено ограничение по: "' + r.code + ' "'+ r.name + '"</div>');
+        if (current_level == 0) {
+            $( "#legacy" ).prop( "disabled", false );
+            $( "#territory" ).prop( "disabled", false );
+        } else if (current_level !== 0) {
+            $( "#primary" ).prop( "checked", true );
+            $( "#legacy" ).prop( "disabled", true );
+            $( "#territory" ).prop( "disabled", true );
+        }
     });
-
-
 };
 
 // Обновление списка таблиц при выборе формы
@@ -179,7 +211,6 @@ updateTableDropdownList = function(form) {
     $("#tableListContainer").jqxDropDownButton('setContent', '<div style="margin-top: 9px">Выберите таблицу из формы ' + form.label + '</div>');
     tlist.jqxDataTable('updateBoundData');
 };
-
 // Таблица строк
 initRowList = function() {
     $("#rowListContainer").jqxDropDownButton({ width: 250, height: 32, theme: theme });
@@ -240,7 +271,6 @@ updateRelated = function() {
     $("#rowSelected").html('');
     $("#columnSelected").html('');
 };
-
 // Обновление списка строк при выборе таблицы
 updateRowList = function() {
     rowsource.url = rowfetch_url + current_table;
@@ -255,12 +285,14 @@ updateColumnList = function() {
 };
 
 setquery = function() {
-    return "?form=" + current_form +
+    return "?period=" + current_period +
+        "&form=" + current_form +
         "&table=" + current_table +
         "&rows=" + rows +
         "&columns=" + columns +
         "&level=" + current_level +
         "&type=" + current_type +
+        "&aggregate=" + aggregate +
         "&output=" + output +
         "&mode=" + groupmode;
 };
@@ -309,7 +341,8 @@ initActions = function() {
         var data = setquery();
         var url = output_url + data;
         //console.log(url);
-        window.open(url);
+        //window.open(url);
+        location.replace(url);
     });
 };
 

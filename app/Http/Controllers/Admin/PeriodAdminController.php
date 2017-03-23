@@ -32,7 +32,7 @@ class PeriodAdminController extends Controller
         $this->validate($request, [
                 'name' => 'required|unique:periods',
                 'begin_date' => 'required|date',
-                'end_date' => 'required|date|after:start_date',
+                'end_date' => 'required|date|after:begin_date',
                 'pattern_id' => 'exists:period_patterns,id',
             ]
         );
