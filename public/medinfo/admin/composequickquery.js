@@ -334,6 +334,15 @@ initButtons = function() {
     $("#excel").on('click', function() {
         output = 2;
     });
+    $("#primary").on('click', function() {
+        aggregate = 1;
+    });
+    $("#legacy").on('click', function() {
+        aggregate = 2;
+    });
+    $("#territory").on('click', function() {
+        aggregate = 3;
+    });
 };
 
 initActions = function() {

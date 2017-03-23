@@ -138,7 +138,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
     <script src="{{ asset('/medinfo/admin/tablepicker.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/composequickquery.js?v=011') }}"></script>
+    <script src="{{ asset('/medinfo/admin/composequickquery.js?v=012') }}"></script>
 @endpush
 
 @section('inlinejs')
