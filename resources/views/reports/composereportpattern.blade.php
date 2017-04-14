@@ -34,20 +34,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="index">
-                                <div class="form-group">
-                                    <label class="control-label col-sm-3" for="title2">Показатель 2:</label>
-                                    <div class="col-sm-8">
-                                        <input type="text" class="form-control" id="title2" name="title[]">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-sm-3" for="value2">Значение (формула расчета):</label>
-                                    <div class="col-sm-8">
-                                        <textarea rows="2" class="form-control" id="value2" name="value[]"></textarea>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                         <div class="form-group">
                             <div class="col-sm-offset-3 col-sm-6">

@@ -33,7 +33,25 @@ class ReportPatternController extends Controller
 
     public function store(Request $request)
     {
-        dd($request->all());
+        $this->validate($request, [
+                'report_name' => 'required|max:256',
+                'title.*' => 'required',
+                'value.*' => 'required',
+            ]
+        );
+        $pattern = new ReportPattern();
+        $pattern->name = $request->report_name;
+        $newpattern = [];
+        $newpattern['header']['title'] = $request->report_name;
+        $titles = $request->title;
+        $values = $request->value;
+        for ($i = 0 ; count($titles) > $i; $i++ ) {
+            $newpattern['content']['index'. ($i+1)]['title'] = $titles[$i];
+            $newpattern['content']['index'. ($i+1)]['value'] = $values[$i];
+        }
+        $pattern->pattern = json_encode($newpattern);
+        $pattern->save();
+        return redirect('/reports/patterns');
     }
 
     public function edit($id)
