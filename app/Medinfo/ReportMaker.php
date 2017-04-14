@@ -11,39 +11,61 @@ namespace App\Medinfo;
 use App\Period;
 use App\Unit;
 use App\Form;
+use App\Table;
+use App\Document;
+use App\Cell;
 
 class ReportMaker
 {
-    public static function makeReportByLegal(array $indexes, int $level = 1, int $period_id = 4)
+    private $period;
+    private $states;
+    private $dtype;
+    private $units;
+    private $population_form;
+    private $population_rows;
+    private $population_column;
+
+    public function __construct(int $level = 1, int $period_id = 4)
     {
-        //$count_of_indexes = count($indexes['content']);
-        //$period = 1; // 2015 год
-        //$period = 4; // 2016 год
-        $period = Period::find($period_id);
-        $states = [ 2, 4, 8, 16, 32 ]; // Документы со всеми статусами
-        $dtype = 1; // Только первичные документв
+        $this->period = Period::find($period_id);
+        $this->states = [ 2, 4, 8, 16, 32 ]; // Документы со всеми статусами
+        $this->dtype = 1; // Только первичные документв
         switch ($level) {
             case 0:
-                $units = Unit::primary()->active()->orderBy('unit_code')->get();
+                $this->units = Unit::primary()->active()->orderBy('unit_code')->get();
                 break;
             case 1:
-                $units = Unit::legal()->active()->orderBy('unit_code')->get();
+                $this->units = Unit::legal()->active()->orderBy('unit_code')->get();
                 break;
             case 2:
-                $units = Unit::upperLevels()->active()->orderBy('unit_code')->get();
+                $this->units = Unit::territory()->active()->orderBy('unit_name')->get();
+                // Добавляем в коллекцию "Всего"
+                $all = Unit::find(0);
+                $this->units->push($all);
                 break;
         }
+        $this->population_form = Form::OfCode('100')->first();
+        $population_table = Table::OfFormTableCode($this->population_form->id, '1000')->with('rows')->with('columns')->first();
+        $this->population_rows = $population_table->rows;
+        $this->population_column = $population_table->columns;
+        //dd($this->population_column->where('column_index', 3)->first()->id);
+    }
+
+    public function makeReportByLegal(array $indexes)
+    {
         $report_units = [];
-        foreach ($units as $unit) {
+        foreach ($this->units as $unit) {
             $report_units[$unit->id]['unit_name'] = $unit->unit_name;
-            $report_units[$unit->id]['inn'] = $unit->inn;
+            //$report_units[$unit->id]['inn'] = $unit->inn;
             $i = 0;
             $row_sum = 0;
             foreach ($indexes['content'] as $index => $rule) {
                 $report_units[$unit->id][$i] = [];
                 $formula =  $rule['value'];
-                preg_match_all('/Ф([а-я0-9.-]+)Т([\w.-]+)С([\w.-]+)Г(\d{1,})/u', $formula, $matches, PREG_SET_ORDER);
-                //var_dump($matches);
+                $cellcount = preg_match_all('/Ф([а-я0-9.-]+)Т([\w.-]+)С([\w.-]+)Г(\d{1,})/u', $formula, $matches, PREG_SET_ORDER);
+                //$cellcount = preg_match_all('/(?:Ф(?P<f>[а-я0-9.-]*))?(?:Т(?P<t>[а-я0-9.-]*))?(?:С(?P<r>[0-9.-]*))?(?:Г(?P<c>\d{1,3}))?(?:П(?P<p>[01]))?/u', $formula, $matches);
+                //$cellcount = preg_match_all('/(?:Ф(?P<f>[а-я0-9.-]*))?(?:Т(?P<t>[а-я0-9.-]*))?(?:С(?P<r>[0-9.-]*))?(?:Г(?P<c>\d{1,3}))/u', $formula, $matches, PREG_SET_ORDER);
+                //dd($matches);
                 $v = 0;
                 foreach ($matches as $c_addr) {
                     $form_code = $c_addr[1];
@@ -51,8 +73,14 @@ class ReportMaker
                     $row_code = $c_addr[3];
                     $col_index = $c_addr[4];
                     $form = Form::where('form_code', $form_code)->first();
-                    $v = self::getAggregatedValue($unit, $form, $period, $table_code, $row_code, $col_index);
+                    $v = $this->getAggregatedValue($unit, $form, $table_code, $row_code, $col_index);
                     $formula = str_replace($c_addr[0], $v, $formula);
+                }
+                $populationlinks = preg_match_all('/население\((\d{1,})\)/u', $formula, $populationmatches, PREG_SET_ORDER);
+                foreach ($populationmatches as $populationmatch) {
+                    $populationgroup = $populationmatch[1];
+                    $population = $this->getPopulation($populationgroup, $unit);
+                    $formula = str_replace($populationmatch[0], $population, $formula);
                 }
                 $m = new EvalMath;
                 $value = 0;
@@ -76,27 +104,17 @@ class ReportMaker
         return $report_units;
     }
 
-    public static function getAggregatedValue(
-        Unit $unit,
-        Form $form,
-        Period $period,
-        $table_code,
-        $row_code,
-        $col_index,
-        $states = [ 2, 4, 8, 16, 32 ],
-        $dtype = 1
-    )
+    public function getAggregatedValue(Unit $unit, Form $form, $table_code, $row_code, $col_index)
     {
         // Проверка, нужно ли сводить данные по текущему юниту.
         // Если вдруг сводить не нужно, в слюбом случае возвращаем значение для упрощения обработки сводного отчета
         if ($unit->aggregate) {
-            //$periods[] = $period;
             $scope = ['top_node' => (string)$unit->id ];
             $scope['forms'] = [ $form->id ];
             $scope['worker_scope'] = 0;
-            $scope['periods'] = [ $period->id ];
-            $scope['states'] = $states;
-            $scope['dtypes'] = [ $dtype ];
+            $scope['periods'] = [ $this->period->id ];
+            $scope['states'] = $this->states;
+            $scope['dtypes'] = [ $this->dtype ];
             $doc_tree = new DocumentTree($scope);
             $doc_array = $doc_tree->get_documents();
             $documents = array();
@@ -126,12 +144,46 @@ class ReportMaker
                           JOIN tables t on v.table_id = t.id
                           LEFT JOIN rows r on v.row_id = r.id
                           LEFT JOIN columns c on v.col_id = c.id
-                        WHERE d.form_id = {$form->id} AND d.ou_id = {$unit->id} AND d.period_id = {$period->id}
+                        WHERE d.form_id = {$form->id} AND d.ou_id = {$unit->id} AND d.period_id = {$this->period->id}
                           AND t.table_code = '$table_code' AND r.row_code = '$row_code' AND c.column_index = $col_index";
             $val_res = \DB::selectOne($val_q);
             $v = $val_res ? $val_res->value :  0;
         }
         return $v;
+    }
+
+    public function getPopulation($population_group = 1, $unit)
+    {
+        // Если данные группируются по-территориально, то население берем из таблицы 100 соответствующей территории
+        // Если id юнита равно нулю, берем все население Иркутской области из выбранной категории
+        $population = 0;
+        switch (true) {
+            case $unit->id === 0 :
+            case $unit->node_type == 2 :
+                //dd($unit);
+                //dd($this->population_form);
+                $document = Document::OfTUPF( 2, $unit->id, $this->period->id, $this->population_form->id)->first();
+                //$cells = Cell::OfDocument($document->id)->get();
+
+                $cell = Cell::OfDRC($document->id, $this->population_rows->where('row_code', $population_group)->first()->id,  $this->population_column->where('column_index', 3)->first()->id)->first();
+                //dd($cell);
+                //$population = $cells[$population_group - 1]->value;
+                $population = $cell->value;
+                break;
+            case $unit->node_type == 3 || $unit->node_type == 4 :
+                $this->getServicedPopulation();
+                break;
+            case $unit->node_type == 1 :
+                $population = 0;
+                break;
+        }
+
+        return $population;
+    }
+
+    public function getServicedPopulation()
+    {
+        return 0;
     }
 
 }

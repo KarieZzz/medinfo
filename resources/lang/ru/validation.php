@@ -118,5 +118,8 @@ return [
     */
     'attributes'           => [
         //
+        'rows' => 'строки',
+        'columns' => 'столбцы',
+        'album_name' => 'имя альбома',
     ],
 ];

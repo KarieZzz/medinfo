@@ -17,6 +17,11 @@ class ValuechangingLog extends Model
         return $this->belongsTo('App\Worker');
     }
 
+    public function form()
+    {
+        return $this->belongsTo('App\Form', 'f');
+    }
+
     public function table()
     {
         return $this->belongsTo('App\Table', 't');

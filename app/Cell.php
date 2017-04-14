@@ -36,6 +36,14 @@ class Cell extends Model
             ->where('col_id', $column);
     }
 
+    public function scopeOfDRC($query, $document, $row, $column)
+    {
+        return $query
+            ->where('doc_id', $document)
+            ->where('row_id', $row)
+            ->where('col_id', $column);
+    }
+
     public function scopeOfDTR($query, $document, $table, $row)
     {
         return $query

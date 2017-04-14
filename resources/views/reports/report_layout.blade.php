@@ -17,8 +17,8 @@
 </head>
 
 <body>
-<div id="wrap">
-    <div>
+<div id="wrap" class="container-fluid">
+<div>
         @yield('title')
     </div>
     <div>

@@ -185,10 +185,18 @@ Route::group(['middleware' => ['medinfo']], function () {
 
     // Аналитика: консолидированные отчеты, справки
     Route::get('reports/map/{level}/{period}', 'ReportController@consolidateIndexes');
+    Route::get('reports/patterns/{pattern}/{period}/perform', 'ReportController@performReport');
     Route::get('reports/br/querycomposer', 'Admin\BriefReferenceMaker@compose_query');
     Route::get('reports/br/output', 'Admin\BriefReferenceMaker@makeBriefReport');
     Route::get('reports/br/fetchcolumns/{table}', 'Admin\BriefReferenceMaker@fetchDataTypeColumns');
     Route::get('reports/br/fetchrows/{table}', 'Admin\BriefReferenceMaker@fetchActualRows');
+
+    Route::get('/reports/patterns', 'Report\ReportPatternController@index');
+    Route::get('/reports/patterns/create', 'Report\ReportPatternController@create');
+    Route::post('/reports/patterns', 'Report\ReportPatternController@store');
+    Route::get('/reports/patterns/{id}/edit', 'Report\ReportPatternController@edit');
+    Route::get('/reports/patterns/{pattern}/fetchindexes', 'Report\ReportPatternController@showIndexes');
+    Route::patch('/reports/patterns/{pattern}', 'Report\ReportPatternController@update');
 
     // Работа с lexer-parser
     Route::get('lexer/test_parser', 'StatDataInput\DataCheckController@func_parser');

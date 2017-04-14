@@ -1,7 +1,8 @@
 @extends('reports.report_layout')
 
 @section('content')
-    <div class="container">
+    <div class="row" style="margin-top: 20px">
+        <a href="/reports/br/querycomposer" class="btn btn-info" role="button">Сформировать новую справку</a>
         <h3>Справка по форме №{{ $form->form_code }}. {{ $form->form_name }} за период "{{ $period->name }}"</h3>
         <h4>Таблица: {{ $table->table_code }}. {{ $table->table_name  }}. </h4>
         <h4>{{ $group_title }} {{ $el_name }}</h4>
