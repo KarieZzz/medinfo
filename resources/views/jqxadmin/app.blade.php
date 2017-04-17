@@ -30,8 +30,9 @@
 </head>
 
 <body>
-<div id="alertmessage" class="col-md-4 "></div>
-<div id="wrap" style="display: none">
+{{--<div id="alertmessage" class="col-md-4 "></div>--}}
+
+<div class="container-fluid" >
     @include('jqxadmin.navbar')
     <div id="widgets-content-wrap">
         @yield('content')

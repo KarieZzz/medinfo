@@ -88,7 +88,7 @@ class ReportPatternController extends Controller
         //return $updated_pattern;
 
         //dd(json_encode($updated_pattern));
-        return back();
+        return back()->with('status' , 'Схема отчета сохранена');
     }
 
     public function destroy($id)

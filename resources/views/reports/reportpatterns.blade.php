@@ -26,8 +26,8 @@
                         </div>
                         <div class="form-group">
                             <div class="col-sm-offset-2 col-sm-10">
-                                <button type="button" id="edit" class="btn btn-default">Редактировать шаблон</button>
-                                <button type="button" id="perform" class="btn btn-default">Выполнить отчет</button>
+                                <button type="button" id="edit" class="btn btn-primary">Редактировать шаблон</button>
+                                <button type="button" id="perform" class="btn btn-success">Выполнить отчет</button>
                                 <a href="/reports/patterns/create" class="btn btn-info" role="button">Новый шаблон</a>
                                 <button type="button" id="delete" class="btn btn-danger">Удалить шаблон</button>
                             </div>
