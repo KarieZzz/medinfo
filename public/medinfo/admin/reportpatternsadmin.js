@@ -9,8 +9,8 @@ initsplitter = function() {
             theme: theme,
             panels:
                 [
-                    { size: '40%', min: '10%'},
-                    { size: '40%', min: '10%'}
+                    { size: '50%', min: '10%'},
+                    { size: '50%', min: '10%'}
                 ]
         }
     );
@@ -54,7 +54,7 @@ initpatternlist = function() {
             filterable: true,
             columns: [
                 { text: 'Id', datafield: 'id', width: '40px' },
-                { text: 'Имя', datafield: 'name' , width: '660px'}
+                { text: 'Имя', datafield: 'name' , width: '897px'}
             ]
         });
     ilist.on('rowselect', function (event) {
