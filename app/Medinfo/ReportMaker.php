@@ -43,13 +43,13 @@ class ReportMaker
         }
         switch ($level) {
             case 0:
-                $this->units = Unit::primary()->active()->orderBy($order)->get();
+                $this->units = Unit::primary()->active()->orderBy($order)->orderBy('unit_name')->get();
                 break;
             case 1:
-                $this->units = Unit::legal()->active()->orderBy($order)->get();
+                $this->units = Unit::legal()->active()->orderBy($order)->orderBy('unit_name')->get();
                 break;
             case 2:
-                $this->units = Unit::territory()->active()->orderBy($order)->get();
+                $this->units = Unit::territory()->active()->orderBy($order)->orderBy('unit_name')->get();
                 // Добавляем в коллекцию "Всего"
                 $all = Unit::find(0);
                 $this->units->push($all);
