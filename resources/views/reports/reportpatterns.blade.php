@@ -25,6 +25,20 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            <label class="control-label col-sm-3" for="level">Сортировка:</label>
+                            <div class="col-sm-3">
+                                <label class="radio-inline">
+                                    <input type="radio" id="fordigest" name="sortOrder" value="1" checked="checked" >города, районы, округ
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" id="byname" name="sortOrder" value="2">по наименованию
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" id="bycode" name="sortOrder" value="3">по коду учреждения
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <div class="col-sm-offset-2 col-sm-10">
                                 <button type="button" id="edit" class="btn btn-primary">Редактировать шаблон</button>
                                 <button type="button" id="perform" class="btn btn-success">Выполнить отчет</button>
@@ -68,7 +82,7 @@
 <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/admin/reportpatternsadmin.js?v=011') }}"></script>
+<script src="{{ asset('/medinfo/admin/reportpatternsadmin.js?v=012') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -77,6 +91,7 @@
         var patternDataAdapter;
         var periodDataAdapter;
         var url = '/reports/patterns/';
+        var sortorder = 1;
         var plist = $("#periodList");
         var ilist = $("#patternList");
         var periods = {!! $periods !!};

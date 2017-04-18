@@ -38,13 +38,13 @@ JSON;
         return view('reports.report', compact('indexes', 'title', 'structure', 'count_of_indexes'));
     }
 
-    public function performReport(ReportPattern $pattern, $period)
+    public function performReport(ReportPattern $pattern, $period, $sortorder)
     {
         $structure = json_decode($pattern->pattern, true);
         $count_of_indexes = count($structure['content']);
         $title = $structure['header']['title'];
         //$indexes = ReportMaker::makeReportByLegal($structure, $level, $period);
-        $rp = new ReportMaker(2, $period);
+        $rp = new ReportMaker(2, $period, $sortorder);
         $indexes = $rp->makeReportByLegal($structure);
         return view('reports.report', compact('indexes', 'title', 'structure', 'count_of_indexes'));
     }

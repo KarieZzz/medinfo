@@ -25,25 +25,37 @@ class ReportMaker
     private $population_rows;
     private $population_column;
 
-    public function __construct(int $level = 1, int $period_id = 4)
+    public function __construct(int $level = 1, int $period_id = 4, int $sort_order = 1)
     {
         $this->period = Period::find($period_id);
         $this->states = [ 2, 4, 8, 16, 32 ]; // Документы со всеми статусами
         $this->dtype = 1; // Только первичные документв
-        switch ($level) {
-            case 0:
-                $this->units = Unit::primary()->active()->orderBy('unit_code')->get();
-                break;
+        switch ($sort_order) {
             case 1:
-                $this->units = Unit::legal()->active()->orderBy('unit_code')->get();
+                $order = 'territory_type';
                 break;
             case 2:
-                $this->units = Unit::territory()->active()->orderBy('unit_name')->get();
+                $order = 'unit_name';
+                break;
+            case 3:
+                $order = 'unit_code';
+                break;
+        }
+        switch ($level) {
+            case 0:
+                $this->units = Unit::primary()->active()->orderBy($order)->get();
+                break;
+            case 1:
+                $this->units = Unit::legal()->active()->orderBy($order)->get();
+                break;
+            case 2:
+                $this->units = Unit::territory()->active()->orderBy($order)->get();
                 // Добавляем в коллекцию "Всего"
                 $all = Unit::find(0);
                 $this->units->push($all);
                 break;
         }
+        //dd($this->units);
         $this->population_form = Form::OfCode('100')->first();
         $population_table = Table::OfFormTableCode($this->population_form->id, '1000')->with('rows')->with('columns')->first();
         $this->population_rows = $population_table->rows;

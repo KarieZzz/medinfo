@@ -114,9 +114,18 @@ initformactions = function() {
             return false;
         }
         var rowid = ilist.jqxGrid('getrowid', row);
-        var route = url + rowid + '/' + current_period + '/perform';
+        var route = url + rowid + '/' + current_period + '/' + sortorder + '/perform';
         //console.log(url);
         //window.open(url);
         location.replace(route);
+    });
+    $("#fordigest").on('click', function() {
+        sortorder = 1;
+    });
+    $("#byname").on('click', function() {
+        sortorder = 2;
+    });
+    $("#bycode").on('click', function() {
+        sortorder = 2;
     });
 };

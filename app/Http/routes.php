@@ -185,7 +185,7 @@ Route::group(['middleware' => ['medinfo']], function () {
 
     // Аналитика: консолидированные отчеты, справки
     Route::get('reports/map/{level}/{period}', 'ReportController@consolidateIndexes');
-    Route::get('reports/patterns/{pattern}/{period}/perform', 'ReportController@performReport');
+    Route::get('reports/patterns/{pattern}/{period}/{sortorder}/perform', 'ReportController@performReport');
     Route::get('reports/br/querycomposer', 'Admin\BriefReferenceMaker@compose_query');
     Route::get('reports/br/output', 'Admin\BriefReferenceMaker@makeBriefReport');
     Route::get('reports/br/fetchcolumns/{table}', 'Admin\BriefReferenceMaker@fetchDataTypeColumns');
