@@ -32,6 +32,12 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label class="control-label col-sm-3" for="unit_code">Тип территории (1-город, 2-район, 3-район округа):</label>
+                        <div class="col-sm-2">
+                            <input type="text" class="form-control" id="territory_type">
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label class="control-label col-sm-3" for="inn">Индивидуальный налоговый номер:</label>
                         <div class="col-sm-2">
                             <input type="text" class="form-control" id="inn">
@@ -101,7 +107,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/unitadmin.js') }}"></script>
+    <script src="{{ asset('/medinfo/admin/unitadmin.js?v=001') }}"></script>
 @endpush
 
 @section('inlinejs')

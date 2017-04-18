@@ -68,6 +68,7 @@ initdatasources = function() {
             { name: 'parent_id', type: 'int' },
             { name: 'parent', map: 'parent>unit_name', type: 'string' },
             { name: 'unit_code', type: 'string' },
+            { name: 'territory_type', type: 'int' },
             { name: 'inn', type: 'string' },
             { name: 'unit_name', type: 'string' },
             { name: 'node_type', type: 'int' },
@@ -113,6 +114,7 @@ inittablelist = function() {
         $("#unit_name").val(row.unit_name);
         $("#parent_id").val(row.parent_id);
         $("#unit_code").val(row.unit_code);
+        $("#territory_type").val(row.territory_type);
         $("#inn").val(row.inn);
         $("#node_type").val(row.node_type);
         $("#report").val( row.report == 1 );
@@ -125,6 +127,7 @@ setquerystring = function() {
     return "&unit_name=" + $("#unit_name").val() +
         "&parent_id=" + $("#parent_id").val() +
         "&unit_code=" + $("#unit_code").val() +
+        "&territory_type=" + $("#territory_type").val() +
         "&inn=" + $("#inn").val() +
         "&node_type=" + $("#node_type").val() +
         "&report=" + ($("#report").val() ? 1 :0) +

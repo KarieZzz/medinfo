@@ -12,7 +12,7 @@
         <table class="table table-bordered table-striped">
             <thead>
             <tr>
-                <th>Учреждение</th>
+                <th>Территория/Медицинская организация</th>
                 {{--<th>ИНН</th>--}}
                 @foreach( $structure['content'] as $index => $description)
                     <th title="{{ $description['value'] }}" width="100px">{{ $description['title'] }} </th>

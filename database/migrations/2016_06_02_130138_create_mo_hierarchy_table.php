@@ -16,6 +16,7 @@ class CreateMoHierarchyTable extends Migration
             $table->increments('id');
             $table->integer('parent_id')->index()->nullable();
             $table->string('unit_code', 32)->unique();
+            $table->integer('territory_type')->index()->nullable(); // Дополнительное поле для сортировки по городу, району, округу
             $table->char('inn', 10)->nullable()->unique();
             $table->smallInteger('node_type')->default(3)->index();
             $table->smallInteger('report')->default(0);

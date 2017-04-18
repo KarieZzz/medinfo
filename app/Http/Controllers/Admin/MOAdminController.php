@@ -37,6 +37,7 @@ class MOAdminController extends Controller
         $this->validate($request, [
                 'parent_id' => 'required|exists:mo_hierarchy,id',
                 'unit_code' => 'required|max:32|unique:mo_hierarchy',
+                'territory_type' => 'integer|in:1,2,3',
                 'inn' => 'digits:10|unique:mo_hierarchy',
                 'unit_name' => 'required|max:256|unique:mo_hierarchy',
                 'node_type' => 'required|integer',
@@ -50,6 +51,7 @@ class MOAdminController extends Controller
         $newunit->parent_id = $request->parent_id;
         $newunit->unit_code = $request->unit_code;
         $newunit->unit_name = preg_replace('/[\r\n\t]/', '', $request->unit_name);
+        $newunit->territory_type =  empty($request->territory_type) ? null : $request->territory_type;
         $newunit->inn =  empty($request->inn) ? null : $request->inn;
         $newunit->node_type = $request->node_type;
         $newunit->report = $request->report;
@@ -80,6 +82,7 @@ class MOAdminController extends Controller
                 //'id' => 'required|exists:mo_hierarchy',
                 'parent_id' => 'required|exists:mo_hierarchy,id',
                 'unit_code' => 'required|max:32',
+                'territory_type' => 'integer|in:1,2,3',
                 'inn' => 'digits:10',
                 'unit_name' => 'required|max:256',
                 'node_type' => 'required|integer',
@@ -92,6 +95,7 @@ class MOAdminController extends Controller
         $unit->parent_id = $request->parent_id;
         $unit->unit_code = $request->unit_code;
         $unit->unit_name = preg_replace('/[\r\n\t]/', '', $request->unit_name);
+        $unit->territory_type =  empty($request->territory_type) ? null : $request->territory_type;
         $unit->inn =  empty($request->inn) ? null : $request->inn;
         $unit->node_type = $request->node_type;
         $unit->report = $request->report;
