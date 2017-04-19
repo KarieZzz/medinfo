@@ -15,7 +15,7 @@ class ReportPatternsTable extends Migration
         //
         Schema::create('report_patterns', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name', 128)->index();
+            $table->string('name', 256)->index();
             $table->jsonb('pattern');
             $table->timestamps();
         });

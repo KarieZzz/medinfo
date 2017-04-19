@@ -19,7 +19,7 @@ class ReportPatternController extends Controller
 
     public function index()
     {
-        $patterns = ReportPattern::all(['id', 'name']);
+        $patterns = ReportPattern::orderBy('name')->get(['id', 'name']);
         $periods = Period::orderBy('name')->get();
         $last_year = Period::LastYear()->first();
         //dd($patterns);
