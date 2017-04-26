@@ -199,6 +199,8 @@ class BriefReferenceMaker extends Controller
     {
         $values = [];
         $values[999999] = []; // Сумма в итоговую строку
+        $level = 1; // для передачи  в репорт ммейкер
+        $sort_order = 3; // для передачи  в репорт ммейкер
         //$i = 0;
         //if ($aggregate_level == 2) {
           //  $units = Unit::legal()->active()->orderBy('unit_code')->get();
@@ -210,10 +212,12 @@ class BriefReferenceMaker extends Controller
         //dd($units);
         foreach ($units as $unit) {
             //if ($unit->aggregate) {
+            $rcontroller = new ReportMaker($level = 1, $period->id, $sort_order = 1);
                 if ($mode == 1) {
                     $i = 0;
                     foreach ($columns as $column) {
-                        $value = ReportMaker::getAggregatedValue($unit, $form, $period, $table->table_code, $rows[0]->row_code, $column->column_index);
+                        //$value = ReportMaker::getAggregatedValue($unit, $form, $period, $table->table_code, $rows[0]->row_code, $column->column_index);
+                        $value = $rcontroller->getAggregatedValue($unit, $form, $table->table_code, $rows[0]->row_code, $column->column_index);
                         //var_dump($value);
                         //is_null($cell) ? $value = 0 : $value = $cell->value;
                         $output == 1 ? $values[$unit->id][$i] = number_format($value, 2, ',', '') : $values[$unit->id][$i] = (float)$value;
@@ -223,7 +227,8 @@ class BriefReferenceMaker extends Controller
                 } elseif ($mode == 2) {
                     $i = 0;
                     foreach ($rows as $row) {
-                        $value = ReportMaker::getAggregatedValue($unit, $form, $period, $table->table_code, $row->row_code, $columns[0]->column_index);
+                        //$value = ReportMaker::getAggregatedValue($unit, $form, $period, $table->table_code, $row->row_code, $columns[0]->column_index);
+                        $value = $rcontroller->getAggregatedValue($unit, $form, $table->table_code, $row->row_code, $columns[0]->column_index);
                         //is_null($cell) ? $value = 0 : $value = $cell->value;
                         $output == 1 ? $values[$unit->id][$i] = number_format($value, 2, ',', '') : $values[$unit->id][$i] = (float)$value;
                         isset($values[999999][$i]) ? $values[999999][$i] += $value : $values[999999][$i] = $value;

@@ -5,14 +5,16 @@
 @endsection
 
 @section('content')
-    <div class="col-sm-7">
-        <h4>{{ $title }}</h4>
+    <div class="row">
+        <div class="col-sm-9">
+            <h4>{{ $title }}</h4>
+        </div>
     </div>
     <div class="row">
         <table class="table table-bordered table-striped">
             <thead>
             <tr>
-                <th>Территория/Медицинская организация</th>
+                <th width="300px">Территория/Медицинская организация</th>
                 {{--<th>ИНН</th>--}}
                 @foreach( $structure['content'] as $index => $description)
                     <th title="{{ $description['value'] }}" width="100px">{{ $description['title'] }} </th>

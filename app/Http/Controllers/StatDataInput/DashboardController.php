@@ -151,7 +151,8 @@ class DashboardController extends Controller
                 } elseif ($contentType == 'data') {
                     if ($c = Cell::OfDTRC($document, $table->id, $r->id, $col->id)->first()) {
                         //$row[$col->id] = is_null($c->value) ? '' : number_format($c->value, $col->decimal_count, '.', '') ;
-                        $row[$col->id] = is_null($c->value) ? null : number_format($c->value, $col->decimal_count, '.', '');
+                        //$row[$col->id] = is_null($c->value) ? null : number_format($c->value, $col->decimal_count, '.', '');
+                        $row[$col->id] = is_null($c->value) ? null : number_format($c->value, $col->decimal_count, ',', '');
                     }
                 }
                 //elseif ( $contentType == 'comment') {
@@ -178,6 +179,7 @@ class DashboardController extends Controller
             $row = $request->row;
             $col = $request->column;
             $new = $request->value;
+            dd($new);
             $old = $request->oldvalue;
             $casted_new_value = (float)$new;
             $casted_old_value = (float)$old;

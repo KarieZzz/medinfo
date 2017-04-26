@@ -31,10 +31,11 @@ var defaultEditor = function (row, cellvalue, editor, celltext, pressedChar) {
     editor.jqxNumberInput({ decimalDigits: 0, digits: 12 });
 };
 var initDecimal2Editor = function (row, cellvalue, editor, celltext, pressedChar) {
-    editor.jqxNumberInput({ decimalDigits: 2, digits: 12 });
+    editor.jqxNumberInput({ decimalDigits: 2, digits: 12, decimalSeparator: ',' });
+
 };
 var initDecimal3Editor = function (row, cellvalue, editor, celltext, pressedChar) {
-    editor.jqxNumberInput({ decimalDigits: 2, digits: 12 });
+    editor.jqxNumberInput({ decimalDigits: 3, digits: 12, decimalSeparator: ',' });
 };
 var cellclass = function (row, columnfield, value, rowdata) {
     var invalid_cell = '';
@@ -1168,6 +1169,7 @@ var initdatagrid = function() {
         var colid = event.args.datafield;
 
         var value = args.newvalue;
+        console.log(value);
         if (typeof args.oldvalue !== 'undefined') {
             var oldvalue = args.oldvalue;
         } else {
