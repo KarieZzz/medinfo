@@ -42,13 +42,12 @@
 </div>
 
 <script src="{{ asset('/plugins/jQuery/jquery-1.12.4.min.js') }}" type="text/javascript" ></script>
-<script src="{{ asset('/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
-<!-- jQWidgets JavaScript files -->
 <script src="{{ asset('/jqwidgets/jqxcore.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxmenu.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxnotification.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>
 <script src="{{ asset('/medinfo/admin/admin.js') }}"></script>
+<script src="{{ asset('/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
 @stack('loadjsscripts')
 <script type="text/javascript">
     var theme = 'bootstrap';

@@ -56,10 +56,9 @@
 
 <!-- Bootstrap core JavaScript -->
 <script src="{{ asset('/plugins/jQuery/jquery-1.12.4.min.js') }}" type="text/javascript" ></script>
-<script src="{{ asset('/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
-<!-- jQWidgets JavaScript files -->
 <script src="{{ asset('/jqwidgets/jqxcore.js') }}"></script>
 <script src="{{ asset('/medinfo/dashboard.js') }}"></script>
+<script src="{{ asset('/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
 @stack('loadjsscripts')
 <script type="text/javascript">
     var theme = 'bootstrap';

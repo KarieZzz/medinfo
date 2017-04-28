@@ -118,7 +118,7 @@
 <script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxnotification.js') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/documentdashboard.js?v=005') }}"></script>
+<script src="{{ asset('/medinfo/documentdashboard.js?v=007') }}"></script>
 @endpush
 
 @section('inlinejs')

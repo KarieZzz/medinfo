@@ -19,6 +19,7 @@ var raiseInfo = function(comment) {
 var localize = function() {
     var localizationobj = {};
     localizationobj.thousandsseparator = " ";
+    localizationobj.decimalseparator = ',';
     localizationobj.emptydatastring = "Нет данных";
     localizationobj.loadtext = "Загрузка..";
     localizationobj.filtershowrowstring = "Показать строки где:";

@@ -827,6 +827,7 @@ button.jqx-button, input[type=button].jqx-button,  input[type=submit].jqx-button
 /*jqxProgresBar Style*/
 .jqx-progressbar
 {
+    position: relative;
     overflow: hidden;
     outline: none;
     border: 1px solid transparent;
@@ -2960,12 +2961,11 @@ of the horizontal scrollbar.*/
 }
 .jqx-switchbutton-label
 {
-/*    font-size: 15px;
-    font-family: Sans-Serif;*/
+    font-size: 15px;
+    font-family: Sans-Serif;
     text-align: center;
     text-transform: uppercase;
-/*    font-weight: bold;*/
-    font-weight: normal;
+    font-weight: bold;
 }
 .jqx-switchbutton-wrapper
 {
@@ -4572,7 +4572,6 @@ ol li .jqx-listmenu-item-label:before
     height: auto;
     width: auto;
     pointer-events: none;
-    z-index:99999;
 }
 .jqx-notification-container-full-width
 {
@@ -5233,7 +5232,7 @@ ol li .jqx-listmenu-item-label:before
     cursor: pointer;
     background-repeat: no-repeat !important;
     background-position: center !important;
-    z-index: 1000;
+    z-index: 0;
 }
 .jqx-ribbon-scrollbutton-top, .jqx-ribbon-scrollbutton-bottom
 {
@@ -5325,7 +5324,7 @@ ol li .jqx-listmenu-item-label:before
 .jqx-ribbon-selection-token
 {
     position: absolute;
-    z-index: 1000;
+    z-index: 0;
 }
 .jqx-ribbon-selection-token-top, .jqx-ribbon-selection-token-bottom
 {
@@ -5962,13 +5961,14 @@ ol li .jqx-listmenu-item-label:before
     background: -moz-linear-gradient(#FFE4B5,  #FFD280) !important;
     background: linear-gradient(#FFE4B5,  #FFD280 ) !important;
 }
-.jqx-docking-layout-overlay, .jqx-docking-layout-overlay-square-edge
-{
-    display: none;
+.jqx-docking-layout-overlay, .jqx-docking-layout-overlay-square-edge {
     z-index: 99999;
     opacity: 0.9;
     -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
     *filter: alpha(opacity=90);
+}
+.jqx-docking-layout-overlay-square-edge {
+    display: none;
 }
 .jqx-docking-layout-overlay
 {
@@ -6063,14 +6063,15 @@ ol li .jqx-listmenu-item-label:before
     height: 9px;
     border-top-style: dashed;
 }
-.jqx-docking-layout-drop-overlay
-{
+.jqx-docking-layout-drop-overlay {
     display: none;
     background-color: #6495ED;
     opacity: 0.5;
     -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
     *filter: alpha(opacity=50);
     z-index: 10000;
+    top: 0px;
+    left: 0px;
 }
 .jqx-docking-layout-square-disabled
 {
@@ -6761,4 +6762,40 @@ ol li .jqx-listmenu-item-label:before
     color: #333 !important;
     text-shadow: none !important;
     border-color:  #f5f5f5 !important;
+}
+.jqx-element {
+    overflow: hidden;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #c7c7c7;
+}
+.jqx-element-no-border {
+    border-width:0px;
+}
+.jqx-element-container {
+    border-width: 0px !important;
+}
+.jqx-resize-trigger, .jqx-resize-trigger-shrink {
+    position: absolute; 
+    left: 0; 
+    top: 0; 
+    transition: 0s
+}
+.jqx-resize-trigger-shrink {
+    width: 200%; 
+    height: 200%;
+}
+.jqx-resize-trigger-container {
+    display: block;
+    visibility:hidden;
+    position: relative;
+    top: -100%; 
+    left: 0; 
+    min-height:0.1px;
+    height: 100%; 
+    width: 100%; 
+    overflow: hidden; 
+    pointer-events: none; 
+    z-index: -1;
+    visibility:hidden;
 }

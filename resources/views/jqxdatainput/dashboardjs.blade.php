@@ -11,7 +11,7 @@ var current_table = '{{ $laststate['currenttable']->id }}';
 var current_table_code = '{{ $laststate['currenttable']->table_code }}';
 var fgrid; // селектор для сетки с перечнем таблиц
 var dgrid; // селектор для сетки с данными таблиц
-
+var localizednumber = new Intl.NumberFormat('ru-RU');
 var edited_tables = [{!! implode(',', $editedtables) !!}];
 var not_editable_cells = {!! json_encode($noteditablecells) !!};
 //console.log(not_editable_cells);
@@ -35,6 +35,9 @@ $.each(data_for_tables, function(table, content) {
         }
         if (typeof properties.cellbeginedit !== 'undefined') {
             properties.cellbeginedit = cellbeginedit;
+        }
+        if (typeof properties.cellsrenderer !== 'undefined') {
+            properties.cellsrenderer = cellsrenderer;
         }
     });
     $.each(content.columngroups, function(group, properties) {

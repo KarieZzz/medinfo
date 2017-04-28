@@ -18,6 +18,7 @@ var firefullscreenevent = function() {
         }
     });
 };
+// проверяем ли находится ли данная ячейка в списке запрещенных к редактированию ячеек
 var cellbeginedit = function (row, datafield, columntype, value) {
     var rowid = dgrid.jqxGrid('getrowid', row);
     var necell_count = not_editable_cells.length;
@@ -32,11 +33,18 @@ var defaultEditor = function (row, cellvalue, editor, celltext, pressedChar) {
 };
 var initDecimal2Editor = function (row, cellvalue, editor, celltext, pressedChar) {
     editor.jqxNumberInput({ decimalDigits: 2, digits: 12, decimalSeparator: ',' });
-
+    //console.log(new Intl.NumberFormat('ru-RU').format(cellvalue));
 };
 var initDecimal3Editor = function (row, cellvalue, editor, celltext, pressedChar) {
     editor.jqxNumberInput({ decimalDigits: 3, digits: 12, decimalSeparator: ',' });
 };
+
+var cellsrenderer = function (row, column, value, defaulthtml, columnproperties) {
+    if (!value) { return defaulthtml  }
+    var formated = $(defaulthtml).html(localizednumber.format(value));
+    return formated[0].outerHTML;
+};
+
 var cellclass = function (row, columnfield, value, rowdata) {
     var invalid_cell = '';
     var alerted_cell = '';
@@ -1169,7 +1177,7 @@ var initdatagrid = function() {
         var colid = event.args.datafield;
 
         var value = args.newvalue;
-        console.log(value);
+        //console.log(value);
         if (typeof args.oldvalue !== 'undefined') {
             var oldvalue = args.oldvalue;
         } else {

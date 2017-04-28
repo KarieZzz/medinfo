@@ -38,7 +38,7 @@ class TableEditing
         })->get();
 
         foreach ($cols as $col) {
-            $datafields_arr[] = ['name'  => $col->id ];
+            $datafields_arr[] = ['name'  => $col->id, 'type'  => 'string', ];
             $width = $col->size * 10;
             switch ( $col->decimal_count) {
                 case 2:
@@ -58,6 +58,8 @@ class TableEditing
                     'width' => $width,
                     'cellsalign' => 'right',
                     'align' => 'center',
+                    'cellsrenderer' => 'cellsrenderer',
+                    //'cellsformat' => 'f',
                     //'cellsformat' => 'd' . $decimal_count,
                     'columntype' => $columntype,
                     //'columntype' => ,
