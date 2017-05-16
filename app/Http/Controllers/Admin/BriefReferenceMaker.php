@@ -76,8 +76,8 @@ class BriefReferenceMaker extends Controller
         $form = Form::find($request->form);
         $table = Table::find($request->table);
         $mode = $request->mode;
-        $rows = Row::whereIn('id', explode(',', $request->rows))->get();
-        $columns = Column::whereIn('id', explode(',', $request->columns))->get();
+        $rows = Row::whereIn('id', explode(',', $request->rows))->orderBy('row_index')->get();
+        $columns = Column::whereIn('id', explode(',', $request->columns))->orderBy('column_index')->get();
         $level = (int)$request->level;
         $type = (int)$request->type;
         $aggregate_level = (int)$request->aggregate;
