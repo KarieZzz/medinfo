@@ -135,7 +135,15 @@ class BriefReferenceMaker extends Controller
             $units = Unit::legal()->active()->orderBy('unit_code')->get();
             $values = self::getAggregatedValues($units, $period, $form, $table, $column_titles, $columns, $rows, $mode, $output, $aggregate_level);
         } elseif ($aggregate_level == 3) {
-            $units = Unit::upperLevels()->active()->orderBy('unit_code')->get();
+            //$units = Unit::upperLevels()->active()->orderBy('unit_code')->get();
+            $units = Unit::Territory()->active()->orderBy('unit_code')->get();
+            // Добавляем аггрегаты группы областных и федеральных учреждений - коды 10002 и 10003
+            // TODO: перенести коды в конфиг
+            $regional = Unit::where('unit_code', '10002')->first();
+            $federal = Unit::where('unit_code', '10003')->first();
+            $units->push($regional);
+            $units->push($federal);
+            //dd($units);
             $values = self::getAggregatedValues($units, $period, $form, $table, $column_titles, $columns, $rows, $mode, $output, $aggregate_level);
         }
 
@@ -167,8 +175,9 @@ class BriefReferenceMaker extends Controller
                         //$cell = Cell::ofDTRC($d->id, $table->id, $rows[0], $column)->first();
                         $cell = Cell::ofDTRC($d->id, $table->id, $rows[0]->id, $column->id)->first();
                         is_null($cell) ? $value = 0 : $value = $cell->value;
-                        $output == 1 ? $values[$unit->id][$i] = number_format($value, 2, ',', '') : $values[$unit->id][$i] = (float)$value;
-                        isset($values[999999][$i]) ? $values[999999][$i] += $value : $values[999999][$i] = $value;
+                        //$output == 1 ? $values[$unit->id][$i] = number_format($value, 2, ',', '') : $values[$unit->id][$i] = (float)$value;
+                        $values[$unit->id][$i] = (float)$value;
+                        isset($values[999999][$i]) ? $values[999999][$i] += (float)$value : $values[999999][$i] = (float)$value;
                         $i++;
                     }
                 } elseif ($mode == 2) {
@@ -177,12 +186,14 @@ class BriefReferenceMaker extends Controller
                         //$cell = Cell::ofDTRC($d->id, $table->id, $row, $columns[0])->first();
                         $cell = Cell::ofDTRC($d->id, $table->id, $row->id, $columns[0]->id)->first();
                         is_null($cell) ? $value = 0 : $value = $cell->value;
-                        $output == 1 ? $values[$unit->id][$i] = number_format($value, 2, ',', '') : $values[$unit->id][$i] = (float)$value;
-                        isset($values[999999][$i]) ? $values[999999][$i] += $value : $values[999999][$i] = $value;
+                        //$output == 1 ? $values[$unit->id][$i] = number_format($value, 2, ',', '') : $values[$unit->id][$i] = (float)$value;
+                        $values[$unit->id][$i] = (float)$value;
+                        isset($values[999999][$i]) ? $values[999999][$i] += (float)$value : $values[999999][$i] = (float)$value;
                         $i++;
                     }
                 }
-
+                //$output == 1 ? $values[999999][$i] = number_format($values[999999][$i], 2, ',', '') : $values[999999][$i] = (float)$values[999999][$i];
+                //dd($values[999999][$i]);
             } else {
                 $i = 0;
                 foreach ($column_titles as $c) {
@@ -192,6 +203,7 @@ class BriefReferenceMaker extends Controller
                 }
             }
         }
+        //var_dump($values[1]);
         return $values;
     }
 
@@ -220,8 +232,9 @@ class BriefReferenceMaker extends Controller
                         $value = $rcontroller->getAggregatedValue($unit, $form, $table->table_code, $rows[0]->row_code, $column->column_index);
                         //var_dump($value);
                         //is_null($cell) ? $value = 0 : $value = $cell->value;
-                        $output == 1 ? $values[$unit->id][$i] = number_format($value, 2, ',', '') : $values[$unit->id][$i] = (float)$value;
-                        isset($values[999999][$i]) ? $values[999999][$i] += $value : $values[999999][$i] = $value;
+                        //$output == 1 ? $values[$unit->id][$i] = number_format($value, 2, ',', '') : $values[$unit->id][$i] = (float)$value;
+                        $values[$unit->id][$i] = (float)$value;
+                        isset($values[999999][$i]) ? $values[999999][$i] += (float)$value : $values[999999][$i] = (float)$value;
                         $i++;
                     }
                 } elseif ($mode == 2) {
@@ -230,8 +243,9 @@ class BriefReferenceMaker extends Controller
                         //$value = ReportMaker::getAggregatedValue($unit, $form, $period, $table->table_code, $row->row_code, $columns[0]->column_index);
                         $value = $rcontroller->getAggregatedValue($unit, $form, $table->table_code, $row->row_code, $columns[0]->column_index);
                         //is_null($cell) ? $value = 0 : $value = $cell->value;
-                        $output == 1 ? $values[$unit->id][$i] = number_format($value, 2, ',', '') : $values[$unit->id][$i] = (float)$value;
-                        isset($values[999999][$i]) ? $values[999999][$i] += $value : $values[999999][$i] = $value;
+                        //$output == 1 ? $values[$unit->id][$i] = number_format($value, 2, ',', '') : $values[$unit->id][$i] = (float)$value;
+                        $values[$unit->id][$i] = (float)$value;
+                        isset($values[999999][$i]) ? $values[999999][$i] += (float)$value : $values[999999][$i] = (float)$value;
                         $i++;
                     }
                 }

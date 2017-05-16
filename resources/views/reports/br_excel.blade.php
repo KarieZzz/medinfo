@@ -32,9 +32,9 @@
             </tr>
         @endforeach
         <tr>
-            <td colspan="2"><strong>Итого</strong></td>
+            <td colspan="2"><strong>Иркутская область</strong></td>
             @foreach($values[999999] as $aggregate)
-                <td><strong>{{ $aggregate }}</strong></td>
+                <td>{{ $aggregate }}</td>
             @endforeach
         </tr>
     </table>
