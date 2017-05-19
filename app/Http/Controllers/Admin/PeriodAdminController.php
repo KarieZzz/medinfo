@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Period;
+use App\PeriodPattern;
 use App\Document;
 
 class PeriodAdminController extends Controller
@@ -19,12 +20,24 @@ class PeriodAdminController extends Controller
 
     public function index()
     {
-        return view('jqxadmin.periods');
+        $period_patterns = PeriodPattern::orderBy('id')->get();
+        $years = $this->getYearsArray();
+        return view('jqxadmin.periods', compact('period_patterns', 'years'));
+    }
+
+    public function getYearsArray()
+    {
+        $upto = 2030;
+        $years = [];
+        for ($initial = 2013 ; $upto >= $initial; $initial++) {
+            $years[] = $initial;
+        }
+        return $years;
     }
 
     public function fetchPeriods()
     {
-        return Period::orderBy('name')->get();
+        return Period::orderBy('begin_date')->with('periodpattern')->get();
     }
 
     public function store(Request $request)
@@ -36,6 +49,7 @@ class PeriodAdminController extends Controller
                 'pattern_id' => 'exists:period_patterns,id',
             ]
         );
+        //$newperiod = Period::create($request->all());
         try {
             $newperiod = Period::create($request->all());
             return ['message' => 'Новая запись создана. Id:' . $newperiod->id];
@@ -45,6 +59,37 @@ class PeriodAdminController extends Controller
             if($errorCode == 7){
                 return ['error' => 422, 'message' => 'Новая запись не создана. Существует Период с такими же датами начала и окончания.'];
             }
+        }
+    }
+
+    public function storeByPattern(Request $request) {
+        $this->validate($request, [
+                'year' => 'required|digits:4',
+                'pattern_id' => 'required|exists:period_patterns,id',
+            ]
+        );
+        $pattern = PeriodPattern::find($request->pattern_id);
+        $period = new Period();
+        $period->begin_date = $request->year . '-' . $pattern->begin; // Дата в ISO формате
+        $period->end_date   = $request->year . '-' . $pattern->end;
+        $period->name = $pattern->name . '. ' . $request->year . '.';
+        $period->year = $request->year;
+        $period->pattern_id = $request->pattern_id;
+        try {
+            $period->save();
+            return ['message' => 'Новая запись создана. Id:' . $period->id];
+        } catch (\Illuminate\Database\QueryException $e) {
+            $errorCode = $e->errorInfo[0];
+            switch ($errorCode) {
+                // Код ошибки "Дублирующиеся значения" из PostgreSql
+                case '23505':
+                    $message = 'Запись не сохранена. Дублирующиеся значения.';
+                    break;
+                default:
+                    $message = 'Новая запись не создана. Код ошибки ' . $errorCode . '.';
+                    break;
+            }
+            return ['error' => 422, 'message' => $message];
         }
     }
 

@@ -116,9 +116,8 @@
 <script src="{{ asset('/jqwidgets/jqxtree.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>
-<script src="{{ asset('/jqwidgets/jqxnotification.js') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/documentdashboard.js?v=007') }}"></script>
+<script src="{{ asset('/medinfo/documentdashboard.js?v=008') }}"></script>
 @endpush
 
 @section('inlinejs')

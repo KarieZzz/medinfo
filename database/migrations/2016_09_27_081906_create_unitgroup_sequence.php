@@ -16,7 +16,7 @@ class CreateUnitgroupSequence extends Migration
         DB::statement("CREATE SEQUENCE public.unit_id_seq
             INCREMENT 1 MINVALUE 1
             MAXVALUE 9223372036854775807 START 1 CACHE 1;
-            ALTER SEQUENCE public.unit_id_seq RESTART WITH 604;
+            ALTER SEQUENCE public.unit_id_seq RESTART WITH 1000;
             ALTER TABLE mo_hierarchy ALTER COLUMN id SET DEFAULT nextval('unit_id_seq');
             ALTER TABLE unit_groups ALTER COLUMN id SET DEFAULT nextval('unit_id_seq');");
     }

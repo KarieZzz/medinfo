@@ -33,7 +33,7 @@
     <link href="{{ asset('/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
     <!-- <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"> -->
     <!-- jQWidgets CSS -->
-    <link href="{{ asset('/jqwidgets/styles/jqx.base.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('/jqwidgets/styles/jqx.base.css?v=001') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('/jqwidgets/styles/jqx.bootstrap.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
     @stack('loadcss')
@@ -57,6 +57,7 @@
 <!-- Bootstrap core JavaScript -->
 <script src="{{ asset('/plugins/jQuery/jquery-1.12.4.min.js') }}" type="text/javascript" ></script>
 <script src="{{ asset('/jqwidgets/jqxcore.js') }}"></script>
+<script src="{{ asset('/jqwidgets/jqxnotification.js') }}"></script>
 <script src="{{ asset('/medinfo/dashboard.js') }}"></script>
 <script src="{{ asset('/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
 @stack('loadjsscripts')

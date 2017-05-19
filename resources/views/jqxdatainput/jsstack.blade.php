@@ -25,7 +25,6 @@
 <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxtooltip.js') }}"></script>
-<script src="{{ asset('/jqwidgets/jqxnotification.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxnavigationbar.js') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
 <script src="{{ asset('/plugins/fullscreen/jquery.fullscreen.js') }}"></script>

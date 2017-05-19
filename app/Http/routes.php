@@ -69,6 +69,8 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('admin/periods', 'Admin\PeriodAdminController@index' );
     Route::get('admin/fetchperiods', 'Admin\PeriodAdminController@fetchPeriods' );
     Route::post('admin/periods/create', 'Admin\PeriodAdminController@store');
+    // Процедура создания нового периода строго по шаблону
+    Route::post('admin/periods/store', 'Admin\PeriodAdminController@storeByPattern');
     Route::patch('admin/periods/update', 'Admin\PeriodAdminController@update');
     Route::delete('admin/periods/delete/{period}', 'Admin\PeriodAdminController@delete');
 

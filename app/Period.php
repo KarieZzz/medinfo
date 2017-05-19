@@ -19,5 +19,9 @@ class Period extends Model
             ->where('pattern_id', 1); // 1 - Паттерн годового отчетного периода
     }
 
-
+    public function periodpattern()
+    {
+        return $this->belongsTo('App\PeriodPattern', 'pattern_id');
+    }
 }
+

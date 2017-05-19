@@ -130,9 +130,9 @@ setquerystring = function() {
         "&territory_type=" + $("#territory_type").val() +
         "&inn=" + $("#inn").val() +
         "&node_type=" + $("#node_type").val() +
-        "&report=" + ($("#report").val() ? 1 :0) +
-        "&aggregate=" + ($("#aggregate").val() ? 1 :0) +
-        "&blocked=" + ($("#blocked").val() ? 1 :0) +
+        "&report=" + ($("#report").val() ? 1 : 0) +
+        "&aggregate=" + ($("#aggregate").val() ? 1 : 0) +
+        "&blocked=" + ($("#blocked").val() ? 1 : 0) +
         "&medinfo_id=" + $("#medinfo_id").val();
 };
 initunitactions = function() {

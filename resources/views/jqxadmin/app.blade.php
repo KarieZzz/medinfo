@@ -24,7 +24,7 @@
     <!-- Bootstrap core CSS -->
     <link href="{{ asset('/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
     <!-- jQWidgets CSS -->
-    <link href="{{ asset('/jqwidgets/styles/jqx.base.css') }}" rel="stylesheet">
+    <link href="{{ asset('/jqwidgets/styles/jqx.base.css?v=002') }}" rel="stylesheet">
     <link href="{{ asset('/jqwidgets/styles/jqx.bootstrap.css') }}" rel="stylesheet">
     <link href="{{ asset('/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
 </head>
@@ -33,12 +33,12 @@
 {{--<div id="alertmessage" class="col-md-4 "></div>--}}
 
 <div class="container-fluid" >
+    @include('jqxdatainput.notifications')
+    @include('jqxdatainput.confirmpopup')
     @include('jqxadmin.navbar')
     <div id="widgets-content-wrap">
         @yield('content')
     </div>
-    @include('jqxdatainput.notifications')
-    @include('jqxdatainput.confirmpopup')
 </div>
 
 <script src="{{ asset('/plugins/jQuery/jquery-1.12.4.min.js') }}" type="text/javascript" ></script>

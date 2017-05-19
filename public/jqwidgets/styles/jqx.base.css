@@ -4572,6 +4572,7 @@ ol li .jqx-listmenu-item-label:before
     height: auto;
     width: auto;
     pointer-events: none;
+    z-index: 99999;
 }
 .jqx-notification-container-full-width
 {

@@ -899,7 +899,7 @@ var initpopupwindows = function() {
             data: data,
             success: function (data, status, xhr) {
                 if (data.status_changed == 1) {
-                    raiseInfo("Статус документа изменен. <br /> Новый статус: \"" + statelabels[data.new_status] + '"');
+                    raiseInfo("Статус документа изменен. Новый статус: \"" + statelabels[data.new_status] + '\""');
                     rowdata.state = statelabels[data.new_status];
                     dgrid.jqxGrid('updaterow', row_id, rowdata);
                     dgrid.jqxGrid('selectrow', rowindex);
