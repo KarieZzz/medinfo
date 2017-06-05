@@ -26,6 +26,7 @@
                     <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                     <li><a href="/admin/periods">Отчетные периоды</a></li>
+                    <li><a href="/admin/monitorings">Мониторинги</a></li>
                     <li><a href="/admin/albums">Альбомы форм</a></li>
                     <li><a href="/admin/forms">Формы</a></li>
                     <li><a href="/admin/tables">Таблицы</a></li>

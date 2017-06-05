@@ -25,4 +25,9 @@ class CFunction extends Model
     {
         return $this->belongsTo('App\Table');
     }
+
+    public function level()
+    {
+        return $this->belongsTo('App\DicErrorLevel', 'level', 'code');
+    }
 }

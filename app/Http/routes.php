@@ -74,6 +74,10 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::patch('admin/periods/update', 'Admin\PeriodAdminController@update');
     Route::delete('admin/periods/delete/{period}', 'Admin\PeriodAdminController@delete');
 
+    // Менеджер мониторингов
+    Route::get('admin/monitorings/fetchlist', 'Admin\MonitoringController@fetchList');
+    Route::resource('admin/monitorings', 'Admin\MonitoringController');
+
     //Менеджер альбомов форм
     Route::get('admin/albums', 'Admin\AlbumAdminController@index' );
     Route::get('admin/fetchalbums', 'Admin\AlbumAdminController@fetchAlbums' );

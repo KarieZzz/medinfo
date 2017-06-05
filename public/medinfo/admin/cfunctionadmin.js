@@ -12,6 +12,7 @@ initdatasources = function() {
             { name: 'table_id', type: 'int' },
             { name: 'table_code', map: 'table>table_code', type: 'string' },
             { name: 'level', type: 'int' },
+            { name: 'levelname', map: 'level>name', type: 'string' },
             { name: 'script', type: 'string' },
             { name: 'comment', type: 'string' },
             { name: 'blocked', type: 'bool' }
@@ -38,7 +39,7 @@ initFunctionList = function() {
             columns: [
                 { text: 'Id', datafield: 'id', width: '50px' },
                 { text: 'Код таблицы', datafield: 'table_code', width: '70px'  },
-                { text: 'Уровень', datafield: 'level', width: '70px'  },
+                { text: 'Уровень', datafield: 'levelname', width: '120px'  },
                 { text: 'Функция контроля', datafield: 'script' , width: '50%'},
                 { text: 'Комментарий', datafield: 'comment', width: '30%' },
                 { text: 'Отключена', datafield: 'blocked', columntype: 'checkbox', width: '70px' }

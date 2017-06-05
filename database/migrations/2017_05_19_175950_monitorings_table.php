@@ -15,8 +15,9 @@ class MonitoringsTable extends Migration
         //
         Schema::create('monitorings', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name', 256)->index();
+            $table->string('name', 256)->unique();
             $table->integer('periodicity')->index();
+            $table->boolean('accumulation');
             $table->integer('album_id')->index();
             $table->timestamps();
         });

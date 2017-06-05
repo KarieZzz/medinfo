@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateDicErrorLevelsTable extends Migration
+class CreateDicPeriodicityTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,8 +12,7 @@ class CreateDicErrorLevelsTable extends Migration
      */
     public function up()
     {
-        Schema::create('dic_error_levels', function (Blueprint $table) {
-            //
+        Schema::create('dic_periodicity', function (Blueprint $table) {
             $table->smallInteger('code')->primary();
             $table->string('name', 64);
             $table->string('comment', 128)->nullable();
@@ -28,6 +27,6 @@ class CreateDicErrorLevelsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('dic_error_levels');
+        Schema::drop('dic_periodicity');
     }
 }

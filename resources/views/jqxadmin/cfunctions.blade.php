@@ -69,7 +69,7 @@
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
     <script src="{{ asset('/medinfo/admin/tablepicker.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/cfunctionadmin.js') }}"></script>
+    <script src="{{ asset('/medinfo/admin/cfunctionadmin.js?v=001') }}"></script>
 @endpush
 
 @section('inlinejs')
