@@ -117,9 +117,9 @@ inittablelist = function() {
         $("#territory_type").val(row.territory_type);
         $("#inn").val(row.inn);
         $("#node_type").val(row.node_type);
-        $("#report").val( row.report == 1 );
-        $("#aggregate").val(row.aggregate == 1);
-        $("#blocked").val(row.blocked == 1);
+        $("#report").val( row.report === 1 );
+        $("#aggregate").val(row.aggregate === 1);
+        $("#blocked").val(row.blocked === 1);
         $("#medinfo_id").val(row.medinfo_id);
     });
 };

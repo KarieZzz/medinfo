@@ -16,6 +16,7 @@ class CreateDocumentsTable extends Migration
             $table->increments('id');
             $table->integer('dtype')->default(1)->index();
             $table->integer('ou_id')->index();
+            $table->integer('monitoring_id')->index();
             $table->char('period_id', 8)->index();
             $table->integer('form_id')->index();
             $table->integer('state')->index();

@@ -45,8 +45,6 @@ initdatasources = function() {
             localdata: patterns
         };
     patternsDataAdapter = new $.jqx.dataAdapter(patternsource);
-
-
 };
 
 initFormElements = function () {
@@ -93,7 +91,6 @@ initCreateActions = function () {
                 } else {
                     raiseInfo(data.message);
                 }
-
                 plist.jqxGrid('updatebounddata');
             },
             error: function (xhr, status, errorThrown) {

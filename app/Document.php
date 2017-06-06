@@ -19,13 +19,19 @@ class Document extends Model
     ];
 
     protected $fillable = [
-        'dtype', 'ou_id' , 'period_id', 'form_id', 'state',
+        'dtype', 'ou_id' , 'monitoring_id', 'period_id', 'form_id', 'state',
     ];
+
     protected $dates = ['state_changed_at'];
 
-    public function form()
+    public function unit()
     {
-        return $this->belongsTo('App\Form');
+        return $this->belongsTo('App\Unit', 'ou_id');
+    }
+
+    public function monitoring()
+    {
+        return $this->belongsTo('App\Monitoring');
     }
 
     public function period()
@@ -33,9 +39,9 @@ class Document extends Model
         return $this->belongsTo('App\Period');
     }
 
-    public function unit()
+    public function form()
     {
-        return $this->belongsTo('App\Unit', 'ou_id');
+        return $this->belongsTo('App\Form');
     }
 
     public function unitgroup()
@@ -77,6 +83,11 @@ class Document extends Model
     public function scopeOfUnit($query, $ou)
     {
         return $query->where('ou_id', $ou);
+    }
+
+    public function scopeOfMonitoring($query, $monitoring)
+    {
+        return $query->where('monitoring_id', $monitoring);
     }
 
     public static function countInUnit(int $unit)

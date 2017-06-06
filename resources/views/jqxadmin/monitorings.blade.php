@@ -22,7 +22,7 @@
                     <div class="form-group">
                         <label class="control-label col-sm-3" for="periodicity">Периодичность:</label>
                         <div class="col-sm-3">
-                            <input type="text" class="form-control" id="periodicity">
+                            <div id="periodicity" style="padding-left: 12px"></div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -34,12 +34,12 @@
                     <div class="form-group">
                         <label class="control-label col-sm-3" for="album">Использует альбом форм:</label>
                         <div class="col-sm-3">
-                            <div id="album"></div>
+                            <div id="album" style="padding-left: 12px"></div>
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-7">
-                            <button type="button" id="save" class="btn btn-default">Сохранить изменения</button>
+                            <button type="button" id="save" class="btn btn-success">Сохранить изменения</button>
                             <button type="button" id="insert" class="btn btn-default">Вставить новую запись</button>
                             <button type="button" id="delete" class="btn btn-danger">Удалить запись</button>
                         </div>
@@ -68,19 +68,23 @@
     <script src="{{ asset('/jqwidgets/jqxgrid.selection.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/monitoringadmin.js?v=002') }}"></script>
+    <script src="{{ asset('/medinfo/admin/monitoringadmin.js?v=010') }}"></script>
 @endpush
 
 @section('inlinejs')
     @parent
     <script type="text/javascript">
-        var selected_scopes = [];
-        var monitoringupdate_url = '/admin/monitorings/update/';
-        var monitoringdestroy_url = '/admin/monitorings/destroy/';
+        var preiodicityDataAdapter;
+        var albumDataAdapter;
+        var periodicities = {!! $periodicities !!};
+        var albums = {!! $albums !!};
+        var monitoringinsert_url = '/admin/monitorings';
+        var monitoringupdate_url = '/admin/monitorings/';
         var fetchmonitoring_url = '/admin/monitorings/fetchlist/';
         var mlist = $('#monitoringList');
         initsplitter();
         initMonitoringList();
+        initbuttons();
         initactions();
     </script>
 @endsection

@@ -102,12 +102,11 @@ setquerystring = function() {
 };
 initalbumactions = function() {
     $("#insert").click(function () {
-        var data = setquerystring();
         $.ajax({
             dataType: 'json',
             url: albumcreate_url,
             method: "POST",
-            data: data,
+            data: setquerystring(),
             success: function (data, status, xhr) {
                 if (typeof data.error != 'undefined') {
                     raiseError(data.message);
@@ -125,17 +124,16 @@ initalbumactions = function() {
     });
     $("#save").click(function () {
         var row = agrid.jqxGrid('getselectedrowindex');
-        if (row == -1) {
+        if (row === -1) {
             raiseError("Выберите запись для изменения/сохранения данных");
             return false;
         }
         var rowid = agrid.jqxGrid('getrowid', row);
-        var data = setquerystring();
         $.ajax({
             dataType: 'json',
             url: albumupdate_url + rowid,
             method: "PATCH",
-            data: data,
+            data: setquerystring(),
             success: function (data, status, xhr) {
                 if (typeof data.error != 'undefined') {
                     raiseError(data.message);
@@ -158,7 +156,7 @@ initalbumactions = function() {
     });
     $("#delete").click(function () {
         var row = agrid.jqxGrid('getselectedrowindex');
-        if (row == -1) {
+        if (row === -1) {
             raiseError("Выберите запись для удаления");
             return false;
         }
@@ -273,7 +271,8 @@ initButtons = function() {
         width: 81,
         onLabel: 'Да',
         offLabel: 'Нет',
-        checked: false });
+        checked: false
+    });
 
 };
 

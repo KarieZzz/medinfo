@@ -13,4 +13,10 @@ class Monitoring extends Model
     {
         return $this->belongsTo('App\Album');
     }
+
+    public function periodicities()
+    {
+        return $this->belongsTo('App\DicPeriodicity', 'periodicity', 'code');
+    }
+
 }

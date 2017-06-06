@@ -10,19 +10,6 @@ initsplitter = function() {
             ]
     });
 };
-initdropdowns = function() {
-    var rolesource =
-    {
-        datatype: "json",
-        datafields: [
-            { name: 'code' },
-            { name: 'name' }
-        ],
-        id: 'code',
-        localdata: roles
-    };
-    roleDataAdapter = new $.jqx.dataAdapter(rolesource);
-};
 initMonitoringList = function() {
     var monSource =
     {
@@ -31,6 +18,7 @@ initMonitoringList = function() {
             { name: 'id', type: 'int' },
             { name: 'name', type: 'string' },
             { name: 'periodicity', type: 'int' },
+            { name: 'periodicities', map: 'periodicities>name', type: 'string' },
             { name: 'accumulation', type: 'bool' },
             { name: 'album_id', type: 'int' },
             { name: 'album', map: 'album>album_name', type: 'string' },
@@ -52,8 +40,8 @@ initMonitoringList = function() {
             filterable: true,
             columns: [
                 { text: 'Id', datafield: 'id', width: '30px' },
-                { text: 'Наименование мониторинга', datafield: 'name' , width: '270px'},
-                { text: 'Периодичность', datafield: 'periodicity', width: '100px' },
+                { text: 'Наименование мониторинга', datafield: 'name' , width: '380px'},
+                { text: 'Периодичность', datafield: 'periodicities', width: '100px' },
                 { text: 'Накопление данных', datafield: 'accumulation', columntype: 'checkbox', width: '140px' },
                 { text: 'Альбом форм', datafield: 'album', width: '170px' }
             ]
@@ -61,21 +49,10 @@ initMonitoringList = function() {
     mlist.on('rowselect', function (event) {
         var row = event.args.row;
         $("#name").val(row.name);
-        $("#periodicity").val(row.password);
-        $("#accumulation").val(row.email);
-        $("#album").val(row.description);
+        $("#periodicity").val(row.periodicity);
+        $("#accumulation").val(row.accumulation === true);
+        $("#album").val(row.album_id);
     });
-};
-
-setquerystring = function() {
-    return "&name=" + $("#name").val() +
-        "&password=" + $("#password").val() +
-        "&email=" + $("#email").val() +
-        "&description=" + $("#description").val() +
-        "&role=" + $("#role").val() +
-        "&permission=" + $("#permission").val() +
-        "&blocked=" + ($("#blocked").val() ? 1 :0);
-        //+ "&_token={{ csrf_token() }}";
 };
 
 initbuttons = function () {
@@ -84,77 +61,138 @@ initbuttons = function () {
         width: 81,
         onLabel: 'Да',
         offLabel: 'Нет',
-        checked: false });
+        checked: false
+    });
+    var preiodicitysource =
+        {
+            datatype: "json",
+            datafields: [
+                { name: 'code' },
+                { name: 'name' }
+            ],
+            id: 'code',
+            localdata: periodicities
+        };
+    preiodicityDataAdapter = new $.jqx.dataAdapter(preiodicitysource);
+    $("#periodicity").jqxDropDownList({
+        theme: theme,
+        source: preiodicityDataAdapter,
+        displayMember: "name",
+        valueMember: "code",
+        placeHolder: "Выберите периодичность отчетов:",
+        width: 300,
+        height: 34
+    });
+
+    var albumsource =
+        {
+            datatype: "json",
+            datafields: [
+                { name: 'id' },
+                { name: 'album_name' }
+            ],
+            id: 'id',
+            localdata: albums
+        };
+    albumDataAdapter = new $.jqx.dataAdapter(albumsource);
+    $("#album").jqxDropDownList({
+        theme: theme,
+        source: albumDataAdapter,
+        displayMember: "album_name",
+        valueMember: "id",
+        placeHolder: "Выберите альбом отчетных форм:",
+        width: 300,
+        height: 34
+    });
+
+};
+
+setquerystring = function() {
+    return "&name=" + $("#name").val() +
+        "&periodicity=" + $("#periodicity").val() +
+        "&accumulation=" + ($("#accumulation").val() ? 1 :0) +
+        "&album=" + $("#album").val();
 };
 
 initactions = function() {
     $("#insert").click(function () {
         $.ajax({
             dataType: 'json',
-            url: '/admin/workers/create',
+            url: monitoringinsert_url,
             method: "POST",
             data: setquerystring(),
             success: function (data, status, xhr) {
-                raiseInfo(data.responce.comment);
-                $("#userList").jqxGrid('updatebounddata');
+                if (typeof data.error !== 'undefined') {
+                    raiseError(data.message);
+                } else {
+                    mlist.jqxGrid('updatebounddata', 'data');
+                    mlist.on("bindingcomplete", function (event) {
+                        var newindex = mlist.jqxGrid('getrowboundindexbyid', data.id);
+                        mlist.jqxGrid('selectrow', newindex);
+                    });
+                    raiseInfo(data.message);
+                }
             },
             error: function (xhr, status, errorThrown) {
-                m = 'Данные не сохранены. ';
                 $.each(xhr.responseJSON, function(field, errorText) {
-                    m += errorText[0];
+                    raiseError(errorText);
                 });
-                raiseError(m, xhr);
             }
         });
     });
     $("#save").click(function () {
-        var row = $('#userList').jqxGrid('getselectedrowindex');
-        if (row == -1) {
+        var row = mlist.jqxGrid('getselectedrowindex');
+        if (row === -1) {
             raiseError("Выберите запись для изменения/сохранения данных");
             return false;
         }
-        var rowid = $("#userList").jqxGrid('getrowid', row);
+        var rowid = mlist.jqxGrid('getrowid', row);
         $.ajax({
             dataType: 'json',
-            url: workerupdate_url + rowid,
-            method: "PATCH",
+            url: monitoringupdate_url + rowid,
+            method: "PUT",
             data: setquerystring(),
             success: function (data, status, xhr) {
-                raiseInfo(data.responce.comment);
-                $("#userList").jqxGrid('updatebounddata');
+                if (typeof data.error !== 'undefined') {
+                    raiseError(data.message);
+                } else {
+                    raiseInfo(data.message);
+                }
+                mlist.jqxGrid('updatebounddata', 'data');
+                mlist.on("bindingcomplete", function (event) {
+                    var newindex = mlist.jqxGrid('getrowboundindexbyid', rowid);
+                    mlist.jqxGrid('selectrow', newindex);
+                });
             },
             error: function (xhr, status, errorThrown) {
-                m = 'Данные не сохранены. ';
                 $.each(xhr.responseJSON, function(field, errorText) {
-                    m += errorText[0];
+                    raiseError(errorText);
                 });
-                raiseError(m, xhr);
             }
         });
     });
     $("#delete").click(function () {
-        var row = $('#userList').jqxGrid('getselectedrowindex');
-        if (row == -1) {
+        var row = mlist.jqxGrid('getselectedrowindex');
+        if (row === -1) {
             raiseError("Выберите запись для удаления");
             return false;
         }
-        var rowid = $("#userList").jqxGrid('getrowid', row);
-        var confirm_text = 'Подтвердите удаление пользователя Id' + rowid ;
+        var rowid = mlist.jqxGrid('getrowid', row);
+        var confirm_text = 'Подтвердите удаление мониторинга Id' + rowid ;
         if (!confirm(confirm_text)) {
             return false;
         }
         $.ajax({
             dataType: 'json',
-            url: workerdelete_url + rowid,
+            url: monitoringupdate_url + rowid,
             method: "DELETE",
             success: function (data, status, xhr) {
-                if (data.worker_deleted) {
-                    raiseInfo(data.message);
-                    $('#userList').jqxGrid('clearselection');
-                    $('#userList').jqxGrid('updatebounddata');
-                }
-                else {
+                if (typeof data.error !== 'undefined') {
                     raiseError(data.message);
+                } else {
+                    mlist.jqxGrid('clearselection');
+                    mlist.jqxGrid('updatebounddata')
+                    raiseInfo(data.message);
                 }
             },
             error: function (xhr, status, errorThrown) {
