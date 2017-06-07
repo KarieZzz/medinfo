@@ -2,7 +2,7 @@
  * Created by shameev on 28.06.2016.
  */
 // Инициализация источников данных для таблиц
-var datasources = function() {
+datasources = function() {
     mo_source =
     {
         dataType: "json",
@@ -86,7 +86,7 @@ var datasources = function() {
     });
     aggregate_report_table = new $.jqx.dataAdapter(aggregate_source);
 };
-var checkformfilter = function() {
+checkformfilter = function() {
     checkedforms = [];
     var checkedItems = $("#formsListbox").jqxListBox('getCheckedItems');
     var formcount = checkedItems.length;
@@ -94,7 +94,7 @@ var checkformfilter = function() {
         checkedforms.push(checkedItems[i].value);
     }
 };
-var checkstatefilter = function() {
+checkstatefilter = function() {
     checkedstates = [];
     var checkedItems = $("#statesListbox").jqxListBox('getCheckedItems');
     var statecount = checkedItems.length;
@@ -102,7 +102,7 @@ var checkstatefilter = function() {
         checkedstates.push(checkedItems[i].value);
     }
 };
-var checkperiodfilter = function() {
+checkperiodfilter = function() {
     checkedperiods = [];
     var checkedItems = $("#periodsListbox").jqxListBox('getCheckedItems');
     var periodcount = checkedItems.length;
@@ -111,7 +111,7 @@ var checkperiodfilter = function() {
     }
 };
 // обновление таблиц первичных и сводных документов в зависимости от выделенных форм, периодов, статусов документов
-var updatedocumenttable = function() {
+updatedocumenttable = function() {
     var old_doc_url = docsource.url;
     var old_aggr_url = aggregate_source.url;
     var states = checkedstates.join();
@@ -132,7 +132,7 @@ var updatedocumenttable = function() {
     }
 };
 // выполнение сведения данных
-var aggregatedata = function() {
+aggregatedata = function() {
     var rowindex = agrid.jqxGrid('getselectedrowindex');
     var row_id = agrid.jqxGrid('getrowid', rowindex);
     var rowdata = agrid.jqxGrid('getrowdata', rowindex);
@@ -168,13 +168,13 @@ var aggregatedata = function() {
     });
 };
 // Установка класса для обозначения заполненных/пустых документов
-var filledFormclass = function (row, columnfield, value, rowdata) {
+filledFormclass = function (row, columnfield, value, rowdata) {
     if (rowdata.filled) {
         return 'filledForm';
     }
 };
 // Установка класса для раскрашивания строк в зависимости от статуса документа
-var formStatusclass = function (row, columnfield, value, rowdata) {
+formStatusclass = function (row, columnfield, value, rowdata) {
     if (value == statelabels.performed) {
         return 'editedStatus';
     } else if (value == statelabels.prepared) {
@@ -188,7 +188,7 @@ var formStatusclass = function (row, columnfield, value, rowdata) {
     }
 };
 // фильтр для быстрого поиска по наименованию учреждения - первичные документы
-var mo_name_filter = function (needle) {
+mo_name_filter = function (needle) {
     var rowFilterGroup = new $.jqx.filter();
     var filter_or_operator = 1;
     var filtervalue = needle;
@@ -199,7 +199,7 @@ var mo_name_filter = function (needle) {
     dgrid.jqxGrid('applyfilters');
 };
 // фильтр для быстрого поиска по наименованию учреждения/территории - сводные документы
-var mo_name_aggrfilter = function (needle) {
+mo_name_aggrfilter = function (needle) {
     var rowFilterGroup = new $.jqx.filter();
     var filter_or_operator = 1;
     var filtervalue = needle;
@@ -210,7 +210,7 @@ var mo_name_aggrfilter = function (needle) {
     agrid.jqxGrid('applyfilters');
 };
 // Рендеринг панели инструментов для таблицы первичных документов
-var rendertoolbar = function (toolbar) {
+rendertoolbar = function (toolbar) {
     var me = this;
     var container = $("<div style='margin: 5px;'></div>");
     var input1 = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='searchField' type='text' style='height: 23px; float: left; width: 150px;' />");
@@ -387,7 +387,7 @@ var rendertoolbar = function (toolbar) {
     });
 };
 
-var filtersource = function() {
+filtersource = function() {
     var states = checkedstates.join();
     var forms = checkedforms.join();
     var periods = checkedperiods.join();
@@ -396,7 +396,7 @@ var filtersource = function() {
 };
 
 // рендеринг панели инструментов для таблицы сводных документов
-var renderaggregatetoolbar = function(toolbar) {
+renderaggregatetoolbar = function(toolbar) {
     var me = this;
     var container = $("<div style='margin: 5px;'></div>");
     var input1 = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='searchField' type='text' style='height: 23px; float: left; width: 150px;' />");
@@ -506,65 +506,28 @@ var renderaggregatetoolbar = function(toolbar) {
     });
 };
 
-var initmotabs = function() {
-    $("#motabs").jqxTabs({  height: '100%', width: '100%', theme: theme });
+initDropdowns = function () {
+    terr.jqxDropDownButton({ width: 350, height: 32, theme: theme });
+    terr.jqxDropDownButton('setContent', '<div style="margin: 9px">Медицинские организации (по территориям)</div>');
+    groups.jqxDropDownButton({ width: 350, height: 32, theme: theme });
+    groups.jqxDropDownButton('setContent', '<div style="margin: 9px">Медицинские организации (по группам)</div>');
 };
 
-var initgrouptree = function() {
-    grouptree.jqxTreeGrid(
-        {
-            width: '100%',
-            height: '100%',
-            theme: theme,
-            source: ugroup_dataAdapter,
-            selectionMode: "singleRow",
-            filterable: true,
-            filterMode: "simple",
-            localization: localize(),
-            columnsResize: true,
-            ready: function()
-            {
-                // expand row with 'EmployeeKey = 32'
-                grouptree.jqxTreeGrid('expandRow', 0);
-            },
-            columns: [
-                { text: 'Код', dataField: 'group_code', width: 120 },
-                { text: 'Наименование', dataField: 'group_name', width: 545 }
-            ]
-        });
-    grouptree.on('filter',
-        function (event)
-        {
-            var args = event.args;
-            var filters = args.filters;
-            grouptree.jqxTreeGrid('expandAll');
-        }
-    );
-    grouptree.on('rowSelect',
-        function (event)
-        {
-            var args = event.args;
-            var new_top_level_node = args.key;
-            if (new_top_level_node == current_top_level_node && filter_mode == 2) {
-                return false;
-            }
-            filter_mode = 2; // режим отбора документов по группам
-            current_top_level_node =  new_top_level_node;
-            updatedocumenttable();
-            return true;
-        }
-    );
+initmotabs = function() {
+    //$("#motabs").jqxTabs({  height: 500, width: 670, theme: theme });
 };
 
 // инициализация дерева Территорий/Медицинских организаций
-var initmotree = function() {
+initmotree = function() {
     motree.jqxTreeGrid(
         {
-            width: '100%',
-            height: '100%',
+            width: 670,
+            height: 600,
             theme: theme,
             source: mo_dataAdapter,
             selectionMode: "singleRow",
+            showToolbar: true,
+            renderToolbar: motreeToolbar,
             filterable: true,
             filterMode: "simple",
             localization: localize(),
@@ -592,18 +555,79 @@ var initmotree = function() {
         {
             var args = event.args;
             var new_top_level_node = args.key;
-            if (new_top_level_node == current_top_level_node && filter_mode == 1) {
+            if (new_top_level_node === current_top_level_node && filter_mode === 1) {
                 return false;
             }
             current_top_level_node =  new_top_level_node;
             filter_mode = 1; // режим отбора документов по территориям
             updatedocumenttable();
+            terr.jqxDropDownButton('close');
             return true;
         }
     );
 };
+
+
+initgrouptree = function() {
+    grouptree.jqxTreeGrid(
+        {
+            width: 670,
+            height: 600,
+            theme: theme,
+            source: ugroup_dataAdapter,
+            selectionMode: "singleRow",
+            filterable: true,
+            filterMode: "simple",
+            localization: localize(),
+            columnsResize: true,
+            ready: function()
+            {
+                grouptree.jqxTreeGrid('expandRow', 0);
+            },
+            columns: [
+                { text: 'Код', dataField: 'group_code', width: 120 },
+                { text: 'Наименование', dataField: 'group_name', width: 545 }
+            ]
+        });
+    grouptree.on('filter',
+        function (event)
+        {
+            var args = event.args;
+            var filters = args.filters;
+            grouptree.jqxTreeGrid('expandAll');
+        }
+    );
+    grouptree.on('rowSelect',
+        function (event)
+        {
+            var args = event.args;
+            var new_top_level_node = args.key;
+            if (new_top_level_node === current_top_level_node && filter_mode === 2) {
+                return false;
+            }
+            filter_mode = 2; // режим отбора документов по группам
+            current_top_level_node =  new_top_level_node;
+            updatedocumenttable();
+            groups.jqxDropDownButton('close');
+            return true;
+        }
+    );
+};
+
+motreeToolbar = function (toolbar) {
+    toolbar.append("<button type='button' id='collapseAll' class='btn btn-default btn-sm'>Свернуть все</button>");
+    toolbar.append("<button type='button' id='expandAll' class='btn btn-default btn-sm'>Развернуть все</button>");
+    $('#expandAll').click(function (event) {
+        motree.jqxTreeGrid('expandAll');
+    });
+    $('#collapseAll').click(function (event) {
+        motree.jqxTreeGrid('collapseAll');
+        motree.jqxTreeGrid('expandRow', 0);
+    });
+};
+
 // инициализация вкладок-фильтров с элементами управления
-var initfiltertabs = function() {
+initfiltertabs = function() {
     $("#filtertabs").jqxTabs({  height: '100%', width: '100%', theme: theme });
     var forms_source =
     {
@@ -711,7 +735,7 @@ var initfiltertabs = function() {
 
 };
 // инициализация вкладок с документами
-var initdocumentstabs = function() {
+initdocumentstabs = function() {
     $("#documenttabs").jqxTabs({  height: '100%', width: '100%', theme: theme });
     dgrid.jqxGrid(
         {
@@ -827,13 +851,13 @@ var initdocumentstabs = function() {
     });
 };
 // инициализация вкладок с сообщениями и проверками к документу
-var initdocumentproperties = function() {
+initdocumentproperties = function() {
     $('#DocumentPropertiesSplitter').jqxSplitter({
         width: '100%',
         height: '95%',
         theme: theme,
         orientation: 'vertical',
-        panels: [{ size: '70%', min: 100, collapsible: false }, { min: '100px', collapsible: true}]
+        panels: [{ size: '80%', min: 100, collapsible: false }, { min: '100px', collapsible: true}]
     });
     $("#messagesExpander").jqxExpander({toggleMode: 'none', showArrow: false, width: "100%", height: "100%", theme: theme  });
     $("#openMessagesListWindow").on('click', function(event) {
@@ -857,7 +881,7 @@ var initdocumentproperties = function() {
     $("#auditExpander").jqxExpander({toggleMode: 'none', showArrow: false, width: "100%", height: "100%", theme: theme  });
 };
 // инициализация всплывающих окон с формами ввода сообщения и т.д.
-var initpopupwindows = function() {
+initpopupwindows = function() {
     $("#changeStateWindow").jqxWindow({
         width: 530,
         height: 480,

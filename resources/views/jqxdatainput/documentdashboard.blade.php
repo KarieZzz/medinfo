@@ -8,18 +8,22 @@
         <div>
             <div id="filterPanelSplitter">
                 <div>
-                    <div class="jqx-hideborder jqx-hidescrollbars" id="motabs">
-                        <ul>
-                            <li style="margin-left: 30px;"> Медицинские организации по территориям</li>
-                            <li>По группам</li>
-                        </ul>
-                        <div>
-                            <div class="jqx-hideborder" id="moTree"></div>
-                        </div>
-                        <div>
-                            <div class="jqx-hideborder" id="groupTree"></div>
-                        </div>
-                    </div>
+                    <div id="moSelectorByTerritories"><div id="moTree"></div></div>
+
+{{--                        <div class="jqx-hideborder jqx-hidescrollbars" id="motabs">
+                            <ul>
+                                <li style="margin-left: 30px;"> Медицинские организации по территориям</li>
+                                <li>По группам</li>
+                            </ul>
+                            <div>
+                                <div class="jqx-hideborder" id="moTree"></div>
+                            </div>
+                            <div>
+                                <div class="jqx-hideborder" id="groupTree"></div>
+                            </div>
+                        </div>--}}
+                    <div id="moSelectorByGroups"><div class="jqx-hideborder" id="groupTree"></div></div>
+                    <div id="periodSelectorDropown"><div id="periods"></div></div>
                 </div>
                 <div id="filtertabs" class="jqx-hideborder jqx-hidescrollbars">
                     <ul>
@@ -102,6 +106,7 @@
 <script src="{{ asset('/jqwidgets/jqxexpander.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxscrollbar.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxbuttons.js') }}"></script>
+<script src="{{ asset('/jqwidgets/jqxdropdownbutton.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxinput.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxtextarea.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxcheckbox.js') }}"></script>
@@ -117,49 +122,51 @@
 <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/documentdashboard.js?v=008') }}"></script>
+<script src="{{ asset('/medinfo/documentdashboard.js?v=018') }}"></script>
 @endpush
 
 @section('inlinejs')
     @parent
     <script type="text/javascript">
-        var current_top_level_node = '{{ is_null($worker_scope) ? 'null' : $worker_scope }}';
-        var current_user_role = '{{ $worker->role }}';
-        var current_user_id = '{{ $worker->id }}';
-        var audit_permission = {{ $audit_permission ? 'true' : 'false' }};
-        var periods = {!! $periods !!};
-        var forms = {!! $forms  !!};
-        var states = {!! $states !!};
-        var checkedforms = {!! $form_ids !!};
-        var checkedstates = {!! $state_ids !!};
-        var checkedperiods = [{{ $period_ids }}];
-        var disabled_states = [{!! $disabled_states !!}];
-        var filter_mode = 1; // 1 - по территориям; 2 - по группам
-        var mo_tree_url = 'datainput/fetch_mo_tree/';
-        var group_tree_url = 'datainput/fetch_ugroups';
-        var docsource_url = 'datainput/fetchdocuments?';
-        var docmessages_url = 'datainput/fetchmessages?';
-        var changestate_url = 'datainput/changestate';
-        var changeaudition_url = 'datainput/changeaudition';
-        var docmessagesend_url = 'datainput/sendmessage';
-        var docauditions_url = 'datainput/fetchauditions?';
-        var aggrsource_url = 'datainput/fetchaggregates?';
-        var edit_form_url = 'datainput/formdashboard';
-        var edit_aggregate_url = 'datainput/aggregatedashboard';
-        var aggregatedata_url = "/datainput/aggregatedata/";
-        var export_form_url = "/datainput/formexport/";
+        let current_top_level_node = '{{ is_null($worker_scope) ? 'null' : $worker_scope }}';
+        let current_user_role = '{{ $worker->role }}';
+        let current_user_id = '{{ $worker->id }}';
+        let audit_permission = {{ $audit_permission ? 'true' : 'false' }};
+        let periods = {!! $periods !!};
+        let forms = {!! $forms  !!};
+        let states = {!! $states !!};
+        let checkedforms = {!! $form_ids !!};
+        let checkedstates = {!! $state_ids !!};
+        let checkedperiods = [{{ $period_ids }}];
+        let disabled_states = [{!! $disabled_states !!}];
+        let filter_mode = 1; // 1 - по территориям; 2 - по группам
+        let mo_tree_url = 'datainput/fetch_mo_tree/';
+        let group_tree_url = 'datainput/fetch_ugroups';
+        let docsource_url = 'datainput/fetchdocuments?';
+        let docmessages_url = 'datainput/fetchmessages?';
+        let changestate_url = 'datainput/changestate';
+        let changeaudition_url = 'datainput/changeaudition';
+        let docmessagesend_url = 'datainput/sendmessage';
+        let docauditions_url = 'datainput/fetchauditions?';
+        let aggrsource_url = 'datainput/fetchaggregates?';
+        let edit_form_url = 'datainput/formdashboard';
+        let edit_aggregate_url = 'datainput/aggregatedashboard';
+        let aggregatedata_url = "/datainput/aggregatedata/";
+        let export_form_url = "/datainput/formexport/";
         //var checkedform = ['f30','f17','f12','f14','f14дс','f16','f57','f1-РБ','f15','f16-вн','f13','f31','f32','f32_вкл','f19','f1-ДЕТИ','f10','f11','f36','f36-ПЛ','f37','f9','f34','f7','f35','f8','f33','f7-Т','f39','f41', 'f53','f55','f56','f61','f70'];
         //var checkedstates = ['st2', 'st4', 'st8', 'st16', 'st32'];
-        var motree = $("#moTree");
-        var grouptree = $("#groupTree");
-        var dgrid = $("#Documents"); // сетка для первичных документов
-        var agrid = $("#Aggregates"); // сетка для сводных документов
-        var current_document_form_code;
-        var current_document_form_name;
-        var current_document_ou_name;
-        var current_document_state;
-        var current_document_audits = [];
-        var statelabels =
+        let motree = $("#moTree");
+        let grouptree = $("#groupTree");
+        let dgrid = $("#Documents"); // сетка для первичных документов
+        let agrid = $("#Aggregates"); // сетка для сводных документов
+        let terr = $("#moSelectorByTerritories");
+        let groups = $('#moSelectorByGroups');
+        let current_document_form_code;
+        let current_document_form_name;
+        let current_document_ou_name;
+        let current_document_state;
+        let currentlet_document_audits = [];
+        let statelabels =
         {
             performed: 'Выполняется',
             prepared: 'Подготовлен к проверке',
@@ -167,7 +174,7 @@
             declined: 'Возвращен на доработку',
             approved: 'Утвержден'
         };
-        var audit_state_ids =
+        let audit_state_ids =
         {
             noaudit: 1,
             audit_correct: 2,
@@ -182,8 +189,8 @@
                     theme: theme,
                     panels:
                             [
-                                { size: "35%", min: "10%"},
-                                { size: '65%', min: "30%"}
+                                { size: "20%", min: "10%"},
+                                { size: '80%', min: "30%"}
                             ]
                 }
         );
@@ -200,8 +207,9 @@
             height: '93%',
             theme: theme,
             orientation: 'horizontal',
-            panels: [{ size: '50%', min: 100, collapsible: false }, { min: '100px', collapsible: true}]
+            panels: [{ size: '65%', min: 100, collapsible: false }, { min: '100px', collapsible: true}]
         });
+        initDropdowns();
         initmotree();
         initgrouptree();
         initdocumentstabs();

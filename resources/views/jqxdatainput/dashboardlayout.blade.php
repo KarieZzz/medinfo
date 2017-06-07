@@ -62,7 +62,7 @@
 <script src="{{ asset('/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
 @stack('loadjsscripts')
 <script type="text/javascript">
-    var theme = 'bootstrap';
+    let theme = 'bootstrap';
     $(document).ready(function () {
         $.ajaxSetup({
             headers: {
