@@ -41,7 +41,7 @@ class NECellAdminController extends Controller
     {
         $default_album = Album::Default()->first(['id']);
         if (!$default_album) {
-            $default_album = Album::find(config('app.default_album'));
+            $default_album = Album::find(config('medinfo.default_album'));
         }
         return TableEditing::fetchDataForTableRenedering($table, $default_album, 'checkbox', false);
     }

@@ -77,6 +77,12 @@
         <div>
             <div style="padding: 15px" class="form-horizontal">
                 <div class="form-group">
+                    <label class="control-label col-sm-3" for="selectMonitoring">Мониторинг</label>
+                    <div class="col-sm-6">
+                        <div id="selectMonitoring"></div>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label class="control-label col-sm-3" for="selectForm">Формы</label>
                     <div class="col-sm-6">
                         <div id="selectForm"></div>
@@ -133,33 +139,33 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=004') }}"></script>
+    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=006') }}"></script>
 @endpush
 
 @section('inlinejs')
     @parent
     <script type="text/javascript">
-        var docsource_url = '/admin/fetchdocuments?';
-        var createdocuments_url = '/admin/createdocuments';
-        var deletedocuments_url = '/admin/deletedocuments';
-        var erasedocuments_url = '/admin/erasedocuments';
-        var changestate_url = '/admin/documentstatechange';
-        var group_tree_url = '/admin/fetchugroups';
-        var protectaggregate_url = '/admin/protectaggregates';
-        var current_top_level_node = 0;
-        var filter_mode = 1; // 1 - по территориям; 2 - по группам
-        var checkeddtypes = {!! $dtype_ids !!};
-        var forms = {!! $forms  !!};
-        var states = {!! $states !!};
-        var periods = {!! $periods !!};
-        var dtypes = {!! $dtypes !!};
-        var checkedforms = {!! $form_ids !!};
-        var checkedstates = {!! $state_ids !!};
-        var checkedperiods = [{!! $period_ids !!}];
-        var checkeddtypes = {!! $dtype_ids !!};
-        var grouptree = $("#groupTree");
-        var motree = $("#moTree");
-        var dlist = $('#documentList');
+        let docsource_url = '/admin/fetchdocuments?';
+        let createdocuments_url = '/admin/createdocuments';
+        let deletedocuments_url = '/admin/deletedocuments';
+        let erasedocuments_url = '/admin/erasedocuments';
+        let changestate_url = '/admin/documentstatechange';
+        let group_tree_url = '/admin/fetchugroups';
+        let protectaggregate_url = '/admin/protectaggregates';
+        let current_top_level_node = 0;
+        let filter_mode = 1; // 1 - по территориям; 2 - по группам
+        let checkeddtypes = {!! $dtype_ids !!};
+        let monitorings = {!! $monitorings  !!};
+        let forms = {!! $forms  !!};
+        let states = {!! $states !!};
+        let periods = {!! $periods !!};
+        let dtypes = {!! $dtypes !!};
+        let checkedforms = {!! $form_ids !!};
+        let checkedstates = {!! $state_ids !!};
+        let checkedperiods = [{!! $period_ids !!}];
+        let grouptree = $("#groupTree");
+        let motree = $("#moTree");
+        let dlist = $('#documentList');
         datasources();
         initfilterdatasources();
         initnewdocumentwindow();

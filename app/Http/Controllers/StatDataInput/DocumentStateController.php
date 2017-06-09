@@ -47,8 +47,8 @@ class DocumentStateController extends Controller
         $form = Form::find($document->form_id);
         $current_unit = Unit::find($document->ou_id);
         $worker = Auth::guard('datainput')->user();
-        $miac_emails = explode(",", config('app.miac_emails'));
-        $director_emails = explode(",", config('app.director_emails'));
+        $miac_emails = explode(",", config('medinfo.miac_emails'));
+        $director_emails = explode(",", config('medinfo.director_emails'));
         $old_state = $document->state;
         $document->state = $new_state;
         $parents = UnitTree::getParents($current_unit->id);
@@ -61,14 +61,14 @@ class DocumentStateController extends Controller
         // TODO: Отправлять или нет сообщения аудиторам?
         $emails = array_merge($miac_emails, $director_emails, $executors);
         $p = $worker->permission;
-        if ($p & config('app.permission.permission_change_any_status')) {
+        if ($p & config('medinfo.permission.permission_change_any_status')) {
             $document->save();
             $data['status_changed'] = 1;
         }
         else {
             switch ($new_state) {
                 case 2 :
-                    if($p & config('app.permission.permission_set_status_accepted_declined')) {
+                    if($p & config('medinfo.permission.permission_set_status_accepted_declined')) {
                         $document->save();
                         $data['status_changed'] = 1;
                     } else {
@@ -77,7 +77,7 @@ class DocumentStateController extends Controller
                     }
                     break;
                 case 4 :
-                    if($p & config('app.permission.permission_set_status_prepared')) {
+                    if($p & config('medinfo.permission.permission_set_status_prepared')) {
                         $document->save();
                         $data['status_changed'] = 1;
                     } else {
@@ -87,7 +87,7 @@ class DocumentStateController extends Controller
                     break;
                 case 8 :
                 case 16 :
-                    if($p & config('app.permission.permission_set_status_accepted_declined')) {
+                    if($p & config('medinfo.permission.permission_set_status_accepted_declined')) {
                         $document->save();
                         $data['status_changed'] = 1;
                     } else {
@@ -96,7 +96,7 @@ class DocumentStateController extends Controller
                     }
                     break;
                 case 32 :
-                    if($p & config('app.permission.permission_set_status_approved')) {
+                    if($p & config('medinfo.permission.permission_set_status_approved')) {
                         $document->save();
                         $data['status_changed'] = 1;
                     } else {

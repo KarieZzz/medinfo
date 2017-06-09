@@ -44,15 +44,15 @@ class DocumentAuditionController extends Controller
         $form = Form::find($document->form_id);
         $current_unit = Unit::find($document->ou_id);
         $worker = Auth::guard('datainput')->user();
-        $miac_emails = explode(",", config('app.miac_emails'));
-        $director_emails = explode(",", config('app.director_emails'));
+        $miac_emails = explode(",", config('medinfo.miac_emails'));
+        $director_emails = explode(",", config('medinfo.director_emails'));
         $parents = UnitTree::getParents($current_unit->id);
         $parents[] = $current_unit->id;
         $executors = Worker::getExecutorEmails($parents);
         $emails = array_merge($miac_emails, $director_emails, $executors);
         $p = $worker->permission;
         $data = array();
-        if ($p & config('app.permission.permission_audit_document')) {
+        if ($p & config('medinfo.permission.permission_audit_document')) {
             $audition = $this->auditDocument($worker->id, $document->id, $new_audit_state);
             $data['audit_status_changed'] = 1;
             $newmessage = new DocumentMessage();

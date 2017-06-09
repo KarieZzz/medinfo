@@ -34,7 +34,7 @@ class DashboardController extends Controller
         $worker = Auth::guard('datainput')->user();
         $default_album = Album::Default()->first(['id']);
         if (!$default_album) {
-            $default_album = Album::find(config('app.default_album'));
+            $default_album = Album::find(config('medinfo.default_album'));
         }
         $statelabel = Document::$state_labels[$document->state];
         $form = Form::find($document->form_id);
@@ -74,19 +74,19 @@ class DashboardController extends Controller
     protected function isEditPermission(int $permission, int $document_state)
     {
         switch (true) {
-            case (($permission & config('app.permission.permission_edit_report')) && ($document_state == 2 || $document_state == 16)) :
+            case (($permission & config('medinfo.permission.permission_edit_report')) && ($document_state == 2 || $document_state == 16)) :
                 $edit_permission = true;
                 break;
-            case (($permission & config('app.permission.permission_edit_prepared_report')) && $document_state == 4) :
+            case (($permission & config('medinfo.permission.permission_edit_prepared_report')) && $document_state == 4) :
                 $edit_permission = true;
                 break;
-            case (($permission & config('app.permission.permission_edit_accepted_report')) && $document_state == 8) :
+            case (($permission & config('medinfo.permission.permission_edit_accepted_report')) && $document_state == 8) :
                 $edit_permission = true;
                 break;
-            case (($permission & config('app.permission.permission_edit_approved_report')) && $document_state == 32) :
+            case (($permission & config('medinfo.permission.permission_edit_approved_report')) && $document_state == 32) :
                 $edit_permission = true;
                 break;
-            case (($permission & config('app.permission.permission_edit_aggregated_report')) && $document_state == 0) :
+            case (($permission & config('medinfo.permission.permission_edit_aggregated_report')) && $document_state == 0) :
                 $edit_permission = true;
                 break;
             default:

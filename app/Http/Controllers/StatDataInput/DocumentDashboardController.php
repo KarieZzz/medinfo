@@ -28,11 +28,11 @@ class DocumentDashboardController extends Controller
         $worker = Auth::guard('datainput')->user();
         $worker_scope = WorkerScope::where('worker_id', $worker->id)->first()->ou_id;
         $permission = $worker->permission;
-          $disabled_states = config('app.disabled_states.' . $worker->role);
+          $disabled_states = config('medinfo.disabled_states.' . $worker->role);
         if (!is_null($worker_scope)) {
             $mo_tree = UnitTree::getSimpleTree();
         }
-        if ($permission & config('app.permission.permission_audit_document')) {
+        if ($permission & config('medinfo.permission.permission_audit_document')) {
             $audit_permission = true;
         }
         else {
@@ -48,6 +48,12 @@ class DocumentDashboardController extends Controller
         $period_ids = $periods[0]->id;
         return view('jqxdatainput.documentdashboard', compact('mo_tree', 'worker', 'worker_scope', 'periods', 'period_ids',
             'disabled_states', 'audit_permission', 'forms', 'form_ids', 'states', 'state_ids'));
+    }
+
+    public function fetch_monitorings()
+    {
+        //return \App\MonitoringView::take(3)->get()->toJson();
+        return \App\MonitoringView::orderBy('name')->get();
     }
 
     public function fetch_mo_hierarchy($parent = 0)
@@ -70,9 +76,10 @@ class DocumentDashboardController extends Controller
         $filter_mode = $request->filter_mode;
         $dtypes[] = 1;
         $states = explode(",", $request->states);
+        $monitorings = explode(",", $request->monitorings);
         $forms = explode(",", $request->forms);
         $periods = explode(",", $request->periods);
-        $scopes = compact('worker_scope', 'filter_mode', 'top_node', 'dtypes', 'states', 'forms', 'periods');
+        $scopes = compact('worker_scope', 'filter_mode', 'top_node', 'dtypes', 'states', 'monitorings', 'forms', 'periods');
         $d = new DocumentTree($scopes);
         $data = $d->get_documents();
         return $data;
@@ -86,9 +93,10 @@ class DocumentDashboardController extends Controller
         $filter_mode = $request->filter_mode;
         $dtypes[] = 2;
         $states = array();
+        $monitorings = explode(",", $request->monitorings);
         $forms = explode(",", $request->forms);
         $periods = explode(",", $request->periods);
-        $scopes = compact('worker_scope', 'filter_mode', 'top_node', 'dtypes', 'states', 'forms', 'periods');
+        $scopes = compact('worker_scope', 'filter_mode', 'top_node', 'dtypes', 'states', 'monitorings', 'forms', 'periods');
         $d = new DocumentTree($scopes);
         $data = $d->get_aggregates();
         return $data;

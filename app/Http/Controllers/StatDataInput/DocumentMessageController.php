@@ -51,9 +51,9 @@ class DocumentMessageController extends Controller
         $parents[] = $unit->id;
         $executors = Worker::getExecutorEmails($parents);
         // Эксперты МИАЦ
-        $miac_emails = explode(",", config('app.miac_emails') );
+        $miac_emails = explode(",", config('medinfo.miac_emails') );
         // Руководители приема
-        $director_emails = explode(",", config('app.director_emails'));
+        $director_emails = explode(",", config('medinfo.director_emails'));
         $emails = array_merge($emails, $miac_emails, $director_emails, $executors);
         // TODO: Решить что делать с отправкой email аудиторам
         $emails = array_unique($emails);

@@ -31,7 +31,7 @@ class CeLLIterator
         $this->table = $table;
         $default_album = Album::Default()->first(['id']);
         if (!$default_album) {
-            $default_album = Album::find(config('app.default_album'));
+            $default_album = Album::find(config('medinfo.default_album'));
         }
         //$this->_rows = $this->table->rows->where('deleted', 0)->sortBy('row_index');
 

@@ -8,6 +8,7 @@
         <div>
             <div id="filterPanelSplitter">
                 <div>
+                    <div id="monitoringSelector"><div id="monTree"></div></div>
                     <div id="moSelectorByTerritories"><div id="moTree"></div></div>
 
 {{--                        <div class="jqx-hideborder jqx-hidescrollbars" id="motabs">
@@ -122,7 +123,7 @@
 <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/documentdashboard.js?v=018') }}"></script>
+<script src="{{ asset('/medinfo/documentdashboard.js?v=031') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -140,6 +141,7 @@
         let checkedperiods = [{{ $period_ids }}];
         let disabled_states = [{!! $disabled_states !!}];
         let filter_mode = 1; // 1 - по территориям; 2 - по группам
+        let mon_tree_url = 'datainput/fetch_mon_tree/';
         let mo_tree_url = 'datainput/fetch_mo_tree/';
         let group_tree_url = 'datainput/fetch_ugroups';
         let docsource_url = 'datainput/fetchdocuments?';
@@ -155,10 +157,12 @@
         let export_form_url = "/datainput/formexport/";
         //var checkedform = ['f30','f17','f12','f14','f14дс','f16','f57','f1-РБ','f15','f16-вн','f13','f31','f32','f32_вкл','f19','f1-ДЕТИ','f10','f11','f36','f36-ПЛ','f37','f9','f34','f7','f35','f8','f33','f7-Т','f39','f41', 'f53','f55','f56','f61','f70'];
         //var checkedstates = ['st2', 'st4', 'st8', 'st16', 'st32'];
+        let montree = $("#monTree");
         let motree = $("#moTree");
         let grouptree = $("#groupTree");
         let dgrid = $("#Documents"); // сетка для первичных документов
         let agrid = $("#Aggregates"); // сетка для сводных документов
+        let mondropdown = $("#monitoringSelector");
         let terr = $("#moSelectorByTerritories");
         let groups = $('#moSelectorByGroups');
         let current_document_form_code;
@@ -181,7 +185,7 @@
             audit_incorrect: 3
         };
         datasources();
-        initmotabs();
+        //initmotabs();
         $("#mainSplitter").jqxSplitter(
                 {
                     width: '99%',
@@ -210,6 +214,7 @@
             panels: [{ size: '65%', min: 100, collapsible: false }, { min: '100px', collapsible: true}]
         });
         initDropdowns();
+        initMonitoringTree();
         initmotree();
         initgrouptree();
         initdocumentstabs();
