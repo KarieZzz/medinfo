@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use App\Unit;
+use App\Monitoring;
 use App\Period;
 use App\Document;
 use App\Album;
@@ -37,6 +38,7 @@ class DashboardController extends Controller
             $default_album = Album::find(config('medinfo.default_album'));
         }
         $statelabel = Document::$state_labels[$document->state];
+        $monitoring = Monitoring::find($document->monitoring_id);
         $form = Form::find($document->form_id);
         $current_unit = Unit::find($document->ou_id);
         if (!$current_unit) {
@@ -55,7 +57,7 @@ class DashboardController extends Controller
         //return $datafortables;
         //return $renderingtabledata;
         return view($this->dashboardView(), compact(
-            'current_unit', 'document', 'worker', 'default_album', 'statelabel', 'editpermission', 'editmode',
+            'current_unit', 'document', 'worker', 'default_album', 'statelabel', 'editpermission', 'editmode', 'monitoring',
             'form', 'period', 'editedtables', 'noteditablecells', 'forformtable', 'renderingtabledata',
             'laststate'
         ));

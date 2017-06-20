@@ -24,7 +24,7 @@ class CreateDocumentsTable extends Migration
             $table->timestamp('state_changed_at')->nullable()->index();
             $table->softDeletes();
             $table->timestamps();
-            $table->unique(['dtype', 'ou_id', 'period_id', 'form_id']);
+            $table->unique(['dtype', 'ou_id', 'period_id', 'monitoring_id', 'form_id']);
         });
     }
 

@@ -24,30 +24,10 @@
                             </div>
                         </div>--}}
                     <div id="moSelectorByGroups"><div class="jqx-hideborder" id="groupTree"></div></div>
-                    <div id="periodSelectorDropown"><div id="periods"></div></div>
-                </div>
-                <div id="filtertabs" class="jqx-hideborder jqx-hidescrollbars">
-                    <ul>
-                        <li style="margin-left: 30px;">Формы</li>
-                        <li>Статусы отчетов</li>
-                        <li>Периоды</li>
-                    </ul>
-                    <div>
-                        <div id="formcheckboxesPanel">
-                            <div id="formsListbox" style="float: left; margin-right: 30px"></div>
-                            <div id="selectedFormBox">
-                                <div id="checkAllForms"><span>Выбрать все формы</span></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <div id="statecheckboxs" class="jqx-hideborder  jqx-hidescrollbars">
-                            <div id="statesListbox" style="float: left; margin-right: 30px"></div>
-                            <div id="checkAllStates"><span>Выбрать все статусы</span></div>
-                        </div>
-                    </div>
-                    <div>
-                        <div id="periodsListbox" style="margin: 10px"></div>
+                    <div id="periodSelector"><div id="periodTree"></div></div>
+                    <div id="statusSelector">
+                        <div id="checkAllStates"><span>Выбрать/Убрать все статусы</span></div>
+                        <div id="statesListbox"></div>
                     </div>
                 </div>
             </div>
@@ -123,7 +103,7 @@
 <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/documentdashboard.js?v=031') }}"></script>
+<script src="{{ asset('/medinfo/documentdashboard.js?v=033') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -160,11 +140,15 @@
         let montree = $("#monTree");
         let motree = $("#moTree");
         let grouptree = $("#groupTree");
+        let periodTree = $("#periodTree");
+        let stateList = $("#statesListbox");
         let dgrid = $("#Documents"); // сетка для первичных документов
         let agrid = $("#Aggregates"); // сетка для сводных документов
         let mondropdown = $("#monitoringSelector");
         let terr = $("#moSelectorByTerritories");
         let groups = $('#moSelectorByGroups');
+        let periodDropDown = $('#periodSelector');
+        let statusDropDown = $('#statusSelector');
         let current_document_form_code;
         let current_document_form_name;
         let current_document_ou_name;
@@ -198,14 +182,13 @@
                             ]
                 }
         );
-        $('#filterPanelSplitter').jqxSplitter({
+/*        $('#filterPanelSplitter').jqxSplitter({
             width: '100%',
             height: '99%',
             theme: theme,
             orientation: 'horizontal',
             panels: [{ size: '50%', min: 100, collapsible: false }, { min: '100px', collapsible: true}]
-        });
-        initfiltertabs();
+        });*/
         $('#DocumentPanelSplitter').jqxSplitter({
             width: '100%',
             height: '93%',
@@ -217,6 +200,8 @@
         initMonitoringTree();
         initmotree();
         initgrouptree();
+        initPeriodTree();
+        initStatusList();
         initdocumentstabs();
         initdocumentproperties();
         initpopupwindows();
