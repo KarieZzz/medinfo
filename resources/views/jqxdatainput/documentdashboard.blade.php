@@ -26,6 +26,7 @@
                     <div id="moSelectorByGroups"><div class="jqx-hideborder" id="groupTree"></div></div>
                     <div id="periodSelector"><div id="periodTree"></div></div>
                     <div id="statusSelector">
+                        <button class="btn btn-primary" id="applyStatuses">Применить</button>
                         <div id="checkAllStates"><span>Выбрать/Убрать все статусы</span></div>
                         <div id="statesListbox"></div>
                     </div>
@@ -103,22 +104,19 @@
 <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/documentdashboard.js?v=033') }}"></script>
+<script src="{{ asset('/medinfo/documentdashboard.js?v=041') }}"></script>
 @endpush
 
 @section('inlinejs')
     @parent
     <script type="text/javascript">
-        let current_top_level_node = '{{ is_null($worker_scope) ? 'null' : $worker_scope }}';
-        let current_user_role = '{{ $worker->role }}';
         let current_user_id = '{{ $worker->id }}';
         let audit_permission = {{ $audit_permission ? 'true' : 'false' }};
         let periods = {!! $periods !!};
-        let forms = {!! $forms  !!};
         let states = {!! $states !!};
-        let checkedforms = {!! $form_ids !!};
-        let checkedstates = {!! $state_ids !!};
-        let checkedperiods = [{{ $period_ids }}];
+        let checkedmf = [{!! $forms->value !!}]; // Выбранные в последнем сеансе мониторинги и формы
+        let checkedstates = [{!! $state_ids->value !!}];
+        let checkedperiods = [{!! $period_ids->value !!}];
         let disabled_states = [{!! $disabled_states !!}];
         let filter_mode = 1; // 1 - по территориям; 2 - по группам
         let mon_tree_url = 'datainput/fetch_mon_tree/';
@@ -135,8 +133,6 @@
         let edit_aggregate_url = 'datainput/aggregatedashboard';
         let aggregatedata_url = "/datainput/aggregatedata/";
         let export_form_url = "/datainput/formexport/";
-        //var checkedform = ['f30','f17','f12','f14','f14дс','f16','f57','f1-РБ','f15','f16-вн','f13','f31','f32','f32_вкл','f19','f1-ДЕТИ','f10','f11','f36','f36-ПЛ','f37','f9','f34','f7','f35','f8','f33','f7-Т','f39','f41', 'f53','f55','f56','f61','f70'];
-        //var checkedstates = ['st2', 'st4', 'st8', 'st16', 'st32'];
         let montree = $("#monTree");
         let motree = $("#moTree");
         let grouptree = $("#groupTree");
@@ -154,6 +150,10 @@
         let current_document_ou_name;
         let current_document_state;
         let currentlet_document_audits = [];
+        let current_user_role = '{{ $worker->role }}';
+        let current_top_level_node = '{{ is_null($worker_scope) ? 'null' : $worker_scope }}';
+        let current_filter = '&filter_mode=' + filter_mode + '&ou=' + current_top_level_node + '&states=' + checkedstates.join() + '&mf=' + checkedmf.join() + '&periods=' + checkedperiods.join();
+
         let statelabels =
         {
             performed: 'Выполняется',
@@ -196,12 +196,13 @@
             orientation: 'horizontal',
             panels: [{ size: '65%', min: 100, collapsible: false }, { min: '100px', collapsible: true}]
         });
-        initDropdowns();
         initMonitoringTree();
+        initStatusList();
+        initDropdowns();
         initmotree();
         initgrouptree();
         initPeriodTree();
-        initStatusList();
+        initDocumentSource();
         initdocumentstabs();
         initdocumentproperties();
         initpopupwindows();

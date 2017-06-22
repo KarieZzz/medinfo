@@ -57,57 +57,16 @@ datasources = function() {
         root: '',
         url: group_tree_url
     };
-    docsource =
-    {
-        datatype: "json",
-        datafields: [
-            { name: 'id', type: 'int' },
-            { name: 'unit_code', type: 'string' },
-            { name: 'unit_name', type: 'string' },
-            { name: 'form_code', type: 'string' },
-            { name: 'form_name', type: 'string' },
-            { name: 'monitoring', type: 'string' },
-            { name: 'period', type: 'string' },
-            { name: 'state', type: 'string' },
-            { name: 'filled', type: 'bool' }
-        ],
-        id: 'id',
-        url: docsource_url + filtersource(),
-        root: 'data'
-    };
-    aggregate_source =
-    {
-        datatype: "json",
-        datafields: [
-            {name: 'id', type: 'int'},
-            {name: 'unit_code', type: 'string'},
-            {name: 'unit_name', type: 'string'},
-            {name: 'form_code', type: 'string'},
-            {name: 'form_name', type: 'string'},
-            {name: 'period', type: 'string'},
-            {name: 'aggregated_at', type: 'string'},
-            { name: 'filled', type: 'bool' }
-        ],
-        id: 'id',
-        url: aggrsource_url + '&filter_mode='+ filter_mode + '&ou=' + current_top_level_node + '&forms=' + checkedforms.join()+'&periods='+checkedperiods.join(),
-        root: 'data'
-    };
     mon_dataAdapter = new $.jqx.dataAdapter(mon_source);
     mo_dataAdapter = new $.jqx.dataAdapter(mo_source);
     ugroup_dataAdapter = new $.jqx.dataAdapter(ugroup_source);
-    dataAdapter = new $.jqx.dataAdapter(docsource, {
-        loadError: function(jqXHR, status, error) {
-            if (jqXHR.status == 401) {
-                raiseError('Пользователь не авторизован', jqXHR);
-            }
-        }
-    });
-    aggregate_report_table = new $.jqx.dataAdapter(aggregate_source);
+
 };
 // Возвращает выбранные мониторинги и формы для отображения соответствующих отчетов
 getCheckedMonsForms = function() {
     let monitorings = [];
     let forms = [];
+    let mf = [];
     let checkedRows;
     let uniquemonitorings;
     let uniqueforms;
@@ -115,6 +74,7 @@ getCheckedMonsForms = function() {
     //console.log(checkedRows);
     if (typeof checkedRows !== 'undefined') {
         for (let i = 0; i < checkedRows.length; i++) {
+            mf.push(checkedRows[i].id);
             let r = checkedRows[i].id.toString();
                 monitorings.push(r.substr(0,6));
                 let form_id = r.substr(6);
@@ -131,7 +91,7 @@ getCheckedMonsForms = function() {
     } else {
         mondropdown.jqxDropDownButton('setContent', '<div style="margin: 9px"></i>Мониторинги</div>');
     }
-    return {f: uniqueforms, m: uniquemonitorings};
+    return {f: uniqueforms, m: uniquemonitorings, mf: mf};
 };
 // функция удалена
 /*checkformfilter = function() {
@@ -143,15 +103,19 @@ getCheckedMonsForms = function() {
     }
 };*/
 checkstatefilter = function() {
-    checkedstates = [];
-    var checkedItems = $("#statesListbox").jqxListBox('getCheckedItems');
-    var statecount = checkedItems.length;
-    for (i=0; i < statecount; i++) {
-        checkedstates.push(checkedItems[i].value);
+    let checkedstates = [];
+    let checkedItems = stateList.jqxListBox('getCheckedItems');
+    if (typeof checkedItems !== 'undefined') {
+        let statecount = checkedItems.length;
+        for (i = 0; i < statecount; i++) {
+            checkedstates.push(checkedItems[i].value);
+        }
     }
+    return checkedstates.join();
 };
+
 checkPeriodFilter = function() {
-    checkedperiods = [];
+    let checkedperiods = [];
 /*    var checkedItems = $("#periodTree").jqxListBox('getCheckedItems');
     var periodcount = checkedItems.length;
     for (i=0; i < periodcount; i++) {
@@ -164,6 +128,7 @@ checkPeriodFilter = function() {
             checkedperiods.push(checkedRows[i].id);
         }
     }
+    return checkedperiods.join();
 
 };
 // обновление таблиц первичных и сводных документов в зависимости от выделенных форм, периодов, статусов документов
@@ -442,20 +407,6 @@ rendertoolbar = function (toolbar) {
         $("#DocumentAuditions").html('');
     });
 };
-// Формирование строки запроса к серверу
-filtersource = function() {
-    let forms;
-    let monitorings;
-    let states = checkedstates.join();
-    let mon_forms = getCheckedMonsForms();
-    let periods = checkPeriodFilter();
-    //let forms = checkedforms.join();
-    forms = mon_forms.f.join();
-    monitorings = mon_forms.m.join();
-    periods = checkedperiods.join();
-    return '&filter_mode=' + filter_mode + '&ou=' +current_top_level_node +'&states='+states+
-        '&monitorings='+monitorings+'&forms='+forms+'&periods=' + periods;
-};
 // рендеринг панели инструментов для таблицы сводных документов
 renderaggregatetoolbar = function(toolbar) {
     var me = this;
@@ -577,8 +528,10 @@ initDropdowns = function () {
     mondropdown.on('close', function () { updatedocumenttable() });
     periodDropDown.jqxDropDownButton({ width: 350, height: 32, theme: theme });
     periodDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px">Отчетные периоды</div>');
+    periodDropDown.on('close', function () { updatedocumenttable() });
     statusDropDown.jqxDropDownButton({ width: 350, height: 32, theme: theme });
     statusDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px">Статусы отчетов</div>');
+    statusDropDown.on('close', function () { updatedocumenttable() });
 };
 // функция удалена
 /*initmotabs = function() {
@@ -604,6 +557,9 @@ initMonitoringTree = function () {
             ready: function()
             {
                 montree.jqxTreeGrid('expandRow', 100000);
+                for (let i = 0; i < checkedmf.length; i++) {
+                    montree.jqxTreeGrid('checkRow', checkedmf[i]);
+                }
             },
             columns: [
                 { text: 'Наименование мониторинга/отчетной формы', dataField: 'name', width: 900 }
@@ -612,8 +568,8 @@ initMonitoringTree = function () {
     montree.on('filter',
         function (event)
         {
-            var args = event.args;
-            var filters = args.filters;
+            let args = event.args;
+            let filters = args.filters;
             montree.jqxTreeGrid('expandAll');
         }
     );
@@ -625,7 +581,7 @@ initMonitoringTree = function () {
 montreeToolbar = function (toolbar) {
     toolbar.append("<button type='button' id='moncollapseAll' class='btn btn-default btn-sm'>Свернуть все</button>");
     toolbar.append("<button type='button' id='monexpandAll' class='btn btn-default btn-sm'>Развернуть все</button>");
-    toolbar.append("<button type='button' id='monfilterApply' class='btn btn-default btn-sm'>Применить</button>");
+    toolbar.append("<button type='button' id='monfilterApply' class='btn btn-primary btn-sm'>Применить</button>");
     $('#monexpandAll').click(function (event) {
         montree.jqxTreeGrid('expandAll');
     });
@@ -749,7 +705,7 @@ initgrouptree = function() {
 };
 // Ининциализация списка отчетных периодов
 initPeriodTree = function () {
-    var periods_source =
+    let periods_source =
         {
             datatype: "json",
             datafields: [
@@ -774,7 +730,10 @@ initPeriodTree = function () {
             columnsResize: true,
             ready: function()
             {
-                grouptree.jqxTreeGrid('expandRow', 0);
+                periodTree.jqxTreeGrid('expandRow', 0);
+                for (let i = 0; i < checkedperiods.length; i++) {
+                    periodTree.jqxTreeGrid('checkRow', checkedperiods[i]);
+                }
             },
             columns: [
                 { text: 'Наименование', dataField: 'name', width: 345 }
@@ -793,13 +752,14 @@ initPeriodTree = function () {
 /*    for (var i=0; i < checkedperiods.length; i++  ) {
         periodTree.jqxListBox('checkItem', checkedperiods[i] );
     }*/
-    periodTree.on('click', function () {
+   /* periodTree.on('click', function () {
         checkperiodfilter();
         updatedocumenttable();
-    });
+    });*/
 };
 // инициализация списка статусов отчетного документа
 initStatusList = function() {
+    let checkAll = $("#checkAllStates");
     let states_source =
     {
         datatype: "array",
@@ -820,22 +780,30 @@ initStatusList = function() {
         width: 230,
         height: 200
     });
-   stateList.jqxListBox('checkAll');
-   stateList.on('click', function () {
-        checkstatefilter();
-        updatedocumenttable();
+    for(let i = 0; i < checkedstates.length; i++) {
+        //console.log('"' + checkedstates[i] + '"');
+        stateList.jqxListBox('checkItem', checkedstates[i]);
+    }
+   //stateList.jqxListBox('checkAll');
+   //stateList.on('click', function () {
+        //checkstatefilter();
+        //updatedocumenttable();
+    //});
+    checkAll.jqxCheckBox({ width: 170, height: 20, theme: theme, checked: true});
+    checkAll.on('checked', function (event) {
+        stateList.jqxListBox('checkAll');
+        //checkcheckAllstatefilter();
+        //updatedocumenttable();
     });
-    $("#checkAllStates").jqxCheckBox({ width: 170, height: 20, theme: theme, checked: true});
-    $('#checkAllStates').on('checked', function (event) {
-        $("#statesListbox").jqxListBox('checkAll');
-        checkstatefilter();
-        updatedocumenttable();
+    checkAll.on('unchecked', function (event) {
+        stateList.jqxListBox('uncheckAll');
+        //checkstatefilter();
+       // updatedocumenttable();
     });
-    $('#checkAllStates').on('unchecked', function (event) {
-        $("#statesListbox").jqxListBox('uncheckAll');
-        checkstatefilter();
-        updatedocumenttable();
+    $("#applyStatuses").click( function (event) {
+        statusDropDown.jqxDropDownButton('close');
     });
+
 };
 // инициализация вкладок с документами
 initdocumentstabs = function() {
@@ -864,8 +832,8 @@ initdocumentstabs = function() {
         });
     dgrid.on('rowselect', function (event)
     {
-        var row = event.args.row;
-        var murl = docmessages_url + 'document=' + row.id;
+        let row = event.args.row;
+        let murl = docmessages_url + 'document=' + row.id;
         current_document_form_code = row.form_code;
         current_document_form_name = row.form_name;
         current_document_ou_name = row.unit_name;
@@ -1209,4 +1177,71 @@ initpopupwindows = function() {
         cancelButton: $("#CancelMessage"),
         theme: theme
     });
+};
+// Формирование строки запроса к серверу
+filtersource = function() {
+    let forms;
+    let monitorings;
+    //let states = checkedstates.join();
+    //let states = checkedstates.join();
+    let states = checkstatefilter();
+    let mon_forms = getCheckedMonsForms();
+    let mf = mon_forms.mf.join();
+    let periods = checkPeriodFilter();
+    //let forms = checkedforms.join();
+    forms = mon_forms.f.join();
+    monitorings = mon_forms.m.join();
+
+    //periods = checkedperiods.join();
+    return '&filter_mode=' + filter_mode + '&ou=' +current_top_level_node +'&states='+states+
+        '&monitorings='+monitorings+'&forms='+forms +'&periods=' + periods + '&mf=' + mf;
+};
+
+initDocumentSource = function () {
+    console.log(current_filter);
+    docsource =
+        {
+            datatype: "json",
+            datafields: [
+                { name: 'id', type: 'int' },
+                { name: 'unit_code', type: 'string' },
+                { name: 'unit_name', type: 'string' },
+                { name: 'form_code', type: 'string' },
+                { name: 'form_name', type: 'string' },
+                { name: 'monitoring', type: 'string' },
+                { name: 'period', type: 'string' },
+                { name: 'state', type: 'string' },
+                { name: 'filled', type: 'bool' }
+            ],
+            id: 'id',
+            ///url: docsource_url + filtersource(),
+            url: docsource_url + current_filter,
+            root: 'data'
+        };
+    aggregate_source =
+        {
+            datatype: "json",
+            datafields: [
+                {name: 'id', type: 'int'},
+                {name: 'unit_code', type: 'string'},
+                {name: 'unit_name', type: 'string'},
+                {name: 'form_code', type: 'string'},
+                {name: 'form_name', type: 'string'},
+                {name: 'period', type: 'string'},
+                {name: 'aggregated_at', type: 'string'},
+                { name: 'filled', type: 'bool' }
+            ],
+            id: 'id',
+            //url: aggrsource_url + '&filter_mode='+ filter_mode + '&ou=' + current_top_level_node + '&forms=' + checkedforms.join()+'&periods='+checkedperiods.join(),
+            url: aggrsource_url + filtersource(),
+            root: 'data'
+        };
+    dataAdapter = new $.jqx.dataAdapter(docsource, {
+        loadError: function(jqXHR, status, error) {
+            if (jqXHR.status == 401) {
+                raiseError('Пользователь не авторизован', jqXHR);
+            }
+        }
+    });
+    aggregate_report_table = new $.jqx.dataAdapter(aggregate_source);
 };
