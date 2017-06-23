@@ -38,6 +38,7 @@
                 <ul>
                     <li style="margin-left: 30px;">Отчеты субъектов</li>
                     <li>Сводные отчеты</li>
+                    <li>Последние документы</li>
                 </ul>
                 <div class="jqx-hideborder jqx-hidescrollbars" style="width: 100%; height: 100%">
                     <h3 style="margin-left: 30px">Первичные отчеты</h3>
@@ -68,6 +69,12 @@
                     <div class="jqx-hideborder jqx-hidescrollbars" style="width: 100%; height: 100%">
                         <h3 style="margin-left: 30px">Сводные отчеты</h3>
                         <div id="Aggregates"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="jqx-hideborder jqx-hidescrollbars" style="width: 100%; height: 100%">
+                        <h3 style="margin-left: 30px">Последние документы</h3>
+                        <div id="Recent"></div>
                     </div>
                 </div>
             </div>
@@ -104,7 +111,7 @@
 <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/documentdashboard.js?v=041') }}"></script>
+<script src="{{ asset('/medinfo/documentdashboard.js?v=043') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -114,11 +121,19 @@
         let audit_permission = {{ $audit_permission ? 'true' : 'false' }};
         let periods = {!! $periods !!};
         let states = {!! $states !!};
-        let checkedmf = [{!! $forms->value !!}]; // Выбранные в последнем сеансе мониторинги и формы
-        let checkedstates = [{!! $state_ids->value !!}];
-        let checkedperiods = [{!! $period_ids->value !!}];
-        let disabled_states = [{!! $disabled_states !!}];
-        let filter_mode = 1; // 1 - по территориям; 2 - по группам
+        let checkedmf = [{!! $mf->value or '' !!}]; // Выбранные в последнем сеансе мониторинги и формы
+        let lasstscope = {!! $last_scope->value or $worker_scope !!};
+        let checkedmonitorings = [{!! $mon_ids->value or '' !!}];
+        let checkedforms = [{!! $form_ids->value or '' !!}];
+        let checkedstates = [{!! $state_ids->value or '' !!}];
+        let checkedperiods = [{!! $period_ids->value or '' !!}];
+        let disabled_states = [{!! $disabled_states or '' !!}];
+        let filter_mode = {!! $filter_mode->value or 1 !!}; // 1 - по территориям; 2 - по группам
+        //let current_top_level_node = '{{ is_null($worker_scope) ? 'null' : $worker_scope }}';
+        let current_top_level_node = {{ is_null($worker_scope) ? 'null' : $worker_scope }};
+        let current_filter = '&filter_mode=' + filter_mode + '&ou=' + lasstscope + '&states='
+            + checkedstates.join() + '&mf=' + checkedmf.join() + '&monitorings=' + checkedmonitorings.join()
+            + '&forms=' + checkedforms.join() + '&periods=' + checkedperiods.join();
         let mon_tree_url = 'datainput/fetch_mon_tree/';
         let mo_tree_url = 'datainput/fetch_mo_tree/';
         let group_tree_url = 'datainput/fetch_ugroups';
@@ -151,9 +166,6 @@
         let current_document_state;
         let currentlet_document_audits = [];
         let current_user_role = '{{ $worker->role }}';
-        let current_top_level_node = '{{ is_null($worker_scope) ? 'null' : $worker_scope }}';
-        let current_filter = '&filter_mode=' + filter_mode + '&ou=' + current_top_level_node + '&states=' + checkedstates.join() + '&mf=' + checkedmf.join() + '&periods=' + checkedperiods.join();
-
         let statelabels =
         {
             performed: 'Выполняется',
@@ -199,6 +211,7 @@
         initMonitoringTree();
         initStatusList();
         initDropdowns();
+        initFilterIcons();
         initmotree();
         initgrouptree();
         initPeriodTree();

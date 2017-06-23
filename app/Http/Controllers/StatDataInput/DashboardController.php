@@ -56,6 +56,7 @@ class DashboardController extends Controller
         $laststate = $this->getLastState($worker, $document, $form, $default_album);
         //return $datafortables;
         //return $renderingtabledata;
+        \App\RecentDocument::create(['worker_id' => $worker->id, 'document_id' => $document->id, 'occured_at' => Carbon::now(), ]);
         return view($this->dashboardView(), compact(
             'current_unit', 'document', 'worker', 'default_album', 'statelabel', 'editpermission', 'editmode', 'monitoring',
             'form', 'period', 'editedtables', 'noteditablecells', 'forformtable', 'renderingtabledata',

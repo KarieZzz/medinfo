@@ -28,6 +28,8 @@ class DocumentDashboardController extends Controller
     {
         $worker = Auth::guard('datainput')->user();
         $worker_scope = WorkerScope::where('worker_id', $worker->id)->first()->ou_id;
+        $last_scope = WorkerSetting::where('worker_id', $worker->id)->where('name','ou')->first(['value']);
+        $filter_mode = WorkerSetting::where('worker_id', $worker->id)->where('name','filter_mode')->first(['value']);
         $permission = $worker->permission;
           $disabled_states = config('medinfo.disabled_states.' . $worker->role);
         if (!is_null($worker_scope)) {
@@ -40,8 +42,10 @@ class DocumentDashboardController extends Controller
             $audit_permission = false;
         }
         //$forms = Form::orderBy('form_index')->get(['id', 'form_code']);
-        $forms = WorkerSetting::where('worker_id', $worker->id)->where('name','monitorings')->first(['value']);
-        //dd($forms);
+        $mon_ids = WorkerSetting::where('worker_id', $worker->id)->where('name','monitorings')->first(['value']);
+        $form_ids = WorkerSetting::where('worker_id', $worker->id)->where('name','forms')->first(['value']);
+        $mf = WorkerSetting::where('worker_id', $worker->id)->where('name','mf')->first(['value']);
+        //dd($form_ids);
         //$form_ids = $forms->pluck('value');
         $states = DicDocumentState::all(['code', 'name']);
         $state_ids = WorkerSetting::where('worker_id', $worker->id)->where('name','states')->first(['value']);
@@ -49,8 +53,8 @@ class DocumentDashboardController extends Controller
         // Периоды отображаемые по умолчанию (поставил последний и предпоследний по датам убывания)
         //$period_ids = $periods[0]->id . ',' . $periods[1]->id;
         $period_ids = WorkerSetting::where('worker_id', $worker->id)->where('name','periods')->first(['value']);
-        return view('jqxdatainput.documentdashboard', compact('mo_tree', 'worker', 'worker_scope', 'periods', 'period_ids',
-            'disabled_states', 'audit_permission', 'forms', 'form_ids', 'states', 'state_ids'));
+        return view('jqxdatainput.documentdashboard', compact('mo_tree', 'worker', 'worker_scope', 'last_scope', 'filter_mode', 'periods', 'period_ids',
+            'disabled_states', 'audit_permission', 'mf', 'mon_ids', 'form_ids', 'states', 'state_ids'));
     }
 
     public function fetch_monitorings()
@@ -109,8 +113,17 @@ class DocumentDashboardController extends Controller
     // Сохранение настроек отображения рабочего стола с документами
     public function saveLastState(Request $request, $worker)
     {
+        $last_filter_mode = WorkerSetting::firstOrCreate(['worker_id' => $worker->id, 'name' => 'filter_mode']);
+        $last_filter_mode->value = $request->filter_mode;
+        $last_filter_mode->save();
+        $last_ou = WorkerSetting::firstOrCreate(['worker_id' => $worker->id, 'name' => 'ou']);
+        $last_ou->value = $request->ou;
+        $last_ou->save();
+        $last_mf = WorkerSetting::firstOrCreate(['worker_id' => $worker->id, 'name' => 'mf']);
+        $last_mf->value = $request->mf;
+        $last_mf->save();
         $last_monitorings = WorkerSetting::firstOrCreate(['worker_id' => $worker->id, 'name' => 'monitorings']);
-        $last_monitorings->value = $request->mf;
+        $last_monitorings->value = $request->monitorings;
         $last_monitorings->save();
         $last_forms = WorkerSetting::firstOrCreate(['worker_id' => $worker->id, 'name' => 'forms']);
         $last_forms->value = $request->forms;

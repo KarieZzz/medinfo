@@ -87,7 +87,7 @@ getCheckedMonsForms = function() {
     uniquemonitorings = Array.from(new Set(monitorings));
     uniqueforms = Array.from(new Set(forms));
     if (uniquemonitorings.length > 0 || uniqueforms.length > 0 ) {
-        mondropdown.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right"></i>Мониторинги</div>');
+        mondropdown.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: blue"></i>Мониторинги</div>');
     } else {
         mondropdown.jqxDropDownButton('setContent', '<div style="margin: 9px"></i>Мониторинги</div>');
     }
@@ -641,7 +641,7 @@ initmotree = function() {
             filter_mode = 1; // режим отбора документов по территориям
             updatedocumenttable();
             terr.jqxDropDownButton('close');
-            terr.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right"></i>Медицинские организации (по территориям)</div>');
+            terr.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: blue"></i>Медицинские организации (по территориям)</div>');
             return true;
         }
     );
@@ -887,10 +887,10 @@ initdocumentstabs = function() {
     });
     dgrid.on('rowdoubleclick', function (event)
     {
-        var args = event.args;
-        var rowindex = args.rowindex;
-        var document_id = dgrid.jqxGrid('getrowid', rowindex);
-        var editWindow = window.open(edit_form_url + '/' + document_id);
+        let args = event.args;
+        let rowindex = args.rowindex;
+        let document_id = dgrid.jqxGrid('getrowid', rowindex);
+        let editWindow = window.open(edit_form_url + '/' + document_id);
     });
     agrid.jqxGrid(
         {
@@ -915,10 +915,10 @@ initdocumentstabs = function() {
         });
     agrid.on('rowdoubleclick', function (event)
     {
-        var args = event.args;
-        var rowindex = args.rowindex;
-        var document_id = agrid.jqxGrid('getrowid', rowindex);
-        var editWindow = window.open(edit_aggregate_url + '/' + document_id);
+        let args = event.args;
+        let rowindex = args.rowindex;
+        let document_id = agrid.jqxGrid('getrowid', rowindex);
+        let editWindow =letndow.open(edit_aggregate_url + '/' + document_id);
     });
 };
 // инициализация вкладок с сообщениями и проверками к документу
@@ -1233,15 +1233,34 @@ initDocumentSource = function () {
             ],
             id: 'id',
             //url: aggrsource_url + '&filter_mode='+ filter_mode + '&ou=' + current_top_level_node + '&forms=' + checkedforms.join()+'&periods='+checkedperiods.join(),
-            url: aggrsource_url + filtersource(),
+            url: aggrsource_url + current_filter,
             root: 'data'
         };
     dataAdapter = new $.jqx.dataAdapter(docsource, {
         loadError: function(jqXHR, status, error) {
-            if (jqXHR.status == 401) {
+            if (jqXHR.status === 401) {
                 raiseError('Пользователь не авторизован', jqXHR);
             }
         }
     });
     aggregate_report_table = new $.jqx.dataAdapter(aggregate_source);
+};
+
+initFilterIcons = function () {
+    if (current_top_level_node !== lasstscope) {
+        if (filter_mode === 1) {
+            terr.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: blue"></i>Медицинские организации (по территориям)</div>');
+        } else if (filter_mode === 2) {
+            groups.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: blue"></i>Медицинские организации (по группам)</div>');
+        }
+    }
+    if (checkedmf.length > 0) {
+        mondropdown.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: blue"></i>Мониторинги</div>');
+    }
+    if (checkedperiods.length > 0) {
+        periodDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: blue"></i>Отчетные периоды</div>');
+    }
+    if (checkedperiods.length > 0) {
+        statusDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: blue"></i>Статусы отчетов</div>');
+    }
 };
