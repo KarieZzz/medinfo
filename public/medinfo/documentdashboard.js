@@ -1,6 +1,74 @@
 /**
  * Created by shameev on 28.06.2016.
  */
+let mon_tree_url = 'datainput/fetch_mon_tree/';
+let mo_tree_url = 'datainput/fetch_mo_tree/';
+let group_tree_url = 'datainput/fetch_ugroups';
+let docsource_url = 'datainput/fetchdocuments?';
+let docmessages_url = 'datainput/fetchmessages?';
+let changestate_url = 'datainput/changestate';
+let changeaudition_url = 'datainput/changeaudition';
+let docmessagesend_url = 'datainput/sendmessage';
+let docauditions_url = 'datainput/fetchauditions?';
+let aggrsource_url = 'datainput/fetchaggregates?';
+let edit_form_url = 'datainput/formdashboard';
+let edit_aggregate_url = 'datainput/aggregatedashboard';
+let aggregatedata_url = "/datainput/aggregatedata/";
+let export_form_url = "/datainput/formexport/";
+let montree = $("#monTree");
+let motree = $("#moTree");
+let grouptree = $("#groupTree");
+let periodTree = $("#periodTree");
+let stateList = $("#statesListbox");
+let dgrid = $("#Documents"); // сетка для первичных документов
+let agrid = $("#Aggregates"); // сетка для сводных документов
+let mondropdown = $("#monitoringSelector");
+let terr = $("#moSelectorByTerritories");
+let groups = $('#moSelectorByGroups');
+let periodDropDown = $('#periodSelector');
+let statusDropDown = $('#statusSelector');
+let current_document_form_code;
+let current_document_form_name;
+let current_document_ou_name;
+let current_document_state;
+let currentlet_document_audits = [];
+let current_user_role = '{{ $worker->role }}';
+let statelabels =
+    {
+        performed: 'Выполняется',
+        prepared: 'Подготовлен к проверке',
+        accepted: 'Принят',
+        declined: 'Возвращен на доработку',
+        approved: 'Утвержден'
+    };
+let audit_state_ids =
+    {
+        noaudit: 1,
+        audit_correct: 2,
+        audit_incorrect: 3
+    };
+// Установка разбивки окна на области
+initSplitters = function () {
+    $("#mainSplitter").jqxSplitter(
+        {
+            width: '99%',
+            height: '96%',
+            theme: theme,
+            panels:
+                [
+                    { size: "370px", min: "100px"},
+                    { size: '82%', min: "30%"}
+                ]
+        }
+    );
+    $('#DocumentPanelSplitter').jqxSplitter({
+        width: '100%',
+        height: '93%',
+        theme: theme,
+        orientation: 'horizontal',
+        panels: [{ size: '65%', min: 100, collapsible: false }, { min: '100px', collapsible: true}]
+    });
+};
 // Инициализация источников данных для таблиц
 datasources = function() {
     let mon_source =
@@ -581,7 +649,7 @@ initMonitoringTree = function () {
 montreeToolbar = function (toolbar) {
     toolbar.append("<button type='button' id='moncollapseAll' class='btn btn-default btn-sm'>Свернуть все</button>");
     toolbar.append("<button type='button' id='monexpandAll' class='btn btn-default btn-sm'>Развернуть все</button>");
-    toolbar.append("<button type='button' id='monfilterApply' class='btn btn-primary btn-sm'>Применить</button>");
+    toolbar.append("<button type='button' id='monfilterApply' class='btn btn-primary btn-sm'>Применить фильтр</button>");
     $('#monexpandAll').click(function (event) {
         montree.jqxTreeGrid('expandAll');
     });
@@ -760,6 +828,7 @@ initPeriodTree = function () {
 // инициализация списка статусов отчетного документа
 initStatusList = function() {
     let checkAll = $("#checkAllStates");
+    let uncheckAll = $("#clearAllStates");
     let states_source =
     {
         datatype: "array",
@@ -784,21 +853,11 @@ initStatusList = function() {
         //console.log('"' + checkedstates[i] + '"');
         stateList.jqxListBox('checkItem', checkedstates[i]);
     }
-   //stateList.jqxListBox('checkAll');
-   //stateList.on('click', function () {
-        //checkstatefilter();
-        //updatedocumenttable();
-    //});
-    checkAll.jqxCheckBox({ width: 170, height: 20, theme: theme, checked: true});
-    checkAll.on('checked', function (event) {
-        stateList.jqxListBox('checkAll');
-        //checkcheckAllstatefilter();
-        //updatedocumenttable();
+    checkAll.click( function (event) {
+            stateList.jqxListBox('checkAll');
     });
-    checkAll.on('unchecked', function (event) {
+    uncheckAll.click( function (event) {
         stateList.jqxListBox('uncheckAll');
-        //checkstatefilter();
-       // updatedocumenttable();
     });
     $("#applyStatuses").click( function (event) {
         statusDropDown.jqxDropDownButton('close');
@@ -839,14 +898,14 @@ initdocumentstabs = function() {
         current_document_ou_name = row.unit_name;
         current_document_state = row.state;
         $.getJSON( murl, function( data ) {
-            if (data.responce == 0) {
+            if (data.responce === 0) {
                 $("#DocumentMessages").html("Нет сообщений для данного документа");
             }
             else {
-                var items = [];
+                let items = [];
                 $.each( data, function( key, val ) {
                     var m = "<tr>";
-                    m += "<td style='width: 10%'>" + val.created_at + "</td>";
+                    m += "<td style='width: 120px'>" + formatDate(val.created_at) + "</td>";
                     m += "<td style='width: 20%'>" + val.worker.description + "</td>";
                     m += "<td>" + val.message + "</td>";
                     m +="</tr>";
@@ -859,7 +918,7 @@ initdocumentstabs = function() {
         var aurl = docauditions_url + 'document=' + row.id;
         current_document_audits = [];
         $.getJSON( aurl, function( data ) {
-            if (data.responce == 0) {
+            if (data.responce === 0) {
                 $("#DocumentAuditions").html("Нет результатов проверки данного отчетного документа");
             }
             else {
@@ -1198,7 +1257,7 @@ filtersource = function() {
 };
 
 initDocumentSource = function () {
-    console.log(current_filter);
+    //console.log(current_filter);
     docsource =
         {
             datatype: "json",

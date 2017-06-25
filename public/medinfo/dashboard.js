@@ -1,4 +1,4 @@
-var raiseError = function(comment, xhr) {
+raiseError = function(comment, xhr) {
     var add_inf = '';
     if (typeof comment == 'undefined') {
         comment = 'Ошибка получения данных ';
@@ -9,14 +9,14 @@ var raiseError = function(comment, xhr) {
     $("#currentError").text(comment + add_inf);
     $("#serverErrorNotification").jqxNotification("open");
 };
-var raiseInfo = function(comment) {
+raiseInfo = function(comment) {
     if (typeof comment == 'undefined') {
         comment = 'Текст информационного сообщения по умолчанию ';
     }
     $("#currentInfoMessage").text(comment);
     $("#infoNotification").jqxNotification("open");
 };
-var localize = function() {
+localize = function() {
     var localizationobj = {};
     localizationobj.thousandsseparator = " ";
     localizationobj.decimalseparator = ',';
@@ -26,7 +26,7 @@ var localize = function() {
     localizationobj.filtersearchstring = "Поиск:";
     return localizationobj;
 };
-var initnotifications = function() {
+initnotifications = function() {
     $("#serverErrorNotification").jqxNotification({
         width: 250, position: "top-right", opacity: 0.9,
         autoOpen: false, animationOpenDelay: 800,  autoClose: true, autoCloseDelay: 8000, template: "error"
@@ -35,4 +35,18 @@ var initnotifications = function() {
         width: 250, position: "top-right", opacity: 0.9,
         autoOpen: false, animationOpenDelay: 800, autoClose: true, autoCloseDelay: 3000, template: "info"
     });
-}
+};
+
+formatDate = function (dateObject) {
+    let d = new Date(dateObject);
+    let day = d.getDate();
+    let month = d.getMonth() + 1;
+    let year = d.getFullYear();
+    if (day < 10) {
+        day = "0" + day;
+    }
+    if (month < 10) {
+        month = "0" + month;
+    }
+    return day + '.' + month + '.' + year + ' '+ d.getHours() + ':' + d.getMinutes();
+};
