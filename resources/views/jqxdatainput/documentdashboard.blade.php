@@ -30,16 +30,24 @@
                             </div>
                         </div>
                     </div>
-                    <div class="well well-sm">
-                        <div id="periodSelector"><div id="periodTree"></div></div>
-                        <div id="statusSelector">
-                            <button class="btn btn-default btn-sm" id="checkAllStates">Выбрать все</button>
-                            <button class="btn btn-default btn-sm" id="clearAllStates">Очистить</button>
-                            <button class="btn btn-primary btn-sm" id="applyStatuses">Применить</button>
-                            <div id="statesListbox"></div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="well well-sm">
+                                <div id="periodSelector"><div id="periodTree"></div></div>
+                                <div id="statusSelector">
+                                    <button class="btn btn-default btn-sm" id="checkAllStates">Выбрать все</button>
+                                    <button class="btn btn-default btn-sm" id="clearAllStates">Очистить</button>
+                                    <button class="btn btn-primary btn-sm" id="applyStatuses">Применить</button>
+                                    <div id="statesListbox"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
+                    <div class="row">
+                        <div class="col-sm-offset-1 col-sm-12">
+                            <button class="btn btn-primary" id="clearAllFilters">Очистить фильтры</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -121,7 +129,7 @@
 <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/documentdashboard.js?v=045') }}"></script>
+<script src="{{ asset('/medinfo/documentdashboard.js?v=046') }}"></script>
 @endpush
 
 @section('inlinejs')

@@ -184,11 +184,6 @@ checkstatefilter = function() {
 
 checkPeriodFilter = function() {
     let checkedperiods = [];
-/*    var checkedItems = $("#periodTree").jqxListBox('getCheckedItems');
-    var periodcount = checkedItems.length;
-    for (i=0; i < periodcount; i++) {
-        checkedperiods.push(checkedItems[i].value);
-    }*/
     let checkedRows = periodTree.jqxTreeGrid('getCheckedRows');
     //console.log(checkedRows);
     if (typeof checkedRows !== 'undefined') {
@@ -587,19 +582,39 @@ renderaggregatetoolbar = function(toolbar) {
 };
 // Инициализация элементов управления с выпадающими списками
 initDropdowns = function () {
-    terr.jqxDropDownButton({ width: 350, height: 32, theme: theme });
+    terr.jqxDropDownButton({width: 350, height: 32, theme: theme});
     terr.jqxDropDownButton('setContent', '<div style="margin: 9px">Медицинские организации (по территориям)</div>');
-    groups.jqxDropDownButton({ width: 350, height: 32, theme: theme });
+    groups.jqxDropDownButton({width: 350, height: 32, theme: theme});
     groups.jqxDropDownButton('setContent', '<div style="margin: 9px">Медицинские организации (по группам)</div>');
-    mondropdown.jqxDropDownButton({ width: 350, height: 32, theme: theme });
+    mondropdown.jqxDropDownButton({width: 350, height: 32, theme: theme});
     mondropdown.jqxDropDownButton('setContent', '<div style="margin: 9px"></i>Мониторинги</div>');
-    mondropdown.on('close', function () { updatedocumenttable() });
-    periodDropDown.jqxDropDownButton({ width: 350, height: 32, theme: theme });
+    mondropdown.on('close', function () {
+        updatedocumenttable()
+    });
+    periodDropDown.jqxDropDownButton({width: 350, height: 32, theme: theme});
     periodDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px">Отчетные периоды</div>');
-    periodDropDown.on('close', function () { updatedocumenttable() });
-    statusDropDown.jqxDropDownButton({ width: 350, height: 32, theme: theme });
+    periodDropDown.on('close', function () {
+        updatedocumenttable()
+    });
+    statusDropDown.jqxDropDownButton({width: 350, height: 32, theme: theme});
     statusDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px">Статусы отчетов</div>');
-    statusDropDown.on('close', function () { updatedocumenttable() });
+    statusDropDown.on('close', function () {
+        updatedocumenttable()
+    });
+    $("#clearAllFilters").click( clearAllFilters );
+};
+
+clearAllFilters = function (event) {
+    let checkedRows = montree.jqxTreeGrid('getCheckedRows');
+    console.log(checkedRows );
+    if (typeof checkedRows !== 'undefined') {
+        for (let i = 0; i < checkedRows.length; i++) {
+            montree.jqxTreeGrid('uncheckRow' , checkedRows[i].id);
+        }
+    }
+    mondropdown.jqxDropDownButton('setContent', '<div style="margin: 9px"></i>Мониторинги</div>');
+
+    updatedocumenttable();
 };
 // функция удалена
 /*initmotabs = function() {
@@ -1255,7 +1270,7 @@ filtersource = function() {
     return '&filter_mode=' + filter_mode + '&ou=' +current_top_level_node +'&states='+states+
         '&monitorings='+monitorings+'&forms='+forms +'&periods=' + periods + '&mf=' + mf;
 };
-
+// Источники данных для
 initDocumentSource = function () {
     //console.log(current_filter);
     docsource =
@@ -1304,7 +1319,7 @@ initDocumentSource = function () {
     });
     aggregate_report_table = new $.jqx.dataAdapter(aggregate_source);
 };
-
+// Показываем иконки фильтров при установленных ограничениях
 initFilterIcons = function () {
     if (current_top_level_node !== lasstscope) {
         if (filter_mode === 1) {
