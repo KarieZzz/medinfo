@@ -44,6 +44,11 @@ class Document extends Model
         return $this->belongsTo('App\Form');
     }
 
+    public function state()
+    {
+        return $this->belongsTo('App\DicDocumentState', 'state' , 'code');
+    }
+
     public function unitgroup()
     {
         return $this->belongsTo('App\UnitGroup', 'ou_id');

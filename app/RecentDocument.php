@@ -20,4 +20,10 @@ class RecentDocument extends Model
     {
         return $this->belongsTo('App\Document');
     }
+
+    public function scopeOfWorker($query, $worker)
+    {
+        return $query->where('worker_id', $worker);
+    }
+
 }

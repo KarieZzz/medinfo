@@ -33,7 +33,12 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="well well-sm">
-                                <div id="periodSelector"><div id="periodTree"></div></div>
+                                <div id="periodSelector">
+                                    <button class="btn btn-default btn-sm" id="checkAllPeriods">Выбрать все</button>
+                                    <button class="btn btn-default btn-sm" id="clearAllPeriods">Очистить</button>
+                                    <button class="btn btn-primary btn-sm" id="applyPeriods">Применить</button>
+                                    <div id="periodTree"></div>
+                                </div>
                                 <div id="statusSelector">
                                     <button class="btn btn-default btn-sm" id="checkAllStates">Выбрать все</button>
                                     <button class="btn btn-default btn-sm" id="clearAllStates">Очистить</button>
@@ -129,7 +134,7 @@
 <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/documentdashboard.js?v=046') }}"></script>
+<script src="{{ asset('/medinfo/documentdashboard.js?v=047') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -164,6 +169,7 @@
         initDocumentSource();
         initdocumentstabs();
         initdocumentproperties();
+        initRecentDocuments();
         initpopupwindows();
         initnotifications();
     </script>

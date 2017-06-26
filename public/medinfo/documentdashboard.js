@@ -5,6 +5,7 @@ let mon_tree_url = 'datainput/fetch_mon_tree/';
 let mo_tree_url = 'datainput/fetch_mo_tree/';
 let group_tree_url = 'datainput/fetch_ugroups';
 let docsource_url = 'datainput/fetchdocuments?';
+let recentdocs_url = 'datainput/fetchrecent?';
 let docmessages_url = 'datainput/fetchmessages?';
 let changestate_url = 'datainput/changestate';
 let changeaudition_url = 'datainput/changeaudition';
@@ -21,6 +22,7 @@ let grouptree = $("#groupTree");
 let periodTree = $("#periodTree");
 let stateList = $("#statesListbox");
 let dgrid = $("#Documents"); // сетка для первичных документов
+let rgrid = $("#Recent"); // сетка для первичных документов
 let agrid = $("#Aggregates"); // сетка для сводных документов
 let mondropdown = $("#monitoringSelector");
 let terr = $("#moSelectorByTerritories");
@@ -107,7 +109,7 @@ datasources = function() {
         url: mo_tree_url + current_top_level_node
     };
 
-    ugroup_source =
+    let ugroup_source =
     {
         dataType: "json",
         dataFields: [
@@ -179,6 +181,11 @@ checkstatefilter = function() {
             checkedstates.push(checkedItems[i].value);
         }
     }
+    if (checkedstates.length > 0) {
+        statusDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: blue"></i>Статусы отчетов</div>');
+    } else {
+        statusDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px"></i>Статусы отчетов</div>');
+    }
     return checkedstates.join();
 };
 
@@ -190,6 +197,11 @@ checkPeriodFilter = function() {
         for (let i = 0; i < checkedRows.length; i++) {
             checkedperiods.push(checkedRows[i].id);
         }
+    }
+    if (checkedperiods.length > 0) {
+        periodDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: blue"></i>Отчетные периоды</div>');
+    } else {
+        periodDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px"></i>Отчетные периоды</div>');
     }
     return checkedperiods.join();
 
@@ -605,15 +617,26 @@ initDropdowns = function () {
 };
 
 clearAllFilters = function (event) {
-    let checkedRows = montree.jqxTreeGrid('getCheckedRows');
-    console.log(checkedRows );
-    if (typeof checkedRows !== 'undefined') {
-        for (let i = 0; i < checkedRows.length; i++) {
-            montree.jqxTreeGrid('uncheckRow' , checkedRows[i].id);
+    let checkedMonitorings = montree.jqxTreeGrid('getCheckedRows');
+    if (typeof checkedMonitorings !== 'undefined') {
+        for (let i = 0; i < checkedMonitorings.length; i++) {
+            montree.jqxTreeGrid('uncheckRow' , checkedMonitorings[i].id);
         }
     }
     mondropdown.jqxDropDownButton('setContent', '<div style="margin: 9px"></i>Мониторинги</div>');
-
+    terr.jqxTreeGrid('clearSelection');
+    terr.jqxDropDownButton('setContent', '<div style="margin: 9px">Медицинские организации (по территориям)</div>');
+    groups.jqxTreeGrid('clearSelection');
+    groups.jqxDropDownButton('setContent', '<div style="margin: 9px">Медицинские организации (по группам)</div>');
+    let checkedPeriods = periodTree.jqxTreeGrid('getCheckedRows');
+    if (typeof checkedPeriods !== 'undefined') {
+        for (let i = 0; i < checkedPeriods.length; i++) {
+            periodTree.jqxTreeGrid('uncheckRow' , checkedPeriods[i].id);
+        }
+    }
+    periodDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px">Отчетные периоды</div>');
+    stateList.jqxListBox('uncheckAll');
+    statusDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px">Статусы отчетов</div>');
     updatedocumenttable();
 };
 // функция удалена
@@ -782,6 +805,7 @@ initgrouptree = function() {
             current_top_level_node =  new_top_level_node;
             updatedocumenttable();
             groups.jqxDropDownButton('close');
+            groups.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: blue"></i>Медицинские организации (по группам)</div>');
             return true;
         }
     );
@@ -822,23 +846,9 @@ initPeriodTree = function () {
                 { text: 'Наименование', dataField: 'name', width: 345 }
             ]
         });
-/*    periodTree.jqxListBox({
-        theme: theme,
-        source: periodsDataAdapter,
-        displayMember: 'name',
-        valueMember: 'id',
-        checkboxes: true,
-        width: 230,
-        height: 200
-    });*/
-    //var item = $("#periodsListbox").jqxListBox('getItem', 0) ;
-/*    for (var i=0; i < checkedperiods.length; i++  ) {
-        periodTree.jqxListBox('checkItem', checkedperiods[i] );
-    }*/
-   /* periodTree.on('click', function () {
-        checkperiodfilter();
-        updatedocumenttable();
-    });*/
+    $("#applyPeriods").click( function (event) {
+        periodDropDown.jqxDropDownButton('close');
+    });
 };
 // инициализация списка статусов отчетного документа
 initStatusList = function() {
@@ -930,17 +940,17 @@ initdocumentstabs = function() {
             }
         });
 
-        var aurl = docauditions_url + 'document=' + row.id;
+        let aurl = docauditions_url + 'document=' + row.id;
         current_document_audits = [];
         $.getJSON( aurl, function( data ) {
             if (data.responce === 0) {
                 $("#DocumentAuditions").html("Нет результатов проверки данного отчетного документа");
             }
             else {
-                var items = [];
+                let items = [];
                 $.each( data, function( key, val ) {
                     current_document_audits.push({ auditor_id: val.worker.id, state_id: val.state_id});
-                    var audit_class = '';
+                    let audit_class = '';
                     switch (val.state_id) {
                         case 1:
                             audit_class = 'noaudit';
@@ -952,7 +962,7 @@ initdocumentstabs = function() {
                             audit_class = 'invalid';
                             break;
                     }
-                    var d = val.created_at ? val.created_at : '';
+                    let d = val.created_at ? val.created_at : '';
                     items.push("<tr class='"+ audit_class +"'><td style='width: 50%'>" + val.created_at + "<br /> " + val.worker.description + "</td><td>" + val.dicauditstate.name + "</td></tr>");
                 });
                 $("#DocumentAuditions").html("<table class='control_result' style='width: 100%'>" + items.join( "" ) + "</table>");
@@ -992,7 +1002,53 @@ initdocumentstabs = function() {
         let args = event.args;
         let rowindex = args.rowindex;
         let document_id = agrid.jqxGrid('getrowid', rowindex);
-        let editWindow =letndow.open(edit_aggregate_url + '/' + document_id);
+        let editWindow =window.open(edit_aggregate_url + '/' + document_id);
+    });
+};
+// Инициализация вкладки последних документов
+initRecentDocuments = function () {
+    recentsource =
+        {
+            datatype: "json",
+            datafields: [
+                { name: 'document_id', type: 'int' },
+                { name: 'unit_code', map: 'document>unit>unit_code', type: 'string' },
+                { name: 'unit_name', map: 'document>unit>unit_name', type: 'string' },
+                { name: 'form_code', map: 'document>form>form_code', type: 'string' },
+                { name: 'monitoring', map: 'document>monitoring>name', type: 'string' },
+                { name: 'period', map: 'document>period>name', type: 'string' },
+                { name: 'state', map: 'document>state>name', type: 'string' }
+            ],
+            id: 'document_id',
+            ///url: docsource_url + filtersource(),
+            url: recentdocs_url,
+            root: 'data'
+        };
+    recentTableDA = new $.jqx.dataAdapter(recentsource);
+    rgrid.jqxGrid(
+        {
+            width: '100%',
+            height: '93%',
+            theme: theme,
+            source: recentTableDA,
+            columnsresize: true,
+            localization: localize(),
+            columns: [
+                { text: '№', datafield: 'document_id', width: '5%' },
+                { text: 'Код Территории/МО', datafield: 'unit_code', width: 100 },
+                { text: 'Наименование МО', datafield: 'unit_name', width: '20%' },
+                { text: 'Мониторинг', datafield: 'monitoring', width: 320 },
+                { text: 'Код формы', datafield: 'form_code', width: 100 },
+                { text: 'Период', datafield: 'period', width: 150 },
+                { text: 'Статус', datafield: 'state', width: 120, cellclassname: formStatusclass }
+            ]
+        });
+    rgrid.on('rowdoubleclick', function (event)
+    {
+        let args = event.args;
+        let rowindex = args.rowindex;
+        let document_id = rgrid.jqxGrid('getrowid', rowindex);
+        let editWindow =window.open(edit_aggregate_url + '/' + document_id);
     });
 };
 // инициализация вкладок с сообщениями и проверками к документу

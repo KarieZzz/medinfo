@@ -161,6 +161,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('datainput/fetch_mon_tree', 'StatDataInput\DocumentDashboardController@fetch_monitorings');
     Route::get('datainput/fetch_ugroups', 'StatDataInput\DocumentDashboardController@fetch_unitgroups');
     Route::get('datainput/fetchdocuments', 'StatDataInput\DocumentDashboardController@fetchdocuments');
+    Route::get('datainput/fetchrecent', 'StatDataInput\DocumentDashboardController@fetchRecentDocuments');
     Route::get('datainput/fetchaggregates', 'StatDataInput\DocumentDashboardController@fetchaggregates');
     Route::get('datainput/fetchmessages', 'StatDataInput\DocumentMessageController@fetchMessages');
     Route::get('datainput/fetchauditions', 'StatDataInput\DocumentAuditionController@fetchAuditions');

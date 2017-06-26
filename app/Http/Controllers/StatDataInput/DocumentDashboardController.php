@@ -93,6 +93,14 @@ class DocumentDashboardController extends Controller
         return $data;
     }
 
+    public function fetchRecentDocuments()
+    {
+        $worker = Auth::guard('datainput')->user();
+        return \App\RecentDocument::OfWorker($worker->id)
+            ->orderBy('occured_at','desc')
+            ->with('document.unit', 'document.monitoring', 'document.period' , 'document.form', 'document.state')->take(20)->get();
+    }
+
     public function fetchaggregates(Request $request)
     {
         $worker = Auth::guard('datainput')->user();
