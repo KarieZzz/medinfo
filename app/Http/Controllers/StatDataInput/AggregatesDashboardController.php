@@ -42,6 +42,7 @@ class AggregatesDashboardController extends DashboardController
         //dd($units);
         $included_documents = Document::whereIn('ou_id', $units)
             ->where('dtype', 1)
+            ->where('monitoring_id', $document->monitoring_id)
             ->where('form_id', $document->form_id)
             ->where('period_id', $document->period_id)
             ->pluck('id');

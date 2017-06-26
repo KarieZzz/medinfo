@@ -232,7 +232,7 @@ aggregatedata = function() {
     let rowindex = agrid.jqxGrid('getselectedrowindex');
     let row_id = agrid.jqxGrid('getrowid', rowindex);
     let rowdata = agrid.jqxGrid('getrowdata', rowindex);
-    if (rowindex == -1) {
+    if (rowindex === -1) {
         return false;
     }
     //var data = "aggregate=" + row_id;
@@ -271,55 +271,55 @@ filledFormclass = function (row, columnfield, value, rowdata) {
 };
 // Установка класса для раскрашивания строк в зависимости от статуса документа
 formStatusclass = function (row, columnfield, value, rowdata) {
-    if (value == statelabels.performed) {
+    if (value === statelabels.performed) {
         return 'editedStatus';
-    } else if (value == statelabels.prepared) {
+    } else if (value === statelabels.prepared) {
         return 'preparedStatus';
-    } else if (value == statelabels.accepted) {
+    } else if (value === statelabels.accepted) {
         return 'acceptedStatus';
-    }  else if (value == statelabels.approved) {
+    }  else if (value === statelabels.approved) {
         return 'approvedStatus';
-    } else if (value == statelabels.declined) {
+    } else if (value === statelabels.declined) {
         return 'declinedStatus';
     }
 };
 // фильтр для быстрого поиска по наименованию учреждения - первичные документы
 mo_name_filter = function (needle) {
-    var rowFilterGroup = new $.jqx.filter();
-    var filter_or_operator = 1;
-    var filtervalue = needle;
-    var filtercondition = 'contains';
-    var nameRecordFilter = rowFilterGroup.createfilter('stringfilter', filtervalue, filtercondition);
+    let rowFilterGroup = new $.jqx.filter();
+    let filter_or_operator = 1;
+    let filtervalue = needle;
+    let filtercondition = 'contains';
+    let nameRecordFilter = rowFilterGroup.createfilter('stringfilter', filtervalue, filtercondition);
     rowFilterGroup.addfilter(filter_or_operator, nameRecordFilter);
     dgrid.jqxGrid('addfilter', 'unit_name', rowFilterGroup);
     dgrid.jqxGrid('applyfilters');
 };
 // фильтр для быстрого поиска по наименованию учреждения/территории - сводные документы
 mo_name_aggrfilter = function (needle) {
-    var rowFilterGroup = new $.jqx.filter();
-    var filter_or_operator = 1;
-    var filtervalue = needle;
-    var filtercondition = 'contains';
-    var nameRecordFilter = rowFilterGroup.createfilter('stringfilter', filtervalue, filtercondition);
+    let rowFilterGroup = new $.jqx.filter();
+    let filter_or_operator = 1;
+    let filtervalue = needle;
+    let filtercondition = 'contains';
+    let nameRecordFilter = rowFilterGroup.createfilter('stringfilter', filtervalue, filtercondition);
     rowFilterGroup.addfilter(filter_or_operator, nameRecordFilter);
     agrid.jqxGrid('addfilter', 'unit_name', rowFilterGroup);
     agrid.jqxGrid('applyfilters');
 };
 // Рендеринг панели инструментов для таблицы первичных документов
 rendertoolbar = function (toolbar) {
-    var me = this;
-    var container = $("<div style='margin: 5px;'></div>");
-    var input1 = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='searchField' type='text' style='height: 23px; float: left; width: 150px;' />");
-    var input2 = $("<input id='clearfilters' type='button' value='Очистить фильтр'/>");
+    let me = this;
+    let container = $("<div style='margin: 5px;'></div>");
+    let input1 = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='searchField' type='text' style='height: 23px; float: left; width: 150px;' />");
+    let input2 = $("<input id='clearfilters' type='button' value='Очистить фильтр'/>");
 
     if (audit_permission) {
-        var input5 = $("<input id='ChangeAudutStatus' type='button' value='Проверка отчета' />");
+        let input5 = $("<input id='ChangeAudutStatus' type='button' value='Проверка отчета' />");
         input5.click(function () {
-            var rowindex = dgrid.jqxGrid('getselectedrowindex');
-            if (rowindex == -1) {
+            let rowindex = dgrid.jqxGrid('getselectedrowindex');
+            if (rowindex === -1) {
                 return false;
             }
-            var radiostates = $('.auditstateradio');
+            let radiostates = $('.auditstateradio');
             radiostates.jqxRadioButton('uncheck');
             //radiostates.each(function() {
                 //$(this).jqxRadioButton('disable');
@@ -327,7 +327,7 @@ rendertoolbar = function (toolbar) {
                 //$("#SaveAuditState").jqxButton({disabled: true });
             //});
             $.each(current_document_audits, function(key, value) {
-                if (value.auditor_id == current_user_id) {
+                if (value.auditor_id === current_user_id) {
                     //$("#SaveAuditState").jqxButton({disabled: false });
                     //radiostates.jqxRadioButton('enable');
                     switch (value.state_id) {
@@ -343,23 +343,23 @@ rendertoolbar = function (toolbar) {
                     }
                 }
             });
-            var offset = dgrid.offset();
+            let offset = dgrid.offset();
             $("#changeAuditStateWindow").jqxWindow({ position: { x: parseInt(offset.left) + 150, y: parseInt(offset.top) + 100 } });
             $("#changeAuditStateWindow").jqxWindow('open');
         });
     }
 
-    var editform = $("<i style='margin-left: 2px;height: 14px' class='fa fa-edit fa-lg' title='Редактировать форму' />");
-    var excel_export = $("<i style='margin-left: 2px;height: 14px' class='fa fa-file-excel-o fa-lg' title='Экспортировать документ в MS Excel'></i>");
-    var message_input = $("<i style='margin-left: 2px;height: 14px' class='fa fa-commenting-o fa-lg' title='Сообщение/комментарий к документу'></i>");
-    var refresh_list = $("<i style='margin-left: 2px;height: 14px' class='fa fa-refresh fa-lg' title='Обновить список'></i>");
-    var changestatus = $("<input id='ChangeStatus' type='button' value='Статус отчета' />");
+    let editform = $("<i style='margin-left: 2px;height: 14px' class='fa fa-edit fa-lg' title='Редактировать форму' />");
+    let excel_export = $("<i style='margin-left: 2px;height: 14px' class='fa fa-file-excel-o fa-lg' title='Экспортировать документ в MS Excel'></i>");
+    let message_input = $("<i style='margin-left: 2px;height: 14px' class='fa fa-commenting-o fa-lg' title='Сообщение/комментарий к документу'></i>");
+    let refresh_list = $("<i style='margin-left: 2px;height: 14px' class='fa fa-refresh fa-lg' title='Обновить список'></i>");
+    let changestatus = $("<input id='ChangeStatus' type='button' value='Статус отчета' />");
 
     toolbar.append(container);
     container.append(input1);
     container.append(input2);
 
-    if (current_user_role != 2) {
+    if (current_user_role !== 2) {
         container.append(changestatus);
     }
     if (audit_permission) {
@@ -387,7 +387,7 @@ rendertoolbar = function (toolbar) {
             if (me.timer) {
                 clearTimeout(me.timer);
             }
-            if (oldVal != input1.val()) {
+            if (oldVal !== input1.val()) {
                 me.timer = setTimeout(function () {
                     mo_name_filter(input1.val());
                 }, 500);
@@ -400,37 +400,37 @@ rendertoolbar = function (toolbar) {
     });
     input2.click(function () { dgrid.jqxGrid('clearfilters'); input1.val('');});
     editform.click(function () {
-        var rowindex = dgrid.jqxGrid('getselectedrowindex');
+        let rowindex = dgrid.jqxGrid('getselectedrowindex');
         if (rowindex !== -1 && typeof rowindex !== 'undefined') {
-            var document_id = dgrid.jqxGrid('getrowid', rowindex);
-            var editWindow = window.open(edit_form_url + '/' + document_id);
+            let document_id = dgrid.jqxGrid('getrowid', rowindex);
+            let editWindow = window.open(edit_form_url + '/' + document_id);
         }
     });
     changestatus.click(function () {
-        var rowindex = dgrid.jqxGrid('getselectedrowindex');
-        var alert_message;
-        var this_document_state = '';
-        if (rowindex == -1 && typeof rowindex !== 'undefined') {
+        let rowindex = dgrid.jqxGrid('getselectedrowindex');
+        let alert_message;
+        let this_document_state = '';
+        if (rowindex === -1 && typeof rowindex !== 'undefined') {
             return false;
         }
-        var offset = dgrid.offset();
+        let offset = dgrid.offset();
         $("#changeStateWindow").jqxWindow({ position: { x: parseInt(offset.left) + 100, y: parseInt(offset.top) + 100 } });
-        var data = dgrid.jqxGrid('getrowdata', rowindex);
+        let data = dgrid.jqxGrid('getrowdata', rowindex);
         //console.log(data);
-        var radiostates = $('.stateradio');
+        let radiostates = $('.stateradio');
         radiostates.each(function() {
-            var state = $(this).attr('id');
+            let state = $(this).attr('id');
             if ($.inArray(state, disabled_states) !== -1) {
                 $(this).jqxRadioButton('disable');
             }
-            if (statelabels[state] == data.state) {
+            if (statelabels[state] === data.state) {
                 $(this).jqxRadioButton('check');
                 this_document_state = state;
             }
         });
-        if (current_user_role == 1 && this_document_state !== 'performed' && this_document_state !== 'declined') {
+        if (current_user_role === 1 && this_document_state !== 'performed' && this_document_state !== 'declined') {
             $('#prepared').jqxRadioButton('disable');
-        } else if (current_user_role == 1 && (this_document_state == 'performed' || this_document_state == 'declined')) {
+        } else if (current_user_role === 1 && (this_document_state === 'performed' || this_document_state === 'declined')) {
             alert_message = '<strong>Внимание!</strong> Смена статуса документа допускается только в то случае если ВСЕ правки документа выполнены! <br />';
             alert_message += 'Если Вы не уверены, что закончили редактирование - отмените действие!';
             if (!data.filled) {
@@ -442,27 +442,27 @@ rendertoolbar = function (toolbar) {
             $('#changeStateAlertMessage').show();
             $('#prepared').jqxRadioButton('enable');
         }
-        if ((current_user_role == 3 || current_user_role ==4) && this_document_state == 'performed') {
+        if ((current_user_role === 3 || current_user_role === 4) && this_document_state === 'performed') {
             $('#declined').jqxRadioButton('disable');
-        } else if ((current_user_role == 3 || current_user_role ==4) && this_document_state !== 'performed') {
+        } else if ((current_user_role === 3 || current_user_role === 4) && this_document_state !== 'performed') {
             $('#declined').jqxRadioButton('enable');
         }
-        var message = $("#statusChangeMessage").val('');
+        let message = $("#statusChangeMessage").val('');
         $("#changeStateWindow").jqxWindow('open');
     });
     message_input.click(function () {
-        var rowindex = dgrid.jqxGrid('getselectedrowindex');
-        if (rowindex == -1) {
+        let rowindex = dgrid.jqxGrid('getselectedrowindex');
+        if (rowindex === -1) {
             return false;
         }
         $("#message").val("");
-        var offset = dgrid.offset();
+        let offset = dgrid.offset();
         $("#sendMessageWindow").jqxWindow({ position: { x: parseInt(offset.left) + 100, y: parseInt(offset.top) + 100 } });
         $("#sendMessageWindow").jqxWindow('open');
     });
     excel_export.click(function () {
-        var rowindex = dgrid.jqxGrid('getselectedrowindex');
-        var document_id = dgrid.jqxGrid('getrowid', rowindex);
+        let rowindex = dgrid.jqxGrid('getselectedrowindex');
+        let document_id = dgrid.jqxGrid('getrowid', rowindex);
         if (rowindex !== -1) {
             window.open(export_form_url + document_id);
         }
@@ -475,7 +475,7 @@ rendertoolbar = function (toolbar) {
      }
      });*/
     refresh_list.click(function () {
-        var new_doc_url = docsource_url + filtersource();
+        let new_doc_url = docsource_url + filtersource();
         docsource.url = new_doc_url;
         dgrid.jqxGrid('updatebounddata');
         $("#DocumentMessages").html('');
@@ -484,27 +484,27 @@ rendertoolbar = function (toolbar) {
 };
 // рендеринг панели инструментов для таблицы сводных документов
 renderaggregatetoolbar = function(toolbar) {
-    var me = this;
-    var container = $("<div style='margin: 5px;'></div>");
-    var input1 = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='searchField' type='text' style='height: 23px; float: left; width: 150px;' />");
-    var filter = $("<i style='margin-left: 2px;height: 14px' class='fa fa-filter fa-lg' title='Очистить фильтр' />");
-    var editform = $("<i style='margin-left: 2px;height: 14px' class='fa fa-eye fa-lg' title='Просмотр/редактирование сводного отчета' />");
-    var makeaggregation = $("<i style='margin-left: 2px;height: 14px' class='fa fa-database fa-lg' title='Выполнить свод' />");
+    let me = this;
+    let container = $("<div style='margin: 5px;'></div>");
+    let input1 = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='searchField' type='text' style='height: 23px; float: left; width: 150px;' />");
+    let filter = $("<i style='margin-left: 2px;height: 14px' class='fa fa-filter fa-lg' title='Очистить фильтр' />");
+    let editform = $("<i style='margin-left: 2px;height: 14px' class='fa fa-eye fa-lg' title='Просмотр/редактирование сводного отчета' />");
+    let makeaggregation = $("<i style='margin-left: 2px;height: 14px' class='fa fa-database fa-lg' title='Выполнить свод' />");
     if (audit_permission) {
-        var change_audit_status = $("<input id='ChangeAudutStatus' type='button' value='Проверка отчета' />");
+        let change_audit_status = $("<input id='ChangeAudutStatus' type='button' value='Проверка отчета' />");
         change_audit_status.click(function () {
-            var rowindex = agrid.jqxGrid('getselectedrowindex');
-            if (rowindex == -1) {
+            let rowindex = agrid.jqxGrid('getselectedrowindex');
+            if (rowindex === -1) {
                 return false;
             }
-            var radiostates = $('.auditstateradio');
+            let radiostates = $('.auditstateradio');
             radiostates.each(function() {
                 $(this).jqxRadioButton('disable');
                 $(this).jqxRadioButton('uncheck');
                 $("#SaveAuditState").jqxButton({disabled: true });
             });
             $.each(current_document_audits, function(key, value) {
-                if (value.auditor_id == current_user_id) {
+                if (value.auditor_id === current_user_id) {
                     $("#SaveAuditState").jqxButton({disabled: false });
                     radiostates.each(function() {
                         $(this).jqxRadioButton('enable');
@@ -522,13 +522,13 @@ renderaggregatetoolbar = function(toolbar) {
                     }
                 }
             });
-            var offset = agrid.offset();
+            let offset = agrid.offset();
             $("#BatchChangeAuditStateWindow").jqxWindow({ position: { x: parseInt(offset.left) + 150, y: parseInt(offset.top) + 100 } });
             $("#BatchChangeAuditStateWindow").jqxWindow('open');
         });
     }
-    var excel_export = $("<i style='margin-left: 2px;height: 14px' class='fa fa-file-excel-o fa-lg' title='Экспортировать документ в MS Excel'></i>");
-    var refresh_list = $("<i style='margin-left: 2px;height: 14px' class='fa fa-refresh fa-lg' title='Обновить список'></i>");
+    let excel_export = $("<i style='margin-left: 2px;height: 14px' class='fa fa-file-excel-o fa-lg' title='Экспортировать документ в MS Excel'></i>");
+    let refresh_list = $("<i style='margin-left: 2px;height: 14px' class='fa fa-refresh fa-lg' title='Обновить список'></i>");
 
 
     toolbar.append(container);
@@ -550,13 +550,13 @@ renderaggregatetoolbar = function(toolbar) {
     makeaggregation.jqxButton({ theme: theme });
     excel_export.jqxButton({ theme: theme });
     refresh_list.jqxButton({ theme: theme });
-    var oldVal = "";
+    let oldVal = "";
     input1.on('keydown', function (event) {
         if (input1.val().length >= 2) {
             if (me.timer) {
                 clearTimeout(me.timer);
             }
-            if (oldVal != input1.val()) {
+            if (oldVal !== input1.val()) {
                 me.timer = setTimeout(function () {
                     mo_name_aggrfilter(input1.val());
                 }, 500);
@@ -569,10 +569,10 @@ renderaggregatetoolbar = function(toolbar) {
     });
     filter.click(function () { agrid.jqxGrid('clearfilters'); input1.val('');});
     editform.click(function () {
-        var rowindex = agrid.jqxGrid('getselectedrowindex');
-        var document_id = agrid.jqxGrid('getrowid', rowindex);
+        let rowindex = agrid.jqxGrid('getselectedrowindex');
+        let document_id = agrid.jqxGrid('getrowid', rowindex);
         if (rowindex !== -1) {
-            var editWindow = window.open(edit_aggregate_url+'/'+document_id);
+            let editWindow = window.open(edit_aggregate_url+'/'+document_id);
         }
     });
 
@@ -581,8 +581,8 @@ renderaggregatetoolbar = function(toolbar) {
     });
 
     excel_export.click(function () {
-        var rowindex = agrid.jqxGrid('getselectedrowindex');
-        var document_id = agrid.jqxGrid('getrowid', rowindex);
+        let rowindex = agrid.jqxGrid('getselectedrowindex');
+        let document_id = agrid.jqxGrid('getrowid', rowindex);
         if (rowindex !== -1) {
             window.open(export_form_url + document_id);
         }
@@ -730,16 +730,16 @@ initmotree = function() {
     motree.on('filter',
         function (event)
         {
-            var args = event.args;
-            var filters = args.filters;
+            let args = event.args;
+            let filters = args.filters;
             motree.jqxTreeGrid('expandAll');
         }
     );
     motree.on('rowSelect',
         function (event)
         {
-            var args = event.args;
-            var new_top_level_node = args.key;
+            let args = event.args;
+            let new_top_level_node = args.key;
             if (new_top_level_node === current_top_level_node && filter_mode === 1) {
                 return false;
             }
@@ -788,16 +788,16 @@ initgrouptree = function() {
     grouptree.on('filter',
         function (event)
         {
-            var args = event.args;
-            var filters = args.filters;
+            let args = event.args;
+            let filters = args.filters;
             grouptree.jqxTreeGrid('expandAll');
         }
     );
     grouptree.on('rowSelect',
         function (event)
         {
-            var args = event.args;
-            var new_top_level_node = args.key;
+            let args = event.args;
+            let new_top_level_node = args.key;
             if (new_top_level_node === current_top_level_node && filter_mode === 2) {
                 return false;
             }
@@ -875,7 +875,6 @@ initStatusList = function() {
         height: 200
     });
     for(let i = 0; i < checkedstates.length; i++) {
-        //console.log('"' + checkedstates[i] + '"');
         stateList.jqxListBox('checkItem', checkedstates[i]);
     }
     checkAll.click( function (event) {
@@ -929,7 +928,7 @@ initdocumentstabs = function() {
             else {
                 let items = [];
                 $.each( data, function( key, val ) {
-                    var m = "<tr>";
+                    let m = "<tr>";
                     m += "<td style='width: 120px'>" + formatDate(val.created_at) + "</td>";
                     m += "<td style='width: 20%'>" + val.worker.description + "</td>";
                     m += "<td>" + val.message + "</td>";
@@ -1002,7 +1001,7 @@ initdocumentstabs = function() {
         let args = event.args;
         let rowindex = args.rowindex;
         let document_id = agrid.jqxGrid('getrowid', rowindex);
-        let editWindow =window.open(edit_aggregate_url + '/' + document_id);
+        let editWindow = window.open(edit_aggregate_url + '/' + document_id);
     });
 };
 // Инициализация вкладки последних документов
@@ -1048,7 +1047,7 @@ initRecentDocuments = function () {
         let args = event.args;
         let rowindex = args.rowindex;
         let document_id = rgrid.jqxGrid('getrowid', rowindex);
-        let editWindow =window.open(edit_aggregate_url + '/' + document_id);
+        let editWindow = window.open(edit_aggregate_url + '/' + document_id);
     });
 };
 // инициализация вкладок с сообщениями и проверками к документу
