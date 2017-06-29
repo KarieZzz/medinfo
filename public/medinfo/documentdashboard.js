@@ -311,8 +311,8 @@ rendertoolbar = function (toolbar) {
     let container = $("<div style='margin: 5px;'></div>");
     let input1 = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='searchField' type='text' style='height: 23px; float: left; width: 150px;' />");
     let input2 = $("<input id='clearfilters' type='button' value='Очистить фильтр'/>");
-
-    if (audit_permission) {
+    //console.log(audit_permission);
+/*    if (audit_permission) {
         let input5 = $("<input id='ChangeAudutStatus' type='button' value='Проверка отчета' />");
         input5.click(function () {
             let rowindex = dgrid.jqxGrid('getselectedrowindex');
@@ -347,7 +347,7 @@ rendertoolbar = function (toolbar) {
             $("#changeAuditStateWindow").jqxWindow({ position: { x: parseInt(offset.left) + 150, y: parseInt(offset.top) + 100 } });
             $("#changeAuditStateWindow").jqxWindow('open');
         });
-    }
+    }*/
 
     let editform = $("<i style='margin-left: 2px;height: 14px' class='fa fa-edit fa-lg' title='Редактировать форму' />");
     let excel_export = $("<i style='margin-left: 2px;height: 14px' class='fa fa-file-excel-o fa-lg' title='Экспортировать документ в MS Excel'></i>");
@@ -362,10 +362,10 @@ rendertoolbar = function (toolbar) {
     if (current_user_role !== 2) {
         container.append(changestatus);
     }
-    if (audit_permission) {
+/*    if (audit_permission) {
         container.append(input5);
         input5.jqxButton({ theme: theme });
-    }
+    }*/
     container.append(editform);
     container.append(message_input);
     container.append(excel_export);
