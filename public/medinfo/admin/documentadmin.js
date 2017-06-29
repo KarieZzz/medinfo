@@ -25,7 +25,7 @@ docroute = function () {
     return route;
 };
 datasources = function() {
-    var mo_source =
+    mo_source =
     {
         dataType: "json",
         dataFields: [
@@ -43,7 +43,6 @@ datasources = function() {
         root: '',
         url: 'fetch_mo_tree/0'
     };
-
     ugroup_source =
     {
         dataType: "json",
@@ -62,7 +61,6 @@ datasources = function() {
         root: '',
         url: group_tree_url
     };
-
     docsource =
     {
         datatype: "json",
