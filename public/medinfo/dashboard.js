@@ -36,7 +36,6 @@ initnotifications = function() {
         autoOpen: false, animationOpenDelay: 800, autoClose: true, autoCloseDelay: 3000, template: "info"
     });
 };
-
 formatDate = function (dateObject) {
     let d = new Date(dateObject);
     let day = d.getDate();

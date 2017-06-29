@@ -747,7 +747,12 @@ initmotree = function() {
             filter_mode = 1; // режим отбора документов по территориям
             updatedocumenttable();
             terr.jqxDropDownButton('close');
-            terr.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: blue"></i>Медицинские организации (по территориям)</div>');
+            if (current_top_level_node == 0) {
+                terr.jqxDropDownButton('setContent', '<div style="margin: 9px">Медицинские организации (по территориям)</div>');
+            } else {
+                terr.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: blue"></i>Медицинские организации (по территориям)</div>');
+            }
+            groups.jqxDropDownButton('setContent', '<div style="margin: 9px">Медицинские организации (по группам)</div>');
             return true;
         }
     );
@@ -806,6 +811,7 @@ initgrouptree = function() {
             updatedocumenttable();
             groups.jqxDropDownButton('close');
             groups.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: blue"></i>Медицинские организации (по группам)</div>');
+            terr.jqxDropDownButton('setContent', '<div style="margin: 9px">Медицинские организации (по территориям)</div>');
             return true;
         }
     );

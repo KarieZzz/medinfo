@@ -16,7 +16,7 @@ initsplitter = function() {
     );
 };
 initdropdowns = function() {
-    var unittypessource =
+    let unittypessource =
     {
         datatype: "json",
         datafields: [

@@ -14,7 +14,7 @@
             <div>
                 <div class="jqx-hideborder jqx-hidescrollbars" id="motabs">
                     <ul>
-                        <li style="margin-left: 30px;"> Медицинские организации по территориям</li>
+                        <li style="margin-left: 30px;">Медицинские организации по территориям</li>
                         <li>По группам</li>
                     </ul>
                     <div>
@@ -27,17 +27,17 @@
             </div>
             <div id="filtertabs">
                 <ul>
-                    <li style="margin-left: 30px;" class="header-name">Формы</li>
+                    <li style="margin-left: 30px;" class="header-name">Мониторинги/формы</li>
                     <li>Статусы</li>
                     <li>Периоды</li>
                     <li>Типы</li>
                 </ul>
                 <div>
-                    <h4>Формы</h4>
-                    <div id="formsListbox" style="float: left; margin-right: 30px"></div>
-                    <div id="selectedFormBox">
+                    <h4>Мониторинги/Формы</h4>
+                    <div id="monTree" style="float: left; margin-right: 30px"></div>
+{{--                    <div id="selectedFormBox">
                         <div id="checkAllForms"><span>Выбрать все формы</span></div>
-                    </div>
+                    </div>--}}
                 </div>
                 <div>
                     <h4>Статусы</h4>
@@ -139,33 +139,20 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=006') }}"></script>
+    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=009') }}"></script>
 @endpush
 
 @section('inlinejs')
     @parent
     <script type="text/javascript">
-        let docsource_url = '/admin/fetchdocuments?';
-        let createdocuments_url = '/admin/createdocuments';
-        let deletedocuments_url = '/admin/deletedocuments';
-        let erasedocuments_url = '/admin/erasedocuments';
-        let changestate_url = '/admin/documentstatechange';
-        let group_tree_url = '/admin/fetchugroups';
-        let protectaggregate_url = '/admin/protectaggregates';
-        let current_top_level_node = 0;
-        let filter_mode = 1; // 1 - по территориям; 2 - по группам
         let checkeddtypes = {!! $dtype_ids !!};
         let monitorings = {!! $monitorings  !!};
         let forms = {!! $forms  !!};
         let states = {!! $states !!};
         let periods = {!! $periods !!};
         let dtypes = {!! $dtypes !!};
-        let checkedforms = {!! $form_ids !!};
         let checkedstates = {!! $state_ids !!};
         let checkedperiods = [{!! $period_ids !!}];
-        let grouptree = $("#groupTree");
-        let motree = $("#moTree");
-        let dlist = $('#documentList');
         datasources();
         initfilterdatasources();
         initnewdocumentwindow();
@@ -174,6 +161,7 @@
         initmotree();
         initgrouptree();
         initfiltertabs();
+        initMonitoringTree();
         initdocumentslist();
         initdocumentactions();
     </script>

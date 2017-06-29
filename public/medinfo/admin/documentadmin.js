@@ -1,10 +1,27 @@
 /**
  * Created by shameev on 28.06.2016.
  */
+let mon_tree_url = '/datainput/fetch_mon_tree/';
+let docsource_url = '/admin/fetchdocuments?';
+let createdocuments_url = '/admin/createdocuments';
+let deletedocuments_url = '/admin/deletedocuments';
+let erasedocuments_url = '/admin/erasedocuments';
+let changestate_url = '/admin/documentstatechange';
+let group_tree_url = '/admin/fetchugroups';
+let protectaggregate_url = '/admin/protectaggregates';
+let current_top_level_node = 0;
+let filter_mode = 1; // 1 - по территориям; 2 - по группам
+let grouptree = $("#groupTree");
+let motree = $("#moTree");
+let montree = $("#monTree");
+let dlist = $('#documentList');
+let checkedmonitorings = [];
+let checkedforms = [];
+
 // Инициализация источников данных для таблиц
 docroute = function () {
-    var route = '&filter_mode=' + filter_mode + '&ou=' + current_top_level_node +  '&dtypes=' + checkeddtypes.join();
-    route += '&states='+ checkedstates.join() +'&forms=' + checkedforms.join() + '&periods=' + checkedperiods.join()
+    let route = '&filter_mode=' + filter_mode + '&ou=' + current_top_level_node +  '&dtypes=' + checkeddtypes.join();
+    route += '&states='+ checkedstates.join() +'&monitorings=' + checkedmonitorings.join() +'&forms=' + checkedforms.join() + '&periods=' + checkedperiods.join()
     return route;
 };
 datasources = function() {
@@ -132,14 +149,42 @@ initfilterdatasources = function() {
     periodsDataAdapter = new $.jqx.dataAdapter(periods_source);
     dtypesDataAdapter = new $.jqx.dataAdapter(dtypes_source);
 };
-checkformfilter = function() {
+
+getCheckedMonsForms = function() {
+    let monitorings = [];
+    let forms = [];
+    let mf = [];
+    let checkedRows;
+    let uniquemonitorings;
+    let uniqueforms;
+    checkedRows = montree.jqxTreeGrid('getCheckedRows');
+    //console.log(checkedRows);
+    if (typeof checkedRows !== 'undefined') {
+        for (let i = 0; i < checkedRows.length; i++) {
+            mf.push(checkedRows[i].id);
+            let r = checkedRows[i].id.toString();
+            monitorings.push(r.substr(0,6));
+            let form_id = r.substr(6);
+            if (form_id) {
+                forms.push(form_id);
+            }
+        }
+    }
+    //console.log(forms);
+    uniquemonitorings = Array.from(new Set(monitorings));
+    uniqueforms = Array.from(new Set(forms));
+
+    return {f: uniqueforms, m: uniquemonitorings, mf: mf};
+};
+
+/*checkformfilter = function() {
     checkedforms = [];
     var checkedItems = $("#formsListbox").jqxListBox('getCheckedItems');
     var formcount = checkedItems.length;
     for (i=0; i < formcount; i++) {
         checkedforms.push(checkedItems[i].value);
     }
-};
+};*/
 checkstatefilter = function() {
     checkedstates = [];
     var checkedItems = $("#statesListbox").jqxListBox('getCheckedItems');
@@ -500,7 +545,7 @@ initgrouptree = function() {
 // инициализация вкладок-фильтров с элементами управления
 initfiltertabs = function() {
     $("#filtertabs").jqxTabs({  height: '100%', width: '100%', theme: theme });
-    $("#formsListbox").jqxListBox({
+/*    $("#formsListbox").jqxListBox({
         theme: theme,
         source: formsDataAdapter,
         displayMember: 'form_code',
@@ -526,7 +571,7 @@ initfiltertabs = function() {
         $("#formsListbox").jqxListBox('uncheckAll');
         checkformfilter();
         updatedocumenttable();
-    });
+    });*/
 
     $("#statesListbox").jqxListBox({
         theme: theme,
@@ -760,4 +805,82 @@ noselected_error = function(message) {
         return false;
     }
     return row_ids;
+};
+
+initMonitoringTree = function () {
+    let mon_source =
+        {
+            dataType: "json",
+            dataFields: [
+                { name: 'id', type: 'int' },
+                { name: 'parent_id', type: 'int' },
+                { name: 'name', type: 'string' }
+            ],
+            hierarchy:
+                {
+                    keyDataField: { name: 'id' },
+                    parentDataField: { name: 'parent_id' }
+                },
+            id: 'id',
+            root: '',
+            url: mon_tree_url
+        };
+    mon_dataAdapter = new $.jqx.dataAdapter(mon_source);
+    montree.jqxTreeGrid(
+        {
+            width: 900,
+            height: 600,
+            theme: theme,
+            source: mon_dataAdapter,
+            selectionMode: "singleRow",
+            showToolbar: true,
+            renderToolbar: montreeToolbar,
+            filterable: true,
+            filterMode: "simple",
+            localization: localize(),
+            checkboxes: true,
+            hierarchicalCheckboxes: true,
+            columnsResize: true,
+            autoRowHeight: false,
+            ready: function()
+            {
+                montree.jqxTreeGrid('expandRow', 100000);
+/*                for (let i = 0; i < checkedmf.length; i++) {
+                    montree.jqxTreeGrid('checkRow', checkedmf[i]);
+                }*/
+            },
+            columns: [
+                { text: 'Наименование мониторинга/отчетной формы', dataField: 'name', width: 900 }
+            ]
+        });
+    montree.on('filter',
+        function (event)
+        {
+            let args = event.args;
+            let filters = args.filters;
+            montree.jqxTreeGrid('expandAll');
+        }
+    );
+
+    /*    montree.on('rowCheck', function (event) {
+     console.log(getCheckedMonsForms());
+     });*/
+};
+montreeToolbar = function (toolbar) {
+    toolbar.append("<button type='button' id='moncollapseAll' class='btn btn-default btn-sm'>Свернуть все</button>");
+    toolbar.append("<button type='button' id='monexpandAll' class='btn btn-default btn-sm'>Развернуть все</button>");
+    toolbar.append("<button type='button' id='monfilterApply' class='btn btn-primary btn-sm'>Применить фильтр</button>");
+    $('#monexpandAll').click(function (event) {
+        montree.jqxTreeGrid('expandAll');
+    });
+    $('#moncollapseAll').click(function (event) {
+        montree.jqxTreeGrid('collapseAll');
+        montree.jqxTreeGrid('expandRow', 0);
+    });
+    $('#monfilterApply').click(function (event) {
+        let checked = getCheckedMonsForms();
+        checkedmonitorings = checked.m;
+        checkedforms = checked.f;
+        updatedocumenttable();
+    });
 };
