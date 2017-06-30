@@ -817,6 +817,7 @@ initgrouptree = function() {
 };
 // Ининциализация списка отчетных периодов
 initPeriodTree = function () {
+    let uncheckAll = $("#clearAllPeriods");
     let periods_source =
         {
             datatype: "json",
@@ -851,6 +852,14 @@ initPeriodTree = function () {
                 { text: 'Наименование', dataField: 'name', width: 345 }
             ]
         });
+    uncheckAll.click( function (event) {
+        let checkedRows = periodTree.jqxTreeGrid('getCheckedRows');
+        if (typeof checkedRows !== 'undefined') {
+            for (let i = 0; i < checkedRows.length; i++) {
+                periodTree.jqxTreeGrid('uncheckRow', checkedRows[i].id);
+            }
+        }
+    });
     $("#applyPeriods").click( function (event) {
         periodDropDown.jqxDropDownButton('close');
     });
