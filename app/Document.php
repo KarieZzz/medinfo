@@ -19,7 +19,7 @@ class Document extends Model
     ];
 
     protected $fillable = [
-        'dtype', 'ou_id' , 'monitoring_id', 'period_id', 'form_id', 'state',
+        'dtype', 'ou_id' , 'monitoring_id', 'album_id' ,'period_id', 'form_id', 'state',
     ];
 
     protected $dates = ['state_changed_at'];
@@ -32,6 +32,11 @@ class Document extends Model
     public function monitoring()
     {
         return $this->belongsTo('App\Monitoring');
+    }
+
+    public function album()
+    {
+        return $this->belongsTo('App\Album');
     }
 
     public function period()

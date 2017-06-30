@@ -69,6 +69,7 @@ datasources = function() {
             { name: 'doctype', type: 'string' },
             { name: 'unit_name', type: 'string' },
             { name: 'period', type: 'string' },
+            { name: 'monitoring', type: 'string' },
             { name: 'form_code', type: 'string' },
             { name: 'state', type: 'string' },
             { name: 'protected', type: 'bool' },
@@ -543,33 +544,6 @@ initgrouptree = function() {
 // инициализация вкладок-фильтров с элементами управления
 initfiltertabs = function() {
     $("#filtertabs").jqxTabs({  height: '100%', width: '100%', theme: theme });
-/*    $("#formsListbox").jqxListBox({
-        theme: theme,
-        source: formsDataAdapter,
-        displayMember: 'form_code',
-        valueMember: 'id',
-        checkboxes: true,
-        filterable:true,
-        filterPlaceHolder: 'Фильтр',
-        width: 150,
-        height: 290
-    });
-    $("#formsListbox").jqxListBox('checkAll');
-    $("#formsListbox").on('click', function () {
-        checkformfilter();
-        updatedocumenttable();
-    });
-    $("#checkAllForms").jqxCheckBox({ width: 170, height: 20, theme: theme, checked: true});
-    $('#checkAllForms').on('checked', function (event) {
-        $("#formsListbox").jqxListBox('checkAll');
-        checkformfilter();
-        updatedocumenttable();
-    });
-    $('#checkAllForms').on('unchecked', function (event) {
-        $("#formsListbox").jqxListBox('uncheckAll');
-        checkformfilter();
-        updatedocumenttable();
-    });*/
 
     $("#statesListbox").jqxListBox({
         theme: theme,
@@ -577,7 +551,7 @@ initfiltertabs = function() {
         displayMember: 'name',
         valueMember: 'code',
         checkboxes: true,
-        width: 230,
+        width: 300,
         height: 200
     });
     $("#statesListbox").jqxListBox('checkAll');
@@ -603,11 +577,11 @@ initfiltertabs = function() {
         displayMember: 'name',
         valueMember: 'id',
         checkboxes: true,
-        width: 230,
+        width: 400,
         height: 200
     });
-    var item = $("#periodsListbox").jqxListBox('getItem', 0) ;
-    $("#periodsListbox").jqxListBox('checkItem', item );
+    //var item = $("#periodsListbox").jqxListBox('getItem', 0) ;
+    //$("#periodsListbox").jqxListBox('checkItem', item );
     $("#periodsListbox").on('click', function () {
         checkperiodfilter();
         updatedocumenttable();
@@ -643,13 +617,14 @@ initdocumentslist = function() {
             selectionmode: 'checkbox',
             columns: [
                 { text: '№', datafield: 'id', width: '60px', cellsrenderer: linkrenderer },
-                { text: 'Тип', datafield: 'doctype' , width: '100px'},
-                { text: 'МО', datafield: 'unit_name', width: '300px' },
+                { text: 'Тип', datafield: 'doctype' , width: '80px'},
+                { text: 'МО', datafield: 'unit_name', width: '250px' },
+                { text: 'Мониторинг', datafield: 'monitoring', width: '250px' },
                 { text: 'Период', datafield: 'period', width: '100px' },
-                { text: 'Форма', datafield: 'form_code', width: '100px'  },
+                { text: 'Форма', datafield: 'form_code', width: '80px'  },
                 { text: 'Статус', datafield: 'state' },
-                { text: 'Защищен', datafield: 'protected', columntype: 'checkbox', width: 100 },
-                { text: 'Данные', datafield: 'filled', columntype: 'checkbox', width: 100 }
+                { text: 'Защищен', datafield: 'protected', columntype: 'checkbox', width: '80px' },
+                { text: 'Данные', datafield: 'filled', columntype: 'checkbox', width: '80px' }
             ]
         });
 };

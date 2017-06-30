@@ -306,14 +306,14 @@ mo_name_aggrfilter = function (needle) {
     agrid.jqxGrid('applyfilters');
 };
 // Рендеринг панели инструментов для таблицы первичных документов
-rendertoolbar = function (toolbar) {
+renderdoctoolbar = function (toolbar) {
     let me = this;
     let container = $("<div style='margin: 5px;'></div>");
-    let input1 = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='searchField' type='text' style='height: 23px; float: left; width: 150px;' />");
-    let input2 = $("<input id='clearfilters' type='button' value='Очистить фильтр'/>");
-    //console.log(audit_permission);
-/*    if (audit_permission) {
-        let input5 = $("<input id='ChangeAudutStatus' type='button' value='Проверка отчета' />");
+    let searchField = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='searchField' type='text' style='height: 23px; float: left; width: 150px;' />");
+    let clearfilters = $("<input id='clearfilters' type='button' value='Очистить фильтр'/>");
+    let input5 = $("<input id='ChangeAudutStatus' type='button' value='Проверка отчета' />");
+    let statewindow = $("#changeAuditStateWindow");
+    if (audit_permission) {
         input5.click(function () {
             let rowindex = dgrid.jqxGrid('getselectedrowindex');
             if (rowindex === -1) {
@@ -344,10 +344,10 @@ rendertoolbar = function (toolbar) {
                 }
             });
             let offset = dgrid.offset();
-            $("#changeAuditStateWindow").jqxWindow({ position: { x: parseInt(offset.left) + 150, y: parseInt(offset.top) + 100 } });
-            $("#changeAuditStateWindow").jqxWindow('open');
+            statewindow.jqxWindow({ position: { x: parseInt(offset.left) + 150, y: parseInt(offset.top) + 100 } });
+            statewindow.jqxWindow('open');
         });
-    }*/
+    }
 
     let editform = $("<i style='margin-left: 2px;height: 14px' class='fa fa-edit fa-lg' title='Редактировать форму' />");
     let excel_export = $("<i style='margin-left: 2px;height: 14px' class='fa fa-file-excel-o fa-lg' title='Экспортировать документ в MS Excel'></i>");
@@ -356,25 +356,25 @@ rendertoolbar = function (toolbar) {
     let changestatus = $("<input id='ChangeStatus' type='button' value='Статус отчета' />");
 
     toolbar.append(container);
-    container.append(input1);
-    container.append(input2);
+    container.append(searchField);
+    container.append(clearfilters);
 
     if (current_user_role !== 2) {
         container.append(changestatus);
     }
-/*    if (audit_permission) {
+    if (audit_permission) {
         container.append(input5);
         input5.jqxButton({ theme: theme });
-    }*/
+    }
     container.append(editform);
     container.append(message_input);
     container.append(excel_export);
     //container.append(excel_file);
     container.append(refresh_list);
-    input1.addClass('jqx-widget-content-' + theme);
-    input1.addClass('jqx-rc-all-' + theme);
-    input1.jqxInput({ width: 200, placeHolder: "Медицинская организация" });
-    input2.jqxButton({ theme: theme });
+    searchField.addClass('jqx-widget-content-' + theme);
+    searchField.addClass('jqx-rc-all-' + theme);
+    searchField.jqxInput({ width: 200, placeHolder: "Медицинская организация" });
+    clearfilters.jqxButton({ theme: theme });
     editform.jqxButton({ theme: theme });
     changestatus.jqxButton({ theme: theme });
     excel_export.jqxButton({ theme: theme });
@@ -382,23 +382,23 @@ rendertoolbar = function (toolbar) {
     message_input.jqxButton({ theme: theme });
     refresh_list.jqxButton({ theme: theme });
     var oldVal = "";
-    input1.on('keydown', function (event) {
-        if (input1.val().length >= 2) {
+    searchField.on('keydown', function (event) {
+        if (searchField.val().length >= 2) {
             if (me.timer) {
                 clearTimeout(me.timer);
             }
-            if (oldVal !== input1.val()) {
+            if (oldVal !== searchField.val()) {
                 me.timer = setTimeout(function () {
-                    mo_name_filter(input1.val());
+                    mo_name_filter(searchField.val());
                 }, 500);
-                oldVal = input1.val();
+                oldVal = searchField.val();
             }
         }
         else {
             dgrid.jqxGrid('removefilter', '1');
         }
     });
-    input2.click(function () { dgrid.jqxGrid('clearfilters'); input1.val('');});
+    clearfilters.click(function () { dgrid.jqxGrid('clearfilters'); searchField.val('');});
     editform.click(function () {
         let rowindex = dgrid.jqxGrid('getselectedrowindex');
         if (rowindex !== -1 && typeof rowindex !== 'undefined') {
@@ -475,8 +475,7 @@ rendertoolbar = function (toolbar) {
      }
      });*/
     refresh_list.click(function () {
-        let new_doc_url = docsource_url + filtersource();
-        docsource.url = new_doc_url;
+        docsource.url = docsource_url + filtersource();
         dgrid.jqxGrid('updatebounddata');
         $("#DocumentMessages").html('');
         $("#DocumentAuditions").html('');
@@ -906,7 +905,7 @@ initdocumentstabs = function() {
             theme: theme,
             columnsresize: true,
             showtoolbar: true,
-            rendertoolbar: rendertoolbar,
+            rendertoolbar: renderdoctoolbar,
             columns: [
                 { text: '№', datafield: 'id', width: '5%', cellclassname: filledFormclass },
                 { text: 'Код МО', datafield: 'unit_code', width: 70 },

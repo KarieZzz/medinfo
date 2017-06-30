@@ -177,7 +177,7 @@ class DocumentTree
                     JOIN monitorings m ON d.monitoring_id = m.id
                     JOIN periods p on d.period_id = p.id
                     LEFT JOIN aggregates a ON a.doc_id = d.id
-                  WHERE d.ou_id = {$this->top_node} {$this->scopes['m']} {$this->scopes['f']} {$this->scopes['p']} {$this->scopes['s']}
+                  WHERE d.ou_id = {$this->top_node} {$this->scopes['t']} {$this->scopes['m']} {$this->scopes['f']} {$this->scopes['p']} {$this->scopes['s']}
                   GROUP BY d.id, u.group_code, u.group_name, f.form_code, f.form_name, m.name, p.name, s.name, t.name, a.protected
                   ORDER BY f.form_code, p.name";
                 //echo $group_doc_query;

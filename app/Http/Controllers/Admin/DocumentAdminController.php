@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Medinfo\DocumentTree;
 use App\Medinfo\UnitTree;
 use App\UnitGroup;
+use App\Monitoring;
 use App\Period;
 use App\Document;
 use App\DicDocumentState;
@@ -62,9 +63,10 @@ class DocumentAdminController extends Controller
         $filter_mode = $request->filter_mode;
         $dtypes = explode(",", $request->dtypes);
         $states = explode(",", $request->states);
+        $monitorings = explode(",", $request->monitorings);
         $forms = explode(",", $request->forms);
         $periods = explode(",", $request->periods);
-        $scopes = compact('worker_scope',  'filter_mode', 'top_node', 'dtypes', 'states', 'forms', 'periods');
+        $scopes = compact('worker_scope',  'filter_mode', 'top_node', 'dtypes', 'states', 'monitorings', 'forms', 'periods');
         $d = new DocumentTree($scopes);
         $data = $d->get_documents();
         return $data;
@@ -76,7 +78,7 @@ class DocumentAdminController extends Controller
         $allowprimary = false;
         $allowaggregate = false;
         $units = explode(",", $request->units);
-        $monitoring = $request->monitoring;
+        $monitoring = Monitoring::find($request->monitoring);
         $forms = explode(",", $request->forms);
         $create_primary = $request->primary;
         $create_aggregate = $request->aggregate;
@@ -95,10 +97,12 @@ class DocumentAdminController extends Controller
                 $unit = UnitGroup::find($unit_id);
             }
             foreach ($forms as $form_id) {
-                $newdoc = ['ou_id' => $unit->id, 'monitoring_id' => $monitoring, 'form_id' => $form_id , 'period_id' => $period_id, 'state' => $initial_state ];
+                $newdoc = ['ou_id' => $unit->id, 'monitoring_id' => $monitoring->id, 'album_id' => $monitoring->album_id, 'form_id' => $form_id ,
+                    'period_id' => $period_id, 'state' => $initial_state ];
 
                 if ($create_primary && $allowprimary) {
                     $newdoc['dtype'] = 1;
+                    //Document::create($newdoc);
                     try {
                         Document::create($newdoc);
                         $i++;
@@ -170,7 +174,7 @@ class DocumentAdminController extends Controller
     public function protect_aggregated(Request $request)
     {
         $documents = explode(",", $request->documents );
-        // TODO: Нужно решить устанавливать защищаемый статус только для сводных документов, или может быть пригодится для любых документов
+        // TODO: Нужно решить устанавливать защищаемый статус только для сводных документов, или может быть пригодится для любых документов?
         foreach ($documents as $document) {
             $aggregate = \App\Aggregate::firstOrCreate(['doc_id' => $document]);
             $aggregate->protected = 1;

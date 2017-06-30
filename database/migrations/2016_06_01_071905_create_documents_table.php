@@ -17,6 +17,7 @@ class CreateDocumentsTable extends Migration
             $table->integer('dtype')->default(1)->index();
             $table->integer('ou_id')->index();
             $table->integer('monitoring_id')->index();
+            $table->integer('album_id')->index();
             $table->char('period_id', 8)->index();
             $table->integer('form_id')->index();
             $table->integer('state')->index();
@@ -24,7 +25,7 @@ class CreateDocumentsTable extends Migration
             $table->timestamp('state_changed_at')->nullable()->index();
             $table->softDeletes();
             $table->timestamps();
-            $table->unique(['dtype', 'ou_id', 'period_id', 'monitoring_id', 'form_id']);
+            $table->unique(['dtype', 'ou_id', 'period_id', 'form_id']);
         });
     }
 

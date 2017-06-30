@@ -34,7 +34,7 @@ initdatasources = function() {
         datatype: "json",
         datafields: [
             { name: 'form_code', map: 'form>form_code', type: 'string' },
-            { name: 'excluded', map: 'excluded>0>album_id', type: 'bool' },
+            { name: 'excluded', map: 'excluded>0>id', type: 'int' },
             { name: 'id', type: 'int' },
             { name: 'table_index', type: 'int' },
             { name: 'form_id', type: 'int' },
@@ -66,7 +66,7 @@ inittablelist = function() {
                 { text: 'Id', datafield: 'id', width: '30px' },
                 { text: '№ п/п', datafield: 'table_index', width: '50px' },
                 { text: 'Код формы', datafield: 'form_code', width: '100px'  },
-                { text: 'Исключена из альбома', datafield: 'excluded', columntype: 'checkbox', width: '90px'  },
+                { text: 'Исключена из альбома', datafield: 'excluded' , columntype: 'checkbox', width: '90px' },
                 { text: 'Код таблицы', datafield: 'table_code', width: '100px'  },
                 { text: 'Имя', datafield: 'table_name' , width: '400px'},
                 { text: 'Транспонирование', datafield: 'transposed', width: '70px' },
@@ -140,7 +140,6 @@ initformactions = function() {
     });
     $("#save").click(function () {
         var row = tlist.jqxGrid('getselectedrowindex');
-        console.log(row);
         if (row == -1) {
             raiseError("Выберите запись для изменения/сохранения данных");
             return false;
