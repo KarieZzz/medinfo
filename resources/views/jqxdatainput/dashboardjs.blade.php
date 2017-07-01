@@ -1,24 +1,23 @@
 <script type="text/javascript">
-var ou_name = "{{ preg_replace('/[\r\n\t]/', '', $current_unit->unit_name) }}";
-var ou_code = "{{ $current_unit->unit_code }}";
-var doc_id = '{{ $document->id }}';
-var doc_type = '{{ $document->dtype }}';
-var form_name = '{{ $form->form_name }}';
-var form_code = '{{ $form->form_code }}';
-var default_album = '{{ $album->id }}';
-var current_user_role = '{{ $worker->role }}';
-var current_table = '{{ $laststate['currenttable']->id }}';
-var current_table_code = '{{ $laststate['currenttable']->table_code }}';
-var fgrid; // селектор для сетки с перечнем таблиц
-var dgrid; // селектор для сетки с данными таблиц
-var localizednumber = new Intl.NumberFormat('ru-RU');
-var edited_tables = [{!! implode(',', $editedtables) !!}];
-var not_editable_cells = {!! json_encode($noteditablecells) !!};
-//console.log(not_editable_cells);
-var edit_permission = {{ $editpermission ? 'true' : 'false' }};
-var control_disabled = {{ config('app.control_disabled') ? 'true' : 'false' }};
-var form_tables_data = [{!! implode(',', $renderingtabledata['tablelist']) !!}];
-var data_for_tables = $.parseJSON('{!!  $renderingtabledata['tablecompose'] !!}');
+let ou_name = "{{ preg_replace('/[\r\n\t]/', '', $current_unit->unit_name) }}";
+let ou_code = "{{ $current_unit->unit_code }}";
+let doc_id = '{{ $document->id }}';
+let doc_type = '{{ $document->dtype }}';
+let form_name = '{{ $form->form_name }}';
+let form_code = '{{ $form->form_code }}';
+let default_album = '{{ $album->id }}';
+let current_user_role = '{{ $worker->role }}';
+let current_table = '{{ $laststate['currenttable']->id }}';
+let current_table_code = '{{ $laststate['currenttable']->table_code }}';
+let fgrid; // селектор для сетки с перечнем таблиц
+let dgrid; // селектор для сетки с данными таблиц
+let localizednumber = new Intl.NumberFormat('ru-RU');
+let edited_tables = [{!! implode(',', $editedtables) !!}];
+let not_editable_cells = {!! json_encode($noteditablecells) !!};
+let edit_permission = {{ $editpermission ? 'true' : 'false' }};
+let control_disabled = {{ config('app.control_disabled') ? 'true' : 'false' }};
+let form_tables_data = [{!! implode(',', $renderingtabledata['tablelist']) !!}];
+let data_for_tables = $.parseJSON('{!!  $renderingtabledata['tablecompose'] !!}');
 $.each(data_for_tables, function(table, content) {
     $.each(content.columns, function(column, properties) {
         if (typeof properties.cellclassname !== 'undefined') {

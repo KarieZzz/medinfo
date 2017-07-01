@@ -57,35 +57,35 @@
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
     <script src="{{ asset('/medinfo/admin/tablepicker.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/necellsadmin.js?v=001') }}"></script>
+    <script src="{{ asset('/medinfo/admin/necellsadmin.js?v=004') }}"></script>
 @endpush
 
 @section('inlinejs')
     @parent
     <script type="text/javascript">
-        var tableDataAdapter;
-        var formsDataAdapter;
-        var rowsDataAdapter;
-        var dataAdapter;
-        var tablesource;
-        var gridsource;
-        var columnsource;
-        var sellselectbegin;
-        var grid =  $("#tableGrid");
-        var tablefetch_url = '/admin/rc/fetchtables/';
-        var gridfetch_url = '/admin/necells/grid/';
-        var cellsfetch_url = '/admin/necells/fetchnecells/';
-        var fetchcellcondition_url = '/admin/necells/fetchcellcondition/';
-        var changecellstate_url = '/admin/necells/changecellstate/';
-        var changerangestate_url = '/admin/necells/range/';
-        var forms = {!! $forms  !!};
-        var conditions = {!! $conditions !!};
-        var current_form = 0;
-        var current_table = 0;
-        var datafields = [ { name: 'id' }, { name: '1' } ];
-        var columns = [{ text: '1', columngroup: 'графа1', datafield: '1', width: 250 } ];
-        var columngroups = [ { text: 'Графа 1', align: 'center', name: 'графа1' } ] ;
-        var rows;
+        let tableDataAdapter;
+        let formsDataAdapter;
+        let rowsDataAdapter;
+        let dataAdapter;
+        let tablesource;
+        let gridsource;
+        let columnsource;
+        let sellselectbegin;
+        let grid =  $("#tableGrid");
+        let tablefetch_url = '/admin/rc/fetchtables/';
+        let gridfetch_url = '/admin/necells/grid/';
+        let cellsfetch_url = '/admin/necells/fetchnecells/';
+        let fetchcellcondition_url = '/admin/necells/fetchcellcondition/';
+        let changecellstate_url = '/admin/necells/changecellstate/';
+        let changerangestate_url = '/admin/necells/range/';
+        let forms = {!! $forms  !!};
+        let conditions = {!! $conditions !!};
+        let current_form = 0;
+        let current_table = 0;
+        let datafields = [ { name: 'id' }, { name: '1' } ];
+        let columns = [{ text: '1', columngroup: 'графа1', datafield: '1', width: 250 } ];
+        let columngroups = [ { text: 'Графа 1', align: 'center', name: 'графа1' } ] ;
+        let rows;
         initFilterDatasources();
         initsplitter();
         initdatasources();

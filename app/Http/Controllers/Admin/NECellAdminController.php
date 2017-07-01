@@ -39,11 +39,8 @@ class NECellAdminController extends Controller
 
     public function fetchGrid(Table $table)
     {
-        $default_album = Album::Default()->first(['id']);
-        if (!$default_album) {
-            $default_album = Album::find(config('medinfo.default_album'));
-        }
-        return TableEditing::fetchDataForTableRenedering($table, $default_album, 'checkbox', false);
+        //$general_album = Album::General()->first(['id']);
+        return TableEditing::tableRender($table);
     }
 
     public function fetchValues(Table $table)

@@ -45,7 +45,7 @@ initdatasources = function() {
 };
 
 initdropdowns = function() {
-    var conditionsource =
+    let conditionsource =
     {
         datatype: "json",
         datafields: [
@@ -92,7 +92,7 @@ initTableGrid = function() {
     //});
 
     grid.on('cellselect',  function() {
-        var cells = $('#tableGrid').jqxGrid('getselectedcells');
+        let cells = $('#tableGrid').jqxGrid('getselectedcells');
         if (cellbeginedit) {
             clearTimeout(cellbeginedit);
         }

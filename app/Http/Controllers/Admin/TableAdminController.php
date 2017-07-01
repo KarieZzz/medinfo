@@ -23,8 +23,8 @@ class TableAdminController extends Controller
     public function index()
     {
         $forms = Form::orderBy('form_index')->get(['id', 'form_code']);
-
-        return view('jqxadmin.tables', compact('forms'));
+        $default_album = Album::Default()->first();
+        return view('jqxadmin.tables', compact('forms', 'default_album'));
     }
 
     public function fetchTables()

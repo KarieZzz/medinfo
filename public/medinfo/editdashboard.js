@@ -39,15 +39,15 @@ var initDecimal3Editor = function (row, cellvalue, editor, celltext, pressedChar
     editor.jqxNumberInput({ decimalDigits: 3, digits: 12, decimalSeparator: ',' });
 };
 
-var cellsrenderer = function (row, column, value, defaulthtml, columnproperties) {
+cellsrenderer = function (row, column, value, defaulthtml, columnproperties) {
     if (!value) { return defaulthtml  }
-    var formated = $(defaulthtml).html(localizednumber.format(value));
+    let formated = $(defaulthtml).html(localizednumber.format(value));
     return formated[0].outerHTML;
 };
 
-var cellclass = function (row, columnfield, value, rowdata) {
-    var invalid_cell = '';
-    var alerted_cell = '';
+cellclass = function (row, columnfield, value, rowdata) {
+    let invalid_cell = '';
+    let alerted_cell = '';
     var class_by_edited_row = '';
     var not_editable = '';
     for (var i = 0; i < not_editable_cells.length; i++) {
@@ -92,14 +92,14 @@ var cellclass = function (row, columnfield, value, rowdata) {
         return class_compare + ' ' + not_editable;
     }
 };
-var validation = function(cell, value) {
+validation = function(cell, value) {
     if (value < 0) {
         return { result: false, message: 'Допускаются только положительные значения' };
     }
     return true;
 };
 // Пояснялки названий столбцов
-var tooltiprenderer = function (element) {
+tooltiprenderer = function (element) {
     $(element).jqxTooltip({position: 'mouse', content: $(element).text() });
 };
 // Пометка/снятие пометки волнистой чертой неверных таблиц

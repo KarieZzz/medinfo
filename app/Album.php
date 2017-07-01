@@ -14,4 +14,11 @@ class Album extends Model
         return $query
             ->where('default', true);
     }
+
+    public function scopeGeneral($query)
+    {
+        return $query
+            ->where('id', config('medinfo.general_album'));
+    }
+
 }

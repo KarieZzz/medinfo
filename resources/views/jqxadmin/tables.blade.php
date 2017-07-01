@@ -72,6 +72,14 @@
                     </div>
                 </form>
             </div>
+
+        </div>
+        <div class="well well-lg">
+            <div class="row">
+                <div class="col-sm-2"><strong>Текущий альбом:</strong></div>
+                <div class="col-sm-10">{{ $default_album->album_name }}</div>
+
+            </div>
         </div>
     </div>
 </div>

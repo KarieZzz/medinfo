@@ -33,6 +33,7 @@ class TableEditing
         );
         $column_groups_arr = array();
         //$cols = $table->columns->where('deleted', 0)->sortBy('column_index');
+
         $cols = Column::OfTable($table->id)->whereDoesntHave('excluded', function ($query) use($album) {
             $query->where('album_id', $album->id);
         })->get();
@@ -68,6 +69,69 @@ class TableEditing
                     'cellclassname' => 'cellclass',
                     'cellbeginedit' => 'cellbeginedit',
                     'initeditor' => $editor,
+                    'validation' => 'validation'
+                );
+                $column_groups_arr[] = array(
+                    'text' => $col->column_name,
+                    'align' => 'center',
+                    'name' => $col->id,
+                    'rendered' => 'tooltiprenderer'
+                );
+            } else if ($contentType == 'header') {
+                $columns_arr[] = array(
+                    'text' => $col->column_name,
+                    'dataField' => $col->id,
+                    'width' => $width,
+                    'cellsalign' => 'left',
+                    'align' => 'center',
+                    'pinned' => true,
+                    'editable' => false,
+                    'filtertype' => 'textbox'
+                );
+            }
+        }
+        $fortable['tablecode'] = $table->table_code;
+        $fortable['tablename'] = $table->table_name;
+        $fortable['datafields'] = $datafields_arr;
+        $fortable['columns'] = $columns_arr;
+        $fortable['columngroups'] = $column_groups_arr;
+        return $fortable;
+    }
+
+    public static function tableRender(Table $table)
+    {
+        if (!$table) {
+            return [];
+        }
+        $fortable = [];
+        $datafields_arr = array();
+        $columns_arr = array();
+        $datafields_arr[0] = array('name'  => 'id');
+        $columns_arr[0] = array(
+            'text'  => 'id',
+            'dataField' => 'id',
+            'width' => 50,
+            'cellsalign' => 'left',
+            'pinned' => true
+        );
+        $column_groups_arr = array();
+        $cols = Column::OfTable($table->id)->get();
+        foreach ($cols as $col) {
+            $datafields_arr[] = ['name'  => $col->id, 'type'  => 'string', ];
+            $width = $col->size * 10;
+            $contentType = $col->getMedinfoContentType();
+            if ($contentType == 'data') {
+                $columns_arr[] = array(
+                    'text'  => $col->column_index,
+                    'dataField' => $col->id,
+                    'width' => $width,
+                    'cellsalign' => 'right',
+                    'align' => 'center',
+                    'columntype' => 'checkbox',
+                    'columngroup' => $col->id,
+                    'filtertype' => 'number',
+                    'cellclassname' => 'cellclass',
+                    'cellbeginedit' => 'cellbeginedit',
                     'validation' => 'validation'
                 );
                 $column_groups_arr[] = array(
