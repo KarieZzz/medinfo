@@ -535,10 +535,10 @@ renderaggregatetoolbar = function(toolbar) {
     container.append(filter);
     container.append(editform);
     container.append(makeaggregation);
-    if (audit_permission) {
+/*    if (audit_permission) {
         container.append(change_audit_status);
         change_audit_status.jqxButton({ theme: theme });
-    }
+    }*/
     container.append(excel_export);
     container.append(refresh_list);
     input1.addClass('jqx-widget-content-' + theme);

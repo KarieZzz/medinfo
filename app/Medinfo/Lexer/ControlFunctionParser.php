@@ -278,8 +278,6 @@ class ControlFunctionParser extends Parser {
         $this->currentNode = $o;
     }
 
-
-
     public function minmaxfunctions()
     {
         $r = new ControlFunctionParseTree(__FUNCTION__);
