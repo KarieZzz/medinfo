@@ -1003,8 +1003,9 @@ initdocumentstabs = function() {
                 { text: '№', datafield: 'id', width: '5%' },
                 { text: 'Код Территории/МО', datafield: 'unit_code', width: 100 },
                 { text: 'Наименование МО', datafield: 'unit_name', width: '20%' },
+                { text: 'Мониторинг', datafield: 'monitoring', width: 320 },
                 { text: 'Код формы', datafield: 'form_code', width: 100 },
-                { text: 'Наименование формы', datafield: 'form_name', width: '20%' },
+                //{ text: 'Наименование формы', datafield: 'form_name', width: '20%' },
                 { text: 'Период', datafield: 'period', width: 150 },
                 { text: 'Сведение', datafield: 'aggregated_at', width: 150 },
                 { text: 'Данные', datafield: 'filled', columntype: 'checkbox', width: 120 }
@@ -1370,6 +1371,7 @@ initDocumentSource = function () {
                 {name: 'unit_name', type: 'string'},
                 {name: 'form_code', type: 'string'},
                 {name: 'form_name', type: 'string'},
+                { name: 'monitoring', type: 'string' },
                 {name: 'period', type: 'string'},
                 {name: 'aggregated_at', type: 'string'},
                 { name: 'filled', type: 'bool' }
