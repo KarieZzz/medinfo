@@ -16,65 +16,58 @@ class WordExportController extends Controller
     private $dom = null;
     private $xpath = null;
     private $document = null;
+    private $year_node = null;
+    private $unit_node = null;
+    private $cell_nodes = [];
 
     public function formExport(int $document)
     {
-        //$phpWord = new \PhpOffice\PhpWord\PhpWord();
         //$path = storage_path('app/templates/excel/s' . $code .'.xlsx');
-        $path = storage_path('app/templates/word/30/word/document.xml');
+        $path = storage_path('app/templates/word/13/word/document.xml');
         if (!is_file($path)) {
             throw new \Exception('Файл шаблона отчета не существует');
         }
-        //$phpWord = \PhpOffice\PhpWord\IOFactory::load($path);
-        //var_dump($phpWord->getSections());
-        //$crawler = new Crawler();
-        //$crawler->addXmlContent($path);
-        //dd($crawler);
-/*        foreach ($crawler as $domElement) {
-            var_dump($domElement->nodeName);
-        }*/
-        //$handle = file($path);
-        //dd($handle);
-        //$this->getDomFromString($path);
-        //dd($this->dom);
         $this->getDomFromPath($path);
-        $this->read();
-        //dd($this->dom);
+        $this->modifyDOM();
+        echo 'Wrote: ' .  $this->dom->save($path) . ' bytes';
+
+        //$this->dom->save($path);
     }
 
-    public function read()
+    public function modifyDOM()
     {
-        //$nodes = $this->getElements('w:bookmarkStart/*');
-        //$nodes = $this->getElements('w:body/*');
-        //$nodes = $this->getElements('*');
         $nodes = $this->getElements('w:body/w:tbl/w:tr/w:tc/w:p/w:bookmarkStart');
         //dd($nodes);
         //dd($nodes->item(0)->getAttribute('w:name'));
         if ($nodes->length > 0) {
             foreach ($nodes as $node) {
-                $cell_arguments = explode('_', $node->getAttribute('w:name'));
-
-                $table_code = substr($cell_arguments[0], 1);
-                $row_index = ltrim($cell_arguments[1], '0');
-                if (isset($cell_arguments[2])) {
-                    $column_index = ltrim($cell_arguments[2], '0');
-                    var_dump(mb_strlen($column_index));
-
+                $node_name = $node->getAttribute('w:name');
+                switch ($node_name) {
+                    case 'z0001_000_00' :
+                        $this->year_node = $node;
+                        break;
+                    case 'z0002_000_00' :
+                        $this->unit_node = $node;
+                        break;
+                    case $node_name[0] === 'z':
+                        $cell_arguments = explode('_', $node->getAttribute('w:name'));
+                        $table_code = substr($cell_arguments[0], 1);
+                        $row_index = ltrim($cell_arguments[1], '0');
+                        $column_index = ltrim($cell_arguments[2], '0');
+                        $this->writeValue($table_code, $row_index, $column_index, $node);
+                        break;
                 }
-
             }
         }
     }
 
     public function getDomFromPath($path)
     {
-        //dd($content);
         $this->dom = new \DOMDocument();
         $this->dom->load($path);
 
         return $this->dom;
     }
-
 
     public function getElements($path, \DOMElement $contextNode = null)
     {
@@ -90,5 +83,37 @@ class WordExportController extends Controller
         } else {
             return $this->xpath->query($path, $contextNode);
         }
+    }
+
+    public function writeValue($table_code, $row_index, $column_index, $node)
+    {
+        $p = $node->parentNode;
+        $wr_nodes = $p->getElementsByTagName('w:r');
+        // Если секция w:r уже присутствует в документе, новую не добавляем
+        var_dump($p->getElementsByTagName('w:bookmarkStart'));
+        //var_dump($wr_nodes);
+/*        if ($wr_nodes->length === 0) {
+            // Создаем узлы
+            $new_r_node = $this->dom->createElement('w:r');
+            $new_t_node = $this->dom->createElement('w:t', '666666');
+            $new_rPr_element = $this->dom->createElement('w:rPr');
+            $new_b_element = $this->dom->createElement('w:b');
+            $new_bCs_element = $this->dom->createElement('w:bCs');
+            $new_sz_element = $this->dom->createElement('w:sz');
+            $new_sz_element->setAttribute("w:val", "18");
+            // Добавляем узлы
+            $new_r_node->appendChild($new_rPr_element);
+            $new_rPr_element->appendChild($new_b_element);
+            $new_rPr_element->appendChild($new_bCs_element);
+            $new_rPr_element->appendChild($new_sz_element);
+
+            $new_r_node->appendChild($new_t_node);
+
+            $p->appendChild($new_r_node);
+            //var_dump($p->childNodes[3]->childNodes[1]);
+        }*/
+
+
+
     }
 }
