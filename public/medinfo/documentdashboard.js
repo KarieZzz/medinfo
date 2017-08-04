@@ -15,6 +15,7 @@ let aggrsource_url = 'datainput/fetchaggregates?';
 let edit_form_url = 'datainput/formdashboard';
 let edit_aggregate_url = 'datainput/aggregatedashboard';
 let aggregatedata_url = "/datainput/aggregatedata/";
+let export_word_url = "/datainput/wordexport/";
 let export_form_url = "/datainput/formexport/";
 let montree = $("#monTree");
 let motree = $("#moTree");
@@ -350,6 +351,7 @@ renderdoctoolbar = function (toolbar) {
     }
 
     let editform = $("<i style='margin-left: 2px;height: 14px' class='fa fa-edit fa-lg' title='Редактировать форму' />");
+    let word_export = $("<i style='margin-left: 2px;height: 14px' class='fa fa-file-word-o fa-lg' title='Экспортировать документ в MS Word'></i>");
     let excel_export = $("<i style='margin-left: 2px;height: 14px' class='fa fa-file-excel-o fa-lg' title='Экспортировать документ в MS Excel'></i>");
     let message_input = $("<i style='margin-left: 2px;height: 14px' class='fa fa-commenting-o fa-lg' title='Сообщение/комментарий к документу'></i>");
     let refresh_list = $("<i style='margin-left: 2px;height: 14px' class='fa fa-refresh fa-lg' title='Обновить список'></i>");
@@ -368,6 +370,7 @@ renderdoctoolbar = function (toolbar) {
     }
     container.append(editform);
     container.append(message_input);
+    container.append(word_export);
     container.append(excel_export);
     //container.append(excel_file);
     container.append(refresh_list);
@@ -377,11 +380,12 @@ renderdoctoolbar = function (toolbar) {
     clearfilters.jqxButton({ theme: theme });
     editform.jqxButton({ theme: theme });
     changestatus.jqxButton({ theme: theme });
+    word_export.jqxButton({ theme: theme });
     excel_export.jqxButton({ theme: theme });
     //excel_file.jqxButton({ theme: theme });
     message_input.jqxButton({ theme: theme });
     refresh_list.jqxButton({ theme: theme });
-    var oldVal = "";
+    let oldVal = "";
     searchField.on('keydown', function (event) {
         if (searchField.val().length >= 2) {
             if (me.timer) {
@@ -460,6 +464,13 @@ renderdoctoolbar = function (toolbar) {
         $("#sendMessageWindow").jqxWindow({ position: { x: parseInt(offset.left) + 100, y: parseInt(offset.top) + 100 } });
         $("#sendMessageWindow").jqxWindow('open');
     });
+    word_export.click(function () {
+        let rowindex = dgrid.jqxGrid('getselectedrowindex');
+        let document_id = dgrid.jqxGrid('getrowid', rowindex);
+        if (rowindex !== -1) {
+            window.open(export_word_url + document_id);
+        }
+    });
     excel_export.click(function () {
         let rowindex = dgrid.jqxGrid('getselectedrowindex');
         let document_id = dgrid.jqxGrid('getrowid', rowindex);
@@ -526,10 +537,9 @@ renderaggregatetoolbar = function(toolbar) {
             $("#BatchChangeAuditStateWindow").jqxWindow('open');
         });
     }
+    let word_export = $("<i style='margin-left: 2px;height: 14px' class='fa fa-file-word-o fa-lg' title='Экспортировать документ в MS Word'></i>");
     let excel_export = $("<i style='margin-left: 2px;height: 14px' class='fa fa-file-excel-o fa-lg' title='Экспортировать документ в MS Excel'></i>");
     let refresh_list = $("<i style='margin-left: 2px;height: 14px' class='fa fa-refresh fa-lg' title='Обновить список'></i>");
-
-
     toolbar.append(container);
     container.append(input1);
     container.append(filter);
@@ -539,6 +549,7 @@ renderaggregatetoolbar = function(toolbar) {
         container.append(change_audit_status);
         change_audit_status.jqxButton({ theme: theme });
     }*/
+    container.append(word_export);
     container.append(excel_export);
     container.append(refresh_list);
     input1.addClass('jqx-widget-content-' + theme);
@@ -547,6 +558,7 @@ renderaggregatetoolbar = function(toolbar) {
     filter.jqxButton({ theme: theme });
     editform.jqxButton({ theme: theme });
     makeaggregation.jqxButton({ theme: theme });
+    word_export.jqxButton({ theme: theme });
     excel_export.jqxButton({ theme: theme });
     refresh_list.jqxButton({ theme: theme });
     let oldVal = "";
@@ -577,6 +589,14 @@ renderaggregatetoolbar = function(toolbar) {
 
     makeaggregation.click( function() {
             aggregatedata();
+    });
+
+    word_export.click(function () {
+        let rowindex = agrid.jqxGrid('getselectedrowindex');
+        let document_id = agrid.jqxGrid('getrowid', rowindex);
+        if (rowindex !== -1) {
+            window.open(export_word_url + document_id);
+        }
     });
 
     excel_export.click(function () {

@@ -183,7 +183,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('datainput/dcheck/table/{document}/{table}/{forcereload}', 'StatDataInput\DataCheckController@check_table');
     Route::get('datainput/dcheck/form/{document}/{forcereload}', 'StatDataInput\DataCheckController@check_document');
 
-    // Эспорт данных в Эксель и заполнение печатных форм-шаблонов
+    // Эспорт данных в Эксель/Word и заполнение печатных форм-шаблонов
     Route::get('datainput/wordexport/{document}', 'StatDataInput\WordExportController@formExport');
     Route::get('datainput/formexport/{document}', 'StatDataInput\ExcelExportController@formExport');
     Route::get('datainput/tableexport/{document}/{table}', 'StatDataInput\ExcelExportController@dataTableExport');

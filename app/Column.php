@@ -56,4 +56,11 @@ class Column extends Model
             ->where('table_id', $table);
     }
 
+    public function scopeOfTableColumnIndex($query, $table, $columnindex)
+    {
+        return $query
+            ->where('table_id', $table)
+            ->where('column_index', $columnindex);
+    }
+
 }

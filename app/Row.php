@@ -26,6 +26,21 @@ class Row extends Model
             ->where('table_id', $table);
     }
 
+    public function scopeOfTableRowIndex($query, $table, $rowindex)
+    {
+        return $query
+            ->where('row_index', $rowindex)
+            ->where('table_id', $table);
+    }
+
+    public function scopeOfTableRowMedstatcode($query, $table, $medstatcode)
+    {
+        return $query
+            ->where('medstat_code', $medstatcode)
+            ->where('table_id', $table);
+    }
+
+
     public function scopeInMedstat($query)
     {
         return $query

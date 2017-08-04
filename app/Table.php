@@ -8,9 +8,16 @@ class Table extends Model
 {
     //
 
-    protected $fillable = ['form_id', 'table_index' , 'table_code',
-        'table_name', 'medstat_code', 'medinfo_id', 'transposed',
-        'aggregated_column_id', 'deleted'];
+    protected $fillable = ['form_id',
+        'table_index' ,
+        'table_code',
+        'table_name',
+        'medstat_code',
+        'medinfo_id',
+        'transposed',
+        'aggregated_column_id',
+        'deleted',
+    ];
 
     public function columns()
     {
