@@ -24,18 +24,17 @@ class Column extends Model
     public function getMedinfoContentType()
     {
         switch ($this->content_type) {
-            case 4 :
-                $contentType = 'data';
-                break;
             case 1 :
                 $contentType = 'header';
                 break;
+            case 2:
+                $contentType = 'calculated';
+                break;
+            case 4 :
+                $contentType = 'data';
+                break;
             case 5 :
                 $contentType = 'comment';
-                break;
-            case 2:
-            case 3:
-                $contentType = 'calculated';
                 break;
             default :
                 $contentType = 'undefined';
