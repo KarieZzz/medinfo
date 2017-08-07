@@ -27,7 +27,7 @@ class Column extends Model
             case 4 :
                 $contentType = 'data';
                 break;
-            case 0 :
+            case 1 :
                 $contentType = 'header';
                 break;
             case 5 :
