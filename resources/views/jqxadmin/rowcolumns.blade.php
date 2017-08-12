@@ -80,7 +80,8 @@
                     <div class="form-group">
                         <label class="control-label col-sm-3" for="content_type">Тип поля:</label>
                         <div class="col-sm-2">
-                            <input type="text" class="form-control" id="content_type">
+                            {{--<input type="text" class="form-control" id="content_type">--}}
+                            <div id="columnTypeList"></div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -147,28 +148,29 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/tablepicker.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=002') }}"></script>
+    <script src="{{ asset('/medinfo/admin/tablepicker.js?v=003') }}"></script>
+    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=006') }}"></script>
 @endpush
 
 @section('inlinejs')
     @parent
     <script type="text/javascript">
-        var tableDataAdapter;
-        var formsDataAdapter;
-        var rowsDataAdapter;
-        var columnsDataAdapter;
-        var tablesource;
-        var rowsource;
-        var columnsource;
-        var tablefetch_url = '/admin/rc/fetchtables/';
-        var rowfetch_url = '/admin/rc/fetchrows/';
-        var columnfetch_url = '/admin/rc/fetchcolumns/';
-        var forms = {!! $forms  !!};
-        var rlist = $("#rowList");
-        var clist = $("#columnList");
-        var current_form = 0;
-        var current_table = 0;
+        let tableDataAdapter;
+        let formsDataAdapter;
+        let rowsDataAdapter;
+        let columnsDataAdapter;
+        let tablesource;
+        let rowsource;
+        let columnsource;
+        let tablefetch_url = '/admin/rc/fetchtables/';
+        let rowfetch_url = '/admin/rc/fetchrows/';
+        let columnfetch_url = '/admin/rc/fetchcolumns/';
+        let forms = {!! $forms  !!};
+        let columnTypes = {!! $columnTypes !!};
+        let rlist = $("#rowList");
+        let clist = $("#columnList");
+        let current_form = 0;
+        let current_table = 0;
         initFilterDatasources();
         initsplitter();
         initdatasources();

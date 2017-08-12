@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Medinfo\Lexer;
+namespace App\Medinfo\Calculation;
 
 class Token {
     public $type;
@@ -10,9 +10,9 @@ class Token {
         $this->type = $type;
         $this->text = $text;
     }
-    
+
     public function __toString() {
-        $tname = \App\Medinfo\Calculation\CalculationFunctionLexer::$tokenNames[$this->type];
+        $tname = CalculationFunctionLexer::$tokenNames[$this->type];
         return "<'" . $this->text . "', " . $tname . ">";
     }
 }

@@ -34,6 +34,4 @@ class TokenStack
         }
         return $this->stack[$this->count - $n];
     }
-
-
 }

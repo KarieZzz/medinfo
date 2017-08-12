@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\StatDataInput;
 
 use App\CFunction;
+use app\Medinfo\Calculation\NormalizeAST;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -167,7 +168,6 @@ class DataCheckController extends Controller
         //$i = 'сравнение(Ф36-плТ2100С6Г4, Ф36-плТ2100С6Г4+Ф36-плТ2140С5Г4, >=, группы(первичные, село, !оп), графы())';
         //$i = 'сравнение(Ф36-плТ2100С6Г4, Ф36-плТ2100С6Г4+Ф36-плТ2140С5Г4, >=, группы(!юрлица), графы())';
         //$i = 'зависимость(Г3, Г4, группы(*),  строки(*))';
-
         //try {
             //$table = Table::find(254); // т. 8000 30 формы
             //$table = Table::find(4); // т. 1001 30 формы
@@ -192,18 +192,19 @@ class DataCheckController extends Controller
             //$document = Document::find(12268); // 30 форма 2016 - все
             $document = Document::find(13425); // 12 форма 2016 ГБ3 Братск
             //$document = Document::find(7015); // 32 форма
-            $lexer = new ControlFunctionLexer($i);
-            $parser = new ControlFunctionParser($lexer);
-            $r = $parser->run();
+            //$lexer = new ControlFunctionLexer($i);
+
+            //$parser = new ControlFunctionParser($lexer);
+            //$r = $parser->run();
             //dd($r);
             //$interpret = new CompareControlInterpreter($r, $table);
-            $interpret = new InterannualControlInterpreter($r, $table);
+            //$interpret = new InterannualControlInterpreter($r, $table);
             //$interpret = new DependencyControlInterpreter($r, $table);
             //$interpret = new FoldControlInterpreter($r, $table);
             //dd($interpret);
-            dd( $interpret->exec($document));
-            $result = $interpret->exec($document) ? 'Правильно' : 'Ошибка';
-            echo 'Результат выполнения контроля: ' . $result;
+            //dd( $interpret->exec($document));
+            //$result = $interpret->exec($document) ? 'Правильно' : 'Ошибка';
+            //echo 'Результат выполнения контроля: ' . $result;
             //dd($interpret);
         //}
         //catch (\Exception $e) {
@@ -220,17 +221,64 @@ class DataCheckController extends Controller
         //$input = '[ Ф30Т1100, Ф12Т2000, Ф121Т1010 ]';
         //$input = "сравнение(меньшее(С16, Ф32Т2120С18Г3),  Ф32Т2120С22Г3, >=, группы(*), графы())";
         //$input = "кратность(диапазон(С11Г3, С16Г3:С18Г3, С20Г3, С32Г3, С16Г3:С18Г3), .25 )";
-        $input = "межгодовой(С11Г3, С16Г3,  20)";
+        //$input = "межгодовой(С11Г3, С16Г3,  20)";
+        $input = "20+Г3-Г5/2";
 
-        $lexer = new ControlFunctionLexer($input);
+        //$lexer = new ControlFunctionLexer($input);
+        $lexer = new \App\Medinfo\Calculation\CalculationFunctionLexer($input);
         $token = $lexer->nextToken();
         echo '<pre>';
-        while($token->type != ControlFunctionLexer::EOF_TYPE) {
+        while($token->type != \App\Medinfo\Calculation\CalculationFunctionLexer::EOF_TYPE) {
             echo $token . "\n";
             $token = $lexer->nextToken();
         }
         echo '</pre>';
-        dd($lexer);
+        //foreach ($lexer->tokenstack->stack as $item) {
+          //  var_dump($lexer->getTokenType($item->type));
+        //}
+        $lexer->tokenstack->rewind();
+        while ($lexer->tokenstack->valid()) {
+            echo $lexer->tokenstack->key(), $lexer->tokenstack->current(), PHP_EOL;
+            $lexer->tokenstack->next();
+        }
+
+        //$lexer->tokenstack->stack->top();
+        //$lexer->tokenstack->stack->rewind();
+        //dd($lexer->tokenstack->stack->valid());
+        //echo($lexer->tokenstack->stack->key());
+    }
+
+    public function test_calculation()
+            {
+        $input = "20+Г3 + Г5/2 ";
+        $lexer = new \App\Medinfo\Calculation\CalculationFunctionLexer($input);
+
+        dd($lexer->tokenstack);
+        //$parser = new \App\Medinfo\Calculation\CalculationColumnFunctionParser($lexer);
+        //$result = $parser->expression();
+        //dd($result);
+    }
+
+    public function test_making_AST()
+    {
+        //$input = "20+Г3-Г5/2";
+        $input = "20 + 10/2 + 3*6";
+        echo eval('return 20 + 10/2 + 3*6;');
+        $lexer = new \App\Medinfo\Calculation\CalculationFunctionLexer($input);
+        $tokenstack = $lexer->getTokenStack();
+        $tokenstack->rewind();
+        //dd($tokenstack);
+        //$parcer = new \App\Medinfo\Calculation\CalculationColumnFunctionParser($tokenstack);
+        $parcer = new \App\Medinfo\Calculation\NormalizeAST($tokenstack);
+        $parcer->selectPlusSubtactNodes();
+        $parcer->selectMultDivNodes();
+        $parcer->selectLeafs();
+        //dd($parcer->leafStack);
+
+        $parcer->composeAST();
+        //dd($parcer->input);
+        dd($parcer->root);
+
     }
 
 }

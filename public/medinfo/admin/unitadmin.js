@@ -26,7 +26,7 @@ initdropdowns = function() {
         id: 'code',
         localdata: unitTypes
     };
-    var aggregatablesource =
+    let aggregatablesource =
     {
         datatype: "json",
         datafields: [

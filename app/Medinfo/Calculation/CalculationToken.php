@@ -1,18 +1,17 @@
 <?php
 
-namespace App\Medinfo\Lexer;
+namespace App\Medinfo\Calculation;
 
-class Token {
+class CalculationToken extends Token {
     public $type;
     public $text;
     
     public function __construct($type, $text) {
-        $this->type = $type;
-        $this->text = $text;
+        parent::__construct($type, $text);
     }
     
     public function __toString() {
-        $tname = \App\Medinfo\Calculation\CalculationFunctionLexer::$tokenNames[$this->type];
+        $tname = CalculationFunctionLexer::$tokenNames[$this->type];
         return "<'" . $this->text . "', " . $tname . ">";
     }
 }

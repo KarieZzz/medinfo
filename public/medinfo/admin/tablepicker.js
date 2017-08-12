@@ -2,7 +2,7 @@
  * Created by shameev on 25.10.2016.
  */
 initFilterDatasources = function() {
-    var formssource =
+    let formssource =
     {
         datatype: "json",
         datafields: [
@@ -29,7 +29,9 @@ initFilterDatasources = function() {
 
 // Инициализация списков-фильтров форма -> таблица
 initFormTableFilter = function() {
-    $("#formList").jqxDropDownList({
+    let flist = $("#formList");
+    let tlist = $("#tableList");
+    flist.jqxDropDownList({
         theme: theme,
         source: formsDataAdapter,
         displayMember: "form_code",
@@ -39,13 +41,13 @@ initFormTableFilter = function() {
         width: 200,
         height: 32
     });
-    $('#formList').on('select', function (event) {
-        var args = event.args;
+    flist.on('select', function (event) {
+        let args = event.args;
         current_form = args.item.value;
         updateTableDropdownList(args.item);
     });
     $("#tableListContainer").jqxDropDownButton({ width: 250, height: 32, theme: theme });
-    $("#tableList").jqxDataTable({
+    tlist.jqxDataTable({
         theme: theme,
         source: tablesDataAdapter,
         width: 420,
@@ -62,10 +64,10 @@ initFormTableFilter = function() {
             }
         ]
     });
-    $('#tableList').on('rowSelect', function (event) {
+    tlist.on('rowSelect', function (event) {
         $("#tableListContainer").jqxDropDownButton('close');
-        var args = event.args;
-        var r = args.row;
+        let args = event.args;
+        let r = args.row;
         current_table = args.key;
         $("#tableProperties").html('<div class="text-bold text-info" style="margin-left: -100px">Таблица: (' + r.table_code + ') ' + r.table_name + '</div>');
         updateRelated();

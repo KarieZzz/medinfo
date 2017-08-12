@@ -14,6 +14,7 @@ use App\AlbumRowSet;
 use App\Column;
 use App\AlbumColumnSet;
 use App\Cell;
+use App\DicColumnType;
 
 class RowColumnAdminController extends Controller
 {
@@ -27,9 +28,10 @@ class RowColumnAdminController extends Controller
     {
         //$forms = Form::orderBy('form_index')->with('tables')->get(['id', 'form_code']);
         $forms = Form::orderBy('form_index')->get(['id', 'form_code']);
+        $columnTypes = DicColumnType::all();
         //$tables = Table::orderBy('form_id')->orderBy('table_index')->get(['id', 'form_id', 'table_code']);
         //return view('jqxadmin.rowcolumns', compact('forms', 'tables'));
-        return view('jqxadmin.rowcolumns', compact('forms'));
+        return view('jqxadmin.rowcolumns', compact('forms', 'columnTypes'));
     }
 
     public function fetchTables(int $form)
