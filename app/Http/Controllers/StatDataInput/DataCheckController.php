@@ -261,24 +261,20 @@ class DataCheckController extends Controller
 
     public function test_making_AST()
     {
-        //$input = "20+Г3-Г5/2";
-        $input = "20 + 10/2 + 3*6";
-        echo eval('return 20 + 10/2 + 3*6;');
+        //$input = "20 + 40 - 23/2";
+        //$input = "20-23/2+40";
+        //$input = "((20+23))/2-40";
+        //$input = "20*3+40/2+50+60";
+        $input = "20*3/2*100";
+        //$input = "20 + 10/2 + 3*6";
+        echo eval("return $input;");
+
         $lexer = new \App\Medinfo\Calculation\CalculationFunctionLexer($input);
         $tokenstack = $lexer->getTokenStack();
-        $tokenstack->rewind();
+        //$tokenstack->rewind();
         //dd($tokenstack);
-        //$parcer = new \App\Medinfo\Calculation\CalculationColumnFunctionParser($tokenstack);
-        $parcer = new \App\Medinfo\Calculation\NormalizeAST($tokenstack);
-        $parcer->selectPlusSubtactNodes();
-        $parcer->selectMultDivNodes();
-        $parcer->selectLeafs();
-        //dd($parcer->leafStack);
-
-        $parcer->composeAST();
-        //dd($parcer->input);
-        dd($parcer->root);
-
+        $parcer = new \App\Medinfo\Calculation\CalculationColumnFunctionParser($tokenstack);
+        dd($parcer->expression());
     }
 
 }

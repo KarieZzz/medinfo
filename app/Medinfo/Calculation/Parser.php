@@ -5,11 +5,13 @@ namespace App\Medinfo\Calculation;
 use SplDoublyLinkedList;
 
 abstract class Parser {
-    public $input;     // tokenstack в формате двунаправленного списка
-    public $lookahead; // Следующий обрабатываемый токен
-    public $root; // ParseTree root node
-    public $currentNode; // ParseTree current node
-    protected $tokenNames; // Для читабельного вывода исключений
+    protected $input;          // tokenstack в формате двунаправленного списка
+    protected $lookahead;      // Следующий обрабатываемый токен
+    protected $root;           // ParseTree root node
+    protected $rootOffset;     // Позиция токена, примаемого за вершину дерева
+    protected $currentNode;    // ParseTree текущий узед
+    protected $prevNode;       // ParseTree предыдущий узед
+    protected $tokenNames;  // Для читабельного вывода исключений
 
     public function __construct(SplDoublyLinkedList $input) {
         $input->rewind();

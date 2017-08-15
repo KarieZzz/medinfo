@@ -15,11 +15,144 @@ class NormalizeAST extends Parser
     public $plusminusStack = [];
     public $multdivStack = [];
     public $leafStack = [];
+    public $operators = ['+' , '-', '*', '/' ];
+    public $attachSite;
 
     public function __construct(SplDoublyLinkedList $input)
     {
         parent::__construct($input);
+        $this->input->pop(); // Удаляем токен EOF
         $this->tokenNames = CalculationFunctionLexer::$tokenNames;
+    }
+
+
+    public function setRootOffset()
+    {
+        foreach ($this->operators as $operator) {
+            $this->selectRoot($operator);
+            if ($this->root) {
+                break;
+            }
+        }
+    }
+
+    public function selectRoot($operator)
+    {
+        $this->input->rewind();
+        while ($this->input->valid()) {
+            $current = $this->input->current();
+            //var_dump($current);
+            $offset = $this->input->key();
+            if (!is_null($current) && $current->type == CalculationFunctionLexer::OPERATOR && $current->text === $operator) {
+                $newNode = new CalculationFunctionParseTree($current->type, $current->text);
+                $this->currentNode = $newNode;
+                $this->rootOffset = $offset;
+                $this->root = $newNode;
+                break;
+            }
+            $this->input->next();
+        }
+        if ($this->root == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public function leftTravers()
+    {
+        //dd($this->rootOffset);
+        //dd($this->currentNode);
+        $this->postorderTraversal($this->rootOffset -1);
+    }
+
+    public function postorderTraversal($offset)
+    {
+        // после завершения обхода дерева, заканчиваем обработку
+        if ($offset === $this->rootOffset) {
+            return;
+        }
+        if ($this->input->offsetExists($offset)) {
+            $this->setNewLeftNode($this->input->offsetGet($offset));
+            $this->manageNodes();
+            //var_dump($this->currentNode);
+            $this->postorderTraversal($offset - 1);
+        } else {
+            // после завершения обхода левой части дерева, переходим к правой
+            $this->postorderTraversal($this->input->count() - 1);
+        }
+    }
+
+    public function setNewLeftNode($token)
+    {
+        $newNode = new CalculationFunctionParseTree($token->type, $token->text);
+        $this->currentNode->addLeft($newNode);
+        $newNode->setParent($this->currentNode);
+        $this->prevNode = $this->currentNode;
+        $this->currentNode = $newNode;
+    }
+
+    // Если обнаружен оператор
+    public function manageNodes() {
+
+        if (!is_null($this->currentNode->parent) && $this->currentNode->type == CalculationFunctionLexer::OPERATOR
+            && ($this->currentNode->content == '+' || $this->currentNode->content == '-' )
+            && ($this->currentNode->parent->content !== '+' || $this->currentNode->parent->content !== '-' ))
+
+        {
+
+            $this->reverseSearchPlusSubtractNode($this->currentNode);
+            $dettached = $this->attachSite->dettachLeft();
+            dd($dettached);
+            //$this->raisePlusSubtractOperator($this->currentNode);
+        } elseif ($this->currentNode->type == CalculationFunctionLexer::OPERATOR && ($this->currentNode->content == '*' || $this->currentNode->content == '/' )) {
+            $this->raiseOperator();
+        } //else {
+            //throw new \Exception('Ошибка построения AST. Некорректная последовательность токенов.');
+        //}
+    }
+
+    public function raisePlusSubtractOperator($node)
+{
+    if (!is_null($node->parent) && $this->currentNode->type == CalculationFunctionLexer::OPERATOR
+        && ($this->currentNode->content == '+' || $this->currentNode->content == '-' )) {
+        return $node;
+    } elseif (!is_null($node->parent)) {
+        //$this->reverseSearchPlusSubtractNode($node);
+    }
+    return null;
+}
+
+    public function raiseOperator()
+    {
+        if ($this->prevNode->type == CalculationFunctionLexer::OPERAND) {
+            $this->prevNode->parent->addLeft($this->currentNode); //
+            $this->currentNode->setParent($this->prevNode->parent);
+            $this->currentNode->addRight($this->prevNode); // Предыдущий узел дочерним справа от текущего узла
+            $this->prevNode->setParent($this->currentNode); // Соответственно заменяется родительский узел
+            $this->prevNode->unsetChildren(); // Соответственно заменяется родительский узел
+        }
+        //dd($this->root);
+    }
+
+    public function reverseSearchPlusSubtractNode(ParseTree $node)
+    {
+        //dump($node);
+        if($node->parent == null) {
+            return true;
+        }
+        if ($node->parent->type == CalculationFunctionLexer::OPERATOR && ($node->parent->content == '+' || $node->parent->content == '-' )) {
+            $this->attachSite = $node->parent;
+        }
+        $this->reverseSearchPlusSubtractNode($node->parent);
+        return ;
+    }
+
+    // То что в скобках
+    public function enclosedTerms()
+    {
+        $this->input->rewind();
+
     }
 
     public function selectPlusSubtactNodes()
@@ -27,7 +160,8 @@ class NormalizeAST extends Parser
         $this->input->rewind();
         while ($this->input->valid()) {
             $current = $this->input->current();
-            if ($current->type == CalculationFunctionLexer::OPERATOR && ($current->text === '+' || $current->text === '-')) {
+            if (!is_null($current) && $current->type == CalculationFunctionLexer::OPERATOR
+                && ($current->text === '+' || $current->text === '-')) {
                 $newNode = new CalculationFunctionParseTree($current->type, $current->text);
                 $this->plusminusStack[] = $newNode;
             }
@@ -85,8 +219,6 @@ class NormalizeAST extends Parser
             }
             $i++;
         }
-
-
 
         if ($this->root == null) {
             $i = 0;
