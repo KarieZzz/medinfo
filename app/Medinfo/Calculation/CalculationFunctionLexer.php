@@ -110,8 +110,7 @@ class CalculationFunctionLexer extends Lexer {
         do {
             if ($this->c === '.') {
                 if ($decimal_separator) {
-                    //$token_type = self::CODE;
-                    //throw new \Exception("Лишний десятичный разделитель в числе " . $buf);
+                    throw new \Exception("Лишний десятичный разделитель в числе " . $buf);
                 } else {
                     $decimal_separator = true;
                 }

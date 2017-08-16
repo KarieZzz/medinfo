@@ -20,7 +20,6 @@ abstract class ParseTree
     {
         $this->type = $nodeType;
         $this->content = $nodeContent;
-        //$this->children = new \SplDoublyLinkedList();
     }
 
     public function __toString() {

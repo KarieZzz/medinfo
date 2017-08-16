@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\StatDataInput;
 
 use App\CFunction;
-use App\Medinfo\Calculation\Evaluator;
-use app\Medinfo\Calculation\NormalizeAST;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -280,7 +278,7 @@ class DataCheckController extends Controller
         //dd($tokenstack);
         $parcer = new \App\Medinfo\Calculation\CalculationFunctionParser($tokenstack);
         //dd($parcer->expression());
-        $eval = new Evaluator($parcer->expression());
+        $eval = new \App\Medinfo\Calculation\Evaluator($parcer->expression());
         dd($eval->evaluate());
     }
 
