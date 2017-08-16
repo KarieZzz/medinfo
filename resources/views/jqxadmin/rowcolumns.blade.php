@@ -85,7 +85,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="size">Размер поля (*10px):</label>
+                        <label class="control-label col-sm-3" for="size">Размер поля (px):</label>
                         <div class="col-sm-2">
                             <input type="text" class="form-control" id="size">
                         </div>
