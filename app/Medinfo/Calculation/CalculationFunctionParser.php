@@ -4,7 +4,7 @@ namespace App\Medinfo\Calculation;
 
 use App\Medinfo\Lexer\ParserException;
 
-class CalculationColumnFunctionParser extends Parser {
+class CalculationFunctionParser extends Parser {
 
     public function __construct($input) {
         parent::__construct($input);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\StatDataInput;
 
 use App\CFunction;
+use App\Medinfo\Calculation\Evaluator;
 use app\Medinfo\Calculation\NormalizeAST;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -236,10 +237,11 @@ class DataCheckController extends Controller
         //foreach ($lexer->tokenstack->stack as $item) {
           //  var_dump($lexer->getTokenType($item->type));
         //}
-        $lexer->tokenstack->rewind();
-        while ($lexer->tokenstack->valid()) {
-            echo $lexer->tokenstack->key(), $lexer->tokenstack->current(), PHP_EOL;
-            $lexer->tokenstack->next();
+        $t = $lexer->getTokenStack();
+        $t->rewind();
+        while ($t->valid()) {
+            echo $t->key(), $t->current(), PHP_EOL;
+            $t->next();
         }
 
         //$lexer->tokenstack->stack->top();
@@ -253,8 +255,8 @@ class DataCheckController extends Controller
         $input = "20+Г3 + Г5/2 ";
         $lexer = new \App\Medinfo\Calculation\CalculationFunctionLexer($input);
 
-        dd($lexer->tokenstack);
-        //$parser = new \App\Medinfo\Calculation\CalculationColumnFunctionParser($lexer);
+        dd($lexer->getTokenStack());
+        //$parser = new \App\Medinfo\Calculation\CalculationFunctionParser($lexer);
         //$result = $parser->expression();
         //dd($result);
     }
@@ -265,7 +267,10 @@ class DataCheckController extends Controller
         //$input = "20-23/2+40";
         //$input = "((20+23))/2-40";
         //$input = "20*3+40/2+50+60";
-        $input = "20*3/2*100";
+        //$input = "20*3/2*100";
+        //$input = "7 + 3 * (10 / (12 / (3 + 1) - 1))";
+        $input = "7 + 3 * (10 / (12 / (3 + 1) - 1)) / (2 + 3) - 5 - 3 + (8)";
+        //$input = "7 + (((3 + 2)))";
         //$input = "20 + 10/2 + 3*6";
         echo eval("return $input;");
 
@@ -273,8 +278,10 @@ class DataCheckController extends Controller
         $tokenstack = $lexer->getTokenStack();
         //$tokenstack->rewind();
         //dd($tokenstack);
-        $parcer = new \App\Medinfo\Calculation\CalculationColumnFunctionParser($tokenstack);
-        dd($parcer->expression());
+        $parcer = new \App\Medinfo\Calculation\CalculationFunctionParser($tokenstack);
+        //dd($parcer->expression());
+        $eval = new Evaluator($parcer->expression());
+        dd($eval->evaluate());
     }
 
 }

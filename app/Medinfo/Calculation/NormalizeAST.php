@@ -6,6 +6,10 @@
  * Time: 14:09
  */
 
+/* Попытка сделать собсбвенный адгоритм генерации AST
+ * Не доделано. Не удалено из-за того что могут пригодится парафункций
+ */
+
 namespace App\Medinfo\Calculation;
 
 use SplDoublyLinkedList;
@@ -98,12 +102,9 @@ class NormalizeAST extends Parser
         if (!is_null($this->currentNode->parent) && $this->currentNode->type == CalculationFunctionLexer::OPERATOR
             && ($this->currentNode->content == '+' || $this->currentNode->content == '-' )
             && ($this->currentNode->parent->content !== '+' || $this->currentNode->parent->content !== '-' ))
-
         {
-
             $this->reverseSearchPlusSubtractNode($this->currentNode);
             $dettached = $this->attachSite->dettachLeft();
-            dd($dettached);
             //$this->raisePlusSubtractOperator($this->currentNode);
         } elseif ($this->currentNode->type == CalculationFunctionLexer::OPERATOR && ($this->currentNode->content == '*' || $this->currentNode->content == '/' )) {
             $this->raiseOperator();
@@ -145,14 +146,7 @@ class NormalizeAST extends Parser
             $this->attachSite = $node->parent;
         }
         $this->reverseSearchPlusSubtractNode($node->parent);
-        return ;
-    }
-
-    // То что в скобках
-    public function enclosedTerms()
-    {
-        $this->input->rewind();
-
+        return true;
     }
 
     public function selectPlusSubtactNodes()
@@ -226,7 +220,7 @@ class NormalizeAST extends Parser
             foreach ($this->multdivStack as $mnode) {
                 if ($this->root == null) {
                     $this->root = $mnode;
-                } elseif ($mroot === null ) {
+                } elseif ($mroot === null) {
                     $mroot = $mnode;
                 }
 
@@ -236,28 +230,7 @@ class NormalizeAST extends Parser
                 $i++;
             }
         }
-
-/*        if (!is_null($pnode)) {
-            $pnode->addChild($mroot);
-        }*/
     }
-
-/*    public function set()
-    {
-        $newNode = new CalculationFunctionParseTree($this->lookahead->type, $this->lookahead->text);
-        $prevNode = $this->currentNode;
-        if ($this->root == null) {
-            $this->root = $newNode;
-        } else {
-            $this->currentNode->addChild($newNode);
-        }
-        $this->currentNode = $newNode;
-        if ($this->lookahead->type == CalculationFunctionLexer::OPERATOR && ($this->lookahead->text === '+' || $this->lookahead->text === '-')) {
-            $this->match(CalculationFunctionLexer::OPERATOR);
-        }
-
-        $this->currentNode = $prevNode;
-    }*/
 
     public function left(ParseTree $node)
     {

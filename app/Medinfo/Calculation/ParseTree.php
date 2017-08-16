@@ -42,12 +42,20 @@ abstract class ParseTree
 
     public function left()
     {
-        return $this->children[0];
+        if (isset($this->children[0])) {
+            return $this->children[0];
+        } else {
+            return null;
+        }
     }
 
     public function right()
     {
-        return $this->children[1];
+        if (isset($this->children[1])) {
+            return $this->children[1];
+        } else {
+            return null;
+        }
     }
 
     public function addLeft(ParseTree $node)
