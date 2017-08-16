@@ -22,6 +22,54 @@ class ControlFunctionParser extends Parser {
             throw new ParserException("Ожидалось объявление функции. Обнаружено " .  $this->input->getTokenName($this->lookahead->type));
         }
     }
+
+    public function compare() {
+        $r = new ControlFunctionParseTree(__FUNCTION__);
+        $o = $this->currentNode; // сохраняем текущий узел, что бы вернутся к нему в конце функции
+        if ($this->root == null) {
+            $this->root = $r;
+        } else {
+            $this->currentNode->addChild($r);
+        }
+        $this->currentNode = $r;
+        $this->match(ControlFunctionLexer::NAME);
+        $this->match(ControlFunctionLexer::LPARENTH);
+        $this->expression(); // Первый аргумент - вычисление
+        $this->match(ControlFunctionLexer::COMMA);
+        $this->expression(); // Второй аргумент - вычисление
+        $this->match(ControlFunctionLexer::COMMA);
+        $this->compare_action();
+        $this->match(ControlFunctionLexer::COMMA);
+        $this->scope(); // Четвертый аргумент - функции ограничения применения данного контроля к группе учреждений
+        $this->match(ControlFunctionLexer::COMMA);
+        $this->iterations(); // Пятый аргумент - функции итерации по строкам и графам
+        $this->match(ControlFunctionLexer::RPARENTH);
+        $this->currentNode = $o;
+        return $this->root;
+    }
+
+    public function dependency() {
+        $r = new ControlFunctionParseTree(__FUNCTION__);
+        $o = $this->currentNode; // сохраняем текущий узел, что бы вернутся к нему в конце функции
+        if ($this->root == null) {
+            $this->root = $r;
+        } else {
+            $this->currentNode->addChild($r);
+        }
+        $this->currentNode = $r;
+        $this->match(ControlFunctionLexer::NAME);
+        $this->match(ControlFunctionLexer::LPARENTH);
+        $this->expression(); // Первый аргумент - вычисление
+        $this->match(ControlFunctionLexer::COMMA);
+        $this->expression(); // Второй аргумент - вычисление
+        $this->match(ControlFunctionLexer::COMMA);
+        $this->scope(); // Четвертый аргумент - функции ограничения применения данного контроля к группе учреждений
+        $this->match(ControlFunctionLexer::COMMA);
+        $this->iterations(); // Пятый аргумент - функции итерации по строкам и графам
+        $this->match(ControlFunctionLexer::RPARENTH);
+        $this->currentNode = $o;
+        return $this->root;
+    }
     
     public function interannual() {
         $r = new ControlFunctionParseTree(__FUNCTION__);
