@@ -40,7 +40,7 @@ class TableEditing
 
         foreach ($cols as $col) {
             $datafields_arr[] = ['name'  => $col->id, 'type'  => 'string', ];
-            $width = $col->size * 10;
+            $width = $col->size; // Ширина графы в пикселях при отображении в браузере
             switch ( $col->decimal_count) {
                 case 2:
                     $editor = 'initDecimal2Editor';
