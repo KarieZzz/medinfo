@@ -23,7 +23,7 @@ abstract class ParseTree
     }
 
     public function __toString() {
-        return "<pre><" . $this->type . ', '. $this->content . ">" . PHP_EOL . "</pre>";
+        return "<" . $this->type . ', '. $this->content . ">" . PHP_EOL;
     }
 
     public function setParent(ParseTree $node)

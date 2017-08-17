@@ -39,8 +39,8 @@
                     </div>
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-7">
-                            <button type="button" id="save" class="btn btn-success">Сохранить изменения</button>
-                            <button type="button" id="insert" class="btn btn-default">Вставить новую запись</button>
+                            <button type="button" id="save" class="btn btn-primary">Сохранить изменения</button>
+                            <button type="button" id="insert" class="btn btn-success">Вставить новую запись</button>
                             <button type="button" id="delete" class="btn btn-danger">Удалить запись</button>
                         </div>
                     </div>

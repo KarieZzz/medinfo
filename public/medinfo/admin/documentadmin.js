@@ -248,8 +248,8 @@ updatedocumenttable = function() {
 
 // Инициализация панели инструкментов
 initnewdocumentwindow = function () {
-    var savebutton = $('#saveButton');
-    var newdoc_form = $('#newForm').jqxWindow({
+    let savebutton = $('#saveButton');
+    let newdoc_form = $('#newForm').jqxWindow({
         width: 600,
         height: 520,
         resizable: false,
@@ -383,10 +383,10 @@ initsplitters = function() {
 // Рендеринг панели инструментов для выделенных территорий/учреждений
 //var rendermotreetoolbar = function(toolbar) {
 rendermotreetoolbar = function() {
-    var toolbar = $("#filtermoTree");
-    var container = $("<div style='display: none' id='buttonplus'></div>");
-    var newdoc_form = $('#newForm');
-    var newdocument = $("<i style='height: 14px' class='fa fa-wpforms fa-lg' title='Новый документ'></i>");
+    let toolbar = $("#filtermoTree");
+    let container = $("<div style='display: none' id='buttonplus'></div>");
+    let newdoc_form = $('#newForm');
+    let newdocument = $("<i style='height: 14px' class='fa fa-wpforms fa-lg' title='Новый документ'></i>");
     newdocument.jqxButton({ theme: theme });
     container.append(newdocument);
     //var newdocument = $("#newdocument");

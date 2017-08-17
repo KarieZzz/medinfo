@@ -50,9 +50,9 @@
 <script src="{{ asset('/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
 @stack('loadjsscripts')
 <script type="text/javascript">
-    var theme = 'bootstrap';
-    var confirm_action = false;
-    var confirmpopup = $('#confirmPopup');
+    let theme = 'bootstrap';
+    let confirm_action = false;
+    let confirmpopup = $('#confirmPopup');
     initnotifications();
     initConfirmWindow();
     $(document).ready(function () {

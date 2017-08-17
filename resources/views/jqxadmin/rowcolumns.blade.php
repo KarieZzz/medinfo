@@ -78,10 +78,12 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="content_type">Тип поля:</label>
-                        <div class="col-sm-2">
-                            {{--<input type="text" class="form-control" id="content_type">--}}
-                            <div id="columnTypeList"></div>
+                        <label class="control-label col-sm-3" for="column_type">Тип поля:</label>
+                        <div class="col-sm-3">
+                            <div id="column_type"></div>
+                        </div>
+                        <div class="col-sm-4">
+                            <button id="editFormula" type="button" class="btn btn-primary btn-sm" style="display: none">Добавить/изменить формулу расчета</button>
                         </div>
                     </div>
                     <div class="form-group">
@@ -126,6 +128,33 @@
         </div>
     </div>
 </div>
+<div id="formulaWindow">
+    <div id="FormHeader">
+        <span id="headerContainer" style="float: left">Введите/измените формулу для вычисляемой графы</span>
+    </div>
+    <div>
+        <div style="padding: 15px" class="form-horizontal">
+            <div class="form-group">
+                <label class="control-label col-sm-3" for="columnName">Графа:</label>
+                <div class="col-sm-8">
+                    <div id="columnNameId"></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-3" for="formula">Формула расчета</label>
+                <div class="col-sm-8">
+                    <textarea rows="2" class="form-control" id="formula" placeholder="Введите формулу расчета"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-3 col-sm-6">
+                    <button type="button" id="saveFormula" class="btn btn-primary">Сохранить</button>
+                    <button type="button" id="cancelButton" class="btn btn-danger">Отменить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('loadjsscripts')
@@ -148,8 +177,8 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/tablepicker.js?v=003') }}"></script>
-    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=006') }}"></script>
+    <script src="{{ asset('/medinfo/admin/tablepicker.js?v=005') }}"></script>
+    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=025') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -165,6 +194,9 @@
         let tablefetch_url = '/admin/rc/fetchtables/';
         let rowfetch_url = '/admin/rc/fetchrows/';
         let columnfetch_url = '/admin/rc/fetchcolumns/';
+        let showcolumnformula_url = '/admin/rc/columnformula/show/';
+        let updatecolumnformula_url = '/admin/rc/columnformula/update/';
+        let storecolumnformula_url = '/admin/rc/columnformula/store/';
         let forms = {!! $forms  !!};
         let columnTypes = {!! $columnTypes !!};
         let rlist = $("#rowList");
@@ -180,5 +212,6 @@
         initButtons();
         initRowActions();
         initColumnActions();
+        initColumnFormulaWindow();
     </script>
 @endsection

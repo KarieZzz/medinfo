@@ -18,6 +18,9 @@ class CalculationFunctionParser extends Parser {
         if ($this->lookahead->type == CalculationFunctionLexer::NUMBER) {
             $node = new CalculationFunctionParseTree($this->lookahead->type, $this->lookahead->text);
             $this->match(CalculationFunctionLexer::NUMBER);
+        } elseif ($this->lookahead->type == CalculationFunctionLexer::COLUMNADRESS) {
+            $node = new CalculationFunctionParseTree($this->lookahead->type, $this->lookahead->text);
+            $this->match(CalculationFunctionLexer::COLUMNADRESS);
         } elseif ($this->lookahead->type == CalculationFunctionLexer::LPARENTH) {
             $this->match(CalculationFunctionLexer::LPARENTH);
             $node = $this->expression();
@@ -42,8 +45,14 @@ class CalculationFunctionParser extends Parser {
             } elseif ($this->lookahead->type == CalculationFunctionLexer::DIVIDE) {
                 $this->match(CalculationFunctionLexer::DIVIDE);
             }
+            if ($leftnode == null) {
+                throw new \Exception("Синтаксическая ошибка. Слева от оператора '*' или '/' должно быть число или арифметическое выражение. Узел: " . $node );
+            }
             $node->addLeft($leftnode);
-            $node->addRight($this->factor());
+            if (is_null($rightnode = $this->factor()) && !is_null($node)) {
+                throw new \Exception("Синтаксическая ошибка. Справа от оператора '*' или '/' должно быть число или арифметическое выражение. Узел: " . $node );
+            }
+            $node->addRight($rightnode);
             $prev_node = $node;
         }
         if (is_null($node)) {
@@ -58,7 +67,7 @@ class CalculationFunctionParser extends Parser {
     public function expression() {
         //expr   : term ((PLUS | MINUS) term)*
         //term   : factor ((MUL | DIV) factor)*
-        //factor : INTEGER | LPAREN expr RPAREN
+        //factor : INTEGER | LPAREN expr RPAREN | COLUMNADRESS
         $node = null;
         $prev_node = null;
         $leftnode = $this->term();
@@ -72,8 +81,14 @@ class CalculationFunctionParser extends Parser {
             } elseif ($this->lookahead->type == CalculationFunctionLexer::MINUS) {
                 $this->match(CalculationFunctionLexer::MINUS);
             }
+            if ($leftnode == null) {
+                throw new \Exception("Синтаксическая ошибка. Слева от оператора '+' или '-' должно быть число или арифметическое выражение. Узел: " . $node );
+            }
             $node->addLeft($leftnode);
-            $node->addRight($this->term());
+            if (is_null($rightnode = $this->term()) && !is_null($node)) {
+                throw new \Exception("Синтаксическая ошибка. Справа от оператора '+' или '-' должно быть число или арифметическое выражение. Узел: " . $node );
+            }
+            $node->addRight($rightnode);
             $prev_node = $node;
         }
         if (is_null($node)) {

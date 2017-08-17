@@ -111,6 +111,11 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::patch('admin/rc/columnupdate/{column}', 'Admin\RowColumnAdminController@columnUpdate');
     Route::delete('admin/rc/columndelete/{column}', 'Admin\RowColumnAdminController@columnDelete');
     Route::post('admin/rc/columncreate', 'Admin\RowColumnAdminController@columnStore');
+
+    Route::get('admin/rc/columnformula/show/{column}', 'Admin\CalculatedColumnAdminController@show');
+    Route::post('admin/rc/columnformula/store/{column}', 'Admin\CalculatedColumnAdminController@store');
+    Route::patch('admin/rc/columnformula/update/{columnCalculation}', 'Admin\CalculatedColumnAdminController@update');
+
     Route::get('admin/rc/msmimatching/{formcode}', 'Admin\RowColumnAdminController@rowsMatching'); // Сопоставление строк Медстат и Мединфо
     Route::get('admin/rc/grfmatching/{formcode}', 'Admin\RowColumnAdminController@columnsMatching'); // Сопоставление граф Медстат и Мединфо
 

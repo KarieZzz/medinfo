@@ -134,7 +134,7 @@ initColumnList = function() {
         $("#column_index").val(row.column_index);
         $("#column_name").val(row.column_name);
         //$("#content_type").val(row.content_type);
-        $("#columnTypeList").val(row.content_type);
+        $("#column_type").val(row.content_type);
         $("#size").val(row.size);
         $("#decimal_count").val(row.decimal_count);
         $("#column_medstat_code").val(row.medstat_code);
@@ -177,7 +177,7 @@ setcolumnquery = function() {
     return "&table_id=" + current_table +
         "&column_index=" + $("#column_index").val() +
         "&column_name=" + $("#column_name").val() +
-        "&content_type=" + $("#content_type").val() +
+        "&content_type=" + $("#column_type").val() +
         "&size=" + $("#size").val() +
         "&decimal_count=" + $("#decimal_count").val() +
         "&medstat_code=" + $("#column_medstat_code").val() +
@@ -186,7 +186,7 @@ setcolumnquery = function() {
 };
 
 initButtons = function() {
-    let typelist = $("#columnTypeList");
+    let typelist = $("#column_type");
     typelist.jqxDropDownList({
         theme: theme,
         source: columnTypesDataAdapter,
@@ -196,6 +196,22 @@ initButtons = function() {
         //selectedIndex: 2,
         width: 200,
         height: 32
+    });
+    typelist.on('change', function (event) {
+        let args = event.args;
+        if (args) {
+            let index = args.index;
+            let item = args.item;
+            let label = item.label;
+            let value = item.value;
+            let type = args.type; // keyboard, mouse or null depending on how the item was selected.
+            if (label === 'Вычисляемая графа') {
+                $("#editFormula").show();
+            } else {
+                $("#editFormula").hide();
+            }
+        }
+
     });
     $('#excludedRow').jqxSwitchButton({
         height: 31,
@@ -339,7 +355,7 @@ initColumnActions = function() {
                 }
                 clist.jqxGrid('updatebounddata', 'data');
                 clist.on("bindingcomplete", function (event) {
-                    var newindex = clist.jqxGrid('getrowboundindexbyid', rowid);
+                    let newindex = clist.jqxGrid('getrowboundindexbyid', rowid);
                     clist.jqxGrid('selectrow', newindex);
 
                 });
@@ -363,7 +379,7 @@ initColumnActions = function() {
             url: '/admin/rc/columndelete/' + rowid,
             method: "DELETE",
             success: function (data, status, xhr) {
-                if (typeof data.error != 'undefined') {
+                if (typeof data.error !== 'undefined') {
                     raiseError(data.message);
                 } else {
                     raiseInfo(data.message);
@@ -374,6 +390,81 @@ initColumnActions = function() {
             },
             error: function (xhr, status, errorThrown) {
                 raiseError('Ошибка удаления записи', xhr);
+            }
+        });
+    });
+};
+
+initColumnFormulaWindow = function () {
+
+    let savebutton = $("#saveFormula");
+    let formulaWindow = $('#formulaWindow');
+    let formula = $("#formula");
+    let formulaexists = false;
+    let columnid;
+    let formulaid = null;
+    $("#editFormula").click(function () {
+        formula.attr("placeholder", "");;
+        let colHeader = $("#columnNameId");
+        colHeader.html("");
+        let row = clist.jqxGrid('getselectedrowindex');
+        columnid = clist.jqxGrid('getrowid', row);
+        if (row === -1) {
+            raiseError("Не выбрана графа для ввода/изменения формулы расчета");
+            return false;
+        }
+        colHeader.html($("#column_name").val() + ' (Id:' + columnid + ')');
+        $.get(showcolumnformula_url + columnid, function( data ) {
+            if (data.formula) {
+                formula.val(data.formula);
+                formulaid = data.id;
+                formulaexists = true;
+            } else {
+                formula.val('');
+                formulaexists = false;
+            }
+            formula.attr("placeholder", data.placeholder);
+        });
+        formulaWindow.jqxWindow('open');
+    });
+
+    formulaWindow.jqxWindow({
+        width: 600,
+        height: 290,
+        resizable: false,
+        autoOpen: false,
+        isModal: true,
+        cancelButton: $('#cancelButton'),
+        position: { x: 310, y: 125 }
+    });
+    savebutton.click(function() {
+        let data = "&formula=" + encodeURIComponent(formula.val());
+        let method;
+        let url;
+        if (formulaexists) {
+            method = 'PATCH';
+            url = updatecolumnformula_url + formulaid;
+        } else {
+            method = 'POST';
+            url = storecolumnformula_url + columnid;
+        }
+        $.ajax({
+            dataType: 'json',
+            url: url,
+            method: method,
+            data: data,
+            success: function (data, status, xhr) {
+                if (data.saved) {
+                    raiseInfo("Изменения сохранены");
+                }
+                else {
+                    raiseError("Ошибка сохранения. " + data.message)
+                }
+            },
+            error: function (xhr, status, errorThrown) {
+                $.each(xhr.responseJSON, function(field, errorText) {
+                    raiseError(errorText);
+                });
             }
         });
     });

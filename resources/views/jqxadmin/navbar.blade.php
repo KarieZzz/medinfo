@@ -65,7 +65,7 @@
             <li><a href="#">@yield('local_actions')</a></li>
         </ul>
         <div class="navbar-header">
-            <a class="navbar-brand" href="#">@yield('title')</a>
+            <a class="navbar-brand" href="#"><span class="text-primary">@yield('title')</span></a>
         </div>
         <ul class="nav navbar-nav navbar-right">
             <li><a href="/admin/logout"><span class="glyphicon glyphicon-log-in"></span> Завершить работу</a></li>

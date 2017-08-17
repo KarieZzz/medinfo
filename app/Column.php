@@ -21,6 +21,11 @@ class Column extends Model
         return $this->belongsTo('App\Table');
     }
 
+    public function calculation()
+    {
+        return $this->hasOne('App\ColumnCalculation');
+    }
+
     public function getMedinfoContentType()
     {
         switch ($this->content_type) {
