@@ -11,8 +11,9 @@ class CalculationFunctionLexer extends Lexer {
     const MULTIPLY      = 6;
     const DIVIDE        = 7;
     const NUMBER        = 8;
-    const COLUMNADRESS  = 9;
+    const CELLADRESS    = 9;
     //const EXPRESSION    = 10;
+    public $celladressStack;
 
     public static $tokenNames = [
         "n/a",
@@ -24,13 +25,18 @@ class CalculationFunctionLexer extends Lexer {
         "MULTIPLY",
         "DIVIDE",
         "NUMBER",
-        "COLUMNADRESS",
+        "CELLADRESS",
         //"EXPRESSION",
     ];
     
     public function __construct($input)
     {
         parent::__construct($input);
+        /*Все адреса ячеек помещаем в отдельный массив.
+         * В соответствующем токене оставляем ссылку на позицию в массиве
+         * в формате %0,%1, %3 и так даее.
+        */
+        $this->celladressStack = new \SplDoublyLinkedList;
     }
 
     public function getTokenName($x)
@@ -86,8 +92,12 @@ class CalculationFunctionLexer extends Lexer {
                 case '.' :
                 case $this->c >= '1' && $this->c <= '9':
                 return $this->number();
+                case 'Ф':
+                case 'Т':
+                case 'С':
                 case 'Г':
-                    return $this->columnAdress();
+                case 'П':
+                    return $this->cellAdress();
                 default :
                     throw new \Exception("Неверный символ: " . $this->c);
             }
@@ -118,21 +128,61 @@ class CalculationFunctionLexer extends Lexer {
             $buf .= $this->c;
             $this->consume();
         } while ($this->isNUMBER());
-        $token = new Token($token_type, $buf);
+        $token = new Token(self::NUMBER, $buf);
         $this->tokenstack->push($token);
         return $token;
     }
 
-    public function columnAdress()
+    public function cellAdress()
     {
         $buf = '';
-        do {
-            $buf .= $this->c;
-            $this->consume();
-        } while ($this->isCODE());
-        $token = new Token(self::COLUMNADRESS, $buf);
+        if ($this->c == 'Ф') {
+            do {
+                $buf .= $this->c;
+                $this->consume();
+            } while ($this->isFORMCODE());
+        }
+        if ($this->c == 'Т') {
+            do {
+                $buf .= $this->c;
+                $this->consume();
+            } while ($this->isCODE());
+        }
+        if ($this->c == 'С') {
+            do {
+                $buf .= $this->c;
+                $this->consume();
+            } while ($this->isROWCODE());
+        }
+        if ($this->c == 'Г') {
+            do {
+                $buf .= $this->c;
+                $this->consume();
+            } while ($this->isCODE());
+        }
+        if ($this->c == 'П') {
+            do {
+                $buf .= $this->c;
+                $this->consume();
+            } while ($this->isPERIODCODE());
+        }
+
+
+        $this->celladressStack->push($buf);
+        $token = new Token(self::CELLADRESS, '%'. ($this->celladressStack->count()-1));
         $this->tokenstack->push($token);
         return $token;
+    }
+
+    public function isFORMCODE()
+    {
+        return
+            $this->c != 'Т' && (
+                ($this->c >= '0' && $this->c <= '9') ||
+                ($this->c >= 'а' && $this->c <= 'я') ||
+                $this->c == '.' ||
+                $this->c == '-'
+            );
     }
 
     public function isCODE()
@@ -140,6 +190,18 @@ class CalculationFunctionLexer extends Lexer {
         return $this->c >= '0' && $this->c <= '9';
     }
 
+    public function isROWCODE()
+    {
+        return
+            $this->c != 'Г' && (
+                ($this->c >= '0' && $this->c <= '9') || $this->c == '.'
+            );
+    }
+
+    public function isPERIODCODE()
+    {
+        return $this->c == '0' || $this->c == '1';
+    }
     /** WS : (' '|'\t'|'\n'|'\r')* ; // игнорируем все пробелы, табуляции, переносы строк ... */
     public function ws()
     {

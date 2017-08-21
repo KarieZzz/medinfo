@@ -158,7 +158,7 @@ getCheckedMonsForms = function() {
     uniquemonitorings = Array.from(new Set(monitorings));
     uniqueforms = Array.from(new Set(forms));
     if (uniquemonitorings.length > 0 || uniqueforms.length > 0 ) {
-        mondropdown.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: blue"></i>Мониторинги</div>');
+        mondropdown.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: #337ab7;"></i>Мониторинги</div>');
     } else {
         mondropdown.jqxDropDownButton('setContent', '<div style="margin: 9px"></i>Мониторинги</div>');
     }
@@ -183,7 +183,7 @@ checkstatefilter = function() {
         }
     }
     if (checkedstates.length > 0) {
-        statusDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: blue"></i>Статусы отчетов</div>');
+        statusDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: #337ab7;"></i>Статусы отчетов</div>');
     } else {
         statusDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px"></i>Статусы отчетов</div>');
     }
@@ -200,7 +200,7 @@ checkPeriodFilter = function() {
         }
     }
     if (checkedperiods.length > 0) {
-        periodDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: blue"></i>Отчетные периоды</div>');
+        periodDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: #337ab7;"></i>Отчетные периоды</div>');
     } else {
         periodDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px"></i>Отчетные периоды</div>');
     }
@@ -769,7 +769,7 @@ initmotree = function() {
             if (current_top_level_node == 0) {
                 terr.jqxDropDownButton('setContent', '<div style="margin: 9px">Медицинские организации (по территориям)</div>');
             } else {
-                terr.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: blue"></i>Медицинские организации (по территориям)</div>');
+                terr.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: #337ab7;"></i>Медицинские организации (по территориям)</div>');
             }
             groups.jqxDropDownButton('setContent', '<div style="margin: 9px">Медицинские организации (по группам)</div>');
             return true;
@@ -829,7 +829,7 @@ initgrouptree = function() {
             current_top_level_node =  new_top_level_node;
             updatedocumenttable();
             groups.jqxDropDownButton('close');
-            groups.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: blue"></i>Медицинские организации (по группам)</div>');
+            groups.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: #337ab7;"></i>Медицинские организации (по группам)</div>');
             terr.jqxDropDownButton('setContent', '<div style="margin: 9px">Медицинские организации (по территориям)</div>');
             return true;
         }
@@ -1414,18 +1414,18 @@ initDocumentSource = function () {
 initFilterIcons = function () {
     if (current_top_level_node !== lasstscope) {
         if (filter_mode === 1) {
-            terr.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: blue"></i>Медицинские организации (по территориям)</div>');
+            terr.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: #337ab7;"></i>Медицинские организации (по территориям)</div>');
         } else if (filter_mode === 2) {
-            groups.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: blue"></i>Медицинские организации (по группам)</div>');
+            groups.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: #337ab7;"></i>Медицинские организации (по группам)</div>');
         }
     }
     if (checkedmf.length > 0) {
-        mondropdown.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: blue"></i>Мониторинги</div>');
+        mondropdown.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: #337ab7;"></i>Мониторинги</div>');
     }
     if (checkedperiods.length > 0) {
-        periodDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: blue"></i>Отчетные периоды</div>');
+        periodDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: #337ab7;"></i>Отчетные периоды</div>');
     }
     if (checkedperiods.length > 0) {
-        statusDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: blue"></i>Статусы отчетов</div>');
+        statusDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: #337ab7;"></i>Статусы отчетов</div>');
     }
 };

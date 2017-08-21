@@ -26,4 +26,9 @@ class Form extends Model
             ->where('form_code', $code);
     }
 
+    public function included()
+    {
+        return $this->hasMany('App\AlbumFormSet');
+    }
+
 }

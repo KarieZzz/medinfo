@@ -100,7 +100,7 @@
                     </div>
                     <div class="form-group">
                         <div class="col-sm-offset-3 col-sm-6">
-                            <button type="button" id="make" class="btn btn-default">Сформировать справку</button>
+                            <button type="button" id="make" class="btn btn-primary">Сформировать справку</button>
                         </div>
                     </div>
                 </form>

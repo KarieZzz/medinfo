@@ -13,45 +13,48 @@
             <div class="panel-body">
                 <form id="rowform" class="form-horizontal" >
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="row_index">Порядковый номер в таблице:</label>
-                        <div class="col-sm-2">
-                            <input type="text" class="form-control" id="row_index">
+                        <label class="control-label col-md-3" for="row_index">Порядковый номер в таблице:</label>
+                        <div class="col-md-2">
+                            <input type="number" class="form-control input-sm" id="row_index">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="row_name">Имя:</label>
-                        <div class="col-sm-8">
-                            <textarea rows="3" class="form-control" id="row_name"></textarea>
+                        <label class="control-label col-md-3" for="row_name">Имя:</label>
+                        <div class="col-md-8">
+                            <textarea rows="3" class="form-control input-sm" id="row_name"></textarea>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="row_code">Код:</label>
-                        <div class="col-sm-2">
-                            <input type="text" class="form-control" id="row_code">
+                        <label class="control-label col-md-3" for="row_code">Код:</label>
+                        <div class="col-md-2">
+                            <input type="text" class="form-control input-sm" id="row_code">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="row_medstat_code">Код Медстат:</label>
-                        <div class="col-sm-2">
-                            <input type="text" class="form-control" id="row_medstat_code">
+                        <label class="control-label col-md-3" for="row_medstat_code">Код Медстат:</label>
+                        <div class="col-md-2">
+                            <input type="text" class="form-control input-sm" id="row_medstat_code">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="row_medinfo_id">Мединфо Id:</label>
-                        <div class="col-sm-2">
-                            <input type="text" class="form-control" id="row_medinfo_id">
+                        <label class="control-label col-md-3" for="row_medinfo_id">Мединфо Id:</label>
+                        <div class="col-md-2">
+                            <input type="text" class="form-control input-sm" id="row_medinfo_id">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="excludedRow">Исключена из текущего альбома:</label>
-                        <div class="col-sm-8">
+                        <label class="control-label col-md-3" for="excludedRow">
+                            Исключена из текущего альбома <a href="albums" target="_blank" class="text-primary album-name" title="Изменить текущий альбом">("{{ $album->album_name }}")</a>:
+                        </label>
+                        <div class="col-md-2">
                             <div id="excludedRow"></div>
                         </div>
+                        <div class="col-md-7 text-primary"> </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-7">
-                            <button type="button" id="saverow" class="btn btn-default">Сохранить изменения</button>
-                            <button type="button" id="insertrow" class="btn btn-default">Вставить новую запись</button>
+                        <div class="col-md-offset-2 col-md-7">
+                            <button type="button" id="saverow" class="btn btn-primary">Сохранить изменения</button>
+                            <button type="button" id="insertrow" class="btn btn-success">Вставить новую запись</button>
                             <button type="button" id="deleterow" class="btn btn-danger">Удалить запись</button>
                         </div>
                     </div>
@@ -66,60 +69,62 @@
             <div class="panel-body">
                 <form id="columnform" class="form-horizontal" >
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="column_index">Порядковый номер в таблице:</label>
-                        <div class="col-sm-2">
-                            <input type="text" class="form-control" id="column_index">
+                        <label class="control-label col-md-3" for="column_index">Порядковый номер в таблице:</label>
+                        <div class="col-md-2">
+                            <input type="number" class="form-control input-sm" id="column_index">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="column_name">Имя:</label>
-                        <div class="col-sm-8">
-                            <textarea rows="2" class="form-control" id="column_name"></textarea>
+                        <label class="control-label col-md-3" for="column_name">Имя:</label>
+                        <div class="col-md-8">
+                            <textarea rows="2" class="form-control input-sm" id="column_name"></textarea>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="column_type">Тип поля:</label>
-                        <div class="col-sm-3">
+                        <label class="control-label col-md-3" for="column_type">Тип поля:</label>
+                        <div class="col-md-3">
                             <div id="column_type"></div>
                         </div>
-                        <div class="col-sm-4">
+                        <div class="col-md-4">
                             <button id="editFormula" type="button" class="btn btn-primary btn-sm" style="display: none">Добавить/изменить формулу расчета</button>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="size">Размер поля (px):</label>
-                        <div class="col-sm-2">
-                            <input type="text" class="form-control" id="size">
+                        <label class="control-label col-md-3" for="size">Размер поля (px):</label>
+                        <div class="col-md-2">
+                            <input type="text" class="form-control input-sm" id="size">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="decimal_count">Знаков после запятой (десятичных):</label>
-                        <div class="col-sm-2">
-                            <input type="text" class="form-control" id="decimal_count">
+                        <label class="control-label col-md-3" for="decimal_count">Знаков после запятой (десятичных):</label>
+                        <div class="col-md-2">
+                            <input type="text" class="form-control input-sm" id="decimal_count">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="column_medstat_code">Код Медстат:</label>
-                        <div class="col-sm-2">
-                            <input type="text" class="form-control" id="column_medstat_code">
+                        <label class="control-label col-md-3" for="column_medstat_code">Код Медстат:</label>
+                        <div class="col-md-2">
+                            <input type="text" class="form-control input-sm" id="column_medstat_code">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="column_medinfo_id">Мединфо Id:</label>
-                        <div class="col-sm-2">
-                            <input type="text" class="form-control" id="column_medinfo_id">
+                        <label class="control-label col-md-3" for="column_medinfo_id">Мединфо Id:</label>
+                        <div class="col-md-2">
+                            <input type="text" class="form-control input-sm" id="column_medinfo_id">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="excludedColumn">Исключена из текущего альбома:</label>
-                        <div class="col-sm-8">
+                        <label class="control-label col-md-3" for="excludedColumn">
+                            Исключена из текущего альбома <a href="albums" target="_blank" class="text-primary album-name" title="Изменить текущий альбом">("{{ $album->album_name }}")</a>:
+                        </label>
+                        <div class="col-md-8">
                             <div id="excludedColumn"></div>
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-7">
-                            <button type="button" id="savecolumn" class="btn btn-default">Сохранить изменения</button>
-                            <button type="button" id="insertcolumn" class="btn btn-default">Вставить новую запись</button>
+                        <div class="col-md-offset-2 col-md-7">
+                            <button type="button" id="savecolumn" class="btn btn-primary">Сохранить изменения</button>
+                            <button type="button" id="insertcolumn" class="btn btn-success">Вставить новую запись</button>
                             <button type="button" id="deletecolumn" class="btn btn-danger">Удалить запись</button>
                         </div>
                     </div>
@@ -135,19 +140,19 @@
     <div>
         <div style="padding: 15px" class="form-horizontal">
             <div class="form-group">
-                <label class="control-label col-sm-3" for="columnName">Графа:</label>
-                <div class="col-sm-8">
+                <label class="control-label col-md-3" for="columnName">Графа:</label>
+                <div class="col-md-8">
                     <div id="columnNameId"></div>
                 </div>
             </div>
             <div class="form-group">
-                <label class="control-label col-sm-3" for="formula">Формула расчета</label>
-                <div class="col-sm-8">
+                <label class="control-label col-md-3" for="formula">Формула расчета</label>
+                <div class="col-md-8">
                     <textarea rows="2" class="form-control" id="formula" placeholder="Введите формулу расчета"></textarea>
                 </div>
             </div>
             <div class="form-group">
-                <div class="col-sm-offset-3 col-sm-6">
+                <div class="col-md-offset-3 col-md-6">
                     <button type="button" id="saveFormula" class="btn btn-primary">Сохранить</button>
                     <button type="button" id="cancelButton" class="btn btn-danger">Отменить</button>
                 </div>
@@ -178,7 +183,7 @@
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
     <script src="{{ asset('/medinfo/admin/tablepicker.js?v=005') }}"></script>
-    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=025') }}"></script>
+    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=027') }}"></script>
 @endpush
 
 @section('inlinejs')

@@ -21,13 +21,18 @@
                     </div>
                     <hr>
                     <div class="indexes">
-                        @for($i=1; count($indexes) >= $i  ;$i++ )
-                        <div class="index">
+                        @for($i = 1; count($indexes) >= $i ;$i++ )
+                        <div id="index{{ $i }}" class="index">
                             <div class="form-group">
                                 <label class="control-label col-sm-2" for="title1">Показатель {{ $i }} (наименование):</label>
                                 <div class="col-sm-8">
                                     <input type="text" class="form-control" id="title1" name="title[]" value="{{ $indexes['index'.$i]['title'] }}">
                                 </div>
+                                @if ($i > 1)
+                                <div class="col-sm-2">
+                                    <button type="button" class="rmindex btn btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
+                                </div>
+                                @endif
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-sm-2" for="value1">Значение (формула расчета):</label>
@@ -42,7 +47,7 @@
                         <div class="col-sm-offset-3 col-sm-6">
                             <button type="submit" name="save" value="1" id="make" class="btn btn-primary">Сохранить</button>
                             <button type="submit" name="saveperform" value="1" id="makeperform" class="btn btn-default">Сохранить и выполнить</button>
-                            <button type="button" id="addindexes" class="btn btn-success">Добавить показатели</button>
+                            <button type="button" id="addindexes" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span>Добавить показатели</button>
                         </div>
                     </div>
                 </form>
@@ -52,29 +57,14 @@
 @endsection
 
 @push('loadjsscripts')
-{{--    <script src="{{ asset('/jqwidgets/jqxdata.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxpanel.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxscrollbar.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxinput.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxbuttons.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxdropdownbutton.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxcheckbox.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxswitchbutton.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxlistbox.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxdropdownlist.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxgrid.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxgrid.filter.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxgrid.columnsresize.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxgrid.selection.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxgrid.sort.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>--}}
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/composereportpattern.js?v=003') }}"></script>
+    <script src="{{ asset('/medinfo/admin/composereportpattern.js?v=004') }}"></script>
 @endpush
 
 @section('inlinejs')
     @parent
     <script type="text/javascript">
-        initActions();
+        addIndex();
+        removeIndex();
     </script>
 @endsection

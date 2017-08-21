@@ -26,12 +26,19 @@ class RowColumnAdminController extends Controller
 
     public function index()
     {
-        //$forms = Form::orderBy('form_index')->with('tables')->get(['id', 'form_code']);
         $forms = Form::orderBy('form_index')->get(['id', 'form_code']);
         $columnTypes = DicColumnType::all();
-        //$tables = Table::orderBy('form_id')->orderBy('table_index')->get(['id', 'form_id', 'table_code']);
-        //return view('jqxadmin.rowcolumns', compact('forms', 'tables'));
-        return view('jqxadmin.rowcolumns', compact('forms', 'columnTypes'));
+        $album = $this->getDefaultAlbum();
+        return view('jqxadmin.rowcolumns', compact('forms', 'columnTypes', 'album'));
+    }
+
+    public function getDefaultAlbum()
+    {
+        $default_album = Album::Default()->first();
+        if (is_null($default_album)) {
+            $default_album = Album::find(config('medinfo.default_album'));
+        }
+        return $default_album;
     }
 
     public function fetchTables(int $form)
@@ -41,18 +48,17 @@ class RowColumnAdminController extends Controller
 
     public function fetchRows(int $table)
     {
-        //return Row::OfTable($table)->with('table')->get();
-        $default_album = Album::Default()->first()->id;
-        return Row::OfTable($table)->with('table')->with(['excluded' => function ($query) use ($default_album) {
-            $query->where('album_id', $default_album);
+        $album = $this->getDefaultAlbum();
+        return Row::OfTable($table)->with('table')->with(['excluded' => function ($query) use ($album) {
+            $query->where('album_id', $album->id);
         }])->get();
     }
 
     public function fetchColumns(int $table)
     {
-        $default_album = Album::Default()->first()->id;
-        return Column::OfTable($table)->with('table')->with(['excluded' => function ($query) use ($default_album) {
-            $query->where('album_id', $default_album);
+        $album = $this->getDefaultAlbum();
+        return Column::OfTable($table)->with('table')->with(['excluded' => function ($query) use ($album) {
+            $query->where('album_id', $album->id);
         }])->get();
     }
 
@@ -227,7 +233,7 @@ class RowColumnAdminController extends Controller
             return ['error' => 422, 'message' => 'Графа Id' . $column->id . ' содержит данные. Удаление невозможно.' ];
         }
     }
-
+    // Сопоставление строк в Мединфо и в Медстат
     public function rowsMatching($formcode)
     {
         $matching_array = [];
@@ -326,7 +332,7 @@ class RowColumnAdminController extends Controller
         }
         return view('jqxdatainput.medstatprotocol', compact('form', 'tables', 'matching_array', 'errors', 'mode'));
     }
-
+    // Сопоставление граф в Мединфо и в Медстат
     public function columnsMatching($formcode)
     {
         $matching_array = [];

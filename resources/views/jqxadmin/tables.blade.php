@@ -77,8 +77,9 @@
         <div class="well well-lg">
             <div class="row">
                 <div class="col-sm-2"><strong>Текущий альбом:</strong></div>
-                <div class="col-sm-10">{{ $default_album->album_name }}</div>
-
+                <div class="col-sm-10">
+                    <strong><a href="albums" target="_blank" class="text-primary text-bold album-name" title="Изменить текущий альбом">"{{ $default_album->album_name }}"</a></strong>
+                </div>
             </div>
         </div>
     </div>
@@ -111,11 +112,11 @@
 @section('inlinejs')
     @parent
     <script type="text/javascript">
-        var rowsDataAdapter;
-        var tableDataAdapter;
-        var formsDataAdapter;
-        var tlist = $("#tableList");
-        var forms = {!! $forms  !!};
+        let rowsDataAdapter;
+        let tableDataAdapter;
+        let formsDataAdapter;
+        let tlist = $("#tableList");
+        let forms = {!! $forms  !!};
         initfilterdatasources();
         initsplitter();
         initdatasources();

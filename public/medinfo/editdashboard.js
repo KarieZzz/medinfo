@@ -2,11 +2,11 @@
  * Created by shameev on 12.07.2016.
  */
 // Обработка состояния кнопочек перевода в полноэкранный режим
-var firefullscreenevent = function() {
+let firefullscreenevent = function() {
     $(document).bind('fscreenchange', function(e, state, elem) {
-        var fsel1 =  $('#togglefullscreen');
-        var fsel2 =  $('#togglecontrolscreen');
-        var fsel3 =  $('#toggle_formcontrolscreen');
+        let fsel1 =  $('#togglefullscreen');
+        let fsel2 =  $('#togglecontrolscreen');
+        let fsel3 =  $('#toggle_formcontrolscreen');
         if ($.fullscreen.isFullScreen()) {
             fsel1.jqxToggleButton('check');
             fsel2.jqxToggleButton('check');
@@ -19,27 +19,26 @@ var firefullscreenevent = function() {
     });
 };
 // проверяем ли находится ли данная ячейка в списке запрещенных к редактированию ячеек
-var cellbeginedit = function (row, datafield, columntype, value) {
-    var rowid = dgrid.jqxGrid('getrowid', row);
-    var necell_count = not_editable_cells.length;
-    for (var i = 0; i < necell_count; i++) {
+let cellbeginedit = function (row, datafield, columntype, value) {
+    let rowid = dgrid.jqxGrid('getrowid', row);
+    let necell_count = not_editable_cells.length;
+    for (let i = 0; i < necell_count; i++) {
         if (not_editable_cells[i].t == current_table &&  not_editable_cells[i].r == rowid && not_editable_cells[i].c == datafield ) {
             return false;
         }
     }
 };
-var defaultEditor = function (row, cellvalue, editor, celltext, pressedChar) {
+let defaultEditor = function (row, cellvalue, editor, celltext, pressedChar) {
     editor.jqxNumberInput({ decimalDigits: 0, digits: 12 });
 };
-var initDecimal2Editor = function (row, cellvalue, editor, celltext, pressedChar) {
+let initDecimal2Editor = function (row, cellvalue, editor, celltext, pressedChar) {
     editor.jqxNumberInput({ decimalDigits: 2, digits: 12, decimalSeparator: ',' });
-    //console.log(new Intl.NumberFormat('ru-RU').format(cellvalue));
 };
-var initDecimal3Editor = function (row, cellvalue, editor, celltext, pressedChar) {
+let initDecimal3Editor = function (row, cellvalue, editor, celltext, pressedChar) {
     editor.jqxNumberInput({ decimalDigits: 3, digits: 12, decimalSeparator: ',' });
 };
 
-cellsrenderer = function (row, column, value, defaulthtml, columnproperties) {
+let cellsrenderer = function (row, column, value, defaulthtml, columnproperties) {
     if (!value) { return defaulthtml  }
     let formated = $(defaulthtml).html(localizednumber.format(value));
     return formated[0].outerHTML;
@@ -48,16 +47,16 @@ cellsrenderer = function (row, column, value, defaulthtml, columnproperties) {
 cellclass = function (row, columnfield, value, rowdata) {
     let invalid_cell = '';
     let alerted_cell = '';
-    var class_by_edited_row = '';
-    var not_editable = '';
-    for (var i = 0; i < not_editable_cells.length; i++) {
-        if (not_editable_cells[i].t == current_table &&  not_editable_cells[i].r == rowdata.id && not_editable_cells[i].c == columnfield) {
+    let class_by_edited_row = '';
+    let not_editable = '';
+    for (let i = 0; i < not_editable_cells.length; i++) {
+        if (not_editable_cells[i].t === current_table && not_editable_cells[i].r === rowdata.id && not_editable_cells[i].c === columnfield) {
             not_editable = 'jqx-grid-cell-pinned jqx-grid-cell-pinned-bootstrap';
         }
     }
-    if (marking_mode == 'control') {
+    if (marking_mode === 'control') {
 
-        for (var i = 0; i < editedCells.length; i++) {
+        for (let i = 0; i < editedCells.length; i++) {
             if (editedCells[i].t == current_table && editedCells[i].r == row && editedCells[i].c == columnfield ) {
                 class_by_edited_row = "editedRow";
             }
@@ -82,7 +81,7 @@ cellclass = function (row, columnfield, value, rowdata) {
         }
         return  alerted_cell + ' ' + invalid_cell +' ' + class_by_edited_row + ' ' + not_editable;
     }
-    else if (marking_mode == 'compareperiods') {
+    else if (marking_mode === 'compareperiods') {
         var class_compare = '';
         for (var i = 0; i < comparedCells.length; i++) {
             if (comparedCells[i].t == current_table && comparedCells[i].r == rowdata.id && comparedCells[i].c == columnfield ) {
@@ -103,15 +102,13 @@ tooltiprenderer = function (element) {
     $(element).jqxTooltip({position: 'mouse', content: $(element).text() });
 };
 // Пометка/снятие пометки волнистой чертой неверных таблиц
-var markTableInvalid = function (id) {
-    if ($.inArray(id, invalidTables) == -1) {
+let markTableInvalid = function (id) {
+    if ($.inArray(id, invalidTables) === -1) {
         invalidTables.push(id);
     }
-    //$("#formTables").jqxDataTable('render');
-    //console.log(invalidTables);
 };
-var markTableValid = function (id) {
-    var index = $.inArray(id, invalidTables);
+let markTableValid = function (id) {
+    let index = $.inArray(id, invalidTables);
     if (index !== -1) {
         delete invalidTables[index];
     }
@@ -120,7 +117,7 @@ var markTableValid = function (id) {
     //console.log(index);
 };
 // Для контроля из "старого" Мединфо
-var renderCellProtocol = function(cell_protocol) {
+let renderCellProtocol = function(cell_protocol) {
     var row = $("<tr class='control-row'></tr>");
     var column = $("<td></td>");
     cell_protocol.valid ? valid = 'верно' : valid = 'не верно';
@@ -144,7 +141,7 @@ var renderCellProtocol = function(cell_protocol) {
     return row;
 };
 // Для контроля из "старого" Мединфо - вывод в читаемом виде контроля строки/столбца
-var renderRowProtocol = function (container, table_id, protocol_by_type, header_text) {
+let renderRowProtocol = function (container, table_id, protocol_by_type, header_text) {
     var header = $("<div class='rule-header'>" + header_text + " " + "</div>");
     var content = $("<div class='rule-content'></div>");
     var r = 0;
@@ -181,7 +178,7 @@ var renderRowProtocol = function (container, table_id, protocol_by_type, header_
     return info;
 };
 // Отображение результатов контроля (новый формат) по каждой итерации
-var renderCompareControl = function(result, boolean_sign, mode, level) {
+let renderCompareControl = function(result, boolean_sign, mode, level) {
     //console.log(result.cells);
     var explanation_intro = mode == 1 ? 'По строке' : 'По графе';
     var error_level_mark = 'invalid';
@@ -218,7 +215,7 @@ var renderCompareControl = function(result, boolean_sign, mode, level) {
     return row;
 };
 
-var renderDependencyControl = function(result, mode, level) {
+let renderDependencyControl = function(result, mode, level) {
     //console.log(result.cells);
     var explanation_intro = mode == 1 ? 'По строке' : 'По графе';
     var error_level_mark = 'invalid';
@@ -255,7 +252,7 @@ var renderDependencyControl = function(result, mode, level) {
     return row;
 };
 
-var renderInterannualControl = function(result, level) {
+let renderInterannualControl = function(result, level) {
     //console.log(result.cells);
     var error_level_mark = 'invalid';
     switch (level) {
@@ -289,7 +286,7 @@ var renderInterannualControl = function(result, level) {
     return row;
 };
 
-var renderFoldControl = function(result, level) {
+let renderFoldControl = function(result, level) {
     //console.log(result.cells);
     var error_level_mark = 'invalid';
     switch (level) {
@@ -322,7 +319,7 @@ var renderFoldControl = function(result, level) {
 };
 
 // Отображение результатов контроля (новый формат) по каждой функции контроля
-var renderFunctionProtocol = function (container, table_id, rule) {
+let renderFunctionProtocol = function (container, table_id, rule) {
     var rule_valid = rule.valid ? 'rule-valid' : 'rule-invalid';
     var header = $("<div class='rule-header " + rule_valid + "'></div>");
     var content = $("<div class='rule-content " + rule_valid + "'></div>");
@@ -392,7 +389,7 @@ var renderFunctionProtocol = function (container, table_id, rule) {
     return content;
 };
 // Вывод в читаемом виде контроля таблицы
-var renderTableProtocol = function (table_id, data) {
+let renderTableProtocol = function (table_id, data) {
     invalidCells[table_id] = [];
     alertedCells[table_id] = [];
     var container;
@@ -417,7 +414,7 @@ var renderTableProtocol = function (table_id, data) {
     return protocol_wrapper;
 };
 // Инициализация дополнительных кнопок на панели инструментов контроля формы
-var init_fc_extarbuttons = function () {
+let init_fc_extarbuttons = function () {
     //$("#fc_extrabuttons").hide();
     //$("#showallfcrule").jqxCheckBox({ theme: theme, checked: true });
     //$("#showallfcrule").on('checked', function (event) {
@@ -438,7 +435,7 @@ var init_fc_extarbuttons = function () {
     $('#printformprotocol').jqxButton({ theme: theme });
 };
 // Инициализация дополнительных кнопок на панели инструментов контроля таблицы
-var initextarbuttons = function () {
+let initextarbuttons = function () {
     $("#extrabuttons").hide();
     $("#showallrule").jqxCheckBox({ theme: theme, checked: true });
     $("#showallrule").on('checked', function (event) {
@@ -509,7 +506,7 @@ function cellfound(cells, column_id, row_id) {
 }
 
 // Контроль формы - вывод протокола контроля на страницу и для печати
-var checkform = function () {
+let checkform = function () {
     var data;
     $.ajax({
         dataType: "json",
@@ -644,7 +641,7 @@ var checkform = function () {
     });
 };
 // Контроль таблицы - вывод протокола контроля на страницу и для печати
-var checktable = function (table_id) {
+let checktable = function (table_id) {
     invalidCells[table_id] = [];
     alertedCells[table_id] = [];
     var data ="";
@@ -666,7 +663,7 @@ var checktable = function (table_id) {
     });
 };
 
-var tabledatacheck = function(table_id) {
+let tabledatacheck = function(table_id) {
     var data ="";
     $.ajax({
         dataType: "json",
@@ -686,7 +683,7 @@ var tabledatacheck = function(table_id) {
     });
 };
 
-var compare_with_prev = function () {
+let compare_with_prev = function () {
     var data ="";
     $.ajax({
         dataType: "json",
@@ -729,7 +726,7 @@ var compare_with_prev = function () {
     });
 };
 
-var beforecheck = function( xhr ) {
+let beforecheck = function( xhr ) {
     $("#tableprotocol").html('');
     //$("#cellvalidationprotocol").html('');
     $('#protocolloader').show();
@@ -741,7 +738,7 @@ var beforecheck = function( xhr ) {
     dgrid.jqxGrid('refresh');
 };
 
-var gettableprotocol = function (data, status, xhr) {
+let gettableprotocol = function (data, status, xhr) {
     var protocol_wrapper;
     var header;
     var printable;
@@ -834,11 +831,11 @@ var gettableprotocol = function (data, status, xhr) {
 };
 
 // Экспорт данных текущей таблицы в эксель
-var tabledataexport = function(table_id) {
+let tabledataexport = function(table_id) {
     window.open(tableexport_url + table_id);
 };
 // Панель инструментов для редактируемой таблицы
-var rendertoolbar = function(toolbar) {
+let rendertoolbar = function(toolbar) {
     var container = $("<div style='margin: 5px;'></div>");
     var filterinput = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='searchField' type='text' style='height: 23px; float: left; width: 150px;' />");
     //var input3 = $("<input id='notnullstrings' type='button' value='Непустые строки' />");
@@ -935,7 +932,7 @@ var rendertoolbar = function(toolbar) {
     });
     firefullscreenevent();
 };
-var initdatasources = function() {
+let initdatasources = function() {
     form_table_source = {
         dataType: "json",
         dataFields: [{
@@ -970,12 +967,12 @@ var initdatasources = function() {
     });
 };
 // Получение читабельных координат ячейки - код строки, индекс графы
-var getreadablecelladress = function(row, column) {
-    var row_code = dgrid.jqxGrid('getcellvaluebyid', row, current_row_number_datafield);
-    var column_index = dgrid.jqxGrid('getcolumnproperty', column, 'text');
+let getreadablecelladress = function(row, column) {
+    let row_code = dgrid.jqxGrid('getcellvaluebyid', row, current_row_number_datafield);
+    let column_index = dgrid.jqxGrid('getcolumnproperty', column, 'text');
     return { row: row_code, column: column_index};
 };
-var fetchcelllayer = function(row, column) {
+let fetchcelllayer = function(row, column) {
     var layer_container = $("<table class='table table-condensed table-striped table-bordered'></table>");
     var period_container = $("<table class='table table-condensed table-striped table-bordered'></table>");
     var fetch_url = cell_layer_url + row + '/' + column;
@@ -997,7 +994,7 @@ var fetchcelllayer = function(row, column) {
     return { layers: layer_container, periods: period_container} ;
 };
 // Инициализация перечня таблиц текущей формы
-var inittablelist = function() {
+let inittablelist = function() {
     fgrid = $("#formTables");
     fgrid.jqxDataTable({
         width: '99%',
@@ -1059,7 +1056,7 @@ var inittablelist = function() {
 
 };
 // Инициализация вкладки протокола контроля текущей таблицы
-var initchecktabletab = function() {
+let initchecktabletab = function() {
     //$("#checktable").jqxButton({ theme: theme, disabled: control_disabled });
     //$("#checktable").click( function() { checktable(current_table) });
     //$("#datacheck").jqxButton({ theme: theme, disabled: control_disabled });
@@ -1078,7 +1075,7 @@ var initchecktabletab = function() {
 
 };
 // Инициализация вкладки протокола контроля формы
-var initcheckformtab = function() {
+let initcheckformtab = function() {
     //$("#checkform").jqxButton({ theme: theme, disabled: control_disabled });
     $("#checkform").click(function () { checkform() });
     var refresh_protocol = $("<i style='margin-left: 2px;height: 14px; float: left' class='fa  fa-lg fa-circle-o' title='Обновить/пересоздать протокол контроля'></i>");
@@ -1120,7 +1117,7 @@ var initcheckformtab = function() {
 
     }*/
 };
-var initfilters = function() {
+let initfilters = function() {
     row_name_filter = function (needle) {
         var rowFilterGroup = new $.jqx.filter();
         var filter_or_operator = 1;
@@ -1148,7 +1145,7 @@ var initfilters = function() {
         $("#DataGrid").jqxGrid('applyfilters');
     }
 };
-var initdatagrid = function() {
+let initdatagrid = function() {
     dgrid = $("#DataGrid");
     dgrid.jqxGrid(
         {
@@ -1170,20 +1167,17 @@ var initdatagrid = function() {
             columngroups: data_for_tables[current_table].columngroups
         });
     dgrid.on('cellvaluechanged', function (event) {
-        var rowBoundIndex = args.rowindex;
-        //var rowdata = $('#DataGrid').jqxGrid('getrowdata', rowBoundIndex);
-        var rowid = $('#DataGrid').jqxGrid('getrowid', rowBoundIndex);
-        //var rowid = rowdata.id;
-        var colid = event.args.datafield;
-
-        var value = args.newvalue;
-        //console.log(value);
+        let rowBoundIndex = args.rowindex;
+        let rowid = $('#DataGrid').jqxGrid('getrowid', rowBoundIndex);
+        let colid = event.args.datafield;
+        let value = args.newvalue;
+        let oldvalue;
         if (typeof args.oldvalue !== 'undefined') {
-            var oldvalue = args.oldvalue;
+            oldvalue = args.oldvalue;
         } else {
-            var oldvalue = null;
+            oldvalue = null;
         }
-        var readable_coordinates = getreadablecelladress(rowid, colid);
+        let readable_coordinates = getreadablecelladress(rowid, colid);
 
         current_edited_cell.t = current_table;
         current_edited_cell.r = rowBoundIndex;
@@ -1232,30 +1226,28 @@ var initdatagrid = function() {
 
     dgrid.on('cellselect', function (event)
     {
-        var cell_protocol_panel = $("#cellprotocol");
-        var header;
+        let cell_protocol_panel = $("#cellprotocol");
+        let header;
+        let args = event.args;
+        let column_id = args.datafield;
+        let rowindex = event.args.rowindex;
+        let row_id = dgrid.jqxGrid('getrowid', rowindex);
+        let row_code = dgrid.jqxGrid('getcellvaluebyid', row_id, current_row_number_datafield);
+        let colindex = dgrid.jqxGrid('getcolumnproperty', column_id, 'text');
+        let analitic_header = "<b>Строка " + row_code + ", Графа " + colindex +  ": </b><br/>";
         cell_protocol_panel.html('');
-        var args = event.args;
-        var column_id = args.datafield;
-        var rowindex = event.args.rowindex;
-        var row_id = dgrid.jqxGrid('getrowid', rowindex);
-        var row_code = dgrid.jqxGrid('getcellvaluebyid', row_id, current_row_number_datafield);
-        var colindex = dgrid.jqxGrid('getcolumnproperty', column_id, 'text');
-        var analitic_header = "<b>Строка " + row_code + ", Графа " + colindex +  ": </b><br/>";
-        if (current_protocol_source.length == 0) {
+        if (current_protocol_source.length === 0) {
             cell_protocol_panel.html("<div class='alert alert-danger'><p>Протокол контроля формы не найден. Выполните контроль формы или контроль текущей таблицы</p></div>");
-        } else if (typeof current_protocol_source[current_table_code] == 'undefined') {
+        } else if (typeof current_protocol_source[current_table_code] === 'undefined') {
             cell_protocol_panel.html("<div class='alert alert-danger'><p>Протокол контроля текущей таблицы не найден. Выполните контроль формы или контроль текущей таблицы</p></div>");
         } else {
-            var cellprotocol = selectedcell_protocol(current_protocol_source, current_table, current_table_code, column_id, row_id);
-
-            var count_of_rules  = cellprotocol.length > 0 ? cellprotocol.length : " не определены ";
+            let cellprotocol = selectedcell_protocol(current_protocol_source, current_table, current_table_code, column_id, row_id);
+            let count_of_rules  = cellprotocol.length > 0 ? cellprotocol.length : " не определены ";
             if ( cellprotocol.length > 0) {
                 header = $("<div class='alert alert-info'><p>Количество заданых правил контроля для данной ячейки - " + count_of_rules + " </p></div>");
             } else {
                 header = $("<div class='alert alert-warning'><p>Нет заданых правил контроля для данной ячейки</p></div>");
             }
-
             cell_protocol_panel.append(header);
             for (i = 0; i < count_of_rules ; i++) {
                 cell_protocol_panel.append("<strong>Правило контроля: </strong><span>" + cellprotocol[i].rule.formula + "</span>");
@@ -1276,8 +1268,9 @@ var initdatagrid = function() {
             }
 
         }
-        if (doc_type == 2) {
-            var returned = fetchcelllayer(row_id, column_id);
+        if (doc_type === 2) {
+            let returned = fetchcelllayer(row_id, column_id);
+
             $("#CellAnalysisTable").html(analitic_header);
             $("#CellAnalysisTable").append(returned.layers);
             $("#CellPeriodsTable").html(analitic_header);

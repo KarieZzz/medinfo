@@ -1,7 +1,7 @@
 /**
  * Created by shameev on 09.09.2016.
  */
-var initlayout = function() {
+let initlayout = function() {
     layout = [{
         type: 'layoutGroup',
         orientation: 'horizontal',

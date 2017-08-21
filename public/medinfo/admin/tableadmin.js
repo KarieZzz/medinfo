@@ -16,7 +16,7 @@ initsplitter = function() {
     );
 };
 initfilterdatasources = function() {
-    var forms_source =
+    let forms_source =
     {
         datatype: "json",
         datafields: [
@@ -29,7 +29,7 @@ initfilterdatasources = function() {
     formsDataAdapter = new $.jqx.dataAdapter(forms_source);
 };
 initdatasources = function() {
-    var tablesource =
+    let tablesource =
     {
         datatype: "json",
         datafields: [

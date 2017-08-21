@@ -57,6 +57,7 @@ class ReportPatternController extends Controller
     public function edit($id)
     {
         $pattern = ReportPattern::find($id);
+        //echo $pattern->pattern;
         $decoded = json_decode($pattern->pattern, true);
         $name = $decoded['header']['title'];
         $indexes = $decoded['content'];

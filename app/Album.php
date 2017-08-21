@@ -11,8 +11,7 @@ class Album extends Model
 
     public function scopeDefault($query)
     {
-        return $query
-            ->where('default', true);
+        return $query->where('default', true);
     }
 
     public function scopeGeneral($query)

@@ -100,7 +100,7 @@ initRowList = function() {
         $("#row_code").val(row.row_code);
         $("#row_medstat_code").val(row.medstat_code);
         $("#row_medinfo_id").val(row.medinfo_id);
-        $("#excludedRow").val(row.excluded !== null);
+        $("#excludedRow").val(row.excluded);
     });
 };
 //Таблица граф
@@ -133,13 +133,12 @@ initColumnList = function() {
         let row = event.args.row;
         $("#column_index").val(row.column_index);
         $("#column_name").val(row.column_name);
-        //$("#content_type").val(row.content_type);
         $("#column_type").val(row.content_type);
         $("#size").val(row.size);
         $("#decimal_count").val(row.decimal_count);
         $("#column_medstat_code").val(row.medstat_code);
         $("#column_medinfo_id").val(row.medinfo_id);
-        $("#excludedColumn").val(row.excluded !== null);
+        $("#excludedColumn").val(row.excluded);
     });
 };
 // функция для обновления связанных объектов после выбора таблицы
@@ -211,7 +210,6 @@ initButtons = function() {
                 $("#editFormula").hide();
             }
         }
-
     });
     $('#excludedRow').jqxSwitchButton({
         height: 31,
@@ -396,7 +394,6 @@ initColumnActions = function() {
 };
 
 initColumnFormulaWindow = function () {
-
     let savebutton = $("#saveFormula");
     let formulaWindow = $('#formulaWindow');
     let formula = $("#formula");

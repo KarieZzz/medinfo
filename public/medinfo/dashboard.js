@@ -1,6 +1,6 @@
 raiseError = function(comment, xhr) {
-    var add_inf = '';
-    if (typeof comment == 'undefined') {
+    let add_inf = '';
+    if (typeof comment === 'undefined') {
         comment = 'Ошибка получения данных ';
     }
     if (typeof xhr !== 'undefined') {
@@ -10,14 +10,14 @@ raiseError = function(comment, xhr) {
     $("#serverErrorNotification").jqxNotification("open");
 };
 raiseInfo = function(comment) {
-    if (typeof comment == 'undefined') {
+    if (typeof comment === 'undefined') {
         comment = 'Текст информационного сообщения по умолчанию ';
     }
     $("#currentInfoMessage").text(comment);
     $("#infoNotification").jqxNotification("open");
 };
 localize = function() {
-    var localizationobj = {};
+    let localizationobj = {};
     localizationobj.thousandsseparator = " ";
     localizationobj.decimalseparator = ',';
     localizationobj.emptydatastring = "Нет данных. Установите условия отбора отчетных документов";

@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class Column extends Model
 {
     //
+    const HEADER        = 2;
+    const CALCULATED    = 2;
+    const DATA          = 4;
+    const COMMENT       = 5;
+
     protected $fillable = [
         'table_id', 'column_index', 'column_name', 'content_type', 'size', 'decimal_count', 'medstat_code', 'medinfo_id',
     ];
@@ -50,7 +55,7 @@ class Column extends Model
 
     public function scopeOfDataType($query)
     {
-        return $query->where('content_type', 4);
+        return $query->where('content_type', self::DATA);
     }
 
     public function scopeOfTable($query, $table)
@@ -65,6 +70,11 @@ class Column extends Model
         return $query
             ->where('table_id', $table)
             ->where('column_index', $columnindex);
+    }
+
+    public function scopeCalculated($query)
+    {
+        return $query->where('content_type', self::CALCULATED);
     }
 
 }

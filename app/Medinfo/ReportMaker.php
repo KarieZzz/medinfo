@@ -177,7 +177,11 @@ class ReportMaker
                 $document = Document::OfTUPF( 2, $unit->id, $this->period->id, $this->population_form->id)->first();
                 //$cells = Cell::OfDocument($document->id)->get();
 
-                $cell = Cell::OfDRC($document->id, $this->population_rows->where('row_code', $population_group)->first()->id,  $this->population_column->where('column_index', 3)->first()->id)->first();
+                $cell = Cell::OfDRC(
+                    $document->id,
+                    $this->population_rows->where('row_code', $population_group)->first()->id,
+                    $this->population_column->where('column_index', 3)->first()->id
+                )->first();
                 //dd($cell);
                 //$population = $cells[$population_group - 1]->value;
                 $population = $cell->value;

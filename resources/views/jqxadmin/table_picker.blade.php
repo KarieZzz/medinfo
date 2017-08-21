@@ -1,6 +1,6 @@
 <div class="row">
-    <div class="col-sm-2"><h4 class="text-right">Выберите форму и таблицу</h4></div>
-    <div class="col-sm-4">
+    <div class="col-md-2"><h4 class="text-right">Выберите форму и таблицу</h4></div>
+    <div class="col-md-4">
         <form style="margin-top: 3px" class="form-inline">
             <div class="form-group">
                 <div id="formList"></div>
@@ -12,5 +12,5 @@
             </div>
         </form>
     </div>
-    <div id="tableProperties" class="col-sm-6 text-nowrap"></div>
+    <div class="col-md-6 text-nowrap"><h5 id="tableProperties"></h5></div>
 </div>

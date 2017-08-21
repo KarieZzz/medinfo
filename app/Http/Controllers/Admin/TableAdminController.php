@@ -22,16 +22,30 @@ class TableAdminController extends Controller
 
     public function index()
     {
-        $forms = Form::orderBy('form_index')->get(['id', 'form_code']);
-        $default_album = Album::Default()->first();
+        $default_album = $this->getDefaultAlbum();
+        $forms = Form::whereHas('included', function ($query) use($default_album) {
+            $query->where('album_id', $default_album->id);
+        })->orderBy('form_index')->get(['id', 'form_code']);
         return view('jqxadmin.tables', compact('forms', 'default_album'));
+    }
+
+    public function getDefaultAlbum()
+    {
+        $default_album = Album::Default()->first();
+        if (is_null($default_album)) {
+            $default_album = Album::find(config('medinfo.default_album'));
+        }
+        return $default_album;
     }
 
     public function fetchTables()
     {
-        $default_album = Album::Default()->first()->id;
-        return Table::orderBy('form_id')->orderBy('table_index')->with('form')->with(['excluded' => function ($query) use ($default_album) {
-            $query->where('album_id', $default_album);
+        $default_album = $this->getDefaultAlbum();
+        $forms = Form::whereHas('included', function ($query) use($default_album) {
+            $query->where('album_id', $default_album->id);
+        })->orderBy('form_index')->pluck('id');
+        return Table::whereIn('form_id', $forms)->orderBy('form_id')->orderBy('table_index')->with('form')->with(['excluded' => function ($query) use ($default_album) {
+            $query->where('album_id', $default_album->id);
         }])->get();
 
         //return Form::all();

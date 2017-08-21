@@ -45,32 +45,30 @@ $.each(data_for_tables, function(table, content) {
     });
 });
 //console.log(data_for_tables);
-var current_row_name_datafield = data_for_tables[current_table].columns[1].dataField;
-var current_row_number_datafield = data_for_tables[current_table].columns[2].dataField;
-var protocol_control_created = false;
-var forcereload = 0; // При наличии загружается кэшированный протокол контроля
-var invalidTables = [];
-var editedCells = [];
-var alertedCells = [];
-var invalidCells = [];
-var comparedCells = [];
-var show_table_errors_only = true;
-var marking_mode = 'control';
-var current_edited_cell = {};
+let current_row_name_datafield = data_for_tables[current_table].columns[1].dataField;
+let current_row_number_datafield = data_for_tables[current_table].columns[2].dataField;
+let protocol_control_created = false;
+let forcereload = 0; // При наличии загружается кэшированный протокол контроля
+let invalidTables = [];
+let editedCells = [];
+let alertedCells = [];
+let invalidCells = [];
+let comparedCells = [];
+let show_table_errors_only = true;
+let marking_mode = 'control';
+let current_edited_cell = {};
 // JSON объект - протокол контроля формы
-var current_protocol_source = [];
-var source_url = "/datainput/fetchvalues/" + doc_id + "/" + default_album + "/";
-var savevalue_url = "/datainput/savevalue/" + doc_id + "/";
-var validate_table_url = "/datainput/tablecontrol/" + doc_id + "/";
-var validate_form_url = "/datainput/formcontrol/" + doc_id;
-
-var tabledatacheck_url = "/datainput/dcheck/table/" + doc_id + "/";
-var formdatacheck_url = "/datainput/dcheck/form/" + doc_id;
-
-var medstat_control_url = "medstat_control_protocol.php?document=" + doc_id;
-var valuechangelog_url = "/datainput/valuechangelog/" + doc_id;
-var tableexport_url = "/datainput/tableexport/" + doc_id + "/";
-var cell_layer_url = "/datainput/fetchcelllayers/" + doc_id + "/";
+let current_protocol_source = [];
+let source_url = "/datainput/fetchvalues/" + doc_id + "/" + default_album + "/";
+let savevalue_url = "/datainput/savevalue/" + doc_id + "/";
+let validate_table_url = "/datainput/tablecontrol/" + doc_id + "/";
+let validate_form_url = "/datainput/formcontrol/" + doc_id;
+let tabledatacheck_url = "/datainput/dcheck/table/" + doc_id + "/";
+let formdatacheck_url = "/datainput/dcheck/form/" + doc_id;
+let medstat_control_url = "medstat_control_protocol.php?document=" + doc_id;
+let valuechangelog_url = "/datainput/valuechangelog/" + doc_id;
+let tableexport_url = "/datainput/tableexport/" + doc_id + "/";
+let cell_layer_url = "/datainput/fetchcelllayers/" + doc_id + "/";
 
 initdatasources();
 initnotifications();
