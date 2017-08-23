@@ -276,7 +276,7 @@ class DashboardController extends Controller
         $table_protocol['no_data'] = true;
         return $table_protocol;
     }
-
+    // "Старый" контроль из Мединфо. Сейчас не используется.
     public function formControl(int $document)
     {
         $form_protocol = [];

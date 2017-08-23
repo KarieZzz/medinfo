@@ -57,7 +57,7 @@ class RowColumnAdminController extends Controller
     public function fetchColumns(int $table)
     {
         $album = $this->getDefaultAlbum();
-        return Column::OfTable($table)->with('table')->with(['excluded' => function ($query) use ($album) {
+        return Column::OfTable($table)->orderBy('column_index')->with('table')->with(['excluded' => function ($query) use ($album) {
             $query->where('album_id', $album->id);
         }])->get();
     }

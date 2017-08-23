@@ -42,6 +42,11 @@ class Evaluator
                     return $left * $right;
                     break;
                 case 'DIVIDE' :
+                    //dump($right);
+                    if ($right === 0) {
+                        return 0;
+                        break;
+                    }
                     return $left / $right;
                     break;
             }

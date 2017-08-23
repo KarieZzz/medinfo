@@ -17,13 +17,13 @@
 @endsection
 
 @push('loadcss')
-    <link href="{{ asset('/css/medinfoeditform.css?v=008') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('/css/medinfoeditform.css?v=009') }}" rel="stylesheet" type="text/css" />
 @endpush('loadcss')
 
 @push('loadjsscripts')
     @include('jqxdatainput.jsstack')
-    <script src="{{ asset('/medinfo/editdashboard.js?v=034') }}"></script>
-    <script src="{{ asset('/medinfo/primary.js') }}"></script>
+    <script src="{{ asset('/medinfo/editdashboard.js?v=047') }}"></script>
+    <script src="{{ asset('/medinfo/primary.js?v=002') }}"></script>
 @endpush('loadjsscripts')
 
 @section('inlinejs')

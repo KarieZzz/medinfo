@@ -6,11 +6,11 @@ use App\Medinfo\Lexer\ParserException;
 
 class CalculationFunctionParser extends Parser {
 
-    //public $celladressStack;
+    public $celladressStack;
 
     public function __construct($input) {
         parent::__construct($input);
-        //$this->celladressStack = new \SplDoublyLinkedList;
+        $this->celladressStack = new \SplDoublyLinkedList;
         //$this->tokenNames = CalculationFunctionLexer::$tokenNames;
     }
 
@@ -23,7 +23,7 @@ class CalculationFunctionParser extends Parser {
             $this->match(CalculationFunctionLexer::NUMBER);
         } elseif ($this->lookahead->type == CalculationFunctionLexer::CELLADRESS) {
             $node = new CalculationFunctionParseTree($this->lookahead->type, $this->lookahead->text);
-            //$this->celladressStack->push($node);
+            $this->celladressStack->push($node);
             $this->match(CalculationFunctionLexer::CELLADRESS);
         } elseif ($this->lookahead->type == CalculationFunctionLexer::LPARENTH) {
             $this->match(CalculationFunctionLexer::LPARENTH);

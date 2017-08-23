@@ -166,8 +166,6 @@ class CalculationFunctionLexer extends Lexer {
                 $this->consume();
             } while ($this->isPERIODCODE());
         }
-
-
         $this->celladressStack->push($buf);
         $token = new Token(self::CELLADRESS, '%'. ($this->celladressStack->count()-1));
         $this->tokenstack->push($token);

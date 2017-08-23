@@ -40,9 +40,8 @@ let initlayout = function() {
                         title: 'Полный журнал изменений',
                         contentContainer: 'FullValueChangeLogPanel',
                         initContent: function () {
-                            $("#openFullChangeLog").jqxButton({ theme: theme, disabled: control_disabled });
                             $("#openFullChangeLog").click(function () {
-                                var dataExportWindow = window.open(valuechangelog_url);
+                                let dataExportWindow = window.open(valuechangelog_url);
                             });
                         }
                     }]

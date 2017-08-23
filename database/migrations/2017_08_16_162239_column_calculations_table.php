@@ -18,6 +18,7 @@ class ColumnCalculationsTable extends Migration
             $table->integer('column_id')->index();
             $table->string('formula', 512);
             $table->string('comment', 128)->nullable();
+            $table->jsonb('compiled');
             $table->timestamps();
         });
     }

@@ -17,6 +17,7 @@ class CreateCfunctionsTable extends Migration
             $table->increments('id');
             $table->integer('table_id')->index();
             $table->smallInteger('level')->index();
+            $table->smallInteger('type')->index();
             $table->smallInteger('function')->index();
             $table->string('script', 512);
             $table->string('comment', 128)->nullable();

@@ -180,6 +180,9 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('datainput/fetchvalues/{document}/{album}/{table}', 'StatDataInput\FormDashboardController@fetchValues');
     Route::post('datainput/savevalue/{document}/{table}', 'StatDataInput\FormDashboardController@saveValue');
     Route::get('datainput/valuechangelog/{document}', 'StatDataInput\FormDashboardController@fullValueChangeLog');
+    Route::get('datainput/calculate/{document}/{table}', 'StatDataInput\CalculateColumnController@calculate');
+
+
 
     // Контроль данных
     Route::get('datainput/formcontrol/{document}', 'StatDataInput\FormDashboardController@formControl');

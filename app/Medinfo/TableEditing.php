@@ -31,10 +31,11 @@ class TableEditing
             'hidden' => $hiderowid,
             'pinned' => true
         );
+        $calculated_fields = array();
         $column_groups_arr = array();
         //$cols = $table->columns->where('deleted', 0)->sortBy('column_index');
 
-        $cols = Column::OfTable($table->id)->whereDoesntHave('excluded', function ($query) use($album) {
+        $cols = Column::OfTable($table->id)->orderBy('column_index')->whereDoesntHave('excluded', function ($query) use($album) {
             $query->where('album_id', $album->id);
         })->get();
 
@@ -77,6 +78,28 @@ class TableEditing
                     'name' => $col->id,
                     'rendered' => 'tooltiprenderer'
                 );
+            } else if ($contentType == 'calculated') {
+                $calculated_fields[] = $col->id;
+                $columns_arr[] = array(
+                    'text' => $col->column_index,
+                    'dataField' => $col->id,
+                    'width' => $width,
+                    'cellsalign' => 'right',
+                    'align' => 'center',
+                    'cellsrenderer' => 'cellsrenderer',
+                    'columntype' => $columntype,
+                    'columngroup' => $col->id,
+                    'pinned' => false,
+                    'editable' => false,
+                    'filtertype' => 'number',
+                    'cellclassname' => 'calculated'
+                );
+                $column_groups_arr[] = array(
+                    'text' => $col->column_name,
+                    'align' => 'center',
+                    'name' => $col->id,
+                    'rendered' => 'tooltiprenderer'
+                );
             } else if ($contentType == 'header') {
                 $columns_arr[] = array(
                     'text' => $col->column_name,
@@ -93,8 +116,13 @@ class TableEditing
         $fortable['tablecode'] = $table->table_code;
         $fortable['tablename'] = $table->table_name;
         $fortable['datafields'] = $datafields_arr;
+        $fortable['calcfields'] = $calculated_fields;
         $fortable['columns'] = $columns_arr;
         $fortable['columngroups'] = $column_groups_arr;
+        //if ($table->id === 31) {
+          //  dd($columns_arr);
+        //}
+
         return $fortable;
     }
 
@@ -115,7 +143,7 @@ class TableEditing
             'pinned' => true
         );
         $column_groups_arr = array();
-        $cols = Column::OfTable($table->id)->get();
+        $cols = Column::OfTable($table->id)->orderBy('column_index')->get();
         foreach ($cols as $col) {
             $datafields_arr[] = ['name'  => $col->id, 'type'  => 'string', ];
             $width = $col->size * 10;

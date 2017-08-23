@@ -59,6 +59,8 @@
     margin-left: 10px;
 }
 
+.calculated { background-color: rgba(27, 116, 156, 0.25); }
+
 .equality { background-color: #57ff53; }
 .approximate { background-color: #a8ff96; }
 .moderate { background-color: #f5ff9b; }

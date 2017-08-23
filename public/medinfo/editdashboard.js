@@ -2,121 +2,44 @@
  * Created by shameev on 12.07.2016.
  */
 // Обработка состояния кнопочек перевода в полноэкранный режим
-let firefullscreenevent = function() {
-    $(document).bind('fscreenchange', function(e, state, elem) {
-        let fsel1 =  $('#togglefullscreen');
-        let fsel2 =  $('#togglecontrolscreen');
-        let fsel3 =  $('#toggle_formcontrolscreen');
-        if ($.fullscreen.isFullScreen()) {
-            fsel1.jqxToggleButton('check');
-            fsel2.jqxToggleButton('check');
-            fsel3.jqxToggleButton('check');
-        } else {
-            fsel1.jqxToggleButton('unCheck');
-            fsel2.jqxToggleButton('unCheck');
-            fsel3.jqxToggleButton('unCheck');
-        }
-    });
-};
-// проверяем ли находится ли данная ячейка в списке запрещенных к редактированию ячеек
-let cellbeginedit = function (row, datafield, columntype, value) {
-    let rowid = dgrid.jqxGrid('getrowid', row);
-    let necell_count = not_editable_cells.length;
-    for (let i = 0; i < necell_count; i++) {
-        if (not_editable_cells[i].t == current_table &&  not_editable_cells[i].r == rowid && not_editable_cells[i].c == datafield ) {
+// Пометка/снятие пометки волнистой чертой неверных таблиц
+
+// Контроль таблицы - вывод протокола контроля на страницу и для печати
+let tabledatacheck = function(table_id) {
+    let data = "";
+    $.ajax({
+        dataType: "json",
+        url: tabledatacheck_url + table_id + "/" + forcereload,
+        data: data,
+        beforeSend: beforecheck,
+        success: gettableprotocol
+    }).fail(function(jqXHR, textStatus, errorThrown) {
+        $("#tableprotocol").html('');
+        $('#formprotocolloader').hide();
+        $('#protocolloader').hide();
+        if (jqXHR.status == 401) {
+            raiseError('Пользователь не авторизован.', jqXHR );
             return false;
         }
+        raiseError("Ошибка получения протокола контроля с сервера.");
+    });
+};
+let beforecheck = function( xhr ) {
+    $("#tableprotocol").html('');
+    //$("#cellvalidationprotocol").html('');
+    $('#protocolloader').show();
+    $('#showallrule').jqxCheckBox('check');
+    $("#extrabuttons").hide();
+    $(".inactual-protocol").hide();
+    if (typeof invalidCells[current_table] !== 'undefined' ) {
+        invalidCells[current_table].length = 0;
     }
-};
-let defaultEditor = function (row, cellvalue, editor, celltext, pressedChar) {
-    editor.jqxNumberInput({ decimalDigits: 0, digits: 12 });
-};
-let initDecimal2Editor = function (row, cellvalue, editor, celltext, pressedChar) {
-    editor.jqxNumberInput({ decimalDigits: 2, digits: 12, decimalSeparator: ',' });
-};
-let initDecimal3Editor = function (row, cellvalue, editor, celltext, pressedChar) {
-    editor.jqxNumberInput({ decimalDigits: 3, digits: 12, decimalSeparator: ',' });
-};
-
-let cellsrenderer = function (row, column, value, defaulthtml, columnproperties) {
-    if (!value) { return defaulthtml  }
-    let formated = $(defaulthtml).html(localizednumber.format(value));
-    return formated[0].outerHTML;
-};
-
-cellclass = function (row, columnfield, value, rowdata) {
-    let invalid_cell = '';
-    let alerted_cell = '';
-    let class_by_edited_row = '';
-    let not_editable = '';
-    for (let i = 0; i < not_editable_cells.length; i++) {
-        if (not_editable_cells[i].t === current_table && not_editable_cells[i].r === rowdata.id && not_editable_cells[i].c === columnfield) {
-            not_editable = 'jqx-grid-cell-pinned jqx-grid-cell-pinned-bootstrap';
-        }
+    if (typeof alertedCells[current_table] !== 'undefined' ) {
+        alertedCells[current_table].length = 0;
     }
-    if (marking_mode === 'control') {
-
-        for (let i = 0; i < editedCells.length; i++) {
-            if (editedCells[i].t == current_table && editedCells[i].r == row && editedCells[i].c == columnfield ) {
-                class_by_edited_row = "editedRow";
-            }
-        }
-        $.each(invalidCells[current_table], function(key, value) {
-            if (value.r == rowdata.id && value.c == columnfield) {
-                invalid_cell = 'invalid';
-            }
-        });
-        $.each(alertedCells[current_table], function(key, value) {
-            if (value.r == rowdata.id && value.c == columnfield) {
-                alerted_cell = 'alerted';
-            }
-        });
-        if (current_edited_cell.t == current_table && current_edited_cell.r == row && current_edited_cell.c == columnfield) {
-            if (!current_edited_cell.valid) {
-                invalid_cell = 'invalid';
-            }
-            else {
-                invalid_cell = '';
-            }
-        }
-        return  alerted_cell + ' ' + invalid_cell +' ' + class_by_edited_row + ' ' + not_editable;
-    }
-    else if (marking_mode === 'compareperiods') {
-        var class_compare = '';
-        for (var i = 0; i < comparedCells.length; i++) {
-            if (comparedCells[i].t == current_table && comparedCells[i].r == rowdata.id && comparedCells[i].c == columnfield ) {
-                class_compare = comparedCells[i].degree;
-            }
-        }
-        return class_compare + ' ' + not_editable;
-    }
+    marking_mode = 'control';
+    dgrid.jqxGrid('refresh');
 };
-validation = function(cell, value) {
-    if (value < 0) {
-        return { result: false, message: 'Допускаются только положительные значения' };
-    }
-    return true;
-};
-// Пояснялки названий столбцов
-tooltiprenderer = function (element) {
-    $(element).jqxTooltip({position: 'mouse', content: $(element).text() });
-};
-// Пометка/снятие пометки волнистой чертой неверных таблиц
-let markTableInvalid = function (id) {
-    if ($.inArray(id, invalidTables) === -1) {
-        invalidTables.push(id);
-    }
-};
-let markTableValid = function (id) {
-    let index = $.inArray(id, invalidTables);
-    if (index !== -1) {
-        delete invalidTables[index];
-    }
-    //("#formTables").jqxDataTable('render');
-    //console.log(invalidTables);
-    //console.log(index);
-};
-// Для контроля из "старого" Мединфо
 let renderCellProtocol = function(cell_protocol) {
     var row = $("<tr class='control-row'></tr>");
     var column = $("<td></td>");
@@ -142,19 +65,19 @@ let renderCellProtocol = function(cell_protocol) {
 };
 // Для контроля из "старого" Мединфо - вывод в читаемом виде контроля строки/столбца
 let renderRowProtocol = function (container, table_id, protocol_by_type, header_text) {
-    var header = $("<div class='rule-header'>" + header_text + " " + "</div>");
-    var content = $("<div class='rule-content'></div>");
-    var r = 0;
-    var i = 0;
-    var info = $("<div class='rule-comment bg-info'> - правила контроля не заданы</div>");
-    if (typeof protocol_by_type.no_rules == 'undefined' || !protocol_by_type.no_rules) {
+    let header = $("<div class='rule-header'>" + header_text + " " + "</div>");
+    let content = $("<div class='rule-content'></div>");
+    let r = 0;
+    let i = 0;
+    let info = $("<div class='rule-comment bg-info'> - правила контроля не заданы</div>");
+    if (typeof protocol_by_type.no_rules === 'undefined' || !protocol_by_type.no_rules) {
         info = $("<table style='margin: 5px;'></table>");
         $.each(protocol_by_type, function(row_index, row_protocol) {
             if (typeof row_protocol.valid !== 'undefined') {
                 $.each(row_protocol, function(column_index, cell_protocol ) {
                     if ( typeof cell_protocol.valid !=='undefined' ) {
-                        var valid = '';
-                        var row = renderCellProtocol(cell_protocol);
+                        //var valid = '';
+                        let row = renderCellProtocol(cell_protocol);
                         info.append(row);
                         if (!cell_protocol.valid) {
                             invalidCells[table_id].push({r: row_protocol.row_id, c: cell_protocol.column_id});
@@ -169,7 +92,7 @@ let renderRowProtocol = function (container, table_id, protocol_by_type, header_
             }
         });
     }
-    var badge = "<span class='badge'>" + r + " / " + i + "</span>";
+    let badge = "<span class='badge'>" + r + " / " + i + "</span>";
     //var badge = "<span class='badge'>" + i + "</span>";
     header.append(badge);
     content.append(info);
@@ -214,7 +137,6 @@ let renderCompareControl = function(result, boolean_sign, mode, level) {
     }
     return row;
 };
-
 let renderDependencyControl = function(result, mode, level) {
     //console.log(result.cells);
     var explanation_intro = mode == 1 ? 'По строке' : 'По графе';
@@ -251,7 +173,6 @@ let renderDependencyControl = function(result, mode, level) {
     }
     return row;
 };
-
 let renderInterannualControl = function(result, level) {
     //console.log(result.cells);
     var error_level_mark = 'invalid';
@@ -285,7 +206,6 @@ let renderInterannualControl = function(result, level) {
     }
     return row;
 };
-
 let renderFoldControl = function(result, level) {
     //console.log(result.cells);
     var error_level_mark = 'invalid';
@@ -317,7 +237,6 @@ let renderFoldControl = function(result, level) {
     }
     return row;
 };
-
 // Отображение результатов контроля (новый формат) по каждой функции контроля
 let renderFunctionProtocol = function (container, table_id, rule) {
     var rule_valid = rule.valid ? 'rule-valid' : 'rule-invalid';
@@ -473,10 +392,9 @@ function searchprotocol(source, column_id, row_id) {
     });
     return results;
 }
-
 function selectedcell_protocol(form_protocol, table_id, table_code, column_id, row_id) {
-    var tableprotocol = form_protocol[table_code];
-    var cell_protocol = [];
+    let tableprotocol = form_protocol[table_code];
+    let cell_protocol = [];
     if (tableprotocol.no_rules) {
         return false;
     } else {
@@ -495,7 +413,7 @@ function selectedcell_protocol(form_protocol, table_id, table_code, column_id, r
 }
 
 function cellfound(cells, column_id, row_id) {
-    var found = false;
+    let found = false;
     $.each(cells, function(cell_idx, cell) {
         //console.log(cell.column == column_id && cell.row == row_id);
         if (cell.column == column_id && cell.row == row_id) {
@@ -505,9 +423,8 @@ function cellfound(cells, column_id, row_id) {
     return found;
 }
 
-// Контроль формы - вывод протокола контроля на страницу и для печати
 let checkform = function () {
-    var data;
+    let data;
     $.ajax({
         dataType: "json",
         //url: validate_form_url,
@@ -521,19 +438,19 @@ let checkform = function () {
             current_protocol_source = null;
         },
         success: function (data, status, xhr) {
-            var formprotocol = $("#formprotocol");
-            var protocol_wrapper = $("<div></div>");
-            var header;
-            var printable;
-            var formprotocolheader;
+            let formprotocol = $("#formprotocol");
+            let protocol_wrapper = $("<div></div>");
+            let header;
+            let printable;
+            let formprotocolheader;
             current_protocol_source = data;
             raiseInfo("Протокол контроля формы загружен");
             $('#formprotocolloader').hide();
             invalidCells.length = 0;
             alertedCells.length = 0;
             invalidTables.length = 0;
-            var now = new Date();
-            var timestamp = now.toLocaleString();
+            let now = new Date();
+            let timestamp = now.toLocaleString();
             if  (data.nodata) {
                 formprotocol.html("<div class='alert alert-info'>"+ timestamp+" Проверяемая форма не содержит данных</div>");
                 protocol_control_created = true;
@@ -581,7 +498,7 @@ let checkform = function () {
             formprotocol.jqxPanel({ autoUpdate: true, width: '97%', height: '80%'});
             $("#formprotocol .tableprotocol-header").click(function() {
                 $(this).next().toggle();
-                var glyph = $(this.firstChild);
+                let glyph = $(this.firstChild);
                 if (glyph.hasClass('glyphicon-plus')) {
                     glyph.removeClass('glyphicon-plus');
                     glyph.addClass('glyphicon-minus');
@@ -605,11 +522,10 @@ let checkform = function () {
             });
             $(".rule-valid ").parent(".jqx-expander-header").hide().next().hide();
             $(".control-valid ").hide();
-
             formprotocolheader ="<a href='#' onclick='window.print()'>Распечатать</a>";
             formprotocolheader +="<h2>Протокол контроля формы № "+ form_code +": \"" + form_name +"\" </h2>";
             formprotocolheader +="<h3>Учреждение: " + ou_code + " " + ou_name + "</h3>";
-            var print_style = "<style>.tableprotocol-header { margin-top: 20px; font-size: 1.1em; font-weight: bold }";
+            let print_style = "<style>.tableprotocol-header { margin-top: 20px; font-size: 1.1em; font-weight: bold }";
             //print_style += ".badge { background-color: #cbcbcb }";
             print_style += ".badge { display:none }";
             print_style += ".rule-valid { display:none }";
@@ -633,18 +549,33 @@ let checkform = function () {
     }).fail(function(jqXHR, textStatus, errorThrown) {
         $('#formprotocol').html('');
         $('#formprotocolloader').hide();
-        if (jqXHR.status == 401) {
+        if (jqXHR.status === 401) {
             raiseError('Пользователь не авторизован.', jqXHR );
             return false;
         }
         raiseError("Ошибка получения протокола контроля с сервера.");
     });
 };
-// Контроль таблицы - вывод протокола контроля на страницу и для печати
+let markTableInvalid = function (id) {
+    if ($.inArray(id, invalidTables) === -1) {
+        invalidTables.push(id);
+    }
+};
+let markTableValid = function (id) {
+    let index = $.inArray(id, invalidTables);
+    if (index !== -1) {
+        delete invalidTables[index];
+    }
+    //("#formTables").jqxDataTable('render');
+    //console.log(invalidTables);
+    //console.log(index);
+};
+/*
+// Не используется в текущей версии
 let checktable = function (table_id) {
     invalidCells[table_id] = [];
     alertedCells[table_id] = [];
-    var data ="";
+    let data = "";
     $.ajax({
         dataType: "json",
         url: validate_table_url + table_id + "/" + forcereload,
@@ -662,29 +593,9 @@ let checktable = function (table_id) {
         raiseError("Ошибка получения протокола контроля с сервера.");
     });
 };
-
-let tabledatacheck = function(table_id) {
-    var data ="";
-    $.ajax({
-        dataType: "json",
-        url: tabledatacheck_url + table_id + "/" + forcereload,
-        data: data,
-        beforeSend: beforecheck,
-        success: gettableprotocol
-    }).fail(function(jqXHR, textStatus, errorThrown) {
-        $("#tableprotocol").html('');
-        $('#formprotocolloader').hide();
-        $('#protocolloader').hide();
-        if (jqXHR.status == 401) {
-            raiseError('Пользователь не авторизован.', jqXHR );
-            return false;
-        }
-        raiseError("Ошибка получения протокола контроля с сервера.");
-    });
-};
-
+// Не используется в текущей версии
 let compare_with_prev = function () {
-    var data ="";
+    let data ="";
     $.ajax({
         dataType: "json",
         url: compare_period_url + '&table=' + current_table,
@@ -725,29 +636,17 @@ let compare_with_prev = function () {
         //$("#serverErrorNotification").jqxNotification("open");
     });
 };
-
-let beforecheck = function( xhr ) {
-    $("#tableprotocol").html('');
-    //$("#cellvalidationprotocol").html('');
-    $('#protocolloader').show();
-    $('#showallrule').jqxCheckBox('check');
-    $("#extrabuttons").hide();
-    $(".inactual-protocol").hide();
-    //invalidCells.length = 0; // TODO: Обнулять только текущую таблицу перед заполнением
-    marking_mode = 'control';
-    dgrid.jqxGrid('refresh');
-};
+*/
 
 let gettableprotocol = function (data, status, xhr) {
-    var protocol_wrapper;
-    var header;
-    var printable;
-    var scripterrors;
-
-    var tableprotocol = $("#tableprotocol");
-    var now = new Date();
-    var timestamp = now.toLocaleString();
-    var cashed = "";
+    let protocol_wrapper;
+    let header;
+    let printable;
+    let scripterrors;
+    let tableprotocol = $("#tableprotocol");
+    let now = new Date();
+    let timestamp = now.toLocaleString();
+    let cashed = "";
     $('#protocolloader').hide();
     if (data.cashed) {
         cashed = "(сохраненная версия)";
@@ -757,7 +656,7 @@ let gettableprotocol = function (data, status, xhr) {
         tableprotocol.html("<div class='alert alert-info'>"+ timestamp+" Проверяемая таблица не содержит данных</div>");
         protocol_control_created = true;
     }
-    else if (typeof data.no_rules != 'undefined' && data.no_rules) {
+    else if (typeof data.no_rules !== 'undefined' && data.no_rules) {
         tableprotocol.html("<div class='alert alert-info'>"+ timestamp+" Для данной таблицы не заданы правила контроля</div>");
         protocol_control_created = false;
     }
@@ -795,11 +694,11 @@ let gettableprotocol = function (data, status, xhr) {
         } else {
             $(".rule-valid").parent(".jqx-expander-header").show().next().hide();
         }
-        var printprotocolheader ="<a href='#' onclick='window.print()'>Распечатать</a>";
+        let printprotocolheader ="<a href='#' onclick='window.print()'>Распечатать</a>";
         printprotocolheader += "<h2>Протокол контроля таблицы " + current_table_code + " \""+ data_for_tables[data.table_id].tablename;
         printprotocolheader += "\" формы № "+ form_code + "</h2>";
         printprotocolheader +="<h4>Учреждение: " + ou_code + " " + ou_name + "</h4>";
-        var print_style = "<style>.badge { background-color: #cbcbcb }";
+        let print_style = "<style>.badge { background-color: #cbcbcb }";
         print_style += ".badge { display:none }";
         print_style += ".rule-valid { display:none }";
         print_style += ".rule-comment { text-indent: 20px; font-style: italic }";
@@ -810,14 +709,14 @@ let gettableprotocol = function (data, status, xhr) {
         print_style += "</style>";
         table_protocol_comment = "<div>Дата и время проведения проверки: " + timestamp + " "+ cashed + "</div>";
         $('#printtableprotocol').click(function () {
-            var pWindow = window.open("", "ProtocolWindow", "width=900, height=600, scrollbars=yes");
+            let pWindow = window.open("", "ProtocolWindow", "width=900, height=600, scrollbars=yes");
             // почистить окошко от предыдущего протокола
             pWindow.document.body.innerHTML = " ";
             pWindow.document.write(print_style + printprotocolheader + printable.html());
         });
         protocol_control_created = true;
     }
-    if (typeof data.errors != 'undefined' && data.errors.length > 0 && (current_user_role == 3 || current_user_role == 4 )) {
+    if (typeof data.errors !== 'undefined' && data.errors.length > 0 && (current_user_role == 3 || current_user_role == 4 )) {
         scripterrors = $("<div class='alert alert-danger'></div>");
         scripterrors.append("<p><strong>Ошибка выполнения!</strong> При выполнения контроля по данной таблицы выявлен ряд ошибок в функциях:</p>");
         $.each(data.errors, function(error_inx, error ) {
@@ -829,108 +728,9 @@ let gettableprotocol = function (data, status, xhr) {
     fgrid.jqxDataTable('refresh');
     dgrid.jqxGrid('refresh');
 };
-
 // Экспорт данных текущей таблицы в эксель
 let tabledataexport = function(table_id) {
     window.open(tableexport_url + table_id);
-};
-// Панель инструментов для редактируемой таблицы
-let rendertoolbar = function(toolbar) {
-    var container = $("<div style='margin: 5px;'></div>");
-    var filterinput = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='searchField' type='text' style='height: 23px; float: left; width: 150px;' />");
-    //var input3 = $("<input id='notnullstrings' type='button' value='Непустые строки' />");
-    var clearfilter = $("<input id='clearfilters' type='button' value='Очистить фильтр' />");
-    //var input5 = $("<input id='savestate' type='button' value='Сохранить настройки таблицы' />");
-    //var input6 = $("<input id='loadstate' type='button' value='Загрузить настройки таблицы' />");
-    //var excelexport = $("<a id='excelexport' style='margin-left: 2px;' target='_blank'><span class='glyphicon glyphicon-export'></span></a>");
-    var fullscreen = $("<a id='togglefullscreen' style='margin-left: 2px;' target='_blank'><span class='glyphicon glyphicon-fullscreen'></span></a>");
-    toolbar.append(container);
-    container.append(filterinput);
-    //container.append(input3);
-    container.append(clearfilter);
-    //container.append(input5);
-    //container.append(input6);
-    //container.append(excelexport);
-    container.append(fullscreen);
-    filterinput.addClass('jqx-widget-content-' + theme);
-    filterinput.addClass('jqx-rc-all-' + theme);
-    filterinput.jqxInput({ width: 200, placeHolder: "Поиск строки" });
-    var oldVal = "";
-    filterinput.on('keydown', function (event) {
-        if (filterinput.val().length >= 2) {
-            if (this.timer) {
-                clearTimeout(this.timer);
-            }
-            if (oldVal != filterinput.val()) {
-                this.timer = setTimeout(function () {
-                    row_name_filter(filterinput.val());
-                }, 500);
-                oldVal = filterinput.val();
-            }
-        }
-        else {
-            dgrid.jqxGrid('removefilter', '1');
-        }
-    });
-    //input3.jqxButton({ theme: theme });
-    //input3.click(function () { not_null_filter(); });
-    clearfilter.jqxButton({ theme: theme });
-    clearfilter.click(function () { dgrid.jqxGrid('clearfilters'); filterinput.val(''); });
-    //input5.jqxButton({ theme: theme });
-/*    input5.click(function () {
-        var tablestate = $("#DataGrid").jqxGrid('savestate');
-        var data = "state=" + JSON.stringify(tablestate);
-        $.ajax({
-            dataType: 'json',
-            url: table_state_url + '&table='+ current_table + '&action=save' ,
-            data: data,
-            success: function (data, status, xhr) {
-                //console.log(data.responce);
-            },
-            error: function (xhr, status, errorThrown) {
-                raiseError("Ошибка сохранения настроек редактирования таблицы. " + xhr.status + ' (' + xhr.statusText + ') - ' + status);
-                //$("#currentError").text("Ошибка сохранения настроек редактирования таблицы. " + xhr.status + ' (' + xhr.statusText + ') - ' + status);
-                //$("#serverErrorNotification").jqxNotification("open");
-            }
-        });
-    });*/
-    //input6.jqxButton({ theme: theme });
-/*    input6.click(function () {
-        get_state_url = table_state_url + '&table='+ current_table + '&action=get';
-        $.getJSON( get_state_url, function( data ) {
-            if (data.responce != 0) {
-                $("#DataGrid").jqxGrid('loadstate', data.responce);
-            }
-            else {
-                $("#currentInfoMessage").text("Для данной таблицы нет сохраненных настроек редактирования");
-                $("#infoNotification").jqxNotification("open");
-            }
-        });
-    });*/
-
-    //excelexport.jqxButton({ theme: theme });
-    // TODO: Функция экспорта из виджета работает некорректно после обновления данных, некоторые данные экспортируются в формате даты
-    //excelexport.on('click', function () {
-        //var exported;
-        //exported = $("#DataGrid").jqxGrid('exportdata', 'json');
-        //console.log(dataAdapter.records);
-        //tabledataexport(current_table);
-    //});
-    // TODO: Работает только в Хроме и Опере, разобраться с совместимостью вызова полноэкранного режима
-    fullscreen.jqxToggleButton({ theme: theme });
-    fullscreen.on('click', function () {
-        var toggled = fullscreen.jqxToggleButton('toggled');
-        if (toggled) {
-            $("#DataGrid").fullscreen();
-/*            var elem = document.getElementById("DataGrid");
-            if (elem.webkitrequestFullscreen) {
-                elem.webkitrequestFullscreen();
-            }*/
-        }
-        else $.fullscreen.exit();
-        return false;
-    });
-    firefullscreenevent();
 };
 let initdatasources = function() {
     form_table_source = {
@@ -973,19 +773,19 @@ let getreadablecelladress = function(row, column) {
     return { row: row_code, column: column_index};
 };
 let fetchcelllayer = function(row, column) {
-    var layer_container = $("<table class='table table-condensed table-striped table-bordered'></table>");
-    var period_container = $("<table class='table table-condensed table-striped table-bordered'></table>");
-    var fetch_url = cell_layer_url + row + '/' + column;
+    let layer_container = $("<table class='table table-condensed table-striped table-bordered'></table>");
+    let period_container = $("<table class='table table-condensed table-striped table-bordered'></table>");
+    let fetch_url = cell_layer_url + row + '/' + column;
     $.getJSON( fetch_url, function( data ) {
         $.each(data.layers, function (i, layer) {
-            var row = $("<tr class='rowdocument' id='"+ layer.doc_id +"'><td>" + layer.unit_code
+            let row = $("<tr class='rowdocument' id='"+ layer.doc_id +"'><td>" + layer.unit_code
                 + "</td><td><a href='/datainput/formdashboard/" + layer.doc_id +"' target='_blank' title='Открыть для редактирования'>" + layer.unit_name + "</a>"
                 + "</td><td style='min-width: 40px' class='text-primary text-right'>" + layer.value
                 + "</td></tr>");
             layer_container.append(row);
         });
         $.each(data.periods, function (i, period) {
-            var row = $("<tr><td>" + period.period
+            let row = $("<tr><td>" + period.period
                 + "</td><td style='min-width: 40px' class='text-primary text-right'>" + period.value
                 + "</td></tr>");
             period_container.append(row);
@@ -1009,7 +809,7 @@ let inittablelist = function() {
             dataField: 'code',
             width: 70,
             cellClassName: function (row, column, value, data) {
-                var cell_class = '';
+                let cell_class = '';
                 if ($.inArray(data.id, edited_tables) !== -1) {
                     cell_class += " editedRow";
                 }
@@ -1029,7 +829,7 @@ let inittablelist = function() {
         }]
     });
     fgrid.on('rowSelect', function (event) {
-        if (event.args.row.id == current_table) {
+        if (event.args.row.id === current_table) {
             return false;
         }
         //$("#formTables").jqxDataTable('render');
@@ -1043,6 +843,8 @@ let inittablelist = function() {
         dgrid.jqxGrid('beginupdate');
         tablesource.datafields = data_for_tables[current_table].datafields;
         tablesource.url = source_url + current_table;
+        data_for_tables[current_table].calcfields.length > 0 ? there_is_calculated = true : there_is_calculated = false;
+        there_is_calculated ? $("#calculate").jqxButton({disabled: false }) : $("#calculate").jqxButton({disabled: true });
         dgrid.jqxGrid( { columns: data_for_tables[current_table].columns } );
         dgrid.jqxGrid( { columngroups: data_for_tables[current_table].columngroups } );
         dgrid.jqxGrid('updatebounddata');
@@ -1051,27 +853,8 @@ let inittablelist = function() {
         $('#formEditLayout').jqxLayout('refresh');
         $("#tableprotocol").html('');
         $("#extrabuttons").hide();
-        $("#formTables").jqxDataTable('focus');
+        //$("#formTables").jqxDataTable('focus');
     });
-
-};
-// Инициализация вкладки протокола контроля текущей таблицы
-let initchecktabletab = function() {
-    //$("#checktable").jqxButton({ theme: theme, disabled: control_disabled });
-    //$("#checktable").click( function() { checktable(current_table) });
-    //$("#datacheck").jqxButton({ theme: theme, disabled: control_disabled });
-    $("#datacheck").click( function() { tabledatacheck(current_table) });
-    //$("#compareprevperiod").jqxButton({ theme: theme });
-    //$("#compareprevperiod").click(compare_with_prev);
-
-/*    if (current_user_role == 3 || current_user_role == 4 ) {
-        var tk = $("<input id='medstatcontrol' style='float: left' type='button' value='Контроль таблицы (Старый формат)'/>");
-        $("#ProtocolToolbar").prepend(tk);
-        tk.jqxButton({ theme: theme });
-        tk.click(function () {
-            checktable(current_table);
-        });
-    }*/
 
 };
 // Инициализация вкладки протокола контроля формы
@@ -1119,30 +902,29 @@ let initcheckformtab = function() {
 };
 let initfilters = function() {
     row_name_filter = function (needle) {
-        var rowFilterGroup = new $.jqx.filter();
-        var filter_or_operator = 1;
+        let rowFilterGroup = new $.jqx.filter();
+        let filter_or_operator = 1;
         // create a string filter with 'contains' condition.
         //var filtervalue = 'всего';
-        var filtervalue = needle;
-        var filtercondition = 'contains';
-        var nameRecordFilter = rowFilterGroup.createfilter('stringfilter', filtervalue, filtercondition);
+        let filtervalue = needle;
+        let filtercondition = 'contains';
+        let nameRecordFilter = rowFilterGroup.createfilter('stringfilter', filtervalue, filtercondition);
         rowFilterGroup.addfilter(filter_or_operator, nameRecordFilter);
         //$("#DataGrid").jqxGrid('addfilter', '1', rowFilterGroup);
-        $("#DataGrid").jqxGrid('addfilter', current_row_name_datafield, rowFilterGroup);
-        $("#DataGrid").jqxGrid('applyfilters');
-
-    }
+        dgrid.jqxGrid('addfilter', current_row_name_datafield, rowFilterGroup);
+        dgrid.jqxGrid('applyfilters');
+    };
     not_null_filter = function () {
-        var notnullFilterGroup = new $.jqx.filter();
+        let notnullFilterGroup = new $.jqx.filter();
         // create a filter.
-        var filter_or_operator = 1;
-        var filtervalue = 0;
-        var filtercondition = 'NOT_NULL';
-        var notnullFilterGroup1 = notnullFilterGroup.createfilter('numericfilter', filtervalue, filtercondition);
+        let filter_or_operator = 1;
+        let filtervalue = 0;
+        let filtercondition = 'NOT_NULL';
+        let notnullFilterGroup1 = notnullFilterGroup.createfilter('numericfilter', filtervalue, filtercondition);
         notnullFilterGroup.addfilter(filter_or_operator, notnullFilterGroup1);
         // TODO: Здесь нужно получить итоговый столбец из описания таблицы
-        $("#DataGrid").jqxGrid('addfilter', '3', notnullFilterGroup);
-        $("#DataGrid").jqxGrid('applyfilters');
+        dgrid.jqxGrid('addfilter', '3', notnullFilterGroup);
+        dgrid.jqxGrid('applyfilters');
     }
 };
 let initdatagrid = function() {
@@ -1185,7 +967,7 @@ let initdatagrid = function() {
         current_edited_cell.valid = true;
         current_edited_cell.rowid = rowid;
 
-        var data = "row=" + rowid + "&column=" + colid + "&value=" + value+ "&oldvalue=" + oldvalue;
+        let data = "row=" + rowid + "&column=" + colid + "&value=" + value+ "&oldvalue=" + oldvalue;
         $.ajax({
             dataType: 'json',
             url: savevalue_url + current_table ,
@@ -1268,13 +1050,257 @@ let initdatagrid = function() {
             }
 
         }
-        if (doc_type === 2) {
-            let returned = fetchcelllayer(row_id, column_id);
 
-            $("#CellAnalysisTable").html(analitic_header);
-            $("#CellAnalysisTable").append(returned.layers);
-            $("#CellPeriodsTable").html(analitic_header);
-            $("#CellPeriodsTable").append(returned.periods);
+        if (doc_type === '2') {
+            let returned = fetchcelllayer(row_id, column_id);
+            $("#CellAnalysisTable").html(analitic_header).append(returned.layers);
+            //$("#CellAnalysisTable").append(returned.layers);
+            $("#CellPeriodsTable").html(analitic_header).append(returned.periods);
+            //$("#CellPeriodsTable").append(returned.periods);
+        }
+    });
+};
+// Панель инструментов для редактируемой таблицы
+let rendertoolbar = function(toolbar) {
+    let container = $("<div style='margin: 5px;'></div>");
+    let filterinput = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='searchField' type='text' style='height: 23px; float: left; width: 150px;' />");
+    let clearfilter = $("<input id='clearfilters' type='button' value='Очистить фильтр' />");
+    let calculate = $("<a id='calculate' style='margin-left: 2px;' title='Рассчитать'><span class='glyphicon glyphicon-road'></span></a>");
+    let fullscreen = $("<a id='togglefullscreen' style='margin-left: 2px;' target='_blank' title='Полноэкранный режим'><span class='glyphicon glyphicon-fullscreen'></span></a>");
+    /*
+       var input3 = $("<input id='notnullstrings' type='button' value='Непустые строки' />");
+       var input5 = $("<input id='savestate' type='button' value='Сохранить настройки таблицы' />");
+       var input6 = $("<input id='loadstate' type='button' value='Загрузить настройки таблицы' />");
+       var excelexport = $("<a id='excelexport' style='margin-left: 2px;' target='_blank'><span class='glyphicon glyphicon-export'></span></a>");
+       */
+    toolbar.append(container);
+    container.append(filterinput);
+    container.append(clearfilter);
+    container.append(calculate);
+    container.append(fullscreen);
+    /*
+        container.append(input3);
+        container.append(input5);
+        container.append(input6);
+        container.append(excelexport);
+        */
+    filterinput.addClass('jqx-widget-content-' + theme);
+    filterinput.addClass('jqx-rc-all-' + theme);
+    filterinput.jqxInput({ width: 200, placeHolder: "Поиск строки" });
+    let oldVal = "";
+    filterinput.on('keydown', function (event) {
+        if (filterinput.val().length >= 2) {
+            if (this.timer) {
+                clearTimeout(this.timer);
+            }
+            if (oldVal !== filterinput.val()) {
+                this.timer = setTimeout(function () {
+                    row_name_filter(filterinput.val());
+                }, 500);
+                oldVal = filterinput.val();
+            }
+        }
+        else {
+            dgrid.jqxGrid('removefilter', '1');
+        }
+    });
+    clearfilter.jqxButton({ theme: theme });
+    clearfilter.click(function () { dgrid.jqxGrid('clearfilters'); filterinput.val(''); });
+    calculate.jqxButton({ theme: theme });
+    calculate.click(fillCalculatedFields);
+    if (!there_is_calculated) {
+        calculate.jqxButton({disabled: true });
+    }
+
+    // TODO: Работает только в Хроме и Опере, разобраться с совместимостью вызова полноэкранного режима
+    fullscreen.jqxToggleButton({ theme: theme });
+    fullscreen.on('click', function () {
+        let toggled = fullscreen.jqxToggleButton('toggled');
+        if (toggled) {
+            $("#DataGrid").fullscreen();
+            /*            var elem = document.getElementById("DataGrid");
+                        if (elem.webkitrequestFullscreen) {
+                            elem.webkitrequestFullscreen();
+                        }*/
+        }
+        else $.fullscreen.exit();
+        return false;
+    });
+    firefullscreenevent();
+    /*input5.jqxButton({ theme: theme });
+    input3.jqxButton({ theme: theme });
+    input3.click(function () { not_null_filter(); });
+        input5.click(function () {
+            var tablestate = $("#DataGrid").jqxGrid('savestate');
+            var data = "state=" + JSON.stringify(tablestate);
+            $.ajax({
+                dataType: 'json',
+                url: table_state_url + '&table='+ current_table + '&action=save' ,
+                data: data,
+                success: function (data, status, xhr) {
+                    //console.log(data.responce);
+                },
+                error: function (xhr, status, errorThrown) {
+                    raiseError("Ошибка сохранения настроек редактирования таблицы. " + xhr.status + ' (' + xhr.statusText + ') - ' + status);
+                    //$("#currentError").text("Ошибка сохранения настроек редактирования таблицы. " + xhr.status + ' (' + xhr.statusText + ') - ' + status);
+                    //$("#serverErrorNotification").jqxNotification("open");
+                }
+            });
+        });
+    input6.jqxButton({ theme: theme });
+        input6.click(function () {
+            get_state_url = table_state_url + '&table='+ current_table + '&action=get';
+            $.getJSON( get_state_url, function( data ) {
+                if (data.responce != 0) {
+                    $("#DataGrid").jqxGrid('loadstate', data.responce);
+                }
+                else {
+                    $("#currentInfoMessage").text("Для данной таблицы нет сохраненных настроек редактирования");
+                    $("#infoNotification").jqxNotification("open");
+                }
+            });
+        });
+    excelexport.jqxButton({ theme: theme });
+    excelexport.on('click', function () {
+    var exported;
+    exported = $("#DataGrid").jqxGrid('exportdata', 'json');
+    console.log(dataAdapter.records);
+    tabledataexport(current_table);
+    });
+    */
+};
+let firefullscreenevent = function() {
+    $(document).bind('fscreenchange', function(e, state, elem) {
+        let fsel1 =  $('#togglefullscreen');
+        let fsel2 =  $('#togglecontrolscreen');
+        let fsel3 =  $('#toggle_formcontrolscreen');
+        if ($.fullscreen.isFullScreen()) {
+            fsel1.jqxToggleButton('check');
+            fsel2.jqxToggleButton('check');
+            fsel3.jqxToggleButton('check');
+        } else {
+            fsel1.jqxToggleButton('unCheck');
+            fsel2.jqxToggleButton('unCheck');
+            fsel3.jqxToggleButton('unCheck');
+        }
+    });
+};
+// проверяем ли находится ли данная ячейка в списке запрещенных к редактированию ячеек
+let cellbeginedit = function (row, datafield, columntype, value) {
+    let rowid = dgrid.jqxGrid('getrowid', row);
+    let necell_count = not_editable_cells.length;
+    for (let i = 0; i < necell_count; i++) {
+        if (not_editable_cells[i].t == current_table &&  not_editable_cells[i].r == rowid && not_editable_cells[i].c == datafield ) {
+            return false;
+        }
+    }
+};
+let defaultEditor = function (row, cellvalue, editor, celltext, pressedChar) {
+    editor.jqxNumberInput({ decimalDigits: 0, digits: 12 });
+};
+let initDecimal2Editor = function (row, cellvalue, editor, celltext, pressedChar) {
+    editor.jqxNumberInput({ decimalDigits: 2, digits: 12, decimalSeparator: ',' });
+};
+let initDecimal3Editor = function (row, cellvalue, editor, celltext, pressedChar) {
+    editor.jqxNumberInput({ decimalDigits: 3, digits: 12, decimalSeparator: ',' });
+};
+let cellsrenderer = function (row, column, value, defaulthtml, columnproperties) {
+    if (!value) { return defaulthtml  }
+    let formated = $(defaulthtml).html(localizednumber.format(value));
+    return formated[0].outerHTML;
+};
+let cellclass = function (row, columnfield, value, rowdata) {
+    let invalid_cell = '';
+    let alerted_cell = '';
+    let class_by_edited_row = '';
+    let not_editable = '';
+    for (let i = 0; i < not_editable_cells.length; i++) {
+        if (not_editable_cells[i].t === current_table && not_editable_cells[i].r === rowdata.id && not_editable_cells[i].c === columnfield) {
+            not_editable = 'jqx-grid-cell-pinned jqx-grid-cell-pinned-bootstrap';
+        }
+    }
+    if (marking_mode === 'control') {
+        $.each(invalidCells[current_table], function(key, value) {
+            if (value.r == rowdata.id && value.c == columnfield) {
+                invalid_cell = 'invalid';
+            }
+        });
+        $.each(alertedCells[current_table], function(key, value) {
+            if (value.r === rowdata.id && value.c === columnfield) {
+                alerted_cell = 'alerted';
+            }
+        });
+        for (let i = 0; i < editedCells.length; i++) {
+            if (editedCells[i].t == current_table && editedCells[i].r == row && editedCells[i].c == columnfield ) {
+                class_by_edited_row = "editedRow";
+                invalid_cell = '';
+                alerted_cell = '';
+            }
+        }
+        /*        if (current_edited_cell.t == current_table && current_edited_cell.r == row && current_edited_cell.c == columnfield) {
+                    if (!current_edited_cell.valid) {
+                        invalid_cell = 'invalid';
+                    }
+                    else {
+                        invalid_cell = '';
+                    }
+                }*/
+        return  alerted_cell + ' ' + invalid_cell +' ' + class_by_edited_row + ' ' + not_editable;
+    }
+    else if (marking_mode === 'compareperiods') {
+        let class_compare = '';
+        for (let i = 0; i < comparedCells.length; i++) {
+            if (comparedCells[i].t == current_table && comparedCells[i].r == rowdata.id && comparedCells[i].c == columnfield ) {
+                class_compare = comparedCells[i].degree;
+            }
+        }
+        return class_compare + ' ' + not_editable;
+    }
+};
+let validation = function(cell, value) {
+    if (value < 0) {
+        return { result: false, message: 'Допускаются только положительные значения' };
+    }
+    return true;
+};
+// Пояснялки названий столбцов
+let tooltiprenderer = function (element) {
+    $(element).jqxTooltip({position: 'mouse', content: $(element).text() });
+};
+
+// Инициализация вкладки протокола контроля текущей таблицы
+let initchecktabletab = function() {
+    //$("#checktable").jqxButton({ theme: theme, disabled: control_disabled });
+    //$("#checktable").click( function() { checktable(current_table) });
+    //$("#datacheck").jqxButton({ theme: theme, disabled: control_disabled });
+    $("#datacheck").click( function() { tabledatacheck(current_table) });
+    //$("#compareprevperiod").jqxButton({ theme: theme });
+    //$("#compareprevperiod").click(compare_with_prev);
+
+    /*    if (current_user_role == 3 || current_user_role == 4 ) {
+            var tk = $("<input id='medstatcontrol' style='float: left' type='button' value='Контроль таблицы (Старый формат)'/>");
+            $("#ProtocolToolbar").prepend(tk);
+            tk.jqxButton({ theme: theme });
+            tk.click(function () {
+                checktable(current_table);
+            });
+        }*/
+
+};
+let fillCalculatedFields = function () {
+    $.get(calculatedcells_url + current_table, function( data ) {
+        if (typeof data.errors !== 'undefined') {
+            for (i = 0; data.errors.length > i; i++ ) {
+                raiseError(data.errors[i]);
+            }
+        }
+        if (typeof data.calculations !== 'undefined') {
+            for (i = 0; data.calculations.length > i; i++ ) {
+                let row_id = data.calculations[i].r;
+                let datafield = data.calculations[i].c;
+                let v = data.calculations[i].v;
+                dgrid.jqxGrid('setcellvaluebyid', row_id, datafield, v);
+            }
         }
     });
 };

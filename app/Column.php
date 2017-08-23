@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Column extends Model
 {
     //
-    const HEADER        = 2;
+    const HEADER        = 1;
     const CALCULATED    = 2;
     const DATA          = 4;
     const COMMENT       = 5;
@@ -61,7 +61,7 @@ class Column extends Model
     public function scopeOfTable($query, $table)
     {
         return $query
-            ->orderBy('column_index')
+            //->orderBy('column_index')
             ->where('table_id', $table);
     }
 

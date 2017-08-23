@@ -24,6 +24,8 @@ use App\Medinfo\Lexer\FunctionDispatcher;
 class DataCheckController extends Controller
 {
     //
+
+
     public function check_table(Document $document, Table $table, int $forcereload = 0)
     {
         return DataCheck::tableControl($document, $table, $forcereload);
@@ -272,14 +274,12 @@ class DataCheckController extends Controller
         //$input = "20 + 10/2 + 3*6";
         //echo eval("return $input;");
 
-        $pattern = '/(?:Ф(?P<f>[а-я0-9.-]*))?(?:Т(?P<t>[а-я0-9.-]*))?(?:С(?P<r>[0-9.-]*))?(?:Г(?P<c>\d{1,3}))?(?:П(?P<p>[01]))?/u';
+        //$pattern = '/(?:Ф(?P<f>[а-я0-9.-]*))?(?:Т(?P<t>[а-я0-9.-]*))?(?:С(?P<r>[0-9.-]*))?(?:Г(?P<c>\d{1,3}))?(?:П(?P<p>[01]))?/u';
         //$replacement = ['%0' , '%1', '%0' , '%1', '%0' , '%1' , '%0' , '%1'];
         //$correct = preg_match_all(, $input, $matches, PREG_SET_ORDER );
         //dd(preg_replace_sub($pattern, $replacement, $input));
-
         //preg_match_all('/(Ф([а-я0-9.-]*))?(Т([а-я0-9.-]*))?(С([0-9.-]*))?(Г(\d{1,3}))?/u', $input, $matches, PREG_SET_ORDER );
         //dd($matches);
-
 
         $lexer = new \App\Medinfo\Calculation\CalculationFunctionLexer($input);
         $tokenstack = $lexer->getTokenStack();

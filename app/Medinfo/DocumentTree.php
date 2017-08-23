@@ -203,7 +203,7 @@ class DocumentTree
                 CASE WHEN (SELECT sum(v.value) FROM statdata v WHERE d.id = v.doc_id) > 0 THEN 1 ELSE 0 END filled
               FROM documents d
               LEFT JOIN forms f on d.form_id = f.id
-              LEFT JOIN mo_hierarchy u on d.ou_id = u.id
+              JOIN mo_hierarchy u on d.ou_id = u.id
               LEFT JOIN aggregates a ON d.id = a.doc_id
               JOIN monitorings m ON d.monitoring_id = m.id
               JOIN periods p on d.period_id = p.id

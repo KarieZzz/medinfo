@@ -7,7 +7,6 @@
     <div data-container="FormControlPanel" id="fcp">
         <div id="formControlToolbar" style="padding: 4px;">
             <button type="button" style="float: left" class="btn btn-primary" id="checkform">Контроль формы</button>
-
             <div style="padding: 4px; display: none" id="fc_extrabuttons">
                 <i style='margin-left: 2px;height: 14px; float: left' id="toggle_formcontrolscreen" title='Обновить/пересоздать протокол контроля'>
                     <span class='glyphicon glyphicon-fullscreen'></span>
@@ -25,7 +24,8 @@
         <div id="log" style="font-size: 0.9em">Изменений не было</div>
     </div>
     <div data-container="FullValueChangeLogPanel">
-        <input id="openFullChangeLog" type="button" value="Открыть протокол изменений в новом окне" />
+        <button type="button" style="float: left" class="btn btn-primary" id="openFullChangeLog">Открыть протокол изменений в новом окне</button>
+        {{--<input id="openFullChangeLog" type="button" value="Открыть протокол изменений в новом окне" />--}}
     </div>
     <div data-container="TableEditPanel">
         <div id="DataGrid"></div>

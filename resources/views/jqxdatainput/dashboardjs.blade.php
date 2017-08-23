@@ -20,7 +20,7 @@ let form_tables_data = [{!! implode(',', $renderingtabledata['tablelist']) !!}];
 let data_for_tables = $.parseJSON('{!!  $renderingtabledata['tablecompose'] !!}');
 $.each(data_for_tables, function(table, content) {
     $.each(content.columns, function(column, properties) {
-        if (typeof properties.cellclassname !== 'undefined') {
+        if (typeof properties.cellclassname !== 'undefined' && properties.cellclassname === 'cellclass') {
             properties.cellclassname = cellclass;
         }
 /*        if (typeof properties.createeditor !== 'undefined') {
@@ -45,6 +45,7 @@ $.each(data_for_tables, function(table, content) {
     });
 });
 //console.log(data_for_tables);
+let there_is_calculated = data_for_tables[current_table].calcfields.length > 0;
 let current_row_name_datafield = data_for_tables[current_table].columns[1].dataField;
 let current_row_number_datafield = data_for_tables[current_table].columns[2].dataField;
 let protocol_control_created = false;
@@ -69,6 +70,7 @@ let medstat_control_url = "medstat_control_protocol.php?document=" + doc_id;
 let valuechangelog_url = "/datainput/valuechangelog/" + doc_id;
 let tableexport_url = "/datainput/tableexport/" + doc_id + "/";
 let cell_layer_url = "/datainput/fetchcelllayers/" + doc_id + "/";
+let calculatedcells_url = "/datainput/calculate/" + doc_id + "/";
 
 initdatasources();
 initnotifications();

@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class ColumnCalculation extends Model
 {
     //
-    protected $fillable = ['column_id', 'formula', 'comment'];
+    protected $fillable = ['column_id', 'formula', 'comment', 'compiled'];
+    protected $hidden = ['compiled'];
 
     public function column()
     {
