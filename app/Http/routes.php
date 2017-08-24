@@ -182,8 +182,6 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('datainput/valuechangelog/{document}', 'StatDataInput\FormDashboardController@fullValueChangeLog');
     Route::get('datainput/calculate/{document}/{table}', 'StatDataInput\CalculateColumnController@calculate');
 
-
-
     // Контроль данных
     Route::get('datainput/formcontrol/{document}', 'StatDataInput\FormDashboardController@formControl');
     Route::get('datainput/tablecontrol/{document}/{table}', 'StatDataInput\FormDashboardController@tableControl');
@@ -216,7 +214,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::patch('/reports/patterns/{pattern}', 'Report\ReportPatternController@update');
 
     // Работа с lexer-parser
-    Route::get('lexer/parser', 'StatDataInput\DataCheckController@func_parser');
+    //Route::get('lexer/parser', 'StatDataInput\DataCheckController@func_parser');
     Route::get('lexer/lexer', 'StatDataInput\DataCheckController@test_celllexer');
     Route::get('lexer/parser', 'StatDataInput\DataCheckController@test_cellparser');
     Route::get('lexer/calcparser', 'StatDataInput\DataCheckController@test_calculation');
