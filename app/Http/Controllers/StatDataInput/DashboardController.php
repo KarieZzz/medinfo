@@ -145,7 +145,28 @@ class DashboardController extends Controller
             $row = array();
             $row['id'] = $r->id;
             foreach($cols as $col) {
-                $contentType = $col->getMedinfoContentType();
+                switch ($col->content_type) {
+                    case Column::HEADER :
+                        if ($col->column_index == 1) {
+                            $row[$col->id] = $r->row_name;
+                        } elseif ($col->column_index == 2) {
+                            $row[$col->id] = $r->row_code;
+                        }
+                        break;
+                    case Column::CALCULATED :
+                    case Column::DATA :
+                        if ($c = Cell::OfDTRC($document, $table->id, $r->id, $col->id)->first()) {
+                            if (is_null($c->value)) {
+                                $c->delete();
+                            } else {
+                                $row[$col->id] = number_format($c->value, $col->decimal_count, '.', '');
+                            }
+                        }
+                        break;
+                        default:
+                            $row[$col->id] = '#ЧИСЛО!';
+                }
+/*                $contentType = $col->getMedinfoContentType();
                 if ($contentType == 'header') {
                     if ($col->column_index == 1) {
                         $row[$col->id] = $r->row_name;
@@ -164,7 +185,7 @@ class DashboardController extends Controller
                 //  if (isset($r['add_inf'][$col['col_id']])) {
                 //    $row[$col['col_id']] = $r['add_inf'][$col['col_id']]['row_comment'];
                 //}
-                //}
+                //}*/
             }
             $data[$i] = $row;
             $i++;

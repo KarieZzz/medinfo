@@ -94,9 +94,19 @@ class CalculateColumnController extends Controller
                     default:
                         $color = 'black';
                 }*/
-                //$formated = number_format($eval->evaluate(), 2, ',', ' ');
-                //echo "<p>$header: <span style='color: $color'><strong>$formated</strong></span></p>";
-                $result['calculations'][] = ['r' => $el[0]->r, 'c' => $c->id, 'v' => $calculated];
+                try {
+                    if ($calculated !== 0) {
+                        $cell = Cell::firstOrCreate(['doc_id' => $document->id, 'table_id' => $table->id, 'row_id' => $el[0]->r, 'col_id' => $c->id, ]);
+                        $cell->value = $calculated;
+                        $cell->save();
+                    }
+                } catch (\Exception $e) {
+                    $result['errors'][] = 'Ошибка записи данных в графу' . $c->column_index . ' по строке ' . Row::find($el[0]->r)->row_code;
+                }
+
+                //$result['calculations'][] = ['r' => $el[0]->r, 'c' => $c->id, 'v' => $calculated];
+                //$result['calculations'][] = ['r' => $el[0]->r, 'c' => $c->id, 'v' => $calculated];
+
             }
         }
         return $result;

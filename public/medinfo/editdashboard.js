@@ -1065,7 +1065,7 @@ let rendertoolbar = function(toolbar) {
     let container = $("<div style='margin: 5px;'></div>");
     let filterinput = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='searchField' type='text' style='height: 23px; float: left; width: 150px;' />");
     let clearfilter = $("<input id='clearfilters' type='button' value='Очистить фильтр' />");
-    let calculate = $("<a id='calculate' style='margin-left: 2px;' title='Рассчитать'><span class='glyphicon glyphicon-road'></span></a>");
+    let calculate = $("<button id='calculate' style='margin-left: 2px;' title='Рассчитать'><span class='fa fa-calculator'></span></button>");
     let fullscreen = $("<a id='togglefullscreen' style='margin-left: 2px;' target='_blank' title='Полноэкранный режим'><span class='glyphicon glyphicon-fullscreen'></span></a>");
     /*
        var input3 = $("<input id='notnullstrings' type='button' value='Непустые строки' />");
@@ -1099,8 +1099,7 @@ let rendertoolbar = function(toolbar) {
                 }, 500);
                 oldVal = filterinput.val();
             }
-        }
-        else {
+        }else {
             dgrid.jqxGrid('removefilter', '1');
         }
     });
@@ -1294,13 +1293,15 @@ let fillCalculatedFields = function () {
                 raiseError(data.errors[i]);
             }
         }
-        if (typeof data.calculations !== 'undefined') {
-            for (i = 0; data.calculations.length > i; i++ ) {
-                let row_id = data.calculations[i].r;
-                let datafield = data.calculations[i].c;
-                let v = data.calculations[i].v;
-                dgrid.jqxGrid('setcellvaluebyid', row_id, datafield, v);
-            }
-        }
+        dgrid.jqxGrid('updatebounddata');
+        raiseInfo("Заполнение рассчитываемых ячеек выполнено");
+        /*        if (typeof data.calculations !== 'undefined') {
+                    for (i = 0; data.calculations.length > i; i++ ) {
+                        let row_id = data.calculations[i].r;
+                        let datafield = data.calculations[i].c;
+                        let v = data.calculations[i].v;
+                        dgrid.jqxGrid('setcellvaluebyid', row_id, datafield, v);
+                    }
+                }*/
     });
 };
