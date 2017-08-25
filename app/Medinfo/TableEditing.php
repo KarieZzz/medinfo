@@ -52,8 +52,7 @@ class TableEditing
                 default:
                     $editor = 'defaultEditor';
             }
-            $contentType = $col->getMedinfoContentType();
-            if ($contentType == 'data') {
+            if ($col->content_type === Column::DATA) {
                 $columns_arr[] = array(
                     'text'  => $col->column_index,
                     'dataField' => $col->id,
@@ -78,7 +77,7 @@ class TableEditing
                     'name' => $col->id,
                     'rendered' => 'tooltiprenderer'
                 );
-            } else if ($contentType == 'calculated') {
+            } elseif ($col->content_type === Column::CALCULATED) {
                 $calculated_fields[] = $col->id;
                 $columns_arr[] = array(
                     'text' => $col->column_index,
@@ -100,7 +99,7 @@ class TableEditing
                     'name' => $col->id,
                     'rendered' => 'tooltiprenderer'
                 );
-            } else if ($contentType == 'header') {
+            } elseif ($col->content_type === Column::HEADER) {
                 $columns_arr[] = array(
                     'text' => $col->column_name,
                     'dataField' => $col->id,

@@ -28,7 +28,7 @@
                     <div class="form-group">
                         <label class="control-label col-sm-3" for="table_index">Порядковый номер в форме:</label>
                         <div class="col-sm-2">
-                            <input type="text" class="form-control" id="table_index">
+                            <input type="text" class="form-control" id="table_index" disabled>
                         </div>
                     </div>
                     <div class="form-group">
@@ -64,10 +64,25 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label class="control-label col-sm-3" for="placebefore">Переместить/вставить перед:</label>
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control" id="placebefore" placeholder="порядковый номер">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-3"></label>
+                        <div class="col-sm-8">
+                            <button type="button" id="top" class="btn btn-sm btn-default">В начало </button>
+                            <button type="button" id="up" class="btn btn-sm btn-default">Вверх</button>
+                            <button type="button" id="down" class="btn btn-sm btn-default">Вниз</button>
+                            <button type="button" id="bottom" class="btn btn-sm btn-default">В конец</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-7">
-                            <button type="button" id="save" class="btn btn-default">Сохранить изменения</button>
-                            <button type="button" id="insert" class="btn btn-default">Вставить новую запись</button>
-                            <button type="button" id="delete" class="btn btn-danger">Удалить запись</button>
+                            <button type="button" id="save" class="btn btn-primary">Сохранить изменения</button>
+                            <button type="button" id="create" class="btn btn-success">Добавить таблицу</button>
+                            <button type="button" id="delete" class="btn btn-danger">Удалить таблицу</button>
                         </div>
                     </div>
                 </form>
@@ -106,7 +121,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/tableadmin.js?v=003') }}"></script>
+    <script src="{{ asset('/medinfo/admin/tableadmin.js?v=013') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -115,12 +130,22 @@
         let rowsDataAdapter;
         let tableDataAdapter;
         let formsDataAdapter;
+        let rowid = null;
+        let nextAction = 'POST';
         let tlist = $("#tableList");
         let forms = {!! $forms  !!};
+        let store_url = '/admin/tables';
+        let update_url = '/admin/tables/update/';
+        let up_url = 'tables/up/';
+        let down_url = 'tables/down/';
+        let top_url = 'tables/top/';
+        let bottom_url = 'tables/bottom/';
         initfilterdatasources();
         initsplitter();
         initdatasources();
         inittablelist();
         initformactions();
+        initOrderControls();
+        disableOrderButtons();
     </script>
 @endsection

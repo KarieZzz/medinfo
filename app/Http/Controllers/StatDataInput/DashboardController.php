@@ -21,8 +21,8 @@ use App\Row;
 use App\Cell;
 use App\NECellsFetch;
 use App\ValuechangingLog;
-use App\Medinfo\TableControlMM;
-use App\Medinfo\ControlHelper;
+//use App\Medinfo\TableControlMM;
+//use App\Medinfo\ControlHelper;
 use App\Medinfo\TableEditing;
 
 class DashboardController extends Controller
@@ -131,11 +131,9 @@ class DashboardController extends Controller
 
     public function fetchValues(int $document, int $album, Table $table)
     {
-        //$rows = $table->rows->where('deleted', 0)->sortBy('row_index');
         $rows = Row::OfTable($table->id)->whereDoesntHave('excluded', function ($query) use($album) {
             $query->where('album_id', $album);
         })->get();
-        //$cols = $table->columns->where('deleted', 0)->sortBy('column_index');
         $cols = Column::OfTable($table->id)->whereDoesntHave('excluded', function ($query) use($album) {
             $query->where('album_id', $album);
         })->get();
@@ -285,7 +283,8 @@ class DashboardController extends Controller
         return view('jqxdatainput.fullvaluelog', compact('values', 'document', 'form', 'current_unit', 'period'));
     }
 
-    public function tableControl(int $document, int $table)
+/*      Устаревшая функция из "старого" пакета
+ *     public function tableControl(int $document, int $table)
     {
         if (ControlHelper::tableContainsData($document, $table)) {
             $control = new TableControlMM($document, $table);
@@ -319,7 +318,7 @@ class DashboardController extends Controller
             }
         }
         return $form_protocol;
-    }
+    }*/
 
     // TODO: Доработать сохранение настроек редактирования отчета (таблица, фильтры, ширина колонок и т.д.)
     protected function getLastState(GenericUser $worker, Document $document, Form $form, $default_album)

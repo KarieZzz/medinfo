@@ -652,11 +652,12 @@ let gettableprotocol = function (data, status, xhr) {
         cashed = "(сохраненная версия)";
     }
     raiseInfo("Протокол контроля таблицы загружен");
-    if  (data.no_data) {
+/*    if  (data.no_data) {
         tableprotocol.html("<div class='alert alert-info'>"+ timestamp+" Проверяемая таблица не содержит данных</div>");
         protocol_control_created = true;
     }
-    else if (typeof data.no_rules !== 'undefined' && data.no_rules) {
+    else*/
+    if (typeof data.no_rules !== 'undefined' && data.no_rules) {
         tableprotocol.html("<div class='alert alert-info'>"+ timestamp+" Для данной таблицы не заданы правила контроля</div>");
         protocol_control_created = false;
     }

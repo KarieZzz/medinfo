@@ -96,9 +96,13 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::delete('admin/forms/delete/{form}', 'Admin\FormAdminController@delete');
     Route::get('admin/tables', 'Admin\TableAdminController@index');
     Route::get('admin/fetchtables', 'Admin\TableAdminController@fetchTables' );
-    Route::post('admin/tables/create', 'Admin\TableAdminController@store');
-    Route::patch('admin/tables/update', 'Admin\TableAdminController@update');
+    Route::post('admin/tables', 'Admin\TableAdminController@store');
+    Route::patch('admin/tables/update/{table}', 'Admin\TableAdminController@update');
     Route::delete('admin/tables/delete/{table}', 'Admin\TableAdminController@delete');
+    Route::patch('admin/tables/up/{table}', 'Admin\TableAdminController@up');
+    Route::patch('admin/tables/down/{table}', 'Admin\TableAdminController@down');
+    Route::patch('admin/tables/top/{table}', 'Admin\TableAdminController@top');
+    Route::patch('admin/tables/bottom/{table}', 'Admin\TableAdminController@bottom');
 
     // Менеджер строк и граф
     Route::get('admin/rc', 'Admin\RowColumnAdminController@index');

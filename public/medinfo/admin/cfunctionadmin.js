@@ -46,7 +46,7 @@ initFunctionList = function() {
             ]
         });
     fgrid.on('rowselect', function (event) {
-        var row = event.args.row;
+        let row = event.args.row;
         $("#level").val(row.level);
         $("#script").val(row.script);
         $("#comment").val(row.comment);
@@ -68,7 +68,7 @@ initButtons = function() {
         onLabel: 'Да',
         offLabel: 'Нет',
         checked: false });
-    var errorlevelsource =
+    let errorlevelsource =
     {
         datatype: "json",
         datafields: [
@@ -99,18 +99,18 @@ setquerystring = function() {
 
 initFunctionActions = function() {
     $("#insert").click(function () {
-        if (current_table == 0 ) {
+        if (current_table === 0 ) {
             raiseError('Выберите форму и таблицу для которых будет применяться функция');
             return;
         }
-        var data = setquerystring();
+        let data = setquerystring();
         $.ajax({
             dataType: 'json',
             url: '/admin/cfunctions/create/' + current_table ,
             method: "POST",
             data: data,
             success: function (data, status, xhr) {
-                if (typeof data.error != 'undefined') {
+                if (typeof data.error !== 'undefined') {
                     raiseError(data.message);
                 } else {
                     raiseInfo(data.message);

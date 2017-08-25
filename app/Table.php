@@ -42,7 +42,7 @@ class Table extends Model
     public function scopeOfForm($query, $form)
     {
         return $query
-            ->orderBy('table_index')
+            //->orderBy('table_index')
             ->where('form_id', $form);
     }
 

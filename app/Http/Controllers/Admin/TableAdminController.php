@@ -53,26 +53,45 @@ class TableAdminController extends Controller
 
     public function store(Request $request)
     {
-        //dd($request->id);
         $this->validate($request, [
-                'form_id' => 'required|exists:forms,id',
+                'form_id' => 'required|integer|exists:forms,id',
                 'table_name' => 'required',
                 'table_code' => 'required',
                 'medstat_code' => 'digits:4',
                 'medinfo_id' => 'integer',
+                'placebefore' => 'integer',
             ]
         );
+        if ($request->table_index === '' ) {
+            //dd($request->table_index);
+            $new_table_index = Table::OfForm($request->form_id)->count();
+        } else {
+            $new_table_index = $request->table_index;
+        }
+
         $newtable = new Table;
         $newtable->form_id = $request->form_id;
-        $newtable->table_index = $request->table_index;
+        $newtable->table_index = $new_table_index;
         $newtable->table_code = $request->table_code;
         $newtable->table_name = $request->table_name;
         $newtable->medstat_code = empty($request->medstat_code) ? null : $request->medstat_code;
         $newtable->medinfo_id = empty($request->medinfo_id) ? null : $request->medinfo_id;
         $newtable->transposed = $request->transposed;
 
+/*        $newtable->save();
+        if ($request->placebefore !== '') {
+            $this->placebefore($newtable, $request->placebefore);
+            $newtable->table_index = $request->placebefore;
+            $newtable->save();
+        }*/
+
         try {
             $newtable->save();
+            if ($request->placebefore !== '') {
+                $this->placebefore($newtable, $request->placebefore);
+                $newtable->table_index = $request->placebefore;
+                $newtable->save();
+            }
             return ['message' => 'Новая запись создана. Id:' . $newtable->id];
         } catch (\Illuminate\Database\QueryException $e) {
             $errorCode = $e->errorInfo[0];
@@ -88,17 +107,18 @@ class TableAdminController extends Controller
         }
     }
 
-    public function update(Request $request)
+    public function update(Table $table, Request $request)
     {
         $this->validate($request, [
                 'table_name' => 'required',
+                'table_index' => 'integer',
                 'transposed' => 'boolean',
                 'medstat_code' => 'digits:4',
                 'medinfo_id' => 'integer',
                 'excluded' => 'required|in:1,0',
             ]
         );
-        $table = Table::find($request->id);
+        //$table = Table::find($request->id);
         $table->form_id = $request->form_id;
         $table->table_index = $request->table_index;
         $table->table_code = $request->table_code;
@@ -133,5 +153,91 @@ class TableAdminController extends Controller
         } else {
             return ['error' => 422, 'message' => 'Таблица Id' . $table->id . ' содержит данные. Удаление невозможно.' ];
         }
+    }
+
+    public function up(Table $table)
+    {
+        $current_index = $table->table_index;
+        //dd($current_index-1);
+        $prevtable = Table::OfForm($table->form_id)->where('table_index', $current_index - 1)->first();
+        //dd($prevtable);
+        if(is_null($prevtable)){
+            return ['error' => 422, 'message' => 'Выше некуда.'];
+        }
+        $table->table_index = $current_index - 1;
+        $table->save();
+        $prevtable->table_index = $current_index;
+        $prevtable->save();
+        return [$current_index, $current_index - 1];
+    }
+
+    public function down(Table $table)
+    {
+        $current_index = $table->table_index;
+        //dd($current_index-1);
+        $nexttable = Table::OfForm($table->form_id)->where('table_index', $current_index + 1)->first();
+        //dd($prevtable);
+        if(is_null($nexttable)){
+            return ['error' => 422, 'message' => 'Дальше некуда.'];
+        }
+        $table->table_index = $current_index + 1;
+        $table->save();
+        $nexttable->table_index = $current_index;
+        $nexttable->save();
+        return [$current_index, $current_index + 1];
+    }
+
+    public function top(Table $table, $top = 1)
+    {
+        $current_index = $table->table_index;
+        //dd($current_index-1);
+        $uppertables = Table::OfForm($table->form_id)->where('table_index', '<' ,$current_index)->get();
+        //dd($uppertables->count());
+        if ($uppertables->count() === 0) {
+            return ['error' => 422, 'message' => 'Выбранная запись уже в начале списка.'];
+        }
+        foreach ($uppertables as $uppertable) {
+            $uppertable->table_index = $uppertable->table_index + 1;
+            $uppertable->save();
+            //dump($uppertable->table_index);
+        }
+        $table->table_index = $top;
+        $table->save();
+        return [$current_index, $top];
+    }
+
+    public function bottom(Table $table, $top = 1)
+    {
+        $current_index = $table->table_index;
+        //dd($current_index-1);
+        $belowtables = Table::OfForm($table->form_id)->where('table_index', '>' ,$current_index)->get();
+        if ($belowtables->count() === 0) {
+            return ['error' => 422, 'message' => 'Выбранная запись уже в конце списка.'];
+        }
+        //dd($uppertables);
+        foreach ($belowtables as $belowtable) {
+            $belowtable->table_index = $belowtable->table_index - 1 ;
+            $belowtable->save();
+            //dump($uppertable->table_index);
+        }
+        $table->table_index = $belowtable->table_index + 1;
+        $table->save();
+        return [$current_index, $table->table_index];
+    }
+
+    public function placebefore(Table $table, $index)
+    {
+        if (!$index) {
+            return null;
+        }
+        $belowtables = Table::OfForm($table->form_id)->where('table_index', '>=', $index)->get();
+        if ($belowtables->count() === 0) {
+            throw new \Exception("Заданный порядковый номер не существует");
+        }
+        foreach ($belowtables as $belowtable) {
+            $belowtable->table_index = $belowtable->table_index + 1 ;
+            $belowtable->save();
+        }
+        return true;
     }
 }
