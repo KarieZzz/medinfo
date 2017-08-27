@@ -112,7 +112,7 @@ class DashboardController extends Controller
         //$tables = Table::where('form_id', $form->id)->where('deleted', 0)->orderBy('table_code')->get();
         $tables = Table::OfForm($form->id)->whereDoesntHave('excluded', function ($query) use($album) {
             $query->where('album_id', $album->id);
-        })->get();
+        })->orderBy('table_index')->get();
         //dd($tables);
         $forformtable = [];
         $datafortables = [];

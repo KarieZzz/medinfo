@@ -68,27 +68,26 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/tablepicker.js') }}"></script>
+    <script src="{{ asset('/medinfo/admin/tablepicker.js?v=006') }}"></script>
     <script src="{{ asset('/medinfo/admin/cfunctionadmin.js?v=001') }}"></script>
 @endpush
 
 @section('inlinejs')
     @parent
     <script type="text/javascript">
-        var tableDataAdapter;
-        var formsDataAdapter;
-        var functionsDataAdapter;
-        var tablesource;
-        var rowsource;
-        var columnsource;
-        var tablefetch_url = '/admin/rc/fetchtables/';
-        var functionfetch_url = '/admin/cfunctions/fetchcf/';
-        var forms = {!! $forms  !!};
-        var errorLevels = {!! $error_levels !!};
-        var fgrid = $("#functionList");
-        var current_form = 0;
-        var current_table = 0;
-        var current_function = 0;
+        let tableDataAdapter;
+        let formsDataAdapter;
+        let functionsDataAdapter;
+        let tablesource;
+        let rowsource;
+        let columnsource;
+        let functionfetch_url = '/admin/cfunctions/fetchcf/';
+        let forms = {!! $forms  !!};
+        let errorLevels = {!! $error_levels !!};
+        let fgrid = $("#functionList");
+        let current_form = 0;
+        let current_table = 0;
+        let current_function = 0;
         initFilterDatasources();
         initdatasources();
         initFunctionList();

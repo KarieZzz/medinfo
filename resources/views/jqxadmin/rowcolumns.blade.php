@@ -112,6 +112,12 @@
                         <div class="col-md-2">
                             <input type="text" class="form-control input-sm" id="column_medinfo_id">
                         </div>
+                        <div class="col-md-7">
+                            <button type="button" id="top" class="btn btn-sm btn-default">В начало </button>
+                            <button type="button" id="up" class="btn btn-sm btn-default">Вверх</button>
+                            <button type="button" id="down" class="btn btn-sm btn-default">Вниз</button>
+                            <button type="button" id="bottom" class="btn btn-sm btn-default">В конец</button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label class="control-label col-md-3" for="excludedColumn">
@@ -182,7 +188,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/tablepicker.js?v=005') }}"></script>
+    <script src="{{ asset('/medinfo/admin/tablepicker.js?v=006') }}"></script>
     <script src="{{ asset('/medinfo/admin/rcadmin.js?v=027') }}"></script>
 @endpush
 
@@ -196,7 +202,6 @@
         let tablesource;
         let rowsource;
         let columnsource;
-        let tablefetch_url = '/admin/rc/fetchtables/';
         let rowfetch_url = '/admin/rc/fetchrows/';
         let columnfetch_url = '/admin/rc/fetchcolumns/';
         let showcolumnformula_url = '/admin/rc/columnformula/show/';

@@ -393,7 +393,7 @@ initColumnActions = function() {
     });
 };
 
-initColumnFormulaWindow = function () {
+let initColumnFormulaWindow = function () {
     let savebutton = $("#saveFormula");
     let formulaWindow = $('#formulaWindow');
     let formula = $("#formula");

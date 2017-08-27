@@ -1,7 +1,9 @@
 /**
  * Created by shameev on 25.10.2016.
  */
-initFilterDatasources = function() {
+let tablefetch_url = '/admin/rc/fetchtables/';
+
+let initFilterDatasources = function() {
     let formssource =
     {
         datatype: "json",
@@ -28,7 +30,7 @@ initFilterDatasources = function() {
 };
 
 // Инициализация списков-фильтров форма -> таблица
-initFormTableFilter = function() {
+let initFormTableFilter = function() {
     let flist = $("#formList");
     let tlist = $("#tableList");
     flist.jqxDropDownList({
@@ -75,7 +77,7 @@ initFormTableFilter = function() {
 };
 
 // Обновление списка таблиц при выборе формы
-updateTableDropdownList = function(form) {
+let updateTableDropdownList = function(form) {
     tablesource.url = tablefetch_url + current_form;
     $("#tableListContainer").jqxDropDownButton('setContent', '<div style="margin-top: 9px">Выберите таблицу из формы ' + form.label + '</div>');
     $("#tableList").jqxDataTable('updateBoundData');

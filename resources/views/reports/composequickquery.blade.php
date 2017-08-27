@@ -128,44 +128,43 @@
     <script src="{{ asset('/jqwidgets/jqxgrid.sort.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/tablepicker.js') }}"></script>
+    <script src="{{ asset('/medinfo/admin/tablepicker.js?v=006') }}"></script>
     <script src="{{ asset('/medinfo/admin/composequickquery.js?v=012') }}"></script>
 @endpush
 
 @section('inlinejs')
     @parent
     <script type="text/javascript">
-        var tableDataAdapter;
-        var formsDataAdapter;
-        var rowsDataAdapter;
-        var columnsDataAdapter;
-        var tablesource;
-        var rowsource;
-        var columnsource;
-        var rows = [];
-        var columns = [];
-        var tablefetch_url = '/admin/rc/fetchtables/';
-        var rowfetch_url = '/reports/br/fetchrows/';
-        var columnfetch_url = '/reports/br/fetchcolumns/';
-        var output_url = '/reports/br/output';
-        var periods = {!! $periods !!};
-        var forms = {!! $forms !!};
-        var levels = {!! $upper_levels  !!};
-        var plist = $("#periodList");
-        var flist = $("#formList");
-        var tlist = $("#tableList");
-        var rlist = $("#rowList");
-        var clist = $("#columnList");
-        var levellist = $("#levelList");
-        var modebutton = $("#groupMode");
-        var current_period = {{ $last_year->id }};
-        var current_form = 0;
-        var current_table = 0;
-        var current_level = 0;
-        var current_type = 1; // по территории - 1, по группе - 2
-        var groupmode = 1; // по умолчанию группируем по строке
-        var aggregate = 1; // По умолчанию вывод по первичным документам, 2 - по юрлицам, 3 - по территориям
-        var output = 1; // По умолчанию вывод в html
+        let tableDataAdapter;
+        let formsDataAdapter;
+        let rowsDataAdapter;
+        let columnsDataAdapter;
+        let tablesource;
+        let rowsource;
+        let columnsource;
+        let rows = [];
+        let columns = [];
+        let rowfetch_url = '/reports/br/fetchrows/';
+        let columnfetch_url = '/reports/br/fetchcolumns/';
+        let output_url = '/reports/br/output';
+        let periods = {!! $periods !!};
+        let forms = {!! $forms !!};
+        let levels = {!! $upper_levels  !!};
+        let plist = $("#periodList");
+        let flist = $("#formList");
+        let tlist = $("#tableList");
+        let rlist = $("#rowList");
+        let clist = $("#columnList");
+        let levellist = $("#levelList");
+        let modebutton = $("#groupMode");
+        let current_period = {{ $last_year->id }};
+        let current_form = 0;
+        let current_table = 0;
+        let current_level = 0;
+        let current_type = 1; // по территории - 1, по группе - 2
+        let groupmode = 1; // по умолчанию группируем по строке
+        let aggregate = 1; // По умолчанию вывод по первичным документам, 2 - по юрлицам, 3 - по территориям
+        let output = 1; // По умолчанию вывод в html
         initFilterDatasources();
         initdatasources();
         initRowList();

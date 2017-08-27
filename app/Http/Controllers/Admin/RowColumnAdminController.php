@@ -43,7 +43,7 @@ class RowColumnAdminController extends Controller
 
     public function fetchTables(int $form)
     {
-        return Table::OfForm($form)->with('form')->get();
+        return Table::OfForm($form)->orderBy('table_index')->with('form')->get();
     }
 
     public function fetchRows(int $table)
