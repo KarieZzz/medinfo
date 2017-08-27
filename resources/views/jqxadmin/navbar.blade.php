@@ -18,7 +18,7 @@
                     <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                     <li><a href="/admin/workers">Исполнители</a></li>
-                    <li><a href="#">Адмнистраторы</a></li>
+                    <li><a href="#">Администраторы</a></li>
                 </ul>
             </li>
             <li class="dropdown">

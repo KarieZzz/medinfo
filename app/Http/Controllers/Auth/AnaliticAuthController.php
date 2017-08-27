@@ -3,20 +3,22 @@
 namespace App\Http\Controllers\Auth;
 
 use Illuminate\Http\Request;
-
 use App\Http\Requests;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Lang;
-use App\Worker;
+use App\User;
+use Validator;
+use App\Http\Controllers\Controller;
+use Illuminate\Foundation\Auth\ThrottlesLogins;
+use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
+use Hash;
 
-class DatainputAuthController extends Controller
+class AnaliticAuthController extends Controller
 {
-
     //
     public function getLogin()
     {
-        return view('auth.workerlogin');
+        return view('auth.analyticlogin');
     }
 
     /**
@@ -29,15 +31,17 @@ class DatainputAuthController extends Controller
     {
         $this->validateLogin($request);
         $credentials = $this->getCredentials($request);
-        $worker_id = $this->attemptWorkerAuth($credentials);
-        if ($worker_id) {
-            Auth::guard('datainput')->loginUsingId($worker_id);
+        //dd($credentials);
+        $user_id = $this->attemptWorkerAuth($credentials);
+
+        if ($user_id) {
+            Auth::guard('analytics')->loginUsingId($user_id);
             return $this->handleUserWasAuthenticated($request);
         }
 
- /*       if (Auth::guard('datainput')->attempt($credentials, $request->has('remember'))) {
-            return $this->handleUserWasAuthenticated($request);
-        }*/
+        /*       if (Auth::guard('datainput')->attempt($credentials, $request->has('remember'))) {
+                   return $this->handleUserWasAuthenticated($request);
+               }*/
 
         // If the login attempt was unsuccessful we will increment the number of attempts
         // to login and redirect the user back to the login form. Of course, when this
@@ -51,11 +55,12 @@ class DatainputAuthController extends Controller
 
     protected function attemptWorkerAuth($credentials)
     {
-        $worker = Worker::where('name', $credentials['name'])
-            ->where('password' , $credentials['password'])
-            ->where('blocked' , 0)
+        $user = User::where('email', $credentials['email'])
             ->first();
-        return $worker ? $worker->id : 0;
+        //dd($user);
+        //dd(Hash::check($credentials['password'], $user->password));
+        $valid = Hash::check($credentials['password'], $user->password);
+        return $valid ? $user->id : 0;
     }
 
     /**
@@ -67,7 +72,7 @@ class DatainputAuthController extends Controller
     protected function validateLogin(Request $request)
     {
         $this->validate($request, [
-            'name' => 'required', 'password' => 'required',
+            'email' => 'required|email', 'password' => 'required',
         ]);
     }
 
@@ -81,10 +86,10 @@ class DatainputAuthController extends Controller
     protected function handleUserWasAuthenticated(Request $request)
     {
         if (method_exists($this, 'authenticated')) {
-            return $this->authenticated($request, Auth::guard('datainput')->user());
+            return $this->authenticated($request, Auth::guard('analytics')->user());
         }
 
-        return redirect()->intended('datainput');
+        return redirect()->intended('analytics');
     }
 
     /**
@@ -96,7 +101,7 @@ class DatainputAuthController extends Controller
     protected function sendFailedLoginResponse(Request $request)
     {
         return redirect()->back()
-            ->withInput($request->only('name', 'remember'))
+            ->withInput($request->only('email', 'remember'))
             ->withErrors([
                 'failedLogin' => $this->getFailedLoginMessage(),
             ]);
@@ -123,7 +128,7 @@ class DatainputAuthController extends Controller
      */
     protected function getCredentials(Request $request)
     {
-        return $request->only('name', 'password');
+        return $request->only('email', 'password');
     }
 
     /**
@@ -143,8 +148,8 @@ class DatainputAuthController extends Controller
      */
     public function logout()
     {
-        Auth::guard('datainput')->logout();
-        return redirect('workerlogin');
+        Auth::guard('analytics')->logout();
+        return redirect('analyticlogin');
     }
 
     /**
@@ -166,5 +171,4 @@ class DatainputAuthController extends Controller
     {
         return property_exists($this, 'name') ? $this->username : 'email';
     }
-
 }

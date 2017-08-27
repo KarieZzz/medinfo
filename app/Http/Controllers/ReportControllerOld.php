@@ -8,7 +8,7 @@ use App\Http\Requests;
 use App\Medinfo\ReportMaker;
 use App\ReportPattern;
 
-class ReportController extends Controller
+class ReportControllerOld extends Controller
 {
     //
     public $rep_struct =

@@ -3,7 +3,7 @@
 @section('content')
 	<div class="login-box">
 		<div class="register-logo">
-			<b>Medinfo</b> WebAdmin
+			<b>Medinfo</b> Аналитика
 		</div>
 		<div class="login-box-body">
 			@if (count($errors) > 0)
@@ -16,8 +16,8 @@
 					</ul>
 				</div>
 			@endif
-			<p class="login-box-msg">Авторизация пользователя - администратора системы</p>
-				<form role="form" method="POST" action="{{ url('/login') }}">
+			<p class="login-box-msg">Авторизация пользователя</p>
+				<form role="form" method="POST" action="{{ url('/analyticlogin') }}">
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
 					<div class="form-group has-feedback">
 						<input type="email" class="form-control" placeholder="Email" name="email" value="{{ old('email') }}">

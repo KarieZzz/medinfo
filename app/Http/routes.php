@@ -27,6 +27,8 @@
 Route::group(['middleware' => ['medinfo']], function () {
     Route::auth();
     Route::get('admin/logout', 'Auth\AuthController@logout');
+    Route::get('analyticlogin', 'Auth\AnaliticAuthController@getLogin');
+    Route::post('analyticlogin', 'Auth\AnaliticAuthController@login');
     Route::get('workerlogin', 'Auth\DatainputAuthController@getLogin' );
     Route::get('workerlogout', 'Auth\DatainputAuthController@logout' );
     Route::post('workerlogin', 'Auth\DatainputAuthController@login' );
@@ -203,8 +205,8 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('datainput/fetchcelllayers/{document}/{row}/{column}', 'StatDataInput\AggregatesDashboardController@fetchAggregatedCellLayers');
 
     // Аналитика: консолидированные отчеты, справки
-    Route::get('reports/map/{level}/{period}', 'ReportController@consolidateIndexes');
-    Route::get('reports/patterns/{pattern}/{period}/{sortorder}/perform', 'ReportController@performReport');
+    Route::get('reports/map/{level}/{period}', 'ReportControllerOld@consolidateIndexes');
+    Route::get('reports/patterns/{pattern}/{period}/{sortorder}/perform', 'ReportControllerOld@performReport');
     Route::get('reports/br/querycomposer', 'Admin\BriefReferenceMaker@compose_query');
     Route::get('reports/br/output', 'Admin\BriefReferenceMaker@makeBriefReport');
     Route::get('reports/br/fetchcolumns/{table}', 'Admin\BriefReferenceMaker@fetchDataTypeColumns');
@@ -226,6 +228,10 @@ Route::group(['middleware' => ['medinfo']], function () {
 
     // mail test
     Route::get('mailtest', 'StatDataInput\DocumentMessageController@testmail');
+
+    // Аналитика - отдельный модуль для стастиков и экспертов. Только отчеты, справки, выборочный контроль данных
+    Route::get('analytics', 'Report\ReportController@index');
+
 });
 
 // Эксперименты с шаблоном AdminLTE
