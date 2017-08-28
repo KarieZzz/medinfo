@@ -25,7 +25,7 @@
 
 
 Route::group(['middleware' => ['medinfo']], function () {
-    Route::auth();
+    //Route::auth();
     Route::get('login', 'Auth\AdminAuthController@getLogin' );
     Route::post('login', 'Auth\AdminAuthController@login' );
     Route::get('admin/logout', 'Auth\AdminAuthController@logout');
@@ -33,8 +33,8 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::post('analyticlogin', 'Auth\AnaliticAuthController@login');
     Route::get('analytics/logout', 'Auth\AnaliticAuthController@logout');
     Route::get('workerlogin', 'Auth\DatainputAuthController@getLogin' );
-    Route::get('workerlogout', 'Auth\DatainputAuthController@logout' );
     Route::post('workerlogin', 'Auth\DatainputAuthController@login' );
+    Route::get('workerlogout', 'Auth\DatainputAuthController@logout' );
 
     // Маршрут по умолчанию - ввод данных
     Route::get('/', 'StatDataInput\DocumentDashboardController@index' );
@@ -237,14 +237,3 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('/analytics/reports', 'Report\ReportController@performReport');
 
 });
-
-// Эксперименты с шаблоном AdminLTE
-/*Route::get('adminlte', function () {
-    return view('welcome');
-});
-Route::get('adminlte/users', function () {
-    return view('users');
-});
-Route::get('adminlte/logs/accesslog', 'AccessLogController@index');
-Route::get('adminlte/logs/accesslog/{event}', 'AccessLogController@show');
-
