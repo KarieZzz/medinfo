@@ -4,17 +4,16 @@ namespace App\Http\Controllers\Auth;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Lang;
 use App\User;
 use App\Http\Controllers\Controller;
 use Hash;
 
-class AnaliticAuthController extends Controller
+class AdminAuthController extends Controller
 {
     //
     public function getLogin()
     {
-        return view('auth.analyticlogin');
+        return view('auth.login');
     }
 
     /**
@@ -29,9 +28,10 @@ class AnaliticAuthController extends Controller
         $credentials = $this->getCredentials($request);
         //dd($credentials);
         $user_id = $this->attemptWorkerAuth($credentials);
-
-        if ($user_id) {
-            Auth::guard('analytics')->loginUsingId($user_id);
+        $administrators = explode(',',config('medinfo.administrators'));
+        if ($user_id && in_array($user_id, $administrators)) {
+            //dd($user_id);
+            Auth::guard('admins')->loginUsingId($user_id);
             return $this->handleUserWasAuthenticated($request);
         }
 
@@ -41,9 +41,6 @@ class AnaliticAuthController extends Controller
 
         return $this->sendFailedLoginResponse($request);
     }
-
-    /* Учитывая, что в таблицу workers пароли пользователей храняться в нехешерованном виде,
-    проверяем вручную */
 
     protected function attemptWorkerAuth($credentials)
     {
@@ -76,9 +73,9 @@ class AnaliticAuthController extends Controller
     protected function handleUserWasAuthenticated(Request $request)
     {
         if (method_exists($this, 'authenticated')) {
-            return $this->authenticated($request, Auth::guard('analytics')->user());
+            return $this->authenticated($request, Auth::guard('admins')->user());
         }
-        return redirect()->intended('analytics');
+        return redirect()->intended('admin');
     }
 
     /**
@@ -103,10 +100,7 @@ class AnaliticAuthController extends Controller
      */
     protected function getFailedLoginMessage()
     {
-        return Lang::has('auth.failed')
-            ? Lang::get('auth.failed')
-            : 'These credentials do not match our records.';
-        //return 'Введенные имя пользователя и пароль не верны.';
+        return 'Пользователь не имеет прав для администрирования.';
     }
 
     /**
@@ -137,8 +131,8 @@ class AnaliticAuthController extends Controller
      */
     public function logout()
     {
-        Auth::guard('analytics')->logout();
-        return redirect('analyticlogin');
+        Auth::guard('admins')->logout();
+        return redirect('login');
     }
 
     /**

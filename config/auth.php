@@ -44,6 +44,10 @@ return [
             'driver' => 'session',
             'provider' => 'experts',
         ],
+        'admins' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
 /*        'api' => [
             'driver' => 'token',
             'provider' => 'users',

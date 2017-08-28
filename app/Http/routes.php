@@ -26,7 +26,9 @@
 
 Route::group(['middleware' => ['medinfo']], function () {
     Route::auth();
-    Route::get('admin/logout', 'Auth\AuthController@logout');
+    Route::get('login', 'Auth\AdminAuthController@getLogin' );
+    Route::post('login', 'Auth\AdminAuthController@login' );
+    Route::get('admin/logout', 'Auth\AdminAuthController@logout');
     Route::get('analyticlogin', 'Auth\AnaliticAuthController@getLogin');
     Route::post('analyticlogin', 'Auth\AnaliticAuthController@login');
     Route::get('analytics/logout', 'Auth\AnaliticAuthController@logout');
@@ -231,7 +233,8 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('mailtest', 'StatDataInput\DocumentMessageController@testmail');
 
     // Аналитика - отдельный модуль для стастиков и экспертов. Только отчеты, справки, выборочный контроль данных
-    Route::get('analytics', 'Report\ReportController@compose_query');
+    Route::get('/analytics', 'Report\ReportController@compose_query');
+    Route::get('/analytics/reports', 'Report\ReportController@performReport');
 
 });
 
@@ -244,15 +247,4 @@ Route::get('adminlte/users', function () {
 });
 Route::get('adminlte/logs/accesslog', 'AccessLogController@index');
 Route::get('adminlte/logs/accesslog/{event}', 'AccessLogController@show');
-// Структура отчетов
-// Формы
-Route::get('adminlte/structure/forms', 'StructureFormController@index');
-Route::get('adminlte/structure/editform/{form}', 'StructureFormController@edit');
-Route::patch('adminlte/structure/updateform/{form}', 'StructureFormController@update');
-Route::get('adminlte/structure/newform', 'StructureFormController@newform');
-Route::post('adminlte/structure/newform', 'StructureFormController@store');
-Route::get('adminlte/structure/testquery', 'StructureFormController@testQuery');
-// Строки
-Route::get('adminlte/structure/rows', 'StructureRowController@showrows');
-Route::get('adminlte/structure/editrow/{row}', 'StructureRowController@editrow');
-Route::patch('adminlte/structure/updaterow/{row}', 'StructureRowController@updaterow');*/
+

@@ -20,7 +20,7 @@
             height: 100%;
         }
     </style>
-    <title id="Description">Администрирование Мединфо</title>
+    <title id="Description">@yield('title')</title>
     <!-- Bootstrap core CSS -->
     <link href="{{ asset('/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
     <!-- jQWidgets CSS -->

@@ -21,7 +21,7 @@ class RowColumnAdminController extends Controller
     //
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('admins');
     }
 
     public function index()
