@@ -29,6 +29,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('admin/logout', 'Auth\AuthController@logout');
     Route::get('analyticlogin', 'Auth\AnaliticAuthController@getLogin');
     Route::post('analyticlogin', 'Auth\AnaliticAuthController@login');
+    Route::get('analytics/logout', 'Auth\AnaliticAuthController@logout');
     Route::get('workerlogin', 'Auth\DatainputAuthController@getLogin' );
     Route::get('workerlogout', 'Auth\DatainputAuthController@logout' );
     Route::post('workerlogin', 'Auth\DatainputAuthController@login' );
@@ -207,7 +208,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     // Аналитика: консолидированные отчеты, справки
     Route::get('reports/map/{level}/{period}', 'ReportControllerOld@consolidateIndexes');
     Route::get('reports/patterns/{pattern}/{period}/{sortorder}/perform', 'ReportControllerOld@performReport');
-    Route::get('reports/br/querycomposer', 'Admin\BriefReferenceMaker@compose_query');
+    Route::get('reports/br/querycomposer', 'Admin\BriefReferenceController@index');
     Route::get('reports/br/output', 'Admin\BriefReferenceMaker@makeBriefReport');
     Route::get('reports/br/fetchcolumns/{table}', 'Admin\BriefReferenceMaker@fetchDataTypeColumns');
     Route::get('reports/br/fetchrows/{table}', 'Admin\BriefReferenceMaker@fetchActualRows');
@@ -230,7 +231,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('mailtest', 'StatDataInput\DocumentMessageController@testmail');
 
     // Аналитика - отдельный модуль для стастиков и экспертов. Только отчеты, справки, выборочный контроль данных
-    Route::get('analytics', 'Report\ReportController@index');
+    Route::get('analytics', 'Report\ReportController@compose_query');
 
 });
 

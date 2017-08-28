@@ -1,31 +1,30 @@
 <?php
 
-namespace App\Http\Controllers\Report;
+namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+
 use App\Form;
 use App\Period;
 use App\UnitsView;
 
-class ReportController extends Controller
+class BriefReferenceController extends Controller
 {
     //
     public function __construct()
     {
-        $this->middleware('analytics');
+        $this->middleware('auth');
     }
 
-    public function compose_query()
+    public function index()
     {
         $forms = Form::orderBy('form_index')->get(['id', 'form_code']);
         $periods = Period::orderBy('name')->get();
         $last_year = Period::LastYear()->first();
         $upper_levels = UnitsView::whereIn('type', [1,2,5])->get();
-        return view('reports.composequickquery', compact('forms', 'upper_levels', 'periods', 'last_year'));
+        return view('jqxadmin.composequickquery', compact('forms', 'upper_levels', 'periods', 'last_year'));
     }
-
-
 }

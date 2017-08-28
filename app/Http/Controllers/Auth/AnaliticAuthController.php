@@ -88,7 +88,6 @@ class AnaliticAuthController extends Controller
         if (method_exists($this, 'authenticated')) {
             return $this->authenticated($request, Auth::guard('analytics')->user());
         }
-
         return redirect()->intended('analytics');
     }
 

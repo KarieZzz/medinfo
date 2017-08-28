@@ -35,7 +35,7 @@
 <div class="container-fluid" >
     @include('jqxdatainput.notifications')
     @include('jqxdatainput.confirmpopup')
-    @include('report.navbar')
+    @include('reports.navbar')
     <div id="widgets-content-wrap">
         @yield('content')
     </div>

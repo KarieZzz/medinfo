@@ -24,28 +24,12 @@ use Maatwebsite\Excel\Facades\Excel;
 class BriefReferenceMaker extends Controller
 {
     //
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
-    public function compose_query()
-    {
-        $forms = Form::orderBy('form_index')->get(['id', 'form_code']);
-        $periods = Period::orderBy('name')->get();
-        $last_year = Period::LastYear()->first();
-        //dd($last_year);
-        //$upper_levels = Unit::UpperLevels()->orderBy('unit_code')->get(['id', 'unit_name']);
-        $upper_levels = UnitsView::whereIn('type', [1,2,5])->get();
-        return view('reports.composequickquery', compact('forms', 'upper_levels', 'periods', 'last_year'));
-    }
-
     public function fetchActualRows(int $table)
     {
         $default_album = Album::Default()->first()->id;
         return Row::OfTable($table)->with('table')->whereDoesntHave('excluded', function ($query) use($default_album) {
             $query->where('album_id', $default_album);
-        })->get();
+        })->orderBy('row_index')->get();
     }
 
     public function fetchDataTypeColumns(int $table)
@@ -53,7 +37,7 @@ class BriefReferenceMaker extends Controller
         $default_album = Album::Default()->first()->id;
         return Column::OfTable($table)->OfDataType()->whereDoesntHave('excluded', function ($query) use($default_album) {
             $query->where('album_id', $default_album);
-        })->get();
+        })->orderBy('column_index')->get();
     }
 
     public function makeBriefReport(Request $request) {
@@ -70,7 +54,6 @@ class BriefReferenceMaker extends Controller
                 'output' => 'required|in:1,2',
             ]
         );
-        //$default_album = Album::Default()->first(['id']);
         $document_type = 1;
         $period = Period::find($request->period);
         $form = Form::find($request->form);
@@ -84,10 +67,6 @@ class BriefReferenceMaker extends Controller
         $output = $request->output;
         $group_title = '';
         $el_name = '';
-
-        //dd($type);
-        //dd($columns);
-
         if ($level == 0) {
             $units = Unit::Primary()->orderBy('unit_code')->get();
             $top = Unit::find(0);
@@ -104,8 +83,6 @@ class BriefReferenceMaker extends Controller
             }
 
         }
-        //dd($units);
-
         $column_titles = [];
         if ($mode == 1) {
             $group_title = 'По строке: ';
@@ -128,7 +105,6 @@ class BriefReferenceMaker extends Controller
                 $column_titles[] = $row->row_code . ': '  . $row->row_name;
             }
         }
-
         if ($aggregate_level == 1) {
             $values = self::getValues($units, $period, $form, $table, $column_titles, $columns, $rows, $mode, $document_type, $output);
         } elseif ($aggregate_level == 2) {
@@ -146,10 +122,6 @@ class BriefReferenceMaker extends Controller
             //dd($units);
             $values = self::getAggregatedValues($units, $period, $form, $table, $column_titles, $columns, $rows, $mode, $output, $aggregate_level);
         }
-
-        //dd($column_titles);
-        //$period = Period::orderBy('begin_date', 'desc')->first();
-        //dd($values);
         if ($output == 1) {
             return view('reports.briefreference', compact('form', 'table', 'top','group_title', 'el_name', 'period', 'units', 'column_titles', 'values'));
         } elseif ($output == 2) {

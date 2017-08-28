@@ -7,12 +7,12 @@
             <li><a href="/analitics/briefreport">Справка</a></li>
             <li><a href="/analitics/reports">Отчеты</a></li>
             <li><a href="/analitics/selectedcontrol">Выборочный контроль</a></li>
-
+        </ul>
         <div class="navbar-header">
             <a class="navbar-brand" href="#"><span class="text-primary">@yield('title')</span></a>
         </div>
         <ul class="nav navbar-nav navbar-right">
-            <li><a href="/admin/logout"><span class="glyphicon glyphicon-log-in"></span> Завершить работу</a></li>
+            <li><a href="/analytics/logout"><span class="glyphicon glyphicon-log-in"></span> Завершить работу</a></li>
         </ul>
     </div>
 </nav>
