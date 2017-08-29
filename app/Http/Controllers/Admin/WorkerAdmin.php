@@ -13,7 +13,6 @@ use App\WorkerScope;
 class WorkerAdmin extends Controller
 {
     //
-
     public function __construct()
     {
         $this->middleware('admins');

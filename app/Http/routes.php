@@ -43,6 +43,13 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('admin', 'Admin\AdminController@index');
     Route::get('medstat_export/{document}', 'Admin\MedstatExportController@msExport');
 
+    // Менеджер пользователей - администраторов, экспертов
+    Route::get('users', 'Admin\UserAdminController@index');
+    Route::get('admin/fetchusers', 'Admin\UserAdminController@fetchUsers');
+    Route::post('users', 'Admin\UserAdminController@store');
+    Route::patch('users/{user}', 'Admin\UserAdminController@update');
+    Route::delete('users/{user}', 'Admin\UserAdminController@destroy');
+
     // Менеджер пользователей - исполнителей
     Route::get('admin/workers', 'Admin\WorkerAdmin@index' );
     Route::get('admin/fetch_workers', 'Admin\WorkerAdmin@fetch_workers');

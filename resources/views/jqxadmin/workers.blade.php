@@ -104,11 +104,10 @@
 @section('inlinejs')
     @parent
     <script type="text/javascript">
-        var selected_scopes = [];
-        //var message = $("#alertmessage");
-        var mo_tree_message = $("#mo_tree_comment");
-        var workerupdate_url = '/admin/workers/update/';
-        var workerdelete_url = '/admin/workers/delete/';
+        let selected_scopes = [];
+        let mo_tree_message = $("#mo_tree_comment");
+        let workerupdate_url = '/admin/workers/update/';
+        let workerdelete_url = '/admin/workers/delete/';
         initsplitter();
         inituserlist();
         initmotree();
