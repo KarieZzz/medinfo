@@ -1,7 +1,7 @@
 /**
  * Created by shameev on 25.10.2016.
  */
-let tablefetch_url = '/admin/rc/fetchtables/';
+let tablefetch_url = '/fetchtables/';
 
 let initFilterDatasources = function() {
     let formssource =

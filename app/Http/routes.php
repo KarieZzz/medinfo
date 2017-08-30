@@ -36,6 +36,9 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::post('workerlogin', 'Auth\DatainputAuthController@login' );
     Route::get('workerlogout', 'Auth\DatainputAuthController@logout' );
 
+    // Shared Resources
+    Route::get('/fetchtables/{form}', 'Shared\FormTablePickerController@fetchTables');
+
     // Маршрут по умолчанию - ввод данных
     Route::get('/', 'StatDataInput\DocumentDashboardController@index' );
 
@@ -215,19 +218,20 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('datainput/fetchcelllayers/{document}/{row}/{column}', 'StatDataInput\AggregatesDashboardController@fetchAggregatedCellLayers');
 
     // Аналитика: консолидированные отчеты, справки
-    Route::get('reports/map/{level}/{period}', 'ReportControllerOld@consolidateIndexes');
-    Route::get('reports/patterns/{pattern}/{period}/{sortorder}/perform', 'ReportControllerOld@performReport');
     Route::get('reports/br/querycomposer', 'Admin\BriefReferenceController@index');
     Route::get('reports/br/output', 'Admin\BriefReferenceMaker@makeBriefReport');
     Route::get('reports/br/fetchcolumns/{table}', 'Admin\BriefReferenceMaker@fetchDataTypeColumns');
     Route::get('reports/br/fetchrows/{table}', 'Admin\BriefReferenceMaker@fetchActualRows');
 
     Route::get('/reports/patterns', 'Report\ReportPatternController@index');
-    Route::get('/reports/patterns/create', 'Report\ReportPatternController@create');
-    Route::post('/reports/patterns', 'Report\ReportPatternController@store');
-    Route::get('/reports/patterns/{id}/edit', 'Report\ReportPatternController@edit');
     Route::get('/reports/patterns/{pattern}/fetchindexes', 'Report\ReportPatternController@showIndexes');
-    Route::patch('/reports/patterns/{pattern}', 'Report\ReportPatternController@update');
+    Route::get('/reports/patterns/create', 'Admin\ReportPatternAdminController@create');
+    Route::post('/reports/patterns', 'Admin\ReportPatternAdminController@store');
+    Route::get('/reports/patterns/{id}/edit', 'Admin\ReportPatternAdminController@edit');
+    Route::patch('/reports/patterns/{pattern}', 'Admin\ReportPatternAdminController@update');
+
+    Route::get('reports/map/{level}/{period}', 'ReportControllerOld@consolidateIndexes');
+    Route::get('reports/patterns/{pattern}/{period}/{sortorder}/perform', 'ReportControllerOld@performReport');
 
     // Работа с lexer-parser
     Route::get('tests/lexer', 'Tests\LexerParserController@lexerTest');

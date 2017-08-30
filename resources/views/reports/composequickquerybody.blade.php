@@ -122,7 +122,7 @@
     <script src="{{ asset('/jqwidgets/jqxgrid.sort.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/tablepicker.js?v=006') }}"></script>
+    <script src="{{ asset('/medinfo/admin/tablepicker.js?v=007') }}"></script>
     <script src="{{ asset('/medinfo/admin/composequickquery.js?v=012') }}"></script>
 @endpush
 
