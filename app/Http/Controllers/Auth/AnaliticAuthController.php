@@ -14,7 +14,7 @@ class AnaliticAuthController extends Controller
     //
     public function getLogin()
     {
-        return view('auth.analyticlogin');
+        return view('auth.analyticlogin')->with('title', 'Мединфо Аналитика');
     }
 
     /**
@@ -47,9 +47,12 @@ class AnaliticAuthController extends Controller
 
     protected function attemptWorkerAuth($credentials)
     {
+        $valid = false;
         $user = User::where('email', $credentials['email'])
             ->first();
-        $valid = Hash::check($credentials['password'], $user->password);
+        if ($user) {
+            $valid = Hash::check($credentials['password'], $user->password);
+        }
         return $valid ? $user->id : 0;
     }
 

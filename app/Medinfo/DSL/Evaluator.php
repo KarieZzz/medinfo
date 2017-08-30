@@ -6,7 +6,7 @@
  * Time: 17:14
  */
 
-namespace App\Medinfo\Calculation;
+namespace App\Medinfo\DSL;
 
 
 class Evaluator

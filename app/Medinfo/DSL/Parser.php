@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Medinfo\Calculation;
+namespace App\Medinfo\DSL;
 
 use SplDoublyLinkedList;
 

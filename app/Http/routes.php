@@ -230,11 +230,8 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::patch('/reports/patterns/{pattern}', 'Report\ReportPatternController@update');
 
     // Работа с lexer-parser
-    //Route::get('lexer/parser', 'StatDataInput\DataCheckController@func_parser');
-    Route::get('lexer/lexer', 'StatDataInput\DataCheckController@test_celllexer');
-    Route::get('lexer/parser', 'StatDataInput\DataCheckController@test_cellparser');
-    Route::get('lexer/calcparser', 'StatDataInput\DataCheckController@test_calculation');
-    Route::get('lexer/ast', 'StatDataInput\DataCheckController@test_making_AST');
+    Route::get('tests/lexer', 'Tests\LexerParserController@lexerTest');
+    Route::get('tests/parser', 'Tests\LexerParserController@func_parser');
 
     // mail test
     Route::get('mailtest', 'StatDataInput\DocumentMessageController@testmail');

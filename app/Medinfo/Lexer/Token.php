@@ -12,7 +12,7 @@ class Token {
     }
     
     public function __toString() {
-        $tname = \App\Medinfo\Calculation\CalculationFunctionLexer::$tokenNames[$this->type];
+        $tname = \App\Medinfo\DSL\CalculationFunctionLexer::$tokenNames[$this->type];
         return "<'" . $this->text . "', " . $tname . ">";
     }
 }

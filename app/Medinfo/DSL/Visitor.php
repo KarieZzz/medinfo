@@ -10,7 +10,7 @@
  * оставлен из-за того, что могут пригодиться некоторые функции
  *  */
 
-namespace App\Medinfo\Calculation;
+namespace App\Medinfo\DSL;
 
 
 class Visitor

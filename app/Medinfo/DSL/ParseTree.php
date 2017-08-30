@@ -6,7 +6,7 @@
  * Time: 7:35
  */
 
-namespace App\Medinfo\Calculation;
+namespace App\Medinfo\DSL;
 
 
 abstract class ParseTree

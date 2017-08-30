@@ -6,7 +6,7 @@
         <ul class="nav navbar-nav">
             <li><a href="/analytics">Справка</a></li>
             <li><a href="/analytics/reports">Отчеты</a></li>
-            <li><a href="/analytics/selectedcontrol" disabled="disabled">Выборочный контроль</a></li>
+            {{--<li disabled="disabled"><a href="/analytics/selectedcontrol" >Выборочный контроль</a></li>--}}
         </ul>
         <div class="navbar-header">
             <div class="navbar-brand"><span class="text-primary">@yield('title')</span></div>
@@ -16,4 +16,3 @@
         </ul>
     </div>
 </nav>
-

@@ -147,7 +147,7 @@ class ControlFunctionLexer extends Lexer {
                 case '!' :
                     $this->consume();
                     return $this->tokenstack->push(self::EXCLAMATION, '!');
-                 case '=' :
+                case '=' :
                 case '>' :
                 case '<' :
                     return $this->boolean_sign();

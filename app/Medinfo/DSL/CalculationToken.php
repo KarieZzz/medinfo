@@ -1,16 +1,15 @@
 <?php
 
-namespace App\Medinfo\Calculation;
+namespace App\Medinfo\DSL;
 
-class Token {
+class CalculationToken extends Token {
     public $type;
     public $text;
     
     public function __construct($type, $text) {
-        $this->type = $type;
-        $this->text = $text;
+        parent::__construct($type, $text);
     }
-
+    
     public function __toString() {
         $tname = CalculationFunctionLexer::$tokenNames[$this->type];
         return "<'" . $this->text . "', " . $tname . ">";

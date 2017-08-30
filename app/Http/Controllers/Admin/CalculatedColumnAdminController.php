@@ -103,9 +103,9 @@ class CalculatedColumnAdminController extends Controller
     public function validateExpression($input)
     {
         try {
-            $this->lexer = new \App\Medinfo\Calculation\CalculationFunctionLexer($input);
+            $this->lexer = new \App\Medinfo\DSL\CalculationFunctionLexer($input);
             $tokenstack = $this->lexer->getTokenStack();
-            $this->parcer = new \App\Medinfo\Calculation\CalculationFunctionParser($tokenstack);
+            $this->parcer = new \App\Medinfo\DSL\CalculationFunctionParser($tokenstack);
             $this->parcer->expression();
         } catch (\Exception $e) {
             return $e->getMessage();

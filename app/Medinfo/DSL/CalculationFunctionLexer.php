@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Medinfo\Calculation;
+namespace App\Medinfo\DSL;
 
 class CalculationFunctionLexer extends Lexer {
 
@@ -32,7 +32,8 @@ class CalculationFunctionLexer extends Lexer {
     public function __construct($input)
     {
         parent::__construct($input);
-        /*Все адреса ячеек помещаем в отдельный массив.
+        /* Может быть?
+         * Все адреса ячеек помещаем в отдельный массив.
          * В соответствующем токене оставляем ссылку на позицию в массиве
          * в формате %0,%1, %3 и так даее.
         */
@@ -51,7 +52,7 @@ class CalculationFunctionLexer extends Lexer {
 
     public function nextToken()
     {
-        while ( $this->c != self::EOF ) {
+        while ($this->c != self::EOF) {
             switch ( $this->c ) {
                 case " " :
                 case "\t":
@@ -91,7 +92,7 @@ class CalculationFunctionLexer extends Lexer {
                     return $token;
                 case '.' :
                 case $this->c >= '1' && $this->c <= '9':
-                return $this->number();
+                    return $this->number();
                 case 'Ф':
                 case 'Т':
                 case 'С':
@@ -210,7 +211,7 @@ class CalculationFunctionLexer extends Lexer {
 
     public function getTokenStack()
     {
-        //$this->tokenstack->push(new Token(self::EXPRESSION, 'Calculation'));
+        //$this->tokenstack->push(new Token(self::EXPRESSION, 'DSL'));
         $token = $this->nextToken();
         while($token->type !== CalculationFunctionLexer::EOF_TYPE) {
             $token = $this->nextToken();

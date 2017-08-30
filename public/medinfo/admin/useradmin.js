@@ -1,4 +1,4 @@
-initsplitter = function() {
+let initsplitter = function() {
     $("#mainSplitter").jqxSplitter({
         width: '100%',
         height: '100%',
@@ -11,7 +11,7 @@ initsplitter = function() {
     });
 };
 
-inituserlist = function() {
+let inituserlist = function() {
     let usersource =
     {
         datatype: "json",
@@ -47,16 +47,17 @@ inituserlist = function() {
         $("#name").val(row.name);
         $("#email").val(row.email);
         $("#role").val(row.role);
+        $("#password").val('');
     });
 };
 
-setquerystring = function() {
+let setquerystring = function() {
     return "&name=" + $("#name").val() +
         "&password=" + $("#password").val() +
         "&email=" + $("#email").val();
 };
 
-initactions = function() {
+let initactions = function() {
     $("#insert").click(function () {
         $.ajax({
             dataType: 'json',

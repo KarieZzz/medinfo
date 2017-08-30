@@ -10,7 +10,7 @@
  * Не доделано. Не удалено из-за того что могут пригодится парафункций
  */
 
-namespace App\Medinfo\Calculation;
+namespace App\Medinfo\DSL;
 
 use SplDoublyLinkedList;
 

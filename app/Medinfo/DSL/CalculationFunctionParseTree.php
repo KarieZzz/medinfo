@@ -6,7 +6,7 @@
  * Time: 8:27
  */
 
-namespace App\Medinfo\Calculation;
+namespace App\Medinfo\DSL;
 
 
 class CalculationFunctionParseTree extends ParseTree
