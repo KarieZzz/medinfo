@@ -24,11 +24,6 @@ use Maatwebsite\Excel\Facades\Excel;
 class BriefReferenceMaker extends Controller
 {
     //
-    public function __construct()
-    {
-        $this->middleware('analytics');
-    }
-
     public function fetchActualRows(int $table)
     {
         $default_album = Album::Default()->first()->id;
