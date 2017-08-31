@@ -220,8 +220,8 @@ Route::group(['middleware' => ['medinfo']], function () {
     // Аналитика: консолидированные отчеты, справки
     Route::get('reports/br/querycomposer', 'Admin\BriefReferenceController@index');
     Route::get('reports/br/output', 'Admin\BriefReferenceMaker@makeBriefReport');
-    Route::get('reports/br/fetchcolumns/{table}', 'Admin\BriefReferenceMaker@fetchDataTypeColumns');
-    Route::get('reports/br/fetchrows/{table}', 'Admin\BriefReferenceMaker@fetchActualRows');
+    Route::get('reports/br/fetchcolumns/{table}', 'Shared\FormTablePickerController@fetchDataTypeColumns');
+    Route::get('reports/br/fetchrows/{table}', 'Shared\FormTablePickerController@fetchActualRows');
 
     Route::get('/reports/patterns', 'Report\ReportPatternController@index');
     Route::get('/reports/patterns/{pattern}/fetchindexes', 'Report\ReportPatternController@showIndexes');
