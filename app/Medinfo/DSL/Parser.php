@@ -24,7 +24,7 @@ abstract class Parser {
               $this->consume();
         } else {
             throw new \Exception("Ошибка разбора правила контроля. Ожидался токен <" . $this->tokenNames[$this->input->current()->type]
-                . ">: Обнаружен <" . $this->tokenNames[$this->input->current()->type] . ">");
+                . ">: Обнаружен <" . $this->tokenNames[$x] . ">");
         }
     }
 

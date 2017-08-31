@@ -188,7 +188,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/tablepicker.js?v=006') }}"></script>
+    <script src="{{ asset('/medinfo/admin/tablepicker.js?v=007') }}"></script>
     <script src="{{ asset('/medinfo/admin/rcadmin.js?v=027') }}"></script>
 @endpush
 

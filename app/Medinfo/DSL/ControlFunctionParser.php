@@ -12,6 +12,7 @@ class ControlFunctionParser extends Parser {
     public function __construct($input) {
         parent::__construct($input);
         $this->celladressStack = new \SplDoublyLinkedList;
+        $this->tokenNames = ControlFunctionLexer::$tokenNames;
     }
 
     public function factor()
@@ -30,9 +31,11 @@ class ControlFunctionParser extends Parser {
             $node = $this->expression();
             $this->match(ControlFunctionLexer::RPARENTH);
         } elseif ($this->lookahead->type == ControlFunctionLexer::NAME) {
+            // subfunc : NAME LPARENTH subfunc_args RPARENTH
+            $node = new ControlFunctionParseTree($this->lookahead->type, $this->lookahead->text);
             $this->match(ControlFunctionLexer::NAME);
             $this->match(ControlFunctionLexer::LPARENTH);
-            $node = $this->subfunc();
+            $this->subfunc_args($node);
             $this->match(ControlFunctionLexer::RPARENTH);
         }
 
@@ -122,31 +125,51 @@ class ControlFunctionParser extends Parser {
                 $arg_node = new ControlFunctionParseTree(ControlFunctionLexer::ARG, 'arg_' . $this->currentArgIndex);
                 $exp_node = $this->expression();
                 $arg_node->addChild($exp_node);
-                $this->currentNode->addChild($arg_node);
                 $this->currentArgIndex++;
                 $this->match(ControlFunctionLexer::COMMA);
+                $this->root->addChild($arg_node);
+                //dump($this->currentNode);
+                //dump($this->currentArgIndex);
                 $this->carg();
                 break;
             case 2 :
-                $arg_node = new ControlFunctionParseTree($this->lookahead->type, $this->lookahead->text);
-                $this->match(ControlFunctionLexer::BOOLEAN);
+                $arg_node = new ControlFunctionParseTree(ControlFunctionLexer::ARG, 'arg_' . $this->currentArgIndex);
+                $bool_node = new ControlFunctionParseTree($this->lookahead->type, $this->lookahead->text);
+                $arg_node->addChild($bool_node);
                 $this->currentArgIndex++;
-                $this->match(ControlFunctionLexer::COMMA);
+                $this->match(ControlFunctionLexer::BOOLEAN);
+                $this->root->addChild($arg_node);
+                //dd($this->currentNode);
+                //$this->match(ControlFunctionLexer::COMMA);
                 $this->carg();
                 break;
             case 3 :
-                break;
             case 4 :
+                if ($this->lookahead->type == ControlFunctionLexer::COMMA) {
+                    $this->match(ControlFunctionLexer::COMMA);
+                    $this->carg();
+                } elseif ($this->lookahead->type == ControlFunctionLexer::RPARENTH) {
+                    $this->currentArgIndex = 5;
+                    $this->carg();
+                } else {
+                    $arg_node = new ControlFunctionParseTree(ControlFunctionLexer::ARG, 'arg_' . $this->currentArgIndex);
+                    $subfunc_node = $this->subfunc();
+                    $arg_node->addChild($subfunc_node);
+                    $this->currentArgIndex++;
+                    $this->root->addChild($arg_node);
+                    $this->carg();
+                }
                 break;
             case 5 :
                 if ($this->lookahead->type != ControlFunctionLexer::RPARENTH) {
                     throw new \Exception("
-                        Ожидалось" . ControlFunctionLexer::$tokenNames[ControlFunctionLexer::RPARENTH]  . "Получено " .
+                        Ожидалось " . ControlFunctionLexer::$tokenNames[ControlFunctionLexer::RPARENTH]  . ". Получено " .
                         ControlFunctionLexer::$tokenNames[$this->lookahead->type]
                     );
                 }
                 break;
         }
+
     }
 
     public function cargs()
@@ -160,11 +183,48 @@ class ControlFunctionParser extends Parser {
         }
     }
 
+    public function subfunc_args($func_node)
+    {
+        // subfunc_args : CELLADRESS | CELLADRESS : CELLADRESS | ...
+        while($this->lookahead->type == ControlFunctionLexer::CELLADRESS) {
+            $celladress_left = new ControlFunctionParseTree($this->lookahead->type, $this->lookahead->text);
+            $this->match(ControlFunctionLexer::CELLADRESS);
+            if ($this->lookahead->type == ControlFunctionLexer::COLON) {
+                $this->match(ControlFunctionLexer::COLON);
+                $celladress_right = new ControlFunctionParseTree($this->lookahead->type, $this->lookahead->text);
+                $this->match(ControlFunctionLexer::CELLADRESS);
+                $cellrange = new ControlFunctionParseTree(ControlFunctionLexer::CELLRANGE, 'cellrange');
+                $cellrange->addChild($celladress_left);
+                $cellrange->addChild($celladress_right);
+                $func_node->addChild($cellrange);
+                if ($this->lookahead->type == ControlFunctionLexer::COMMA) {
+                    $this->match(ControlFunctionLexer::COMMA);
+                }
+            } elseif ($this->lookahead->type == ControlFunctionLexer::COMMA) {
+                $func_node->addChild($celladress_left);
+                $this->match(ControlFunctionLexer::COMMA);
+            } elseif ($this->lookahead->type == ControlFunctionLexer::RPARENTH) {
+                $func_node->addChild($celladress_left);
+            }
+        }
+    }
+
+    public function subfunc()
+    {
+        $node = new ControlFunctionParseTree($this->lookahead->type, $this->lookahead->text);
+        $this->match(ControlFunctionLexer::NAME);
+        $this->match(ControlFunctionLexer::LPARENTH);
+        $this->match(ControlFunctionLexer::MULTIPLY);
+        $this->match(ControlFunctionLexer::RPARENTH);
+        return $node;
+    }
+
     public function func()
     {
         // func : NAME cargs
         if ($this->lookahead->type == ControlFunctionLexer::NAME) {
-            $this->currentNode = new ControlFunctionParseTree($this->lookahead->type, $this->lookahead->text);
+            $this->root = new ControlFunctionParseTree($this->lookahead->type, $this->lookahead->text);
+            //$this->root = $this->currentNode;
             $this->currentArgIndex = 0;
             $this->match(ControlFunctionLexer::NAME);
             $this->cargs();
@@ -175,14 +235,6 @@ class ControlFunctionParser extends Parser {
             );
         }
     }
-
-    public function subfunc()
-    {
-        //
-        //
-        return true;
-    }
-
 }
 
 ?>

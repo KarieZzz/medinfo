@@ -99,20 +99,20 @@
 @section('inlinejs')
     @parent
     <script type="text/javascript">
-        var currentgroup = 0;
-        var groups = {!! $groups !!};
-        var membersource;
-        var unitgroup_url ='/admin/units/fetchgroups';
-        var motree_url ='/admin/fetch_mo_tree/';
-        var member_url ='/admin/units/fetchmembers/';
-        var groupcreate_url = '/admin/units/groupcreate';
-        var groupupdate_url = '/admin/units/groupupdate/';
-        var groupdelete_url = '/admin/units/groupdelete/';
-        var addmembers_url = '/admin/units/addmembers/';
-        var removemember_url = '/admin/units/removemember/';
-        var unitGroupDataAdapter;
-        var memberDataAdapter;
-        var mo_dataAdapter;
+        let currentgroup = 0;
+        let groups = {!! $groups !!};
+        let membersource;
+        let unitgroup_url ='/admin/units/fetchgroups';
+        let motree_url ='/admin/fetch_mo_tree/';
+        let member_url ='/admin/units/fetchmembers/';
+        let groupcreate_url = '/admin/units/groupcreate';
+        let groupupdate_url = '/admin/units/groupupdate/';
+        let groupdelete_url = '/admin/units/groupdelete/';
+        let addmembers_url = '/admin/units/addmembers/';
+        let removemember_url = '/admin/units/removemember/';
+        let unitGroupDataAdapter;
+        let memberDataAdapter;
+        let mo_dataAdapter;
         initsplitter();
         initdatasources();
         initmotree();

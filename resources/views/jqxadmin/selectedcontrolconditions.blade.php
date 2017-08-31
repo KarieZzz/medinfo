@@ -73,17 +73,17 @@
 @section('inlinejs')
     @parent
     <script type="text/javascript">
-        var formsDataAdapter;
-        var functionsDataAdapter;
-        var tablesource;
-        var rowsource;
-        var columnsource;
-        var functionfetch_url = '/admin/cfunctions/fetchofform/';
-        var output_url = '/admin/dcheck/selectedcheck';
-        var forms = {!! $forms  !!};
-        var fgrid = $("#functionList");
-        var current_form = 0;
-        var cfselected = [];
+        let formsDataAdapter;
+        let functionsDataAdapter;
+        let tablesource;
+        let rowsource;
+        let columnsource;
+        let functionfetch_url = '/admin/cfunctions/fetchofform/';
+        let output_url = '/admin/dcheck/selectedcheck';
+        let forms = {!! $forms  !!};
+        let fgrid = $("#functionList");
+        let current_form = 0;
+        let cfselected = [];
         initdatasources();
         initFunctionList();
         initFormFilter();

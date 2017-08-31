@@ -113,16 +113,16 @@
 @section('inlinejs')
     @parent
     <script type="text/javascript">
-        var rowsDataAdapter;
-        var tableDataAdapter;
-        var unittypesDataAdapter;
-        var aggregatableDataAdapter;
-        var unitTypes = {!! $unit_types !!};
-        var aggregatables = {!! $aggregate_units !!};
-        var unitfetch_url ='/admin/units/fetchunits';
-        var unitcreate_url ='/admin/units/create';
-        var unitupdate_url ='/admin/units/update/';
-        var unitdelete_url ='/admin/units/delete/';
+        let rowsDataAdapter;
+        let tableDataAdapter;
+        let unittypesDataAdapter;
+        let aggregatableDataAdapter;
+        let unitTypes = {!! $unit_types !!};
+        let aggregatables = {!! $aggregate_units !!};
+        let unitfetch_url ='/admin/units/fetchunits';
+        let unitcreate_url ='/admin/units/create';
+        let unitupdate_url ='/admin/units/update/';
+        let unitdelete_url ='/admin/units/delete/';
         initdropdowns();
         initsplitter();
         initdatasources();
