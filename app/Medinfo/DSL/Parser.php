@@ -13,6 +13,7 @@ abstract class Parser {
     protected $prevNode;       // ParseTree предыдущий узед
     protected $tokenNames;  // Для читабельного вывода исключений
 
+
     public function __construct(SplDoublyLinkedList $input) {
         $input->rewind();
         $this->input = $input;

@@ -11,6 +11,7 @@ abstract class Lexer {
     protected $p                = 0;            // позиция текущего символа
     protected $c;                               // текущий символ
     protected $tokenstack;
+    protected $celladressStack;
     public static $tokenNames = [ ];
 
     public function __construct($input) {

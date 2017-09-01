@@ -6,12 +6,13 @@ use App\Medinfo\Lexer\ParserException;
 
 class ControlFunctionParser extends Parser {
 
-    public $celladressStack;
+    public $celladressStack = [];
+    public $cellrangeStack = [];
     public $currentArgIndex;
 
     public function __construct($input) {
         parent::__construct($input);
-        $this->celladressStack = new \SplDoublyLinkedList;
+        //$this->celladressStack = new \SplDoublyLinkedList;
         $this->tokenNames = ControlFunctionLexer::$tokenNames;
     }
 
@@ -24,7 +25,7 @@ class ControlFunctionParser extends Parser {
             $this->match(ControlFunctionLexer::NUMBER);
         } elseif ($this->lookahead->type == ControlFunctionLexer::CELLADRESS) {
             $node = new ControlFunctionParseTree($this->lookahead->type, $this->lookahead->text);
-            $this->celladressStack->push($node);
+            $this->celladressStack[$this->lookahead->text]['node'] = $node;
             $this->match(ControlFunctionLexer::CELLADRESS);
         } elseif ($this->lookahead->type == ControlFunctionLexer::LPARENTH) {
             $this->match(ControlFunctionLexer::LPARENTH);
@@ -193,18 +194,23 @@ class ControlFunctionParser extends Parser {
                 $this->match(ControlFunctionLexer::COLON);
                 $celladress_right = new ControlFunctionParseTree($this->lookahead->type, $this->lookahead->text);
                 $this->match(ControlFunctionLexer::CELLADRESS);
-                $cellrange = new ControlFunctionParseTree(ControlFunctionLexer::CELLRANGE, 'cellrange');
+                $cellrange_key = $celladress_left->content . ' ' .  $celladress_right->content;
+                $cellrange = new ControlFunctionParseTree(ControlFunctionLexer::CELLRANGE, $cellrange_key);
                 $cellrange->addChild($celladress_left);
                 $cellrange->addChild($celladress_right);
                 $func_node->addChild($cellrange);
+                $this->cellrangeStack[$cellrange_key]['node'] = $cellrange;
+                //$this->celladressStack->push($cellrange);
                 if ($this->lookahead->type == ControlFunctionLexer::COMMA) {
                     $this->match(ControlFunctionLexer::COMMA);
                 }
             } elseif ($this->lookahead->type == ControlFunctionLexer::COMMA) {
                 $func_node->addChild($celladress_left);
+                $this->celladressStack[$celladress_left->content]['node'] = $celladress_left;
                 $this->match(ControlFunctionLexer::COMMA);
             } elseif ($this->lookahead->type == ControlFunctionLexer::RPARENTH) {
                 $func_node->addChild($celladress_left);
+                $this->celladressStack[$celladress_left->content]['node'] = $celladress_left ;
             }
         }
     }

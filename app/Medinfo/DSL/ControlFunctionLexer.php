@@ -210,42 +210,82 @@ class ControlFunctionLexer extends Lexer
         $this->tokenstack->push($token);
         return $token;
     }
-
+    // Добавляем и редуцируем
     public function cellAdress()
     {
         $buf = '';
+        $f = '';
+        $t = '';
+        $r = '';
+        $c = '';
+        $rc = '';
+        $p = '';
         if ($this->c == 'Ф') {
             do {
-                $buf .= $this->c;
+                //$buf .= $this->c;
+                $f .= $this->c;
                 $this->consume();
             } while ($this->isFORMCODE());
+
         }
         if ($this->c == 'Т') {
             do {
-                $buf .= $this->c;
+                $t .= $this->c;
                 $this->consume();
             } while ($this->isCODE());
+
         }
+        // Если не указан код таблицы, код формы обнуляем (это ошибка)
         if ($this->c == 'С') {
             do {
-                $buf .= $this->c;
+                $r .= $this->c;
                 $this->consume();
             } while ($this->isROWCODE());
         }
+        // Если код строки пуст, то убираем и ссылки на форму и таблицу.
+        // "Неполные" адреса строк и граф могут относится только к текущей форме
+
         if ($this->c == 'Г') {
             do {
-                $buf .= $this->c;
+                $c .= $this->c;
                 $this->consume();
             } while ($this->isCODE());
+
+        }
+        // Если код графы пуст, то оставляем только ссылку на код строки таблицы. Подразумевается, что они должны быть указаны.
+        // При этом удаляем коды формы и таблицы, если они были указаны.
+        //mb_strlen($f) > 1 ? $buf = $f : $buf = '' ;
+        //mb_strlen($t) > 1 ? $buf .= $t : $buf = '' ;
+        if (mb_strlen($f) < 2) $f = '';
+        if (mb_strlen($t) < 2) $t = '';
+        if (mb_strlen($r) < 2) $r = '';
+        if (mb_strlen($c) < 2) $c = '';
+        $buf = $f;
+        if ($t == '') $buf = '';
+        if ($r == '') $buf = '';
+        if ($c == '') $buf = '';
+        $f == '' ? $rc = $t.$r.$c : $rc = $r.$c;
+        if ($rc == '') throw new \Exception("В адресе ячейки $f$t$r$c$p не указаны ни код строки, ни код графы. Не действительная ссылка");
+        $buf .= $rc;
+        //dd($buf);
+        if (mb_strlen($buf) === 0) {
+            throw new \Exception("В адресе ячейки $f$t$r$c$p заполнены не все необходимые коды элементов");
         }
         if ($this->c == 'П') {
-            do {
-                $buf .= $this->c;
+            $p .= $this->c;
+            $this->consume();
+            if ($this->c == '0') $p .= $this->c; $this->consume();
+/*
+             do {
+                $p .= $this->c;
                 $this->consume();
             } while ($this->isPERIODCODE());
+*/
+            mb_strlen($buf) > 1 && mb_strlen($p) > 1 ? $buf .= $p : true;
         }
         $this->celladressStack->push($buf);
-        $token = new Token(self::CELLADRESS, '%'. ($this->celladressStack->count()-1));
+        //$token = new Token(self::CELLADRESS, '%'. ($this->celladressStack->count()-1));
+        $token = new Token(self::CELLADRESS, $buf);
         $this->tokenstack->push($token);
         return $token;
     }
@@ -284,8 +324,8 @@ class ControlFunctionLexer extends Lexer
             );
     }
 
-    public function isPERIODCODE()
+/*    public function isPERIODCODE()
     {
         return $this->c == '0' || $this->c == '1';
-    }
+    }*/
 }
