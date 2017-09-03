@@ -69,6 +69,14 @@ class ControlFunctionLexer extends Lexer
         return self::$tokenNames[$x];
     }
 
+    public function convertSDLLtoArray(\SplDoublyLinkedList $list)
+    {
+        $list->rewind();
+        $simlple_array = [];
+        foreach($list as $k => $v) { $simlple_array[$k] = $v; }
+        return $simlple_array;
+    }
+
     public function getTokenStack()
     {
         $token = $this->nextToken();
@@ -76,6 +84,18 @@ class ControlFunctionLexer extends Lexer
             $token = $this->nextToken();
         }
         return $this->tokenstack;
+    }
+
+    public function normalizeInput()
+    {
+        $replacements = self::convertSDLLtoArray($this->celladressStack);
+        $rep_count = count($replacements);
+        $pattern = "/(?:Ф[а-я0-9.-]*)?(?:Т[а-я0-9.-]*)?(?:(?:(?:С[0-9.-]*)|(?:Г\d{1,3})))+(?:П[01])?/u";
+        $match_count = preg_match_all($pattern, $this->input, $matches);
+        if ($rep_count !== $match_count) {
+            throw new \Exception("Кол-во замен ($rep_count) не совпадает с кол-вом найденных ссылок на ячейки ($match_count)");
+        }
+        return str_replace($matches[0], $replacements, $this->input);
     }
 
     public function nextToken()
@@ -254,8 +274,6 @@ class ControlFunctionLexer extends Lexer
         }
         // Если код графы пуст, то оставляем только ссылку на код строки таблицы. Подразумевается, что они должны быть указаны.
         // При этом удаляем коды формы и таблицы, если они были указаны.
-        //mb_strlen($f) > 1 ? $buf = $f : $buf = '' ;
-        //mb_strlen($t) > 1 ? $buf .= $t : $buf = '' ;
         if (mb_strlen($f) < 2) $f = '';
         if (mb_strlen($t) < 2) $t = '';
         if (mb_strlen($r) < 2) $r = '';
@@ -264,7 +282,8 @@ class ControlFunctionLexer extends Lexer
         if ($t == '') $buf = '';
         if ($r == '') $buf = '';
         if ($c == '') $buf = '';
-        $f == '' ? $rc = $t.$r.$c : $rc = $r.$c;
+        //dd($f);
+        $f == '' && $t == '' ? $rc = $r.$c : $rc = $t.$r.$c;
         if ($rc == '') throw new \Exception("В адресе ячейки $f$t$r$c$p не указаны ни код строки, ни код графы. Не действительная ссылка");
         $buf .= $rc;
         //dd($buf);

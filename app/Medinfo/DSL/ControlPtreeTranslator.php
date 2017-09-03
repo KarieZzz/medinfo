@@ -10,6 +10,8 @@ namespace App\Medinfo\DSL;
 
 use App\Form;
 use App\Table;
+use App\Row;
+use App\Column;
 
 class ControlPtreeTranslator
 {
@@ -18,6 +20,9 @@ class ControlPtreeTranslator
     public $form;
     public $currentForm;
     public $withinform = true;
+    public $vector = [];
+    const ROWS = 1;
+    const COLUMNS = 2;
 
     public function __construct(ControlFunctionParser $parser, Table $table)
     {
@@ -32,9 +37,13 @@ class ControlPtreeTranslator
             $props['codes'] = self::parseCelladress($ca);
             $props['ids']['f'] = $this->identifyControlType($props['codes']['f']);
             $props['ids']['t'] = $this->identifyTable($props['codes']['t'], $props['ids']['f']);
+            $props['ids']['r'] = $this->identifyRow($props['codes']['r'], $props['ids']['t']);
+            isset($props['codes']['c']) ?: $props['codes']['c'] = '';
+            $props['ids']['c'] = $this->identifyColumn($props['codes']['c'], $props['ids']['t']);
 
         }
-        dd($this->parcer->celladressStack);
+        dd($this->vector);
+        //dd($this->parcer->celladressStack);
     }
 
     public static function parseCelladress($celladress)
@@ -76,7 +85,31 @@ class ControlPtreeTranslator
         }
     }
 
+    public function identifyRow($code, $table)
+    {
+        //dump($code ==='');
+        if ($code ==='') {
+            $this->vector[] = self::ROWS;
+            return null;
+        }
+        $row = Row::OfTableRowCode($table, $code)->first();
+        if (is_null($row)) {
+            throw new \Exception("В таблице id:{$table} не существует строки с кодом $code");
+        }
+        return $row->id;
+    }
 
-
-
+    public function identifyColumn($code, $table)
+    {
+        //dump($code ==='');
+        if ($code ==='') {
+            $this->vector[] = self::COLUMNS;
+            return null;
+        }
+        $column = Column::OfTableColumnIndex($table, $code)->first();
+        if (is_null($column)) {
+            throw new \Exception("В таблице id:{$table} не существует графы с кодом $code");
+        }
+        return $column->id;
+    }
 }

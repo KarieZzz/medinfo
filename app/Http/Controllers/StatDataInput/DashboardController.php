@@ -228,6 +228,7 @@ class DashboardController extends Controller
                     //echo "Получено нечисловое значение, в БД записано null";
                     $cell->value = null;
                 }
+                //$r = ($v) ?: 'No Value'; // $r is set to 'My Value' because $v is evaluated to TRUE
                 $result = $cell->save();
                 if ($result) {
                     $data['cell_affected'] = true;
