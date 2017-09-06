@@ -7,7 +7,7 @@ use SplDoublyLinkedList;
 abstract class Parser {
     protected $input;          // tokenstack в формате двунаправленного списка
     protected $lookahead;      // Следующий обрабатываемый токен
-    protected $root;           // ParseTree root node
+    public $root;           // ParseTree root node
     protected $rootOffset;     // Позиция токена, примаемого за вершину дерева
     protected $currentNode;    // ParseTree текущий узед
     protected $prevNode;       // ParseTree предыдущий узед

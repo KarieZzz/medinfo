@@ -22,7 +22,7 @@ class Row extends Model
     public function scopeOfTable($query, $table)
     {
         return $query
-            ->orderBy('row_index')
+            //->orderBy('row_index')
             ->where('table_id', $table);
     }
 
