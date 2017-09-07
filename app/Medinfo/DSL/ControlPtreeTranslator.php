@@ -27,26 +27,26 @@ class ControlPtreeTranslator
 
     public function __construct(ControlFunctionParser $parser, Table $table)
     {
-        $this->parcer = $parser;
+        $this->parser = $parser;
         $this->table = $table;
         $this->form = Form::find($table->form_id);
     }
 
     public function setParentNodesFromRoot()
     {
-        self::setParentNode($this->parcer->root);
+        self::setParentNode($this->parser->root);
     }
 
     public function parseCellAdresses()
     {
-        foreach ($this->parcer->celladressStack as $ca => &$props) {
+        foreach ($this->parser->celladressStack as $ca => &$props) {
             $props = $this->identifyCA($ca, $props);
         }
     }
 
     public function parseCellRanges()
     {
-        foreach ($this->parcer->cellrangeStack as &$range) {
+        foreach ($this->parser->cellrangeStack as &$range) {
             $first = $range['node']->children[0];
             $fprops = $this->identifyCA($first->content);
             $fprops['node'] = $first;
@@ -60,34 +60,109 @@ class ControlPtreeTranslator
         }
     }
 
+    public function parseRCRanges()
+    {
+        if ($this->vector === null) {
+            $this->parser->rcStack = [];
+            return;
+        }
+        foreach ($this->parser->rcStack as $rc ) {
+            if ($this->vector[0] === self::ROWS) {
+                $r = $this->identifyRow($rc, $this->table->id);
+            } elseif ($this->vector[0] === self::COLUMNS) {
+                $c = $this->identifyColumn($rc, $this->table->id);
+            }
+        }
+        foreach ($this->parser->rcRangeStack as &$range) {
+            $rcfunc = $range['node']->parent;
+            $topcode = $range['node']->children[0]->content;
+            $bottomcode = $range['node']->children[1]->content;
+            if ($this->vector[0] === self::ROWS) {
+                $toprow = $this->identifyRow($topcode,$this->table->id);
+                $bottomrow = $this->identifyRow($bottomcode,$this->table->id);
+                if ($toprow->row_index >= $bottomrow->row_index ) {
+                    throw new \Exception("Указан неверный диапазон строк {$toprow->row_index} - {$bottomrow->row_index}");
+                }
+                for($i = $toprow->row_index; $i <= $bottomrow->row_index; $i++) {
+                    //dump($i);
+                    $intermediate = Row::OfTableRowIndex($this->table->id, $i)->first();
+                    if (is_null($intermediate)) {
+                        //throw new \Exception("В таблице id:{$this->table->id} не существует строка с индексом $i");
+                        continue;
+                    }
+                    $new_ptnode = new ControlFunctionParseTree(ControlFunctionLexer::NUMBER, $intermediate->row_code);
+                    $rcfunc->addChild($new_ptnode);
+                    $this->parser->rcStack[] = $intermediate->row_code;
+                }
+            } elseif ($this->vector[0] === self::COLUMNS) {
+                $topcolumn_index = (int)$topcode;
+                $bottomcolumn_index = (int)$bottomcode;
+                $topcolumn = Column::OfTableColumnIndex($this->table->id, $topcolumn_index)->first();
+                if (is_null($topcolumn)) {
+                    throw new \Exception("Ошибка в функции {$rcfunc->content}. В таблице id:{$this->table->id} не существует графа с кодом $topcode");
+                }
+                $bottomcolumn =Column::OfTableColumnIndex($this->table->id, $bottomcolumn_index)->first();
+                if (is_null($bottomcolumn)) {
+                    throw new \Exception("Ошибка в функции {$rcfunc->content}. В таблице id:{$this->table->id} не существует графа с кодом $bottomcode");
+                }
+                if ($topcolumn_index >= $bottomcolumn_index ) {
+                    throw new \Exception("Указан неверный диапазон граф {$topcolumn_index} - {$bottomcolumn_index}");
+                }
+                for($i = $topcolumn_index; $i <= $bottomcolumn_index; $i++) {
+                    $new_ptnode = new ControlFunctionParseTree(ControlFunctionLexer::NUMBER, $i);
+                    $rcfunc->addChild($new_ptnode);
+                    $this->parser->rcStack[] = $i;
+                }
+            }
+            sort($this->parser->rcStack, SORT_NATURAL);
+        }
+    }
+
     public function prepareIteration()
     {
         $this->setParentNodesFromRoot();
         $this->parseCellAdresses();
         $this->parseCellRanges();
-        //dd($this->validateVector());
-        switch ($this->validateVector()) {
+        $this->validateVector();
+        $this->parseRCRanges();
+        switch ($this->vector[0]) {
             case null :
-                $this->iterations[] = $this->parcer->celladressStack;
+                $this->iterations[] = $this->parser->celladressStack;
                 break;
             case self::ROWS :
-                $rows = Row::OfTable($this->table->id)->orderBy('row_index')->get();
-                //dd($rows);
+                if (count($this->parser->rcStack) > 0) {
+                    $rows = Row::OfTable($this->table->id)->whereIn('row_code', $this->parser->rcStack)->orderBy('row_index')->get();
+                } else {
+                    $rows = Row::OfTable($this->table->id)->orderBy('row_index')->get();
+                }
                 foreach ($rows as $row) {
-                    $iterations = $this->parcer->celladressStack;
+                    $iterations = $this->parser->celladressStack;
                     foreach ($iterations as &$ca) {
                         if ($ca['incomplete'] ) {
                             $ca['codes']['r'] = $row->row_code;
                             $ca['ids']['r'] = $row->id;
+                            $ca['rowindex'] = $row->row_index;
                         }
                     }
                     $this->iterations[] = $iterations;
                 }
-
-
                 break;
             case self::COLUMNS :
-                $columns = Row::OfTable($this->table->id)->get();
+                if (count($this->parser->rcStack) > 0) {
+                    $columns = Column::OfTable($this->table->id)->whereIn('column_index', $this->parser->rcStack)->orderBy('column_index')->get();
+                } else {
+                    $columns = Column::OfTable($this->table->id)->orderBy('column_index')->get();
+                }
+                foreach ($columns as $column) {
+                    $iterations = $this->parser->celladressStack;
+                    foreach ($iterations as &$ca) {
+                        if ($ca['incomplete'] ) {
+                            $ca['codes']['c'] = $column->column_index;
+                            $ca['ids']['c'] = $column->id;
+                        }
+                    }
+                    $this->iterations[] = $iterations;
+                }
                 break;
         }
         return $this->iterations;
@@ -175,11 +250,11 @@ class ControlPtreeTranslator
                 $new_ptnode->parent = $fprops['node']->parent->parent;
                 //$range->parent->addCild();
                 $fprops['node']->parent->parent->addChild($range[$j]['node']);
-                $this->parcer->celladressStack[$faddr . $taddr . $radrr . $cadrr]['node'] = $new_ptnode;
-                $this->parcer->celladressStack[$faddr . $taddr . $radrr . $cadrr]['codes'] = $range[$j]['codes'];
-                $this->parcer->celladressStack[$faddr . $taddr . $radrr . $cadrr]['ids'] = $range[$j]['ids'];
-                $this->parcer->celladressStack[$faddr . $taddr . $radrr . $cadrr]['rowindex'] = $range[$j]['rowindex'];
-                $this->parcer->celladressStack[$faddr . $taddr . $radrr . $cadrr]['incomplete'] = $incomplete;
+                $this->parser->celladressStack[$faddr . $taddr . $radrr . $cadrr]['node'] = $new_ptnode;
+                $this->parser->celladressStack[$faddr . $taddr . $radrr . $cadrr]['codes'] = $range[$j]['codes'];
+                $this->parser->celladressStack[$faddr . $taddr . $radrr . $cadrr]['ids'] = $range[$j]['ids'];
+                $this->parser->celladressStack[$faddr . $taddr . $radrr . $cadrr]['rowindex'] = $range[$j]['rowindex'];
+                $this->parser->celladressStack[$faddr . $taddr . $radrr . $cadrr]['incomplete'] = $incomplete;
                 $c++;
                 $j++;
             } while($c <= (int)$lprops['codes']['c']);
@@ -272,9 +347,9 @@ class ControlPtreeTranslator
             $this->vector[] = self::COLUMNS;
             return null;
         }
-        $column = Column::OfTableColumnIndex($table, $code)->first();
+        $column = Column::OfDataType()->OfTableColumnIndex($table, $code)->first();
         if (is_null($column)) {
-            throw new \Exception("В таблице id:{$table} не существует графы с кодом $code");
+            throw new \Exception("В таблице id:{$table} не существует графы для ввода данных с индексом $code");
         }
         return $column->id;
     }

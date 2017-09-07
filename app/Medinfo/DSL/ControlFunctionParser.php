@@ -8,6 +8,8 @@ class ControlFunctionParser extends Parser {
 
     public $celladressStack = [];
     public $cellrangeStack = [];
+    public $rcStack = [];
+    public $rcRangeStack = [];
     public $currentArgIndex;
 
     public function __construct($input) {
@@ -36,7 +38,7 @@ class ControlFunctionParser extends Parser {
             $node = new ControlFunctionParseTree($this->lookahead->type, $this->lookahead->text);
             $this->match(ControlFunctionLexer::NAME);
             $this->match(ControlFunctionLexer::LPARENTH);
-            $this->subfunc_args($node);
+            $this->ca_range_args($node);
             $this->match(ControlFunctionLexer::RPARENTH);
         }
 
@@ -184,7 +186,7 @@ class ControlFunctionParser extends Parser {
         }
     }
 
-    public function subfunc_args($func_node)
+    public function ca_range_args($func_node)
     {
         // subfunc_args : CELLADRESS | CELLADRESS : CELLADRESS | ...
         while($this->lookahead->type == ControlFunctionLexer::CELLADRESS) {
@@ -215,12 +217,48 @@ class ControlFunctionParser extends Parser {
         }
     }
 
+    public function range_args($func_node)
+    {
+        if ($this->lookahead->type == ControlFunctionLexer::MULTIPLY) {
+            $multiply_sign = new ControlFunctionParseTree($this->lookahead->type, $this->lookahead->text);
+            $func_node->addChild($multiply_sign);
+            $this->match(ControlFunctionLexer::MULTIPLY);
+            return;
+        }
+        while($this->lookahead->type == ControlFunctionLexer::NUMBER) {
+            $range_left = new ControlFunctionParseTree($this->lookahead->type, $this->lookahead->text);
+            $this->match(ControlFunctionLexer::NUMBER);
+            if ($this->lookahead->type == ControlFunctionLexer::MINUS) {
+                $this->match(ControlFunctionLexer::MINUS);
+                $range_right = new ControlFunctionParseTree($this->lookahead->type, $this->lookahead->text);
+                $this->match(ControlFunctionLexer::NUMBER);
+                $range_key = $range_left->content . ' ' .  $range_right->content;
+                $range = new ControlFunctionParseTree(ControlFunctionLexer::RCRANGE, $range_key);
+                $range->addChild($range_left);
+                $range->addChild($range_right);
+                $func_node->addChild($range);
+                $this->rcRangeStack[$range_key]['node'] = $range;
+                if ($this->lookahead->type == ControlFunctionLexer::COMMA) {
+                    $this->match(ControlFunctionLexer::COMMA);
+                }
+            } elseif ($this->lookahead->type == ControlFunctionLexer::COMMA) {
+                $func_node->addChild($range_left);
+                $this->rcStack[] = $range_left->content;
+                $this->match(ControlFunctionLexer::COMMA);
+            } elseif ($this->lookahead->type == ControlFunctionLexer::RPARENTH) {
+                $func_node->addChild($range_left);
+                $this->rcStack[] = $range_left->content;
+            }
+        }
+    }
+
     public function subfunc()
     {
         $node = new ControlFunctionParseTree($this->lookahead->type, $this->lookahead->text);
         $this->match(ControlFunctionLexer::NAME);
         $this->match(ControlFunctionLexer::LPARENTH);
-        $this->match(ControlFunctionLexer::MULTIPLY);
+        $this->range_args($node);
+        //$this->match(ControlFunctionLexer::MULTIPLY);
         $this->match(ControlFunctionLexer::RPARENTH);
         return $node;
     }

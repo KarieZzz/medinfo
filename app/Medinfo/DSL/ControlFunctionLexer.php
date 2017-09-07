@@ -29,6 +29,7 @@ class ControlFunctionLexer extends Lexer
     const GROUP         = 16;
     const UNIT          = 17;
     const CELLRANGE     = 18;
+    const RCRANGE       = 19;
 
     public static $tokenNames = [
         "n/a",

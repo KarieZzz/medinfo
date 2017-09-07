@@ -18,7 +18,7 @@ class LexerParserController extends Controller
     {
         //$i = "сравнение(сумма(Ф32Т2120С1Г3:Ф32Т2120С18Г3),  Ф32Т2120С22Г3, >=, группы(*), графы())";
         //$i = "сравнение(сумма(С1Г3П0:С18Г3П0),  С22Г3П0, <=, группы(*), графы(*))";
-        //$i = "сравнение(меньшее(С11, С16:С18, С20),  Ф32Т2120С22Г3, <=, группы(*), графы(3))";
+        //$i = "сравнение(меньшее(С11, С16:С18, С20),  Ф32Т2120С22Г3, <=, группы(*), графы(3-9,15))";
         //$i = "сравнение(сумма(Ф32Т2110С1Г3П0:Ф32Т2110С1Г5П0, С16:С18, С6, С8, С20) - сумма(Ф30Т1100С11Г3, Ф30Т1100С13Г3:Ф30Т1100С15Г3)- сумма(Ф30Т1100С22Г3, Ф30Т1100С25Г3:Ф30Т1100С28Г3),
           //  Ф32Т2120С22Г3, <=, группы(*), графы(*))";
         //$i = "сравнение(сумма(Ф32Т2120С16Г3:Ф32Т2120С18Г3),  Ф32Т2120С22Г3, >=, группы(*), графы())";
@@ -27,7 +27,7 @@ class LexerParserController extends Controller
         //$i = "сравнение(С1, С6, >=, группы(*), графы(*))";
         //$i = "сравнение(С1, С6, >=, группы(*))";
         //$i = "сравнение((сумма(С1, С2, С16Г3:С18Г5, С20)+С31+С41)/2, С6, >=)";
-        $i = "сравнение((сумма(Г3, Г5:Г8, Г10)+Г12)/2, Г15, >=)";
+        $i = "сравнение((сумма(Г4, Г7:Г11, Г13)+Г16)/2, Г15, >=, строки(1.0,5.4, 7.0-18.0))";
         //$i = "сравнение(С1, С6, >=, , графы(*))";
 
         //$i = "зависимость(Г3, Г4+Г5, группы(оп), строки(*))";
@@ -51,7 +51,8 @@ class LexerParserController extends Controller
         $parcer->func();
         //dd($parcer);
 
-        $table = Table::find(10);
+        //$table = Table::find(10);
+        $table = Table::find(112);
 
         $translator = new ControlPtreeTranslator($parcer, $table);
         //$translator->setParentNodesFromRoot();
@@ -59,6 +60,9 @@ class LexerParserController extends Controller
         //$translator->parseCellRanges();
         //$translator->validateVector();
         $translator->prepareIteration();
+        //dd($translator->parcer->root);
+        //dd($translator->parcer->rcRangeStack);
+        //dd($translator->parser->rcStack);
         dd($translator->iterations[0]);
     }
 
