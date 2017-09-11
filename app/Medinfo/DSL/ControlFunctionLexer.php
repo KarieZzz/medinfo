@@ -26,10 +26,11 @@ class ControlFunctionLexer extends Lexer
     const NAME          = 14;
     // Следующие типы для парсера
     const ARG           = 15;
-    const GROUP         = 16;
-    const UNIT          = 17;
-    const CELLRANGE     = 18;
-    const RCRANGE       = 19;
+    const INGROUP       = 16;
+    const OUTGROUP      = 17;
+    const UNIT          = 18;
+    const CELLRANGE     = 19;
+    const RCRANGE       = 20;
 
     public static $tokenNames = [
         "n/a",
@@ -48,9 +49,11 @@ class ControlFunctionLexer extends Lexer
         "EXCLAMATION",
         "NAME",
         "ARG",
-        "GROUP",
+        "INGROUP",
+        "OUTGROUP",
         "UNIT",
         "CELLRANGE",
+        "RCRANGE",
     ];
     public $celladressStack;
 

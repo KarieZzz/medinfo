@@ -12,6 +12,8 @@ use App\Form;
 use App\Table;
 use App\Row;
 use App\Column;
+use App\Unit;
+use App\UnitGroup;
 
 class ControlPtreeTranslator
 {
@@ -21,6 +23,13 @@ class ControlPtreeTranslator
     public $currentForm;
     public $withinform = true;
     public $vector = [];
+    public $lightweightCAStack = [];
+    public $scopeOfUnits = false;
+    public $units = [];
+    public $scopeOfDocuments = false;
+    public $incldocuments = [];
+    public $excldocuments = [];
+
     public $iterations = [];
     const ROWS = 1;
     const COLUMNS = 2;
@@ -48,15 +57,18 @@ class ControlPtreeTranslator
     {
         foreach ($this->parser->cellrangeStack as &$range) {
             $first = $range['node']->children[0];
+            $last = $range['node']->children[1];
+            $range['node']->children = [];
             $fprops = $this->identifyCA($first->content);
             $fprops['node'] = $first;
             $fprops['last'] = false;
-            $last = $range['node']->children[1];
             $lprops = $this->identifyCA($last->content);
             $lprops['node'] = $last;
             $lprops['last'] = true;
             $this->validateRange($fprops['codes'], $lprops['codes']);
             $range = $this->inflateRangeMatrix($fprops, $lprops);
+            //unset($range['node']->children[0]);
+            //unset($range['node']->children[1]);
         }
     }
 
@@ -118,6 +130,98 @@ class ControlPtreeTranslator
         }
     }
 
+    public function parseGroupScopes()
+    {
+        $includes = [];
+        $excludes = [];
+        if (count($this->parser->includeGroupStack) > 0 ||  count($this->parser->excludeGroupStack) > 0) {
+            $this->scopeOfUnits = true;
+            foreach ($this->parser->includeGroupStack as $group_slug) {
+                if (!in_array($group_slug, UnitGroup::$reserved_slugs)) {
+                    $group = UnitGroup::OfSlug($group_slug)->first();
+                    if (is_null($group)) {
+                        throw new \Exception("Группа $group_slug не существует");
+                    }
+                    $includes = array_merge($includes, $group->members->pluck('ou_id')->toArray());
+                } else {
+                    $static = $this->parseStaticGroup($group_slug);
+                    if ($static) {
+                        $includes = array_merge($includes, $static['units']);
+                        $this->incldocuments = array_merge($this->incldocuments, $static['documents']);
+                    }
+                }
+             }
+             //dd($includes);
+            foreach ($this->parser->excludeGroupStack as $group_slug) {
+                if (!in_array($group_slug, UnitGroup::$reserved_slugs)) {
+                    $group = UnitGroup::OfSlug($group_slug)->first();
+                    if (is_null($group)) {
+                        throw new \Exception("Группа $group_slug не существует");
+                    }
+                    $excludes = array_merge($excludes, $group->members->pluck('ou_id')->toArray());
+                    //dd($group->members->pluck('id'));
+                } else {
+                    $static = $this->parseStaticGroup($group_slug);
+                    if ($static) {
+                        $excludes = array_merge($excludes, $static['units']);
+                        $this->excldocuments = array_merge($this->excldocuments, $static['documents']);
+                    }
+                }
+            }
+            //dd($includes);
+            $this->units = array_diff($includes, $excludes);
+            //dd($this->units);
+            $this->incldocuments = array_unique($this->incldocuments);
+            $this->excldocuments = array_unique($this->excldocuments);
+            if (count($this->incldocuments) > 1 || count($this->excldocuments) > 1) {
+                throw new \Exception("Одновременно включать(исключать) и первичные и сводные документы не имеет смысла");
+            }
+            //dd($this->excldocuments);
+
+/*            $i = 1;
+            foreach ($this->units as $u) {
+                $unit = Unit::find($u);
+                if ($unit) {
+                    echo $i .'. ' . $unit->id . ' ' . $unit->unit_code . ' ' . $unit->unit_name . '</br>';
+                } else {
+                    echo $u . '</br>';
+                }
+                $i++;
+            }*/
+        }
+    }
+
+    public function parseStaticGroup($static_group) {
+        $units = [];
+        $documents = [];
+        switch ($static_group) {
+            case UnitGroup::$reserved_slugs[1] :
+                $this->scopeOfDocuments = true;
+                $documents[] = UnitGroup::PRIMARY;
+                break;
+            case UnitGroup::$reserved_slugs[2] :
+                $this->scopeOfDocuments = true;
+                $documents[] = UnitGroup::AGGREGATE;
+                break;
+            case UnitGroup::$reserved_slugs[3] :
+            case UnitGroup::$reserved_slugs[4] :
+                $units = Unit::SubLegal()->get()->pluck('id')->toArray();
+                break;
+            case UnitGroup::$reserved_slugs[5] :
+            case UnitGroup::$reserved_slugs[6] :
+                $units = Unit::Legal()->get()->pluck('id')->toArray();
+                break;
+            case UnitGroup::$reserved_slugs[7] :
+            case UnitGroup::$reserved_slugs[8] :
+                $units = Unit::Territory()->get()->pluck('id')->toArray();
+                break;
+            default:
+                throw new \Exception("Группа $static_group не определена");
+        }
+
+        return compact('units', 'documents');
+    }
+
     public function prepareIteration()
     {
         $this->setParentNodesFromRoot();
@@ -125,18 +229,31 @@ class ControlPtreeTranslator
         $this->parseCellRanges();
         $this->validateVector();
         $this->parseRCRanges();
+        $this->parseGroupScopes();
+
+        foreach ($this->parser->celladressStack as $caLabel => $caProps) {
+            $this->lightweightCAStack[$caLabel]['codes'] = $caProps['codes'];
+            $this->lightweightCAStack[$caLabel]['ids'] = $caProps['ids'];
+            $this->lightweightCAStack[$caLabel]['rowindex'] = $caProps['rowindex'];
+            $this->lightweightCAStack[$caLabel]['incomplete'] = $caProps['incomplete'];
+        }
+
         switch ($this->vector[0]) {
             case null :
-                $this->iterations[] = $this->parser->celladressStack;
+                //$this->iterations[] = $this->parser->celladressStack;
+                $this->iterations[] = $this->lightweightCAStack;
                 break;
             case self::ROWS :
+                // Если аргумент ограничивающий итерацию по строкам (строки(...)) не пустой, выбираем строки из дапазона
                 if (count($this->parser->rcStack) > 0) {
                     $rows = Row::OfTable($this->table->id)->whereIn('row_code', $this->parser->rcStack)->orderBy('row_index')->get();
                 } else {
                     $rows = Row::OfTable($this->table->id)->orderBy('row_index')->get();
                 }
                 foreach ($rows as $row) {
-                    $iterations = $this->parser->celladressStack;
+                    //$iterations = $this->parser->celladressStack;
+                    $iterations = $this->lightweightCAStack;
+                    //dd($iterations);
                     foreach ($iterations as &$ca) {
                         if ($ca['incomplete'] ) {
                             $ca['codes']['r'] = $row->row_code;
@@ -148,13 +265,15 @@ class ControlPtreeTranslator
                 }
                 break;
             case self::COLUMNS :
+                // Если аргумент ограничивающий итерацию по графам (графы(...)) не пустой, выбираем графы из дапазона
                 if (count($this->parser->rcStack) > 0) {
                     $columns = Column::OfTable($this->table->id)->whereIn('column_index', $this->parser->rcStack)->orderBy('column_index')->get();
                 } else {
                     $columns = Column::OfTable($this->table->id)->orderBy('column_index')->get();
                 }
                 foreach ($columns as $column) {
-                    $iterations = $this->parser->celladressStack;
+                    //$iterations = $this->parser->celladressStack;
+                    $iterations = $this->lightweightCAStack;
                     foreach ($iterations as &$ca) {
                         if ($ca['incomplete'] ) {
                             $ca['codes']['c'] = $column->column_index;

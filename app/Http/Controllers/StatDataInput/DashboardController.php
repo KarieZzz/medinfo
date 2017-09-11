@@ -133,10 +133,10 @@ class DashboardController extends Controller
     {
         $rows = Row::OfTable($table->id)->whereDoesntHave('excluded', function ($query) use($album) {
             $query->where('album_id', $album);
-        })->get();
+        })->orderBy('row_index')->get();
         $cols = Column::OfTable($table->id)->whereDoesntHave('excluded', function ($query) use($album) {
             $query->where('album_id', $album);
-        })->get();
+        })->orderBy('column_index')->get();
         $data = array();
         $i=0;
         foreach ($rows as $r) {

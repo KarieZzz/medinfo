@@ -9,7 +9,22 @@ class UnitGroup extends Model
     //
     protected $fillable = ['parent_id', 'group_code', 'group_name', 'slug'];
     // зарезервированные имена для "статических" групп
-    public static $reserved_slugs = [ 'сводные', 'первичные', 'оп', 'обособподр', 'юл', 'юрлица', 'тер', 'территории'];
+    public static $reserved_slugs = [
+        'n/a',
+        'первичные',
+        'сводные',
+        'оп',
+        'обособподр',
+        'юл',
+        'юрлица',
+        'тер',
+        'территории'
+    ];
+    const PRIMARY   = 1;
+    const AGGREGATE = 2;
+    const DETACHED  = 3;
+    const LEGAL     = 4;
+    const TERRITORY = 5;
 
     public function members()
     {

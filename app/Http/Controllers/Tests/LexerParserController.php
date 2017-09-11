@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Tests;
 
+use App\Document;
+use App\Medinfo\DSL\ControlFunctionEvaluator;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -27,7 +29,7 @@ class LexerParserController extends Controller
         //$i = "сравнение(С1, С6, >=, группы(*), графы(*))";
         //$i = "сравнение(С1, С6, >=, группы(*))";
         //$i = "сравнение((сумма(С1, С2, С16Г3:С18Г5, С20)+С31+С41)/2, С6, >=)";
-        $i = "сравнение((сумма(Г4, Г7:Г11, Г13)+Г16)/2, Г15, >=, строки(1.0,5.4, 7.0-18.0))";
+        $i = "сравнение((сумма(Г4, Г9:Г11, Г13)+Г16)/2, Г15, >=, группы(село, !сводные , !север, !юл), строки(1.0,5.4, 7.0-18.0))";
         //$i = "сравнение(С1, С6, >=, , графы(*))";
 
         //$i = "зависимость(Г3, Г4+Г5, группы(оп), строки(*))";
@@ -49,10 +51,12 @@ class LexerParserController extends Controller
 
         $parcer = new ControlFunctionParser($tockenstack);
         $parcer->func();
-        //dd($parcer);
+        //dd($parcer->root);
+        //dd(json_decode(json_encode($parcer->root)));
 
         //$table = Table::find(10);
-        $table = Table::find(112);
+        $table = Table::find(112); // Ф12 Т2000
+
 
         $translator = new ControlPtreeTranslator($parcer, $table);
         //$translator->setParentNodesFromRoot();
@@ -60,10 +64,26 @@ class LexerParserController extends Controller
         //$translator->parseCellRanges();
         //$translator->validateVector();
         $translator->prepareIteration();
-        //dd($translator->parcer->root);
-        //dd($translator->parcer->rcRangeStack);
+        //dd($translator->parser->root);
+        //dd(unserialize(serialize($translator->parser->root)));
+        //dd($translator->parser->celladressStack);
+        //dd($translator->parser->rcRangeStack);
         //dd($translator->parser->rcStack);
-        dd($translator->iterations[0]);
+        //dd($translator->parser->excludeGroupStack);
+        //dd($translator->iterations);
+
+        $document = Document::find(13134);
+
+        $evaluator = new ControlFunctionEvaluator($translator, $document);
+
+        $evaluator->prepareCellValues();
+        $evaluator->prepareCAstack();
+        //dd($evaluator->caStack);
+        $evaluator->makeControl();
+        dd($translator->iterations);
+        //dd($evaluator->pTree);
+
+
     }
 
 

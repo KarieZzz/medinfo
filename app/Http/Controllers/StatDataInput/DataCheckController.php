@@ -8,17 +8,11 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 use App\Medinfo\Control\DataCheck;
-use App\Medinfo\Lexer\ControlFunctionLexer;
-use App\Medinfo\Lexer\ControlFunctionParser;
 use App\Form;
 use App\Table;
 use App\Document;
 use App\Period;
 use App\Medinfo\DocumentTree;
-use App\Medinfo\Lexer\CompareControlInterpreter;
-use App\Medinfo\Lexer\DependencyControlInterpreter;
-use App\Medinfo\Lexer\FoldControlInterpreter;
-use App\Medinfo\Lexer\InterannualControlInterpreter;
 use App\Medinfo\Lexer\FunctionDispatcher;
 
 class DataCheckController extends Controller
