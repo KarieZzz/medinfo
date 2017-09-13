@@ -8,9 +8,9 @@
 
 namespace App\Medinfo\DSL;
 
-
 class ControlFunctionLexer extends Lexer
 {
+    // При изменении индексов токенов потребуется перекомпилирование функций контроля сохраненных в базе данных
     const LPARENTH      = 2;
     const RPARENTH      = 3;
     const PLUS          = 4;
@@ -18,19 +18,21 @@ class ControlFunctionLexer extends Lexer
     const MULTIPLY      = 6;
     const DIVIDE        = 7;
     const NUMBER        = 8;
-    const CELLADRESS    = 9;
-    const COMMA         = 10;
-    const BOOLEAN       = 11;
-    const COLON         = 12;
-    const EXCLAMATION   = 13;
-    const NAME          = 14;
+    const COMMA         = 9;
+    const BOOLEAN       = 10;
+    const COLON         = 11;
+    const EXCLAMATION   = 12;
+    const NAME          = 13;
+    const CELLADRESS    = 14;
+    const ELCODE        = 15; // Код элемента (строки, графы)
     // Следующие типы для парсера
-    const ARG           = 15;
-    const INGROUP       = 16;
-    const OUTGROUP      = 17;
-    const UNIT          = 18;
-    const CELLRANGE     = 19;
-    const RCRANGE       = 20;
+    const ARG           = 16;
+    const INGROUP       = 17;
+    const OUTGROUP      = 18;
+    const UNIT          = 19;
+    const CELLRANGE     = 20;
+    const RCRANGE       = 21;
+
 
     public static $tokenNames = [
         "n/a",
@@ -42,13 +44,16 @@ class ControlFunctionLexer extends Lexer
         "MULTIPLY",
         "DIVIDE",
         "NUMBER",
-        "CELLADRESS",
+        "ELCODE",
         "COMMA",
         "BOOLEAN",
         "COLON",
         "EXCLAMATION",
         "NAME",
+        "CELLADRESS",
+        "ELCODE",
         "ARG",
+        // Следующие типы для парсера
         "INGROUP",
         "OUTGROUP",
         "UNIT",
@@ -217,20 +222,26 @@ class ControlFunctionLexer extends Lexer
     public function number()
     {
         $buf = '';
-        $decimal_separator = false;
+        $decimal_separator = 0;
         $token_type = self::NUMBER;
         do {
             if ($this->c === '.') {
-                if ($decimal_separator) {
+                $decimal_separator++;
+            }
+/*                if ($decimal_separator) {
                     throw new \Exception("Лишний десятичный разделитель в числе " . $buf);
                 } else {
                     $decimal_separator = true;
                 }
-            }
+            }*/
             $buf .= $this->c;
             $this->consume();
         } while ($this->isNUMBER());
-        $token = new Token(self::NUMBER, $buf);
+        if ($decimal_separator < 2) {
+            $token = new Token(self::NUMBER, $buf);
+        } else {
+            $token = new Token(self::ELCODE, $buf);
+        }
         $this->tokenstack->push($token);
         return $token;
     }

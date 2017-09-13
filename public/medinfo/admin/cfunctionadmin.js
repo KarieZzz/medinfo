@@ -13,6 +13,8 @@ initdatasources = function() {
             { name: 'table_code', map: 'table>table_code', type: 'string' },
             { name: 'level', type: 'int' },
             { name: 'levelname', map: 'level>name', type: 'string' },
+            { name: 'type', type: 'int' },
+            { name: 'typename', map: 'type>name', type: 'string' },
             { name: 'script', type: 'string' },
             { name: 'comment', type: 'string' },
             { name: 'blocked', type: 'bool' }
@@ -40,14 +42,15 @@ initFunctionList = function() {
                 { text: 'Id', datafield: 'id', width: '50px' },
                 { text: 'Код таблицы', datafield: 'table_code', width: '70px'  },
                 { text: 'Уровень', datafield: 'levelname', width: '120px'  },
-                { text: 'Функция контроля', datafield: 'script' , width: '50%'},
-                { text: 'Комментарий', datafield: 'comment', width: '30%' },
+                { text: 'Тип', datafield: 'typename', width: '120px'  },
+                { text: 'Функция контроля', datafield: 'script' , width: '55%'},
+                { text: 'Комментарий', datafield: 'comment', width: '400px' },
                 { text: 'Отключена', datafield: 'blocked', columntype: 'checkbox', width: '70px' }
             ]
         });
     fgrid.on('rowselect', function (event) {
         let row = event.args.row;
-        $("#level").val(row.level);
+        $("#level").val(row.level.code);
         $("#script").val(row.script);
         $("#comment").val(row.comment);
         $("#blocked").val(row.blocked);
@@ -125,26 +128,26 @@ initFunctionActions = function() {
         });
     });
     $("#save").click(function () {
-        var row = fgrid.jqxGrid('getselectedrowindex');
-        if (row == -1 && typeof row !== 'undefined') {
+        let row = fgrid.jqxGrid('getselectedrowindex');
+        if (row === -1 && typeof row !== 'undefined') {
             raiseError("Выберите запись для изменения/сохранения данных");
             return false;
         }
-        var id = fgrid.jqxGrid('getrowid', row);
-        var data = setquerystring();
+        let id = fgrid.jqxGrid('getrowid', row);
+        let data = setquerystring();
         $.ajax({
             dataType: 'json',
             url: '/admin/cfunctions/update/' + id,
             method: "PATCH",
             data: data,
             success: function (data, status, xhr) {
-                if (typeof data.error != 'undefined') {
+                if (typeof data.error !== 'undefined') {
                     raiseError(data.message);
                 } else {
                     raiseInfo(data.message);
                     fgrid.jqxGrid('updatebounddata', 'data');
                     fgrid.on("bindingcomplete", function (event) {
-                        var newindex = fgrid.jqxGrid('getrowboundindexbyid', id);
+                        let newindex = fgrid.jqxGrid('getrowboundindexbyid', id);
                         fgrid.jqxGrid('selectrow', newindex);
                     });
                 }
@@ -157,8 +160,8 @@ initFunctionActions = function() {
         });
     });
     $("#delete").click(function () {
-        var row = fgrid.jqxGrid('getselectedrowindex');
-        if (row == -1) {
+        let row = fgrid.jqxGrid('getselectedrowindex');
+        if (row === -1) {
             raiseError("Выберите запись для удаления");
             return false;
         }
@@ -173,7 +176,7 @@ performAction = function() {
         url: '/admin/cfunctions/delete/' + current_function,
         method: "DELETE",
         success: function (data, status, xhr) {
-            if (typeof data.error != 'undefined') {
+            if (typeof data.error !== 'undefined') {
                 raiseError(data.message);
             } else {
                 raiseInfo(data.message);

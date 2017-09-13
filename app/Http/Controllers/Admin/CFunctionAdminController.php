@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Medinfo\Lexer\FunctionDispatcher;
-use App\Table;
 use Illuminate\Http\Request;
 
 //use App\Http\Requests;
@@ -16,8 +14,9 @@ use App\ControlCashe;
 use App\DicErrorLevel;
 use App\Medinfo\Lexer\ControlFunctionLexer;
 use App\Medinfo\Lexer\ControlFunctionParser;
-use App\Medinfo\Lexer\CompareControlInterpreter;
-
+use App\Medinfo\DSL\ParseTree;
+use App\Medinfo\Lexer\FunctionDispatcher;
+use App\Table;
 
 class CFunctionAdminController extends Controller
 {
@@ -39,7 +38,7 @@ class CFunctionAdminController extends Controller
 
     public function fetchControlFunctions(int $table)
     {
-        return CFunction::OfTable($table)->orderBy('updated_at')->with('table')->with('level')->get();
+        return CFunction::OfTable($table)->orderBy('updated_at')->with('table')->with('level')->with('type')->get();
     }
 
     public function fetchCFofForm(int $form)
@@ -57,7 +56,7 @@ class CFunctionAdminController extends Controller
         return $cf;
     }
 
-    public function store(Table $table, Request $request)
+/*    public function store(Table $table, Request $request)
     {
         $this->validate($request, $this->validateRules());
         $cache = $this->compile($request->script, $table);
@@ -71,6 +70,7 @@ class CFunctionAdminController extends Controller
         $newfunction->comment = $request->comment;
         $newfunction->blocked = $request->blocked;
         $newfunction->function = $this->functionIndex;
+        //$newfunction->compiled_cashe = $cache;
         $newfunction->compiled_cashe = $cache;
         $newfunction->save();
         try {
@@ -89,9 +89,45 @@ class CFunctionAdminController extends Controller
             }
             return ['error' => 422, 'message' => $message];
         }
+    }*/
+
+    public function store1(Table $table, Request $request)
+    {
+        $this->validate($request, $this->validateRules());
+        $cache = $this->compile($request->script, $table);
+        if (!$cache) {
+            return ['error' => 422, 'message' => $this->compile_error];
+        }
+        $newfunction = new CFunction();
+        $newfunction->table_id = $table->id;
+        $newfunction->level = $request->level;
+        $newfunction->script = $request->script;
+        $newfunction->comment = $request->comment;
+        $newfunction->blocked = $request->blocked;
+        $newfunction->type = $cache['properties']['inform'] ? 1 : 2;
+        $newfunction->function = $cache['properties']['findex'];
+        $newfunction->ptree = $cache['ptree'];
+        $newfunction->properties = json_encode($cache['properties']);
+        //$newfunction->save();
+        try {
+            $newfunction->save();
+            $deleted_protocols =  ControlCashe::where('table_id', $table->id)->delete();
+            return ['message' => 'Новая запись создана. Id:' . $newfunction->id . 'Удалено кэшированных протоколов контроля: ' . $deleted_protocols];
+        } catch (\Illuminate\Database\QueryException $e) {
+            $errorCode = $e->errorInfo[0];
+            switch ($errorCode) {
+                case '23505':
+                    $message = 'Запись не сохранена. Дублирующиеся значения.';
+                    break;
+                default:
+                    $message = 'Новая запись не создана. Код ошибки ' . $errorCode . '.';
+                    break;
+            }
+            return ['error' => 422, 'message' => $message];
+        }
     }
 
-    public function update(CFunction $cfunction, Request $request)
+/*    public function update(CFunction $cfunction, Request $request)
     {
         $this->validate($request, $this->validateRules());
         $table = Table::find($cfunction->table_id);
@@ -121,9 +157,44 @@ class CFunctionAdminController extends Controller
             }
             return ['error' => 422, 'message' => $message];
         }
+    }*/
+
+    public function update1(CFunction $cfunction, Request $request)
+    {
+        $this->validate($request, $this->validateRules());
+        $table = Table::find($cfunction->table_id);
+        $cfunction->level = $request->level;
+        $cache = $this->compile1($request->script, $table);
+        if (!$cache) {
+            return ['error' => 422, 'message' => $this->compile_error];
+        }
+        $cfunction->script = $request->script;
+        $cfunction->comment = $request->comment;
+        $cfunction->blocked = $request->blocked;
+        $cfunction->type = ($cache['properties']['inform'] ? 1 : 2);
+        $cfunction->function = $cache['properties']['findex'];
+        $cfunction->ptree = $cache['ptree'];
+        $cfunction->properties = json_encode($cache['properties']);
+        //$cfunction->save();
+        try {
+            $cfunction->save();
+            $deleted_protocols =  ControlCashe::where('table_id', $table->id)->delete();
+            return ['message' => 'Запись id ' . $cfunction->id . ' сохранена.' . 'Удалено кэшированных протоколов контроля: ' . $deleted_protocols];
+        } catch (\Illuminate\Database\QueryException $e) {
+            $errorCode = $e->errorInfo[0];
+            switch ($errorCode) {
+                case '23505':
+                    $message = 'Запись не сохранена. Дублирующиеся значения.';
+                    break;
+                default:
+                    $message = 'Запись не сохранена. Код ошибки ' . $errorCode . '.';
+                    break;
+            }
+            return ['error' => 422, 'message' => $message];
+        }
     }
 
-    public function compile($script, Table $table)
+/*    public function compile($script, Table $table)
     {
         try {
             $lexer = new ControlFunctionLexer($script);
@@ -134,6 +205,54 @@ class CFunctionAdminController extends Controller
             //dd($interpreter);
             $compiled_cache = base64_encode(serialize($interpreter));
             $this->functionIndex = $parser->functionIndex;
+            return $compiled_cache;
+        } catch (\Exception $e) {
+            $this->compile_error = "Ошибка при компилляции функции: " . $e->getMessage();
+            return false;
+        }
+    }*/
+
+    public function recompileFunctions($scopeTable)
+    {
+        if ($scopeTable === 0) {
+            $functions = CFunction::all();
+        } else {
+            $functions = CFunction::ofTable($scopeTable)->get();
+        }
+
+        $i = 1;
+        foreach ($functions as $function) {
+            $table = Table::find($function->table_id);
+            $cache = $this->compile1($function->script, $table);
+            if ($cache) {
+                echo $i . ' Компиляция функции: ' . $function->script . '<br/>';
+                $function->type = ($cache['properties']['inform'] ? 1 : 2);
+                $function->function = $cache['properties']['findex'];
+                $function->ptree = $cache['ptree'];
+                $function->properties = json_encode($cache['properties']);
+                $function->save();
+            } else {
+                echo $i . ' Ошибка компиляции функции: ' . $function->script . ': ' . $this->compile_error . '<br/>';
+            }
+            //flush();
+            //usleep(50000);
+            $i++;
+        }
+    }
+
+    public function compile1($script, Table $table)
+    {
+        //$ns = '\\App\\Medinfo\\DSL\\';
+        $properties = [];
+        try {
+            $lexer = new \App\Medinfo\DSL\ControlFunctionLexer($script);
+            $tockenstack = $lexer->getTokenStack();
+            $parser = new \App\Medinfo\DSL\ControlFunctionParser($tockenstack);
+            $parser->func();
+            $translator = new \App\Medinfo\DSL\ControlPtreeTranslator($parser, $table);
+            $translator->prepareIteration();
+            $compiled_cache['ptree'] = base64_encode(serialize($translator->parser->root));
+            $compiled_cache['properties'] = $translator->getProperties();
             return $compiled_cache;
         } catch (\Exception $e) {
             $this->compile_error = "Ошибка при компилляции функции: " . $e->getMessage();
@@ -157,5 +276,7 @@ class CFunctionAdminController extends Controller
             'blocked'   => 'required|in:1,0',
         ];
     }
+
+
 
 }

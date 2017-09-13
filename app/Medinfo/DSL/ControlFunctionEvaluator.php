@@ -14,18 +14,18 @@ use App\Cell;
 
 class ControlFunctionEvaluator
 {
-    public $translator;
     public $document;
     public $pTree;
+    public $iterations;
     public $caStack = [];
     public $expr_node1;
     public $expr_node2;
     public $boolean_op;
 
-    public function __construct(ControlPtreeTranslator $translator, Document $document)
+    public function __construct(ParseTree $ptree, $iterations, Document $document)
     {
-        $this->translator = $translator;
-        $this->pTree = $translator->parser->root;
+        $this->pTree = $ptree;
+        $this->iterations = $iterations;
         $this->document = $document;
         $this->expr_node1 = $this->pTree->children[0]->children[0];
         $this->expr_node2 = $this->pTree->children[1]->children[0];
@@ -33,7 +33,7 @@ class ControlFunctionEvaluator
     }
 
     public function prepareCellValues() {
-        foreach ($this->translator->iterations as &$cell_adresses) {
+        foreach ($this->iterations as &$cell_adresses) {
             foreach ($cell_adresses as &$cell_adress) {
                 $cell = Cell::OfDRC($this->document->id, $cell_adress['ids']['r'], $cell_adress['ids']['c'])->first(['value']);
                 !$cell ? $value = 0 : $value = (float)$cell->value;
@@ -62,8 +62,7 @@ class ControlFunctionEvaluator
 
     public function makeControl()
     {
-        //$caStack = $this->translator->parser->celladressStack;
-        foreach ($this->translator->iterations as &$iteration) {
+        foreach ($this->iterations as &$iteration) {
             foreach ($iteration as $cell_label => $props) {
                 //$node = $caStack[$cell_label]['node'];
                 $node = $this->caStack[$cell_label];
@@ -75,7 +74,8 @@ class ControlFunctionEvaluator
             $iteration['left_part_value'] = $this->evaluate($this->expr_node1);
             $iteration['right_part_value'] = $this->evaluate($this->expr_node2);
             $iteration['deviation'] = $this->evaluate($this->expr_node2);
-            $iteration['valid'] = $this->compareArgs($iteration['left_part_value'], $iteration['left_part_value'], $this->boolean_op);
+            $iteration['valid'] = $this->compareArgs($iteration['left_part_value'], $iteration['right_part_value'], $this->boolean_op);
+            //dd($this->boolean_op);
         }
     }
 
@@ -89,6 +89,7 @@ class ControlFunctionEvaluator
         switch ($boolean) {
             case '=' :
                 $result = abs($lp - $rp) < $delta ? true : false;
+                //dd($rp);
                 break;
             case '>' :
                 $result = $lp > $rp;

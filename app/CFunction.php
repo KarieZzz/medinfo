@@ -9,7 +9,7 @@ class CFunction extends Model
     //
     protected $table = 'cfunctions';
     protected $fillable = ['table_id', 'level', 'type', 'script', 'comment', 'blocked', ];
-    protected $hidden = ['compiled_cashe'];
+    protected $hidden = ['ompiled_cashe', 'ptree', 'properties', ];
 
     public function scopeOfTable($query, $table)
     {
@@ -23,7 +23,7 @@ class CFunction extends Model
 
     public function scopeOfType($query, $type)
     {
-        return $query->where('level', $type);
+        return $query->where('type', $type);
     }
 
     public function scopeActive($query)
@@ -39,5 +39,10 @@ class CFunction extends Model
     public function level()
     {
         return $this->belongsTo('App\DicErrorLevel', 'level', 'code');
+    }
+
+    public function type()
+    {
+        return $this->belongsTo('App\DicCfunctionType', 'type', 'code');
     }
 }

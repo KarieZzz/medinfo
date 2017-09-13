@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Medinfo\Lexer;
+namespace App\Medinfo\DSL;
 
 
 class FunctionDispatcher

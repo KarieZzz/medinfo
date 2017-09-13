@@ -22,7 +22,9 @@ class CreateCfunctionsTable extends Migration
             $table->string('script', 512);
             $table->string('comment', 128)->nullable();
             $table->boolean('blocked')->default(false);
-            $table->text('compiled_cashe')->nullable();
+            $table->text('ptree')->nullable();
+            $table->jsonb('properties')->nullable();
+            //$table->text('compiled_cashe')->nullable();
             $table->timestamps();
         });
     }

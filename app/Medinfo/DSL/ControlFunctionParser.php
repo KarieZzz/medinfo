@@ -67,7 +67,6 @@ class ControlFunctionParser extends Parser {
             $this->ca_range_args($node);
             $this->match(ControlFunctionLexer::RPARENTH);*/
         }
-
         return $node;
     }
 
@@ -198,7 +197,6 @@ class ControlFunctionParser extends Parser {
                 }
                 break;
         }
-
     }
 
     public function cargs()
@@ -245,16 +243,20 @@ class ControlFunctionParser extends Parser {
 
     public function num_range_args($func_node)
     {
-        // num_range_args : MULTIPLY | (NUMBER | NUMBER - NUMBER | ...)
+        // num_range_args : MULTIPLY | ((NUMBER | ELCODE) | (NUMBER | ELCODE) - (NUMBER | ELCODE) | ...)
         if ($this->lookahead->type == ControlFunctionLexer::MULTIPLY) {
             $multiply_sign = new ControlFunctionParseTree($this->lookahead->type, $this->lookahead->text);
             $func_node->addChild($multiply_sign);
             $this->match(ControlFunctionLexer::MULTIPLY);
             return;
         }
-        while($this->lookahead->type == ControlFunctionLexer::NUMBER) {
-            $range_left = new ControlFunctionParseTree($this->lookahead->type, $this->lookahead->text);
-            $this->match(ControlFunctionLexer::NUMBER);
+        while($this->lookahead->type == ControlFunctionLexer::NUMBER || $this->lookahead->type == ControlFunctionLexer::ELCODE) {
+            $range_left = new ControlFunctionParseTree(ControlFunctionLexer::NUMBER, $this->lookahead->text);
+            if ($this->lookahead->type == ControlFunctionLexer::NUMBER) {
+                $this->match(ControlFunctionLexer::NUMBER);
+            } elseif ($this->lookahead->type == ControlFunctionLexer::ELCODE) {
+                $this->match(ControlFunctionLexer::ELCODE);
+            }
             if ($this->lookahead->type == ControlFunctionLexer::MINUS) {
                 $this->match(ControlFunctionLexer::MINUS);
                 $range_right = new ControlFunctionParseTree($this->lookahead->type, $this->lookahead->text);

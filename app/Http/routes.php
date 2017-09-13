@@ -155,9 +155,10 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('admin/cfunctions', 'Admin\CFunctionAdminController@index');
     Route::get('admin/cfunctions/fetchcf/{table}', 'Admin\CFunctionAdminController@fetchControlFunctions');
     Route::get('admin/cfunctions/fetchofform/{form}', 'Admin\CFunctionAdminController@fetchCFofForm');
-    Route::post('admin/cfunctions/create/{table}', 'Admin\CFunctionAdminController@store');
-    Route::patch('admin/cfunctions/update/{cfunction}', 'Admin\CFunctionAdminController@update');
+    Route::post('admin/cfunctions/create/{table}', 'Admin\CFunctionAdminController@store1');
+    Route::patch('admin/cfunctions/update/{cfunction}', 'Admin\CFunctionAdminController@update1');
     Route::delete('admin/cfunctions/delete/{cfunction}', 'Admin\CFunctionAdminController@delete');
+    Route::get('admin/cfunctions/recompile/{scopeTable}', 'Admin\CFunctionAdminController@recompileFunctions');
     Route::get('admin/dcheck/selected', 'StatDataInput\DataCheckController@selectControlConditions');
     Route::get('admin/dcheck/selectedcheck', 'StatDataInput\DataCheckController@selectedControl');
 

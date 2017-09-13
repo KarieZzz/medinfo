@@ -22,14 +22,14 @@ class ControlPtreeTranslator
     public $form;
     public $currentForm;
     public $withinform = true;
+    public $findex;
     public $vector = [];
-    public $lightweightCAStack = [];
+    //public $lightweightCAStack = [];
     public $scopeOfUnits = false;
     public $units = [];
     public $scopeOfDocuments = false;
     public $incldocuments = [];
     public $excldocuments = [];
-
     public $iterations = [];
     const ROWS = 1;
     const COLUMNS = 2;
@@ -74,7 +74,7 @@ class ControlPtreeTranslator
 
     public function parseRCRanges()
     {
-        if ($this->vector === null) {
+        if (count($this->vector)=== 0) {
             $this->parser->rcStack = [];
             return;
         }
@@ -222,6 +222,11 @@ class ControlPtreeTranslator
         return compact('units', 'documents');
     }
 
+    public function parseFunctionIndex()
+    {
+        $this->findex = FunctionDispatcher::functionIndex($this->parser->root->content);
+    }
+
     public function prepareIteration()
     {
         $this->setParentNodesFromRoot();
@@ -230,61 +235,70 @@ class ControlPtreeTranslator
         $this->validateVector();
         $this->parseRCRanges();
         $this->parseGroupScopes();
+        $this->parseFunctionIndex();
 
         foreach ($this->parser->celladressStack as $caLabel => $caProps) {
-            $this->lightweightCAStack[$caLabel]['codes'] = $caProps['codes'];
-            $this->lightweightCAStack[$caLabel]['ids'] = $caProps['ids'];
-            $this->lightweightCAStack[$caLabel]['rowindex'] = $caProps['rowindex'];
-            $this->lightweightCAStack[$caLabel]['incomplete'] = $caProps['incomplete'];
+            $lightweightCAStack[$caLabel]['codes'] = $caProps['codes'];
+            $lightweightCAStack[$caLabel]['ids'] = $caProps['ids'];
+            $lightweightCAStack[$caLabel]['rowindex'] = $caProps['rowindex'];
+            $lightweightCAStack[$caLabel]['incomplete'] = $caProps['incomplete'];
         }
-
-        switch ($this->vector[0]) {
-            case null :
-                //$this->iterations[] = $this->parser->celladressStack;
-                $this->iterations[] = $this->lightweightCAStack;
-                break;
-            case self::ROWS :
-                // Если аргумент ограничивающий итерацию по строкам (строки(...)) не пустой, выбираем строки из дапазона
-                if (count($this->parser->rcStack) > 0) {
-                    $rows = Row::OfTable($this->table->id)->whereIn('row_code', $this->parser->rcStack)->orderBy('row_index')->get();
-                } else {
-                    $rows = Row::OfTable($this->table->id)->orderBy('row_index')->get();
-                }
-                foreach ($rows as $row) {
-                    //$iterations = $this->parser->celladressStack;
-                    $iterations = $this->lightweightCAStack;
-                    //dd($iterations);
-                    foreach ($iterations as &$ca) {
-                        if ($ca['incomplete'] ) {
-                            $ca['codes']['r'] = $row->row_code;
-                            $ca['ids']['r'] = $row->id;
-                            $ca['rowindex'] = $row->row_index;
-                        }
+        if (count($this->vector)=== 0) {
+            $this->iterations[] = $lightweightCAStack;
+        } elseif ($this->vector[0] === self::ROWS) {
+            // Если аргумент ограничивающий итерацию по строкам (строки(...)) не пустой, выбираем строки из дапазона
+            if (count($this->parser->rcStack) > 0) {
+                $rows = Row::OfTable($this->table->id)->whereIn('row_code', $this->parser->rcStack)->orderBy('row_index')->get();
+            } else {
+                $rows = Row::OfTable($this->table->id)->orderBy('row_index')->get();
+            }
+            foreach ($rows as $row) {
+                //$iterations = $this->parser->celladressStack;
+                $iterations = $lightweightCAStack;
+                //dd($iterations);
+                foreach ($iterations as &$ca) {
+                    if ($ca['incomplete'] ) {
+                        $ca['codes']['r'] = $row->row_code;
+                        $ca['ids']['r'] = $row->id;
+                        $ca['rowindex'] = $row->row_index;
                     }
-                    $this->iterations[] = $iterations;
                 }
-                break;
-            case self::COLUMNS :
-                // Если аргумент ограничивающий итерацию по графам (графы(...)) не пустой, выбираем графы из дапазона
-                if (count($this->parser->rcStack) > 0) {
-                    $columns = Column::OfTable($this->table->id)->whereIn('column_index', $this->parser->rcStack)->orderBy('column_index')->get();
-                } else {
-                    $columns = Column::OfTable($this->table->id)->orderBy('column_index')->get();
-                }
-                foreach ($columns as $column) {
-                    //$iterations = $this->parser->celladressStack;
-                    $iterations = $this->lightweightCAStack;
-                    foreach ($iterations as &$ca) {
-                        if ($ca['incomplete'] ) {
-                            $ca['codes']['c'] = $column->column_index;
-                            $ca['ids']['c'] = $column->id;
-                        }
+                $this->iterations[] = $iterations;
+            }
+        }  elseif ($this->vector[0] === self::COLUMNS) {
+            // Если аргумент ограничивающий итерацию по графам (графы(...)) не пустой, выбираем графы из дапазона
+            if (count($this->parser->rcStack) > 0) {
+                $columns = Column::OfTable($this->table->id)->OfDataType()->whereIn('column_index', $this->parser->rcStack)->orderBy('column_index')->get();
+            } else {
+                $columns = Column::OfTable($this->table->id)->OfDataType()->orderBy('column_index')->get();
+            }
+            foreach ($columns as $column) {
+                //$iterations = $this->parser->celladressStack;
+                $iterations = $lightweightCAStack;
+                foreach ($iterations as &$ca) {
+                    if ($ca['incomplete']) {
+                        $ca['codes']['c'] = $column->column_index;
+                        $ca['ids']['c'] = $column->id;
                     }
-                    $this->iterations[] = $iterations;
                 }
-                break;
+                $this->iterations[] = $iterations;
+            }
         }
         return $this->iterations;
+    }
+
+    public function getProperties()
+    {
+        $properties = [];
+        $properties['iterations'] = $this->iterations;
+        $properties['inform'] = $this->withinform;
+        $properties['findex'] = $this->findex;
+        $properties['scope_units'] = $this->scopeOfUnits;
+        $properties['units'] = $this->units;
+        $properties['scope_documents'] = $this->scopeOfDocuments;
+        $properties['incldocuments'] = $this->incldocuments;
+        $properties['excldocuments'] = $this->excldocuments;
+        return $properties;
     }
 
     public function validateVector()
