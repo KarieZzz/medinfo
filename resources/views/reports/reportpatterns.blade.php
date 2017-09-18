@@ -14,7 +14,7 @@
                 <div class="panel-body">
                     <form id="period" class="form-horizontal" >
                         <div class="form-group">
-                            <label class="control-label col-sm-3" for="formList">Выберите период:</label>
+                            <label class="control-label col-sm-3" for="periodList">Выберите период:</label>
                             <div class="col-sm-5">
                                 <div id="periodList"></div>
                             </div>
@@ -27,15 +27,12 @@
                         <div class="form-group">
                             <label class="control-label col-sm-3" for="level">Сортировка:</label>
                             <div class="col-sm-3">
-                                <label class="radio-inline">
-                                    <input type="radio" id="fordigest" name="sortOrder" value="1" checked="checked" >города, районы, округ
-                                </label>
-                                <label class="radio-inline">
-                                    <input type="radio" id="byname" name="sortOrder" value="2">по наименованию
-                                </label>
-                                <label class="radio-inline">
-                                    <input type="radio" id="bycode" name="sortOrder" value="3">по коду учреждения
-                                </label>
+                                <div class="radio">
+                                    <label><input type="radio" id="fordigest" name="sortOrder" checked>города, районы, округ</label>
+                                </div>
+                                <div class="radio">
+                                    <label><input type="radio" id="byname" name="sortOrder">по медицинским организациям</label>
+                                </div>
                             </div>
                         </div>
                         <div class="form-group">
@@ -82,21 +79,21 @@
 <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/admin/reportpatternsadmin.js?v=012') }}"></script>
+<script src="{{ asset('/medinfo/admin/reportpatternsadmin.js?v=014') }}"></script>
 @endpush
 
 @section('inlinejs')
     @parent
     <script type="text/javascript">
-        var patternDataAdapter;
-        var periodDataAdapter;
-        var url = '/reports/patterns/';
-        var sortorder = 1;
-        var plist = $("#periodList");
-        var ilist = $("#patternList");
-        var periods = {!! $periods !!};
-        var patterns = {!! $patterns  !!};
-        var current_period = {{ $last_year->id }};
+        let patternDataAdapter;
+        let periodDataAdapter;
+        let url = '/reports/patterns/';
+        let sortorder = 2;
+        let plist = $("#periodList");
+        let ilist = $("#patternList");
+        let periods = {!! $periods !!};
+        let patterns = {!! $patterns  !!};
+        let current_period = {{ $last_year->id }};
         initsplitter();
         initdatasources();
         initpatternlist();

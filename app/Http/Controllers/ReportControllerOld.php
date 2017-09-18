@@ -44,7 +44,7 @@ JSON;
         $count_of_indexes = count($structure['content']);
         $title = $structure['header']['title'];
         //$indexes = ReportMaker::makeReportByLegal($structure, $level, $period);
-        $rp = new ReportMaker(2, $period, $sortorder);
+        $rp = new ReportMaker($sortorder, $period, $sortorder);
         $indexes = $rp->makeReportByLegal($structure);
         return view('reports.report', compact('indexes', 'title', 'structure', 'count_of_indexes'));
     }

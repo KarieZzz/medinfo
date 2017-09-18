@@ -96,36 +96,36 @@ initformcontrols = function() {
 
 initformactions = function() {
     $("#edit").click(function () {
-        var row = ilist.jqxGrid('getselectedrowindex');
-        if (row == -1) {
+        let row = ilist.jqxGrid('getselectedrowindex');
+        if (row === -1) {
             raiseError("Выберите запись для изменения/сохранения данных");
             return false;
         }
-        var rowid = ilist.jqxGrid('getrowid', row);
-        var url = '/reports/patterns/' + rowid + '/edit';
+        let rowid = ilist.jqxGrid('getrowid', row);
+        let url = '/reports/patterns/' + rowid + '/edit';
         //console.log(url);
         //window.open(url);
         location.replace(url);
     });
     $("#perform").click(function () {
-        var row = ilist.jqxGrid('getselectedrowindex');
-        if (row == -1) {
+        let row = ilist.jqxGrid('getselectedrowindex');
+        if (row === -1) {
             raiseError("Выберите запись для изменения/сохранения данных");
             return false;
         }
-        var rowid = ilist.jqxGrid('getrowid', row);
-        var route = url + rowid + '/' + current_period + '/' + sortorder + '/perform';
+        let rowid = ilist.jqxGrid('getrowid', row);
+        let route = url + rowid + '/' + current_period + '/' + sortorder + '/perform';
         //console.log(url);
         //window.open(url);
         location.replace(route);
     });
     $("#fordigest").on('click', function() {
-        sortorder = 1;
+        sortorder = 2;
     });
     $("#byname").on('click', function() {
-        sortorder = 2;
+        sortorder = 1;
     });
-    $("#bycode").on('click', function() {
+/*    $("#bycode").on('click', function() {
         sortorder = 2;
-    });
+    });*/
 };
