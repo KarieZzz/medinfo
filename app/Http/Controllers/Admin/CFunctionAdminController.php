@@ -214,30 +214,40 @@ class CFunctionAdminController extends Controller
 
     public function recompileFunctions($scopeTable)
     {
-        if ($scopeTable === 0) {
-            $functions = CFunction::all();
-        } else {
-            $functions = CFunction::ofTable($scopeTable)->get();
-        }
-
+        //if ($scopeTable === 0) {
+          //  $functions = CFunction::all();
+        //} else {
+            //$functions = CFunction::ofTable($scopeTable)->get();
+        //}
+        $table = Table::find($scopeTable);
+        $form = Form::find($table->form_id);
+        $functions = CFunction::ofTable($scopeTable)->get();
+        $protocol = [];
         $i = 1;
         foreach ($functions as $function) {
-            $table = Table::find($function->table_id);
+            $f = [];
+            $f['i'] = $i;
+            $f['script'] = $function->script;
             $cache = $this->compile1($function->script, $table);
             if ($cache) {
-                echo $i . ' Компиляция функции: ' . $function->script . '<br/>';
+                //echo $i . ' Компиляция функции: ' . $function->script . '<br/>';
                 $function->type = ($cache['properties']['inform'] ? 1 : 2);
                 $function->function = $cache['properties']['findex'];
                 $function->ptree = $cache['ptree'];
                 $function->properties = json_encode($cache['properties']);
                 $function->save();
+                $f['result'] = true;
+                $f['comment'] = 'Успешно';
             } else {
-                echo $i . ' Ошибка компиляции функции: ' . $function->script . ': ' . $this->compile_error . '<br/>';
+                $f['result'] = false;
+                $f['comment'] = $this->compile_error;
             }
+            $protocol[] = $f;
             //flush();
             //usleep(50000);
             $i++;
         }
+        return view('jqxadmin.recompileprotocol', compact('form','table', 'protocol'));
     }
 
     public function compile1($script, Table $table)

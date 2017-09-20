@@ -33,7 +33,7 @@ class LexerParserController extends Controller
         //$i = "сравнение((сумма(Г4, Г9:Г11, Г13)+Г16)/2, Г15, >=, группы(село, !сводные , !север, !юл), строки(1.0,5.4, 7.0-18.0))";
         //$i = "сравнение(С1, С6, >=, , графы(*))";
         //$i = "сравнение(С5.8Г16, С5.8Г15, =)";
-        $i = "сравнение(
+/*        $i = "сравнение(
                 Г9, 
                 Г10, 
                 =, 
@@ -41,8 +41,8 @@ class LexerParserController extends Controller
                     10.1, 10.2, 10.4.2, 10.4.3, 10.6.1, 10.6.2, 10.6.3, 10.6.4, 10.6.5, 10.8.2, 
                     11.3, 12.1, 12.5.1, 10.5.1, 10.5.2, 10.5.3
                 )
-            )";
-
+            )";*/
+        $i = "сравнение(С6.0Г4-С6.1Г4, Ф10Т2000С1Г7, >=)";
         //$i = "зависимость(Г3, Г4+Г5, группы(оп), строки(*))";
         //$i = 'зависимость(Г3, сумма(Г4:Г8), группы(*), строки(*))';
         //$i = 'зависимость(Г3, Г4, группы(*),  строки(*))';
@@ -62,6 +62,7 @@ class LexerParserController extends Controller
 
         $parser = new ControlFunctionParser($tockenstack);
         $parser->func();
+        //dd($parser);
         //dd($parser->root);
         //dd(json_decode(json_encode($parser->root)));
 
@@ -92,14 +93,14 @@ class LexerParserController extends Controller
 
         $document = Document::find(13134);
         //$cfunc = CFunction::find(2652);
-        $cfunc = CFunction::find(3280);
+        //$cfunc = CFunction::find(3280);
         //dd($cfunc);
-        $pTree = unserialize(base64_decode($cfunc->ptree));
+        //$pTree = unserialize(base64_decode($cfunc->ptree));
         //dd($pTree);
-        $props = json_decode($cfunc->properties, true);
+        //$props = json_decode($cfunc->properties, true);
         //dd($iterations);
-        //$evaluator = new ControlFunctionEvaluator($translator->parser->root, $translator->iterations, $document);
-        $evaluator = new ControlFunctionEvaluator($pTree, $props['iterations'], $document);
+        $evaluator = new ControlFunctionEvaluator($translator->parser->root, $translator->iterations, $document);
+        //$evaluator = new ControlFunctionEvaluator($pTree, $props['iterations'], $document);
 
         $evaluator->prepareCellValues();
         $evaluator->prepareCAstack();

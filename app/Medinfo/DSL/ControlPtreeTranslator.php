@@ -417,6 +417,7 @@ class ControlPtreeTranslator
         if ($props['ids']['r'] == null || $props['ids']['c'] == null) {
             $props['incomplete'] = true;
         }
+
         return $props;
     }
 
@@ -447,7 +448,7 @@ class ControlPtreeTranslator
 
     public function identifyTable($code, $form)
     {
-        if ($code == $this->table->table_code || empty($code) ) {
+        if (($code == $this->table->table_code && $form == $this->table->form_id) || empty($code) ) {
             return $this->table->id;
         } else {
             //dd($form, $code);

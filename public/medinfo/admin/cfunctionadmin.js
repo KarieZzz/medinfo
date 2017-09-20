@@ -1,10 +1,10 @@
 // функция для обновления связанных объектов после выбора таблицы
-updateRelated = function() {
+let updateRelated = function() {
     updateFunctionList();
     $("#form")[0].reset();
 };
 
-initdatasources = function() {
+let initdatasources = function() {
     functionsource = {
         datatype: "json",
         datafields: [
@@ -26,7 +26,7 @@ initdatasources = function() {
     functionsDataAdapter = new $.jqx.dataAdapter(functionsource);
 };
 // Таблица функций
-initFunctionList = function() {
+let initFunctionList = function() {
     fgrid.jqxGrid(
         {
             width: '98%',
@@ -57,14 +57,14 @@ initFunctionList = function() {
     });
 };
 // Обновление списка строк при выборе таблицы
-updateFunctionList = function() {
+let updateFunctionList = function() {
     functionsource.url = functionfetch_url + current_table;
     fgrid.jqxGrid('clearselection');
     fgrid.jqxGrid('updatebounddata');
 };
 // Операции с функциями контроля
 
-initButtons = function() {
+let initButtons = function() {
     $('#blocked').jqxSwitchButton({
         height: 31,
         width: 81,
@@ -93,14 +93,14 @@ initButtons = function() {
     });
 };
 
-setquerystring = function() {
+let setquerystring = function() {
     return "&level=" + $("#level").val() +
         "&script=" + encodeURIComponent($("#script").val()) +
         "&comment=" + $("#comment").val() +
         "&blocked=" + ($("#blocked").val() ? 1 :0);
 };
 
-initFunctionActions = function() {
+let initFunctionActions = function() {
     $("#insert").click(function () {
         if (current_table === 0 ) {
             raiseError('Выберите форму и таблицу для которых будет применяться функция');
@@ -168,9 +168,16 @@ initFunctionActions = function() {
         current_function = fgrid.jqxGrid('getrowid', row);
         raiseConfirm("Удалить функцию контроля № " + current_function + "?" )
     });
+    $("#recompile").click(function () {
+        if (current_table === 0) {
+            raiseError("Не выбрана таблица в которой будут перекомпилированы функции");
+            return false;
+        }
+        window.open(recompile_url + current_table);
+    });
 };
 
-performAction = function() {
+let performAction = function() {
     $.ajax({
         dataType: 'json',
         url: '/admin/cfunctions/delete/' + current_function,

@@ -40,6 +40,7 @@
                             <button type="button" id="save" class="btn btn-primary">Сохранить изменения</button>
                             <button type="button" id="insert" class="btn btn-success">Вставить новую запись</button>
                             <button type="button" id="delete" class="btn btn-danger">Удалить запись</button>
+                            <button type="button" id="recompile" class="btn btn-default">Перекомпилировать все функции в таблице</button>
                         </div>
                     </div>
                 </form>
@@ -68,8 +69,8 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/tablepicker.js?v=008') }}"></script>
-    <script src="{{ asset('/medinfo/admin/cfunctionadmin.js?v=002') }}"></script>
+    <script src="{{ asset('/medinfo/admin/tablepicker.js?v=009') }}"></script>
+    <script src="{{ asset('/medinfo/admin/cfunctionadmin.js?v=003') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -82,6 +83,7 @@
         let rowsource;
         let columnsource;
         let functionfetch_url = '/admin/cfunctions/fetchcf/';
+        let recompile_url = '/admin/cfunctions/recompile/';
         let forms = {!! $forms  !!};
         let errorLevels = {!! $error_levels !!};
         let fgrid = $("#functionList");
