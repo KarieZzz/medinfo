@@ -23,7 +23,7 @@ class LexerParserController extends Controller
         //$i = "сравнение(сумма(С1Г3П0:С18Г3П0),  С22Г3П0, <=, группы(*), графы(*))";
         //$i = "сравнение(меньшее(С11, С16:С18, С20),  Ф32Т2120С22Г3, <=, группы(*), графы(3-9,15))";
         //$i = "сравнение(сумма(Ф32Т2110С1Г3П0:Ф32Т2110С1Г5П0, С16:С18, С6, С8, С20) - сумма(Ф30Т1100С11Г3, Ф30Т1100С13Г3:Ф30Т1100С15Г3)- сумма(Ф30Т1100С22Г3, Ф30Т1100С25Г3:Ф30Т1100С28Г3),
-        //  Ф32Т2120С22Г3, <=, группы(*), графы(*))";
+          //Ф32Т2120С22Г3, <=, группы(*), графы(*))";
         //$i = "сравнение(сумма(Ф32Т2120С16Г3:Ф32Т2120С18Г3),  Ф32Т2120С22Г3, >=, группы(*), графы())";
         //$i = 'сравнение(Ф36-плТ2100С6Г4, Ф36-плТ2100С6Г4+Ф36-плТ2140С5Г4, >=, группы(первичные, село, !оп), графы())';
         //$i = 'сравнение(Ф36-плТ2100С6Г4, Ф36-плТ2100С6Г4+Ф36-плТ2140С5Г4, >=, группы(!юрлица), графы())';
@@ -33,16 +33,17 @@ class LexerParserController extends Controller
         //$i = "сравнение((сумма(Г4, Г9:Г11, Г13)+Г16)/2, Г15, >=, группы(село, !сводные , !север, !юл), строки(1.0,5.4, 7.0-18.0))";
         //$i = "сравнение(С1, С6, >=, , графы(*))";
         //$i = "сравнение(С5.8Г16, С5.8Г15, =)";
-/*        $i = "сравнение(
-                Г9, 
+        $i = "сравнение(
+                сумма(Г4:Г9), 
                 Г10, 
                 =, 
                 строки(1.0, 2.2, 4.1.1, 5.2, 5.2.1, 5.2.2, 7.1, 7.1.1, 7.1.2, 7.5.1, 7.8.1, 7.8.2, 7.9.1, 8.8, 
                     10.1, 10.2, 10.4.2, 10.4.3, 10.6.1, 10.6.2, 10.6.3, 10.6.4, 10.6.5, 10.8.2, 
                     11.3, 12.1, 12.5.1, 10.5.1, 10.5.2, 10.5.3
                 )
-            )";*/
-        $i = "сравнение(С6.0Г4-С6.1Г4, Ф10Т2000С1Г7, >=)";
+            )";
+        //$i = "сравнение(С6.0Г4-С6.1Г4, Ф10Т2000С1Г7, >=)";
+
         //$i = "зависимость(Г3, Г4+Г5, группы(оп), строки(*))";
         //$i = 'зависимость(Г3, сумма(Г4:Г8), группы(*), строки(*))';
         //$i = 'зависимость(Г3, Г4, группы(*),  строки(*))';
@@ -54,6 +55,11 @@ class LexerParserController extends Controller
 
         //$i = "кратность(диапазон(С01Г3:С02Г6),  .25)";
         //$i = "кратность(диапазон(С01Г3:С02Г6),  .25)";
+
+        //$cellcount = preg_match_all('/Ф([а-я0-9.-]+)Т([\w.-]+)С([\w.-]+)Г(\d{1,})/u', $i, $matches, PREG_SET_ORDER);
+        //$res = preg_match('|(?:\()(.*?),(.*?)\)|usei', $i, $matches);
+        //$res = preg_match_all('/\((.*?)\(/u', $i, $matches, PREG_SET_ORDER);
+        //dd($matches);
 
         $lexer = new ControlFunctionLexer($i);
         $tockenstack = $lexer->getTokenStack();
@@ -68,7 +74,7 @@ class LexerParserController extends Controller
 
         //$table = Table::find(10);
         $table = Table::find(112); // Ф12 Т2000
-
+        //$table = Table::find(115); // Ф32 Т2120
 
         $translator = new ControlPtreeTranslator($parser, $table);
         //$translator->setParentNodesFromRoot();
@@ -88,6 +94,7 @@ class LexerParserController extends Controller
         //dd($translator->parser->rcRangeStack);
         //dd($translator->parser->rcStack);
         //dd($translator->parser->excludeGroupStack);
+        //dd($translator->scriptReadable);
         //dd($translator->iterations);
         //dd(json_decode(json_encode($translator->iterations), TRUE));
 
@@ -98,13 +105,18 @@ class LexerParserController extends Controller
         //$pTree = unserialize(base64_decode($cfunc->ptree));
         //dd($pTree);
         //$props = json_decode($cfunc->properties, true);
+
         //dd($iterations);
         $evaluator = new ControlFunctionEvaluator($translator->parser->root, $translator->iterations, $document);
         //$evaluator = new ControlFunctionEvaluator($pTree, $props['iterations'], $document);
 
         $evaluator->prepareCellValues();
         $evaluator->prepareCAstack();
+
+        //dd($evaluator->pTree);
         //dd($evaluator->caStack);
+        //dd($evaluator->iterations);
+
         $evaluator->makeControl();
         return ($evaluator->iterations);
         //dd($evaluator->pTree);

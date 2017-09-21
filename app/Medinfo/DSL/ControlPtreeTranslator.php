@@ -23,6 +23,7 @@ class ControlPtreeTranslator
     public $currentForm;
     public $withinform = true;
     public $findex;
+    public $scriptReadable;
     public $vector = [];
     //public $lightweightCAStack = [];
     public $scopeOfUnits = false;
@@ -39,6 +40,17 @@ class ControlPtreeTranslator
         $this->parser = $parser;
         $this->table = $table;
         $this->form = Form::find($table->form_id);
+    }
+
+    public function makeReadable() {
+        foreach ($this->parser->argStack[0] as $node) {
+            $this->scriptReadable .= $node;
+        }
+        $this->scriptReadable .= $this->parser->root->children[2]->children[0];
+        foreach ($this->parser->argStack[1] as $node) {
+            $this->scriptReadable .= $node;
+        }
+        $this->scriptReadable = str_replace(['  ', '( '], [' ', '('], $this->scriptReadable);
     }
 
     public function setParentNodesFromRoot()
@@ -229,6 +241,7 @@ class ControlPtreeTranslator
 
     public function prepareIteration()
     {
+        $this->makeReadable();
         $this->setParentNodesFromRoot();
         $this->parseCellAdresses();
         $this->parseCellRanges();
@@ -354,6 +367,12 @@ class ControlPtreeTranslator
             }
             $c = (int)$fprops['codes']['c'];
             do {
+                // TODO: Добавить понятие (и поле в БД) "Код графы", что бы не было коллизий про пропуске граф или при изменении их последовательности
+                $column = Column::OfTableColumnIndex($fprops['ids']['t'], $c)->first();
+                if (is_null($column)) {
+                    $c++;
+                    continue;
+                }
                 if ($c !== 0) {
                     $column = Column::OfTableColumnIndex($fprops['ids']['t'], $c)->first();
                     $colid = $column->id;

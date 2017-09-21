@@ -73,7 +73,7 @@ class ControlFunctionEvaluator
             //dd($this->expr_node1);
             $iteration['left_part_value'] = $this->evaluate($this->expr_node1);
             $iteration['right_part_value'] = $this->evaluate($this->expr_node2);
-            $iteration['deviation'] = $this->evaluate($this->expr_node2);
+            $iteration['deviation'] = $iteration['left_part_value'] - $iteration['right_part_value'];
             $iteration['valid'] = $this->compareArgs($iteration['left_part_value'], $iteration['right_part_value'], $this->boolean_op);
             //dd($this->boolean_op);
         }
@@ -119,20 +119,22 @@ class ControlFunctionEvaluator
 
     public function evaluateSubtree(ParseTree $node)
     {
-        if (ControlFunctionLexer::$tokenNames[$node->type] === 'NUMBER') {
+        //dump(ControlFunctionLexer::$tokenNames[$node->type]);
+        if ($node->type === ControlFunctionLexer::NUMBER) {
             return $node->content;
-        } elseif (ControlFunctionLexer::$tokenNames[$node->type] === 'NAME') {
+        } elseif ($node->type === ControlFunctionLexer::NAME ) {
+
             if ($node->content == 'сумма') {
                 $value = 0;
                 foreach ($node->children as $child) {
-                    if (ControlFunctionLexer::$tokenNames[$child->type] === 'NUMBER') {
+                    if ($node->type === ControlFunctionLexer::NUMBER) {
                         $value += $child->content;
                     }
                 }
             } elseif ($node->content == 'меньшее') {
                 $values = [];
                 foreach ($node->children as $child) {
-                    if (ControlFunctionLexer::$tokenNames[$child->type] === 'NUMBER') {
+                    if ($node->type === ControlFunctionLexer::NUMBER) {
                         $values[] = $child->content;
                     }
                 }
@@ -140,7 +142,7 @@ class ControlFunctionEvaluator
             } elseif ($node->content == 'большее') {
                 $values = [];
                 foreach ($node->children as $child) {
-                    if (ControlFunctionLexer::$tokenNames[$child->type] === 'NUMBER') {
+                    if ($node->type === ControlFunctionLexer::NUMBER) {
                         $values[] = $child->content;
                     }
                 }
@@ -148,6 +150,7 @@ class ControlFunctionEvaluator
             }
             return $value;
         } else {
+
             $left = $this->evaluateSubtree($node->left());
             $right = $this->evaluateSubtree($node->right());
             switch (ControlFunctionLexer::$tokenNames[$node->type]) {

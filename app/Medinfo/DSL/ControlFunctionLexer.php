@@ -44,7 +44,6 @@ class ControlFunctionLexer extends Lexer
         "MULTIPLY",
         "DIVIDE",
         "NUMBER",
-        "ELCODE",
         "COMMA",
         "BOOLEAN",
         "COLON",

@@ -10,6 +10,7 @@ class ControlFunctionParser extends Parser {
     public $rcRangeStack = [];
     public $includeGroupStack = [];
     public $excludeGroupStack = [];
+    public $argStack = [];
 
     public $currentArgIndex;
     const COMPARE       = 1;
@@ -49,9 +50,11 @@ class ControlFunctionParser extends Parser {
         $node = null;
         if ($this->lookahead->type == ControlFunctionLexer::NUMBER) {
             $node = new ControlFunctionParseTree($this->lookahead->type, $this->lookahead->text);
+            $this->argStack[$this->currentArgIndex][] = $node;
             $this->match(ControlFunctionLexer::NUMBER);
         } elseif ($this->lookahead->type == ControlFunctionLexer::CELLADRESS) {
             $node = new ControlFunctionParseTree($this->lookahead->type, $this->lookahead->text);
+            $this->argStack[$this->currentArgIndex][] = $node;
             $this->celladressStack[$this->lookahead->text]['node'] = $node;
             $this->match(ControlFunctionLexer::CELLADRESS);
         } elseif ($this->lookahead->type == ControlFunctionLexer::LPARENTH) {
@@ -78,6 +81,7 @@ class ControlFunctionParser extends Parser {
         $leftnode = $this->factor();
         while ($this->lookahead->type == ControlFunctionLexer::MULTIPLY || $this->lookahead->type == ControlFunctionLexer::DIVIDE) {
             $node = new ControlFunctionParseTree($this->lookahead->type, $this->lookahead->text);
+            $this->argStack[$this->currentArgIndex][] = $node;
             if(!is_null($prev_node)) {
                 $leftnode = $prev_node;
             }
@@ -114,6 +118,7 @@ class ControlFunctionParser extends Parser {
         $leftnode = $this->term();
         while ($this->lookahead->type == ControlFunctionLexer::PLUS || $this->lookahead->type == ControlFunctionLexer::MINUS) {
             $node = new ControlFunctionParseTree($this->lookahead->type, $this->lookahead->text);
+            $this->argStack[$this->currentArgIndex][] = $node;
             if(!is_null($prev_node)) {
                 $leftnode = $prev_node;
             }
@@ -325,6 +330,7 @@ class ControlFunctionParser extends Parser {
             case self::MIN :
             case self::MAX :
                 $this->ca_range_args($node);
+                $this->argStack[$this->currentArgIndex][] = $node;
                 break;
             case self::ROWS :
             case self::COLUMNS :
