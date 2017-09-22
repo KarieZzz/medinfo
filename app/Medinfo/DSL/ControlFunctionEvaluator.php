@@ -16,23 +16,40 @@ class ControlFunctionEvaluator
 {
     public $document;
     public $pTree;
+    public $properties;
     public $iterations;
     public $caStack = [];
     public $expr_node1;
     public $expr_node2;
     public $boolean_op;
+    public $not_in_scope = false;
+    public $valid;
 
-    public function __construct(ParseTree $ptree, $iterations, Document $document)
+    public function __construct(ParseTree $ptree, $properties, Document $document)
     {
         $this->pTree = $ptree;
-        $this->iterations = $iterations;
+        $this->properties = $properties;
+        $this->iterations = $properties['iterations'];
         $this->document = $document;
         $this->expr_node1 = $this->pTree->children[0]->children[0];
         $this->expr_node2 = $this->pTree->children[1]->children[0];
         $this->boolean_op = $this->pTree->children[2]->children[0]->content;
     }
 
-    public function prepareCellValues() {
+    public function validateScope()
+    {
+        if ($this->properties['scope_documents']) {
+            if ($this->document->dtype === $this->properties['incldocuments'][0]) {
+                return true;
+            } elseif($this->document->dtype === $this->properties['excldocuments'][0]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public function prepareCellValues()
+    {
         foreach ($this->iterations as &$cell_adresses) {
             foreach ($cell_adresses as &$cell_adress) {
                 $cell = Cell::OfDRC($this->document->id, $cell_adress['ids']['r'], $cell_adress['ids']['c'])->first(['value']);
@@ -62,21 +79,32 @@ class ControlFunctionEvaluator
 
     public function makeControl()
     {
-        foreach ($this->iterations as &$iteration) {
+        if (!$this->validateScope()) {
+            $this->not_in_scope = true;
+        }
+        $this->prepareCellValues();
+        $this->prepareCAstack();
+        $result = [];
+        $valid = true;
+        $i = 0;
+        foreach ($this->iterations as $iteration) {
             foreach ($iteration as $cell_label => $props) {
                 //$node = $caStack[$cell_label]['node'];
                 $node = $this->caStack[$cell_label];
                 $node->type = ControlFunctionLexer::NUMBER;
                 $node->content = $props['value'];
+                $result[$i]['cells'][] = ['row' => $props['ids']['r'], 'column' => $props['ids']['c']  ];
             }
-            // TODO: Выполнить сравнение аргументов
             //dd($this->expr_node1);
-            $iteration['left_part_value'] = $this->evaluate($this->expr_node1);
-            $iteration['right_part_value'] = $this->evaluate($this->expr_node2);
-            $iteration['deviation'] = $iteration['left_part_value'] - $iteration['right_part_value'];
-            $iteration['valid'] = $this->compareArgs($iteration['left_part_value'], $iteration['right_part_value'], $this->boolean_op);
-            //dd($this->boolean_op);
+            $result[$i]['left_part_value'] = $this->evaluate($this->expr_node1);
+            $result[$i]['right_part_value'] = $this->evaluate($this->expr_node2);
+            $result[$i]['deviation'] = abs($result[$i]['left_part_value'] - $result[$i]['right_part_value']);
+            $result[$i]['valid'] = $this->compareArgs($result[$i]['left_part_value'], $result[$i]['right_part_value'], $this->boolean_op);
+            $valid = $valid &&  $result[$i]['valid'];
+            $i++;
         }
+        $this->valid = $valid;
+        return $result;
     }
 
     public function compareArgs($lp, $rp, $boolean)
@@ -123,26 +151,28 @@ class ControlFunctionEvaluator
         if ($node->type === ControlFunctionLexer::NUMBER) {
             return $node->content;
         } elseif ($node->type === ControlFunctionLexer::NAME ) {
-
             if ($node->content == 'сумма') {
                 $value = 0;
                 foreach ($node->children as $child) {
-                    if ($node->type === ControlFunctionLexer::NUMBER) {
+
+                    if ($child->type === ControlFunctionLexer::NUMBER) {
+
                         $value += $child->content;
                     }
                 }
             } elseif ($node->content == 'меньшее') {
                 $values = [];
                 foreach ($node->children as $child) {
-                    if ($node->type === ControlFunctionLexer::NUMBER) {
+                    if ($child->type === ControlFunctionLexer::NUMBER) {
                         $values[] = $child->content;
                     }
                 }
                 $value = min($values);
+
             } elseif ($node->content == 'большее') {
                 $values = [];
                 foreach ($node->children as $child) {
-                    if ($node->type === ControlFunctionLexer::NUMBER) {
+                    if ($child->type === ControlFunctionLexer::NUMBER) {
                         $values[] = $child->content;
                     }
                 }

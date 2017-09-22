@@ -24,6 +24,7 @@ class ControlPtreeTranslator
     public $withinform = true;
     public $findex;
     public $scriptReadable;
+    //public $boolean_sign;
     public $vector = [];
     //public $lightweightCAStack = [];
     public $scopeOfUnits = false;
@@ -46,6 +47,7 @@ class ControlPtreeTranslator
         foreach ($this->parser->argStack[0] as $node) {
             $this->scriptReadable .= $node;
         }
+        //$this->boolean_sign = $this->parser->root->children[2]->children[0]->content;
         $this->scriptReadable .= $this->parser->root->children[2]->children[0];
         foreach ($this->parser->argStack[1] as $node) {
             $this->scriptReadable .= $node;
@@ -303,9 +305,13 @@ class ControlPtreeTranslator
     public function getProperties()
     {
         $properties = [];
+        //$properties['boolean_sign'] = $this->boolean_sign;
         $properties['iterations'] = $this->iterations;
         $properties['inform'] = $this->withinform;
-        $properties['findex'] = $this->findex;
+        $properties['iteration_mode'] = isset($this->vector[0]) ? $this->vector[0] : null ;
+        $properties['formula'] = $this->scriptReadable;
+        $properties['function_id'] = $this->findex;
+        $properties['function'] = ControlFunctionParser::$functionNames[$this->findex];
         $properties['scope_units'] = $this->scopeOfUnits;
         $properties['units'] = $this->units;
         $properties['scope_documents'] = $this->scopeOfDocuments;

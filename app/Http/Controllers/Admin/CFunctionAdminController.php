@@ -105,7 +105,7 @@ class CFunctionAdminController extends Controller
         $newfunction->comment = $request->comment;
         $newfunction->blocked = $request->blocked;
         $newfunction->type = $cache['properties']['inform'] ? 1 : 2;
-        $newfunction->function = $cache['properties']['findex'];
+        $newfunction->function =  $cache['properties']['function_id'];
         $newfunction->ptree = $cache['ptree'];
         $newfunction->properties = json_encode($cache['properties']);
         //$newfunction->save();
@@ -172,7 +172,7 @@ class CFunctionAdminController extends Controller
         $cfunction->comment = $request->comment;
         $cfunction->blocked = $request->blocked;
         $cfunction->type = ($cache['properties']['inform'] ? 1 : 2);
-        $cfunction->function = $cache['properties']['findex'];
+        $cfunction->function = $cache['properties']['function_id'];
         $cfunction->ptree = $cache['ptree'];
         $cfunction->properties = json_encode($cache['properties']);
         //$cfunction->save();
@@ -232,7 +232,7 @@ class CFunctionAdminController extends Controller
             if ($cache) {
                 //echo $i . ' Компиляция функции: ' . $function->script . '<br/>';
                 $function->type = ($cache['properties']['inform'] ? 1 : 2);
-                $function->function = $cache['properties']['findex'];
+                $function->function = $cache['properties']['function_id'];
                 $function->ptree = $cache['ptree'];
                 $function->properties = json_encode($cache['properties']);
                 $function->save();
@@ -254,6 +254,7 @@ class CFunctionAdminController extends Controller
     {
         //$ns = '\\App\\Medinfo\\DSL\\';
         $properties = [];
+
         try {
             $lexer = new \App\Medinfo\DSL\ControlFunctionLexer($script);
             $tockenstack = $lexer->getTokenStack();
@@ -265,6 +266,7 @@ class CFunctionAdminController extends Controller
             $compiled_cache['properties'] = $translator->getProperties();
             return $compiled_cache;
         } catch (\Exception $e) {
+
             $this->compile_error = "Ошибка при компилляции функции: " . $e->getMessage();
             return false;
         }
