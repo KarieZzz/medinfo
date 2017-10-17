@@ -255,7 +255,7 @@ class ControlPtreeTranslator
         foreach ($this->parser->celladressStack as $caLabel => $caProps) {
             $lightweightCAStack[$caLabel]['codes'] = $caProps['codes'];
             $lightweightCAStack[$caLabel]['ids'] = $caProps['ids'];
-            $lightweightCAStack[$caLabel]['rowindex'] = $caProps['rowindex'];
+            //$lightweightCAStack[$caLabel]['rowindex'] = $caProps['rowindex'];
             $lightweightCAStack[$caLabel]['incomplete'] = $caProps['incomplete'];
         }
         if (count($this->vector)=== 0) {
@@ -270,15 +270,18 @@ class ControlPtreeTranslator
             foreach ($rows as $row) {
                 //$iterations = $this->parser->celladressStack;
                 $iterations = $lightweightCAStack;
+
                 //dd($iterations);
                 foreach ($iterations as &$ca) {
                     if ($ca['incomplete'] ) {
                         $ca['codes']['r'] = $row->row_code;
                         $ca['ids']['r'] = $row->id;
-                        $ca['rowindex'] = $row->row_index;
+                        //$ca['rowindex'] = $row->row_index;
                     }
                 }
-                $this->iterations[] = $iterations;
+                //$iterations['code'] = $row->row_code;
+                $this->iterations[$row->row_code] = $iterations;
+
             }
         }  elseif ($this->vector[0] === self::COLUMNS) {
             // Если аргумент ограничивающий итерацию по графам (графы(...)) не пустой, выбираем графы из дапазона
@@ -296,9 +299,10 @@ class ControlPtreeTranslator
                         $ca['ids']['c'] = $column->id;
                     }
                 }
-                $this->iterations[] = $iterations;
+                $this->iterations[$column->column_index] = $iterations;
             }
         }
+        //dd($this->iterations);
         return $this->iterations;
     }
 
@@ -311,7 +315,7 @@ class ControlPtreeTranslator
         $properties['iteration_mode'] = isset($this->vector[0]) ? $this->vector[0] : null ;
         $properties['formula'] = $this->scriptReadable;
         $properties['function_id'] = $this->findex;
-        $properties['function'] = ControlFunctionParser::$functionNames[$this->findex];
+        $properties['function'] = FunctionDispatcher::$functionIndexes[$this->findex];
         $properties['scope_units'] = $this->scopeOfUnits;
         $properties['units'] = $this->units;
         $properties['scope_documents'] = $this->scopeOfDocuments;

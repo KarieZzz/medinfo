@@ -41,7 +41,7 @@
                 <div id="showallrule" class="extrabutton" style="float: left"><span>Показать только ошибки</span></div>
                 <a id="togglecontrolscreen" style="margin-left: 2px;" target="_blank"><span class='glyphicon glyphicon-fullscreen'></span></a>
                 <a id='printtableprotocol' style="margin-left: 2px;" target="_blank" ><span class='glyphicon glyphicon-print'></span></a>
-                <a id='expandprotocolrow' style="margin-left: 2px;" target="_blank" title="Развернуть"><span class='glyphicon glyphicon-folder-close'></span></a>
+                {{--<a id='expandprotocolrow' style="margin-left: 2px;" target="_blank" title="Развернуть"><span class='glyphicon glyphicon-folder-close'></span></a>--}}
             </div>
         </div>
         <div style="clear: both"></div>

@@ -29,6 +29,7 @@ class ControlFunctionEvaluator
     {
         $this->pTree = $ptree;
         $this->properties = $properties;
+        //dd($properties);
         $this->iterations = $properties['iterations'];
         $this->document = $document;
         $this->expr_node1 = $this->pTree->children[0]->children[0];
@@ -87,7 +88,8 @@ class ControlFunctionEvaluator
         $result = [];
         $valid = true;
         $i = 0;
-        foreach ($this->iterations as $iteration) {
+        foreach ($this->iterations as $code => $iteration) {
+
             foreach ($iteration as $cell_label => $props) {
                 //$node = $caStack[$cell_label]['node'];
                 $node = $this->caStack[$cell_label];
@@ -96,6 +98,7 @@ class ControlFunctionEvaluator
                 $result[$i]['cells'][] = ['row' => $props['ids']['r'], 'column' => $props['ids']['c']  ];
             }
             //dd($this->expr_node1);
+            $result[$i]['code'] = $code !== 0 ? $code : null;
             $result[$i]['left_part_value'] = $this->evaluate($this->expr_node1);
             $result[$i]['right_part_value'] = $this->evaluate($this->expr_node2);
             $result[$i]['deviation'] = abs($result[$i]['left_part_value'] - $result[$i]['right_part_value']);
@@ -116,6 +119,7 @@ class ControlFunctionEvaluator
         }
         switch ($boolean) {
             case '=' :
+            case '==' :
                 $result = abs($lp - $rp) < $delta ? true : false;
                 //dd($rp);
                 break;

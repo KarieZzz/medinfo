@@ -71,6 +71,13 @@ let valuechangelog_url = "/datainput/valuechangelog/" + doc_id;
 let tableexport_url = "/datainput/tableexport/" + doc_id + "/";
 let cell_layer_url = "/datainput/fetchcelllayers/" + doc_id + "/";
 let calculatedcells_url = "/datainput/calculate/" + doc_id + "/";
+let formlabels =
+    {
+        compare: 1,
+        dependency: 2,
+        interannual: 3,
+        multiplicity: 4
+    };
 
 initdatasources();
 initnotifications();

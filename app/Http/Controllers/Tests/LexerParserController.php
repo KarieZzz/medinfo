@@ -30,10 +30,10 @@ class LexerParserController extends Controller
         //$i = "сравнение(С1, С6, >=, группы(*), графы(*))";
         //$i = "сравнение(С1, С6, >=, группы(*))";
         //$i = "сравнение((сумма(С1, С2, С16Г3:С18Г5, С20)+С31+С41)/2, С6, >=)";
-        //$i = "сравнение((сумма(Г4, Г9:Г11, Г13)+Г16)/2, Г15, >=, группы(село, !сводные , !север, !юл), строки(1.0,5.4, 7.0-18.0))";
-        //$i = "сравнение(С1, С6, >=, , графы(*))";
-        //$i = "сравнение(С5.8Г16, С5.8Г15, =, группы(*), графы())";
-        //$i = "сравнение(С4.2.1Г13, С4.2.1Г9, =, группы(*), строки())";
+        $i = "сравнение((сумма(Г4, Г9:Г11, Г13)+Г16)/2, Г15, >=, группы(село, !сводные , !север, !юл), строки(1.0,5.4, 7.0-18.0))";
+        //$i = "сравнение(С1, С6, ==,группы(),строки())";
+        //$i = "сравнение(С5.8Г16, С5.8Г15, =)";
+        //$i = "сравнение(С4.2.1Г13, С4.2.1Г9, =, группы(*), строки(),)";
 /*        $i = "сравнение(
                 большее(Г4:Г9), 
                 Г10, 
@@ -43,6 +43,7 @@ class LexerParserController extends Controller
                     11.3, 12.1, 12.5.1, 10.5.1, 10.5.2, 10.5.3
                 )
             )";*/
+        //$i = "сравнение(С8.0, С8.1+С8.2+С8.3+С8.4+С8.5+С8.6+С8.7+С8.8+С8.9+С8.10+С8.11+С8.12, >=))";
         //$i = "сравнение(С6.0Г4-С6.1Г4, Ф10Т2000С1Г7, >=)";
 
         //$i = "зависимость(Г3, Г4+Г5, группы(оп), строки(*))";
@@ -62,27 +63,27 @@ class LexerParserController extends Controller
         //$res = preg_match_all('/\((.*?)\(/u', $i, $matches, PREG_SET_ORDER);
         //dd($matches);
 
-         //$lexer = new ControlFunctionLexer($i);
-         //$tockenstack = $lexer->getTokenStack();
+         $lexer = new ControlFunctionLexer($i);
+         $tockenstack = $lexer->getTokenStack();
         //dd($lexer->normalizeInput());
         //dd($lexer);
 
-         //$parser = new ControlFunctionParser($tockenstack);
-         //$parser->func();
+         $parser = new ControlFunctionParser($tockenstack);
+         $parser->func();
         //dd($parser);
-        //dd($parser->root);
+        dd($parser->root);
         //dd(json_decode(json_encode($parser->root)));
 
         //$table = Table::find(10);
-         //$table = Table::find(112); // Ф12 Т2000
+         $table = Table::find(112); // Ф12 Т2000
         //$table = Table::find(115); // Ф32 Т2120
 
-         //$translator = new ControlPtreeTranslator($parser, $table);
+         $translator = new ControlPtreeTranslator($parser, $table);
         //$translator->setParentNodesFromRoot();
         //$translator->parseCellAdresses();
         //$translator->parseCellRanges();
         //$translator->validateVector();
-         //$translator->prepareIteration();
+         $translator->prepareIteration();
         //dd($translator);
         //dd($translator->getProperties());
         //dd($translator->parser->root);
@@ -101,16 +102,16 @@ class LexerParserController extends Controller
         //dd($translator->getProperties());
 
         $document = Document::find(13134); // 12 ф ГКБ№8 за 2016 год
-        $cfunc = CFunction::find(2652); // сравнение(С8.0, С8.1+С8.2+С8.3+С8.4+С8.5+С8.6+С8.7+С8.8+С8.9+С8.10+С8.11+С8.12, >=)) ф. 12 т. 2000
+        //$cfunc = CFunction::find(2652); // сравнение(С8.0, С8.1+С8.2+С8.3+С8.4+С8.5+С8.6+С8.7+С8.8+С8.9+С8.10+С8.11+С8.12, >=)) ф. 12 т. 2000
         //$cfunc = CFunction::find(3280);
         //dd($cfunc);
-        $pTree = unserialize(base64_decode($cfunc->ptree));
+        //$pTree = unserialize(base64_decode($cfunc->ptree));
         //dd($pTree);
-        $props = json_decode($cfunc->properties, true);
+        //$props = json_decode($cfunc->properties, true);
         //dd($props);
         //dd($iterations);
-        //$evaluator = new ControlFunctionEvaluator($translator->parser->root, $translator->iterations, $document);
-        $evaluator = new ControlFunctionEvaluator($pTree, $props, $document);
+        $evaluator = new ControlFunctionEvaluator($translator->parser->root, $translator->getProperties(), $document);
+        //$evaluator = new ControlFunctionEvaluator($pTree, $props, $document);
 
         //$evaluator->prepareCellValues();
         //$evaluator->prepareCAstack();

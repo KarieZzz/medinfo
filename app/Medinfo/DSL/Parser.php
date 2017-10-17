@@ -20,11 +20,11 @@ abstract class Parser {
     }
     
     public function match($x) {
-        if ($this->lookahead->type == $x ) {
+        if ($this->lookahead->type === $x ) {
               $this->consume();
         } else {
             throw new \Exception("Ошибка разбора правила контроля. Ожидался токен <" . $this->tokenNames[$this->input->current()->type]
-                . ">: Обнаружен <" . $this->tokenNames[$x] . ">");
+                . ">: Обнаружен <" . $this->tokenNames[$this->lookahead->type] . ">");
         }
     }
 
