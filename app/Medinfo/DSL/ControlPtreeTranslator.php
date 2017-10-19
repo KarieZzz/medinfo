@@ -43,17 +43,7 @@ class ControlPtreeTranslator
         $this->form = Form::find($table->form_id);
     }
 
-    public function makeReadable() {
-        foreach ($this->parser->argStack[0] as $node) {
-            $this->scriptReadable .= $node;
-        }
-        //$this->boolean_sign = $this->parser->root->children[2]->children[0]->content;
-        $this->scriptReadable .= $this->parser->root->children[2]->children[0];
-        foreach ($this->parser->argStack[1] as $node) {
-            $this->scriptReadable .= $node;
-        }
-        $this->scriptReadable = str_replace(['  ', '( '], [' ', '('], $this->scriptReadable);
-    }
+    public function makeReadable() {  }
 
     public function setParentNodesFromRoot()
     {

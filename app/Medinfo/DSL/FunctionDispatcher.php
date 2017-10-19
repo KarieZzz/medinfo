@@ -8,16 +8,17 @@ class FunctionDispatcher
     const COMPARE       = 1;
     const DEPENDENCY    = 2;
     const INTERANNUAL   = 3;
-    const MULTIPLICITY  = 4;
-    const PRESENCE      = 5;
-    const ABSENS        = 6;
-    const SUM           = 7;
-    const MIN           = 8;
-    const MAX           = 9;
-    const DIAPAZON      = 10;
-    const GROUPS        = 11;
-    const ROWS          = 12;
-    const COLUMNS       = 13;
+    const IADIAPAZON    = 4;
+    const MULTIPLICITY  = 5;
+    const PRESENCE      = 6;
+    const ABSENS        = 7;
+    const SUM           = 8;
+    const MIN           = 9;
+    const MAX           = 10;
+    const DIAPAZON      = 11;
+    const GROUPS        = 12;
+    const ROWS          = 13;
+    const COLUMNS       = 14;
 
     const DSL = 'App\\Medinfo\\DSL\\';
 
@@ -26,6 +27,7 @@ class FunctionDispatcher
         "сравнение"     => self::COMPARE,
         "зависимость"   => self::DEPENDENCY,
         "межгодовой"    => self::INTERANNUAL,
+        "мгдиапазон"    => self::IADIAPAZON,
         "кратность"     => self::MULTIPLICITY,
         "наличие"       => self::PRESENCE ,
         "отсутствие"    => self::ABSENS,
@@ -43,6 +45,7 @@ class FunctionDispatcher
         "сравнение",
         "зависимость",
         "межгодовой",
+        "мгдиапазон",
         "кратность",
         "наличие",
         "отсутствие",
@@ -55,12 +58,13 @@ class FunctionDispatcher
         "графы",
     ];
 
-    public static $structNames = [
+    public static $translators = [
         null,
-        "compare",
-        "dependency",
-        "interannual",
-        "multiplicity",
+        "CompareTranslator",
+        "DependencyTranslator",
+        "InterannualTranslator",
+        "IAdiapazonTranslator",
+        "MultiplicityTranslator",
         "presens",
         "absence",
     ];
@@ -75,19 +79,24 @@ class FunctionDispatcher
 
     public static $functionArgs = [
         null,
-        'сравнение'     => ['expression|required', 'expression|required','boolean|required', 'subfunction|groups|group_range', 'subfunction|rows|columns|num_range'],
-        'зависимость'   => ['expression:required|expression:required|subfunction:группы|subfunction:строки,графы'],
-        'межгодовой'    => ['diapason|required', 'integer|required'],
-        'кратность'     => ['diapason|required', 'float|required'],
-        "наличие"       => self::PRESENCE ,
-        "отсутствие"    => self::ABSENS,
-        "сумма"         => self::SUM,
-        "меньшее"       => self::MIN,
-        "большее"       => self::MAX,
-        "диапазон"      => self::DIAPAZON,
-        "группы"        => self::GROUPS,
-        "строки"        => self::ROWS,
-        "графы"         => self::COLUMNS,
+        'сравнение'     => ['expression|required', 'expression|required','boolean|required', 'subfunction|группы', 'subfunction|строки|графы'],
+        'зависимость'   => ['expression|required','expression|required','subfunction|группы','subfunction|строки|графы'],
+        'межгодовой'    => ['expression|required', 'expression|required','factor|required'],
+        'мгдиапазон'    => ['subfunction|required|diapazon', 'factor|required'],
+        'кратность'     => ['subfunction|required|diapazon', 'factor|required'],
+        "наличие"       => [] ,
+        "отсутствие"    => [],
+    ];
+
+    public static $algorithms = [
+        null,
+        'сравнение'     => 'a1 a3 a2',
+        'зависимость'   => 'a1 ^ a2',
+        'межгодовой'    => '(a2 - a1)/a2 * 100 > a3',
+        'мгдиапазон'    => ['subfunction|required|diapazon', 'factor|required'],
+        'кратность'     => 'a1 % a2 == 0',
+        "наличие"       => [] ,
+        "отсутствие"    => [],
     ];
 
     public static function getProperties($fname)

@@ -14,7 +14,7 @@ class ControlFunctionParser extends Parser {
     public $excludeGroupStack = [];
     public $argStack = [];
     public $currentArgIndex = 0;
-    public $function_name;
+    //public $function_name;
     //public $arguments;
 
     public function __construct($input) {
@@ -252,6 +252,7 @@ class ControlFunctionParser extends Parser {
             case FunctionDispatcher::SUM :
             case FunctionDispatcher::MIN :
             case FunctionDispatcher::MAX :
+            case FunctionDispatcher::DIAPAZON :
                 $this->ca_range_args($node);
                 $this->argStack[$this->currentArgIndex][] = $node;
                 break;
@@ -344,7 +345,6 @@ class ControlFunctionParser extends Parser {
         do {
             $arg_type = $arguments->lookahead->argType;
             $exp_node = $this->$arg_type();
-
             $arg_node = new ControlFunctionParseTree(ControlFunctionLexer::ARG, 'arg_' . $this->currentArgIndex);
             if (!is_null($exp_node)) {
                 $arg_node->addChild($exp_node);
@@ -434,8 +434,10 @@ class ControlFunctionParser extends Parser {
     {
         // func : NAME cargs
         if ($this->lookahead->type == ControlFunctionLexer::NAME) {
-            $this->function_name = $this->lookahead->text;
-            if (!array_key_exists($this->lookahead->text, FunctionDispatcher::$functionNames)) {
+            if (array_key_exists($this->lookahead->text, FunctionDispatcher::$functionNames)) {
+                $this->function_name = $this->lookahead->text;
+                $this->function_index = FunctionDispatcher::$functionNames[$this->lookahead->text];
+            } else {
                 throw new \Exception("Функция <$this->function_name> не существует");
             }
             $this->root = new ControlFunctionParseTree($this->lookahead->type, $this->function_name);

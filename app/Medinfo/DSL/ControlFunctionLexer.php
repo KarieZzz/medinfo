@@ -165,11 +165,12 @@ class ControlFunctionLexer extends Lexer
                     $token = new Token(self::EXCLAMATION, '!');
                     $this->tokenstack->push($token);
                     return $token;
-                case $this->c >= 'а' && $this->c <= 'я':
-                    return $this->name();
+                case '0' :
                 case '.' :
                 case $this->c >= '1' && $this->c <= '9':
                     return $this->number();
+                case $this->c >= 'а' && $this->c <= 'я' :
+                    return $this->name();
                 case 'Ф':
                 case 'Т':
                 case 'С':

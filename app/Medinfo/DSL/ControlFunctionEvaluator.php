@@ -32,9 +32,9 @@ class ControlFunctionEvaluator
         //dd($properties);
         $this->iterations = $properties['iterations'];
         $this->document = $document;
-        $this->expr_node1 = $this->pTree->children[0]->children[0];
-        $this->expr_node2 = $this->pTree->children[1]->children[0];
-        $this->boolean_op = $this->pTree->children[2]->children[0]->content;
+        $this->expr_node1 = $this->getArgument(1);
+        $this->expr_node2 = $this->getArgument(1);
+        $this->boolean_op = $this->getArgument(2)->content;
     }
 
     public function validateScope()
@@ -47,6 +47,14 @@ class ControlFunctionEvaluator
             }
         }
         return true;
+    }
+
+    public function getArgument($index)
+    {
+        if (!$this->pTree->children[$index]->children[0] instanceof ParseTree) {
+            throw new \Exception("Аргумент $index не найден");
+        }
+        return $this->pTree->children[$index]->children[0];
     }
 
     public function prepareCellValues()

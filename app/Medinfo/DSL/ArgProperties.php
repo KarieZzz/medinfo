@@ -22,15 +22,13 @@ class ArgProperties
     const EXPRESSION    = 2;
     const SUBFUNCTION   = 3;
     const BOOLEAN       = 4;
-    const INTEGER       = 5;
+    const FACTOR        = 5;
     const FLOAT         = 6;
-    const DIAPASON      = 7;
+    const DIAPAZON      = 7;
     const REQUIRED      = 8;
     const GROUPS        = 9;
-    const GROUP_RANGE   = 10;
-    const ROWS          = 11;
-    const COLUMNS       = 12;
-    const NUM_RANGE     = 13;
+    const ROWS          = 10;
+    const COLUMNS       = 11;
 
     public static $propNames = [
         "n/a",
@@ -38,15 +36,13 @@ class ArgProperties
         "expression",
         "subfunction",
         "boolean",
-        "integer",
+        "factor",
         "float",
-        "diapason",
+        "diapazon",
         "required",
-        "groups",
-        "group_range",
-        "rows",
-        "columns",
-        "num_range",
+        "группы",
+        "строки",
+        "графы",
     ];
 
     public function __construct($input) {
@@ -87,33 +83,27 @@ class ArgProperties
                 case 'boolean' :
                     $this->propstack[] = self::BOOLEAN;
                     break;
-                case 'integer' :
-                    $this->propstack[] = self::INTEGER;
+                case 'factor' :
+                    $this->propstack[] = self::FACTOR;
                     break;
                 case 'float' :
                     $this->propstack[] = self::FLOAT;
                     break;
-                case 'diapason' :
-                    $this->propstack[] = self::DIAPASON;
+                case 'diapazon' :
+                    $this->propstack[] = self::DIAPAZON;
                     break;
                 case 'required' :
                     $this->argRequired = true;
                     $this->propstack[] = self::REQUIRED;
                     break;
-                case 'groups' :
+                case 'группы' :
                     $this->propstack[] = self::GROUPS;
                     break;
-                case 'group_range' :
-                    $this->propstack[] = self::GROUP_RANGE;
-                    break;
-                case 'rows' :
+                case 'строки' :
                     $this->propstack[] = self::ROWS;
                     break;
-                case 'columns' :
+                case 'графы' :
                     $this->propstack[] = self::COLUMNS;
-                    break;
-                case 'num_range' :
-                    $this->propstack[] = self::NUM_RANGE;
                     break;
                 default :
                     throw new \Exception("Неизвестное ствойство аргумента: " . $prop);

@@ -6,7 +6,7 @@ abstract class Lexer {
 
     const EOF                   = -1;
     const EOF_TYPE              = 1;
-    const INVALID_TOKEN_TYPE    = 0;
+    //const INVALID_TOKEN_TYPE    = 0;
     protected $input;                           // обрабатываемая строка
     protected $p                = 0;            // позиция текущего символа
     protected $c;                               // текущий символ
