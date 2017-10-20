@@ -19,7 +19,7 @@ class ControlFunctionParser extends Parser {
 
     public function __construct($input) {
         parent::__construct($input);
-        //$this->celladressStack = new \SplDoublyLinkedList;
+        //$this->argStack = new \SplDoublyLinkedList;
         $this->tokenNames = ControlFunctionLexer::$tokenNames;
     }
 
@@ -151,7 +151,7 @@ class ControlFunctionParser extends Parser {
                 $cellrange->addChild($celladress_right);
                 $func_node->addChild($cellrange);
                 $this->cellrangeStack[$cellrange_key]['node'] = $cellrange;
-                //$this->celladressStack->push($cellrange);
+                //$this->argStack->push($cellrange);
                 if ($this->lookahead->type == ControlFunctionLexer::COMMA) {
                     $this->match(ControlFunctionLexer::COMMA);
                 }

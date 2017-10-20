@@ -258,7 +258,7 @@ class ControlPtreeTranslator
                 $rows = Row::OfTable($this->table->id)->orderBy('row_index')->get();
             }
             foreach ($rows as $row) {
-                //$iterations = $this->parser->celladressStack;
+                //$iterations = $this->parser->argStack;
                 $iterations = $lightweightCAStack;
 
                 //dd($iterations);
@@ -281,7 +281,7 @@ class ControlPtreeTranslator
                 $columns = Column::OfTable($this->table->id)->OfDataType()->orderBy('column_index')->get();
             }
             foreach ($columns as $column) {
-                //$iterations = $this->parser->celladressStack;
+                //$iterations = $this->parser->argStack;
                 $iterations = $lightweightCAStack;
                 foreach ($iterations as &$ca) {
                     if ($ca['incomplete']) {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Tests;
 
 use App\Medinfo\DSL\ControlFunctionEvaluator;
+use App\Medinfo\DSL\EquationFunctionParser;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -11,6 +12,7 @@ use App\Medinfo\DSL\ControlFunctionLexer;
 use App\Medinfo\DSL\ControlFunctionParser;
 use App\Medinfo\DSL\ControlPtreeTranslator;
 use App\Medinfo\DSL\Translator;
+use App\Medinfo\DSL\Evaluator;
 
 use App\Document;
 use App\Table;
@@ -36,7 +38,7 @@ class LexerParserController extends Controller
         //$i = "сравнение(С1, С6, ==,группы(),строки())";
         //$i = "сравнение(С5.8Г16, С5.8Г15, =)";
         //$i = "сравнение(С4.2.1Г13, С4.2.1Г9, =, группы(*), строки(),)";
-        $i = "сравнение(
+        /*$i = "сравнение(
                 большее(Г4:Г9), 
                 Г10, 
                 =, 
@@ -44,11 +46,11 @@ class LexerParserController extends Controller
                     10.1, 10.2, 10.4.2, 10.4.3, 10.6.1, 10.6.2, 10.6.3, 10.6.4, 10.6.5, 10.8.2, 
                     11.3, 12.1, 12.5.1, 10.5.1, 10.5.2, 10.5.3
                 )
-            )";
+            )";*/
         //$i = "сравнение(С8.0, С8.1+С8.2+С8.3+С8.4+С8.5+С8.6+С8.7+С8.8+С8.9+С8.10+С8.11+С8.12, >=))";
         //$i = "сравнение(С6.0Г4-С6.1Г4, Ф10Т2000С1Г7, >=)";
 
-        //$i = "зависимость(Г3, Г4+Г5, группы(оп), строки(*))";
+        //$i = "зависимость(Г4, Г16, группы(оп), строки(*))";
         //$i = 'зависимость(Г3, сумма(Г4:Г8))';
         //$i = 'зависимость(Г3, Г4, группы(*),  строки(*))';
 
@@ -58,9 +60,11 @@ class LexerParserController extends Controller
         //$i = "мгдиапазон(диапазон(С16Г3:С18Г3), 0.2)";
         //$i = "мгдиапазон(диапазон(С11Г3, С16Г3:С18Г3, С20Г3, С32Г3, С16Г3:С18Г3),  20)";
 
-        //$i = "кратность(диапазон(С01Г3:С02Г6),  0.25)";
+        $i = "кратность(диапазон(С01Г3:С02Г6),  2)";
         //$i = "кратность(диапазон(С1Г3:С221Г8), 0.25 )";
         //$i = "кратность(диапазон(С01Г3:С02Г6),  .25)";
+
+        //$i = '(a2 - a1)/a2 * 100 > a3';
 
         //$cellcount = preg_match_all('/Ф([а-я0-9.-]+)Т([\w.-]+)С([\w.-]+)Г(\d{1,})/u', $i, $matches, PREG_SET_ORDER);
         //$res = preg_match('|(?:\()(.*?),(.*?)\)|usei', $i, $matches);
@@ -79,8 +83,9 @@ class LexerParserController extends Controller
         //dd(json_decode(json_encode($parser->root)));
 
         //$table = Table::find(10); // Ф30 Т1100
-        $table = Table::find(112); // Ф12 Т2000
+        //$table = Table::find(112); // Ф12 Т2000
         //$table = Table::find(115); // Ф32 Т2120
+        $table = Table::find(151); // Ф41 Т2100
 
          $translator = Translator::invoke($parser, $table);
          //$translator = new ControlPtreeTranslator($parser, $table);
@@ -97,7 +102,7 @@ class LexerParserController extends Controller
         //dd(json_decode(json_encode($translator->parser->root, JSON_PARTIAL_OUTPUT_ON_ERROR, JSON_FORCE_OBJECT), TRUE));
         //dd((array)$translator->parser->root);
         //dd(unserialize(serialize($translator->parser->root)));
-        //dd($translator->parser->celladressStack);
+        //dd($translator->parser->argStack);
         //dd($translator->parser->rcRangeStack);
         //dd($translator->parser->rcStack);
         //dd($translator->parser->excludeGroupStack);
@@ -106,7 +111,8 @@ class LexerParserController extends Controller
         //dd(json_decode(json_encode($translator->iterations), TRUE));
         //dd($translator->getProperties());
 
-        $document = Document::find(13134); // 12 ф ГКБ№8 за 2016 год
+        //$document = Document::find(13134); // 12 ф ГКБ№8 за 2016 год
+        $document = Document::find(13753); // 41 ф ДР1 за 2016 год
         //$cfunc = CFunction::find(2652); // сравнение(С8.0, С8.1+С8.2+С8.3+С8.4+С8.5+С8.6+С8.7+С8.8+С8.9+С8.10+С8.11+С8.12, >=)) ф. 12 т. 2000
         //$cfunc = CFunction::find(3280);
         //dd($cfunc);
@@ -115,12 +121,13 @@ class LexerParserController extends Controller
         //$props = json_decode($cfunc->properties, true);
         //dd($props);
         //dd($iterations);
-        $evaluator = new ControlFunctionEvaluator($translator->parser->root, $translator->getProperties(), $document);
+        $evaluator = Evaluator::invoke($translator->parser->root, $translator->getProperties(), $document);
+        //$evaluator = new ControlFunctionEvaluator($translator->parser->root, $translator->getProperties(), $document);
         //$evaluator = new ControlFunctionEvaluator($pTree, $props, $document);
 
         //$evaluator->prepareCellValues();
         //$evaluator->prepareCAstack();
-
+        //dd($evaluator->arguments);
         //dd($evaluator->pTree);
         //dd($evaluator->caStack);
         //dd($evaluator->iterations);
@@ -214,9 +221,19 @@ class LexerParserController extends Controller
         //dd($tokenstack);
         $parcer = new \App\Medinfo\DSL\CalculationFunctionParser($tokenstack);
         $parcer->expression();
-        //dd($parcer->celladressStack);
-        $eval = new \App\Medinfo\DSL\Evaluator($parcer->expression());
+        //dd($parcer->argStack);
+        $eval = new \App\Medinfo\DSL\EvaluatorExample($parcer->expression());
         //dd($eval->evaluate());
+    }
+
+    public function test_making_AST_w_bool()
+    {
+        $input = "33 + 44 - 40 > 23/2";
+        $lexer = new ControlFunctionLexer($input);
+        $tockenstack = $lexer->getTokenStack();
+        //dd($tockenstack);
+        $parser = new EquationFunctionParser($tockenstack);
+        dd($parser->equation());
     }
 
     public function test_celllexer()

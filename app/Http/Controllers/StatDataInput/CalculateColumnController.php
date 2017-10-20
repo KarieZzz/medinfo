@@ -11,7 +11,7 @@ use App\Medinfo\DSL\CalculationFunctionParser;
 use App\Cell;
 use App\Column;
 use App\Document;
-use App\Medinfo\DSL\Evaluator;
+use App\Medinfo\DSL\EvaluatorExample;
 use App\Row;
 use App\Table;
 
@@ -61,7 +61,7 @@ class CalculateColumnController extends Controller
                     $node->content = $v;
                     $i++;
                 }
-                $eval = new Evaluator($pt);
+                $eval = new EvaluatorExample($pt);
                 $calculated = $eval->evaluate();
 /*                switch (true) {
                     case $calculated == 0 :

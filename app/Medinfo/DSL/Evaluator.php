@@ -2,8 +2,8 @@
 /**
  * Created by PhpStorm.
  * User: shameev
- * Date: 15.08.2017
- * Time: 17:14
+ * Date: 19.10.2017
+ * Time: 11:37
  */
 
 namespace App\Medinfo\DSL;
@@ -11,47 +11,13 @@ namespace App\Medinfo\DSL;
 
 class Evaluator
 {
-    //
-    public $parceTree;
+    const NS = 'App\\Medinfo\\DSL\\';
 
-    public function __construct(ParseTree $parseTree)
+    public static function invoke($ptree, $properties, $document)
     {
-        $this->parceTree = $parseTree;
-    }
+        $f = $properties['function_id'];
+        $e = self::NS . FunctionDispatcher::$evaluators[$f];
+        return new $e($ptree, $properties, $document);
 
-    public function evaluate()
-    {
-        return $this->evaluateSubtree($this->parceTree);
     }
-
-    public function evaluateSubtree(ParseTree $node)
-    {
-        if (CalculationFunctionLexer::$tokenNames[$node->type] === 'NUMBER') {
-            return $node->content;
-        } else {
-            $left = $this->evaluateSubtree($node->left());
-            $right = $this->evaluateSubtree($node->right());
-            switch (CalculationFunctionLexer::$tokenNames[$node->type]) {
-                case 'PLUS' :
-                    return $left + $right;
-                    break;
-                case 'MINUS' :
-                    return $left - $right;
-                    break;
-                case 'MULTIPLY' :
-                    return $left * $right;
-                    break;
-                case 'DIVIDE' :
-                    //dump($right);
-                    if ($right === 0) {
-                        return 0;
-                        break;
-                    }
-                    return $left / $right;
-                    break;
-            }
-        }
-        return null;
-    }
-
 }

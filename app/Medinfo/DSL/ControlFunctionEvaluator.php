@@ -19,9 +19,7 @@ class ControlFunctionEvaluator
     public $properties;
     public $iterations;
     public $caStack = [];
-    public $expr_node1;
-    public $expr_node2;
-    public $boolean_op;
+    public $arguments;
     public $not_in_scope = false;
     public $valid;
 
@@ -30,11 +28,10 @@ class ControlFunctionEvaluator
         $this->pTree = $ptree;
         $this->properties = $properties;
         //dd($properties);
-        $this->iterations = $properties['iterations'];
+        //dd($this->iterations);
         $this->document = $document;
-        $this->expr_node1 = $this->getArgument(1);
-        $this->expr_node2 = $this->getArgument(1);
-        $this->boolean_op = $this->getArgument(2)->content;
+        $this->setIterations();
+        $this->setArguments();
     }
 
     public function validateScope()
@@ -49,12 +46,29 @@ class ControlFunctionEvaluator
         return true;
     }
 
+    public function setIterations()
+    {
+        $this->iterations = $this->properties['iterations'];
+    }
+
+    public function setArguments() { }
+
+    public function evaluate()
+    {
+        $result['l'] = null;
+        $result['r'] = null;
+        $result['d'] = null;
+        $result['v'] = null;
+        return $result;
+    }
+
     public function getArgument($index)
     {
-        if (!$this->pTree->children[$index]->children[0] instanceof ParseTree) {
+        if (!$this->pTree->children[$index-1]->children[0] instanceof ParseTree) {
             throw new \Exception("Аргумент $index не найден");
         }
-        return $this->pTree->children[$index]->children[0];
+        $this->arguments[$index] = $this->pTree->children[$index-1]->children[0];
+
     }
 
     public function prepareCellValues()
@@ -97,7 +111,6 @@ class ControlFunctionEvaluator
         $valid = true;
         $i = 0;
         foreach ($this->iterations as $code => $iteration) {
-
             foreach ($iteration as $cell_label => $props) {
                 //$node = $caStack[$cell_label]['node'];
                 $node = $this->caStack[$cell_label];
@@ -105,12 +118,12 @@ class ControlFunctionEvaluator
                 $node->content = $props['value'];
                 $result[$i]['cells'][] = ['row' => $props['ids']['r'], 'column' => $props['ids']['c']  ];
             }
-            //dd($this->expr_node1);
             $result[$i]['code'] = $code !== 0 ? $code : null;
-            $result[$i]['left_part_value'] = $this->evaluate($this->expr_node1);
-            $result[$i]['right_part_value'] = $this->evaluate($this->expr_node2);
-            $result[$i]['deviation'] = abs($result[$i]['left_part_value'] - $result[$i]['right_part_value']);
-            $result[$i]['valid'] = $this->compareArgs($result[$i]['left_part_value'], $result[$i]['right_part_value'], $this->boolean_op);
+            $r = $this->evaluate();
+            $result[$i]['left_part_value'] = $r['l'];
+            $result[$i]['right_part_value'] = $r['r'];
+            $result[$i]['deviation'] = $r['d'];
+            $result[$i]['valid'] = $r['v'];
             $valid = $valid &&  $result[$i]['valid'];
             $i++;
         }
@@ -118,7 +131,7 @@ class ControlFunctionEvaluator
         return $result;
     }
 
-    public function compareArgs($lp, $rp, $boolean)
+    public function compare($lp, $rp, $boolean)
     {
         $delta = 0.0001;
         // Если обе части выражения равны нулю - пропускаем проверку.
@@ -152,9 +165,9 @@ class ControlFunctionEvaluator
         return $result;
     }
 
-    public function evaluate(ParseTree $expr_root)
+    public function multiplicity($number, $divider)
     {
-        return $this->evaluateSubtree($expr_root);
+        return $number % $divider == 0 ? true : false;
     }
 
     public function evaluateSubtree(ParseTree $node)
@@ -192,27 +205,34 @@ class ControlFunctionEvaluator
             }
             return $value;
         } else {
-
             $left = $this->evaluateSubtree($node->left());
             $right = $this->evaluateSubtree($node->right());
             switch (ControlFunctionLexer::$tokenNames[$node->type]) {
                 case 'PLUS' :
                     return $left + $right;
-                    break;
+                    //break;
                 case 'MINUS' :
                     return $left - $right;
-                    break;
+                    //break;
                 case 'MULTIPLY' :
                     return $left * $right;
-                    break;
+                    //break;
                 case 'DIVIDE' :
                     //dump($right);
                     if ($right === 0) {
                         return 0;
-                        break;
+                        //break;
                     }
                     return $left / $right;
-                    break;
+                    //break;
+                case 'DIVIDEMOD' :
+                    //dump($right);
+                    if ($right === 0) {
+                        return 0;
+                        //break;
+                    }
+                    return $left % $right;
+                //break;
             }
         }
         return null;

@@ -65,8 +65,15 @@ class FunctionDispatcher
         "InterannualTranslator",
         "IAdiapazonTranslator",
         "MultiplicityTranslator",
-        "presens",
-        "absence",
+    ];
+
+    public static $evaluators = [
+        null,
+        "CompareEvaluator",
+        "DependencyEvaluator",
+        "InterannualEvaluator",
+        "IAdiapazonEvaluator",
+        "MultiplicityEvaluator",
     ];
 
     public static $interpreterNames = [
@@ -84,8 +91,6 @@ class FunctionDispatcher
         'межгодовой'    => ['expression|required', 'expression|required','factor|required'],
         'мгдиапазон'    => ['subfunction|required|diapazon', 'factor|required'],
         'кратность'     => ['subfunction|required|diapazon', 'factor|required'],
-        "наличие"       => [] ,
-        "отсутствие"    => [],
     ];
 
     public static $algorithms = [
@@ -93,10 +98,8 @@ class FunctionDispatcher
         'сравнение'     => 'a1 a3 a2',
         'зависимость'   => 'a1 ^ a2',
         'межгодовой'    => '(a2 - a1)/a2 * 100 > a3',
-        'мгдиапазон'    => ['subfunction|required|diapazon', 'factor|required'],
+        'мгдиапазон'    => '',
         'кратность'     => 'a1 % a2 == 0',
-        "наличие"       => [] ,
-        "отсутствие"    => [],
     ];
 
     public static function getProperties($fname)

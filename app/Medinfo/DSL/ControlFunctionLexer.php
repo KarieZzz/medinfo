@@ -17,21 +17,22 @@ class ControlFunctionLexer extends Lexer
     const MINUS         = 5;
     const MULTIPLY      = 6;
     const DIVIDE        = 7;
-    const NUMBER        = 8;
-    const COMMA         = 9;
-    const BOOLEAN       = 10;
-    const COLON         = 11;
-    const EXCLAMATION   = 12;
-    const NAME          = 13;
-    const CELLADRESS    = 14;
-    const ELCODE        = 15; // Код элемента (строки, графы)
+    const DIVIDEMOD     = 8; // Деление по модулю
+    const NUMBER        = 9;
+    const COMMA         = 10;
+    const BOOLEAN       = 11;
+    const COLON         = 12;
+    const EXCLAMATION   = 13;
+    const NAME          = 14;
+    const CELLADRESS    = 15;
+    const ELCODE        = 16; // Код элемента (строки, графы)
     // Следующие типы для парсера
-    const ARG           = 16;
-    const INGROUP       = 17;
-    const OUTGROUP      = 18;
-    const UNIT          = 19;
-    const CELLRANGE     = 20;
-    const RCRANGE       = 21;
+    const ARG           = 17;
+    const INGROUP       = 18;
+    const OUTGROUP      = 19;
+    const UNIT          = 20;
+    const CELLRANGE     = 21;
+    const RCRANGE       = 22;
 
 
     public static $tokenNames = [
@@ -42,7 +43,7 @@ class ControlFunctionLexer extends Lexer
         "PLUS",
         "MINUS",
         "MULTIPLY",
-        "DIVIDE",
+        "DIVIDEMOD",
         "NUMBER",
         "COMMA",
         "BOOLEAN",
@@ -141,6 +142,11 @@ class ControlFunctionLexer extends Lexer
                     $token = new Token(self::DIVIDE, '/');
                     $this->tokenstack->push($token);
                     return $token;
+                case '%' :
+                    $this->consume();
+                    $token = new Token(self::DIVIDEMOD, '%');
+                    $this->tokenstack->push($token);
+                    return $token;
                 case '+' :
                     $this->consume();
                     $token = new Token(self::PLUS, '+');
@@ -154,6 +160,7 @@ class ControlFunctionLexer extends Lexer
                 case '=' :
                 case '>' :
                 case '<' :
+                case '^' :
                     return $this->boolean_sign();
                 case ':' :
                     $this->consume();
@@ -177,6 +184,8 @@ class ControlFunctionLexer extends Lexer
                 case 'Г':
                 case 'П':
                     return $this->cellAdress();
+                case 'a': // Латинское a
+                    return $this->argument();
                 default :
                     throw new \Exception("Неверный символ: " . $this->c);
             }
@@ -318,8 +327,20 @@ class ControlFunctionLexer extends Lexer
             mb_strlen($buf) > 1 && mb_strlen($p) > 1 ? $buf .= $p : true;
         }
         $this->celladressStack->push($buf);
-        //$token = new Token(self::CELLADRESS, '%'. ($this->celladressStack->count()-1));
+        //$token = new Token(self::CELLADRESS, '%'. ($this->argStack->count()-1));
         $token = new Token(self::CELLADRESS, $buf);
+        $this->tokenstack->push($token);
+        return $token;
+    }
+
+    public function argument()
+    {
+        $buf = '';
+        do {
+            $buf .= $this->c;
+            $this->consume();
+        } while ($this->isINTEGER());
+        $token = new Token(self::ARG, $buf);
         $this->tokenstack->push($token);
         return $token;
     }
@@ -332,6 +353,11 @@ class ControlFunctionLexer extends Lexer
     public function isNUMBER()
     {
         return $this->c == '.' || ($this->c >= '0' && $this->c <= '9');
+    }
+
+    public function isINTEGER()
+    {
+        return $this->c >= '0' && $this->c <= '9';
     }
 
     public function isFORMCODE()

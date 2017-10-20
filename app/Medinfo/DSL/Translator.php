@@ -11,12 +11,12 @@ namespace App\Medinfo\DSL;
 
 class Translator
 {
-    const TRANSLATORNS = 'App\\Medinfo\\DSL\\';
+    const NS = 'App\\Medinfo\\DSL\\';
 
     public static function invoke(Parser $parser, $table)
     {
         $f = $parser->function_index;
-        $t = self::TRANSLATORNS . FunctionDispatcher::$translators[$f];
+        $t = self::NS . FunctionDispatcher::$translators[$f];
         return new $t($parser, $table);
 
     }
