@@ -260,7 +260,8 @@ class CFunctionAdminController extends Controller
             $tockenstack = $lexer->getTokenStack();
             $parser = new \App\Medinfo\DSL\ControlFunctionParser($tockenstack);
             $parser->func();
-            $translator = new \App\Medinfo\DSL\ControlPtreeTranslator($parser, $table);
+            //$translator = new \App\Medinfo\DSL\ControlPtreeTranslator($parser, $table);
+            $translator = \App\Medinfo\DSL\Translator::invoke($parser, $table);
             $translator->prepareIteration();
             $compiled_cache['ptree'] = base64_encode(serialize($translator->parser->root));
             $compiled_cache['properties'] = $translator->getProperties();

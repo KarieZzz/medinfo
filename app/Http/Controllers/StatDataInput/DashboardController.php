@@ -322,12 +322,17 @@ class DashboardController extends Controller
     }*/
 
     // TODO: Доработать сохранение настроек редактирования отчета (таблица, фильтры, ширина колонок и т.д.)
-    protected function getLastState(GenericUser $worker, Document $document, Form $form, $default_album)
+    protected function getLastState(GenericUser $worker, Document $document, Form $form, $album)
     {
         $laststate = array();
-        $current_table = Table::OfForm($form->id)->whereDoesntHave('excluded', function ($query) use($default_album) {
+/*        $current_table = Table::OfForm($form->id)->whereDoesntHave('excluded', function ($query) use($default_album) {
             $query->where('album_id', $default_album->id)->orderBy('table_code');
-        })->first();
+        })->first();*/
+
+        $current_table = Table::OfForm($form->id)->whereDoesntHave('excluded', function ($query) use($album) {
+            $query->where('album_id', $album->id);
+        })->orderBy('table_index')->first();
+
         //$current_table = $form->tables->where('deleted', 0)->sortBy('table_code')->first();
         $laststate['currenttable'] = $current_table;
         return $laststate;

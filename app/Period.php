@@ -19,6 +19,15 @@ class Period extends Model
             ->where('pattern_id', 1); // 1 - Паттерн годового отчетного периода
     }
 
+    public function scopePreviousYear($query, $current_year)
+    {
+        $date = ((int)$current_year - 1 ) . '-01-01';
+        return $query
+
+            ->where('begin_date', $date)
+            ->where('pattern_id', 1); // 1 - Паттерн годового отчетного периода
+    }
+
     public function periodpattern()
     {
         return $this->belongsTo('App\PeriodPattern', 'pattern_id');

@@ -76,21 +76,21 @@ class FunctionDispatcher
         "MultiplicityEvaluator",
     ];
 
-    public static $interpreterNames = [
+/*    public static $interpreterNames = [
         null,
         "CompareEvaluator",
         "DependencyEvaluator",
         "InterannualEvaluator",
         "MultiplicityEvaluator",
-    ];
+    ];*/
 
     public static $functionArgs = [
         null,
-        'сравнение'     => ['expression|required', 'expression|required','boolean|required', 'subfunction|группы', 'subfunction|строки|графы'],
-        'зависимость'   => ['expression|required','expression|required','subfunction|группы','subfunction|строки|графы'],
+        'сравнение'     => ['expression|required', 'expression|required','boolean|required', 'subfunction|группы', 'subfunction|строки|графы|iterator'],
+        'зависимость'   => ['expression|required','expression|required','subfunction|группы','subfunction|строки|графы|iterator'],
         'межгодовой'    => ['expression|required', 'expression|required','factor|required'],
-        'мгдиапазон'    => ['subfunction|required|diapazon', 'factor|required'],
-        'кратность'     => ['subfunction|required|diapazon', 'factor|required'],
+        'мгдиапазон'    => ['subfunction|required|diapazon|iterator', 'factor|required'],
+        'кратность'     => ['subfunction|required|diapazon|iterator', 'factor|required'],
     ];
 
     public static $algorithms = [
@@ -98,7 +98,7 @@ class FunctionDispatcher
         'сравнение'     => 'a1 a3 a2',
         'зависимость'   => 'a1 ^ a2',
         'межгодовой'    => '(a2 - a1)/a2 * 100 > a3',
-        'мгдиапазон'    => '',
+        'мгдиапазон'    => '(a1p - a1c)/a1p * 100 > a2',
         'кратность'     => 'a1 % a2 == 0',
     ];
 

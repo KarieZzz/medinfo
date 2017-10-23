@@ -24,14 +24,12 @@ class ControlPtreeTranslator
     public $withinform = true;
     public $findex;
     public $scriptReadable;
-    //public $boolean_sign;
     public $vector = [];
     //public $lightweightCAStack = [];
     public $scopeOfUnits = false;
     public $units = [];
     public $scopeOfDocuments = false;
-    public $incldocuments = [];
-    public $excldocuments = [];
+    public $documents = [];
     public $iterations = [];
     const ROWS = 1;
     const COLUMNS = 2;
@@ -151,7 +149,7 @@ class ControlPtreeTranslator
                     $static = $this->parseStaticGroup($group_slug);
                     if ($static) {
                         $includes = array_merge($includes, $static['units']);
-                        $this->incldocuments = array_merge($this->incldocuments, $static['documents']);
+                        $this->documents[] = $static['dtype'];
                     }
                 }
              }
@@ -168,17 +166,16 @@ class ControlPtreeTranslator
                     $static = $this->parseStaticGroup($group_slug);
                     if ($static) {
                         $excludes = array_merge($excludes, $static['units']);
-                        $this->excldocuments = array_merge($this->excldocuments, $static['documents']);
+                        $this->documents[] = $static['dtype'] === 1 ? 2 : 1;
                     }
                 }
             }
             //dd($includes);
             $this->units = array_diff($includes, $excludes);
             //dd($this->units);
-            $this->incldocuments = array_unique($this->incldocuments);
-            $this->excldocuments = array_unique($this->excldocuments);
-            if (count($this->incldocuments) > 1 || count($this->excldocuments) > 1) {
-                throw new \Exception("Одновременно включать(исключать) и первичные и сводные документы не имеет смысла");
+            $this->documents = array_unique($this->documents);
+            if (count($this->documents) > 1 ) {
+                throw new \Exception("Не допускается дублирование включения или исключения документа в контроль в соответствии с типом (первичные, сводные)");
             }
             //dd($this->excldocuments);
 
@@ -201,11 +198,11 @@ class ControlPtreeTranslator
         switch ($static_group) {
             case UnitGroup::$reserved_slugs[1] :
                 $this->scopeOfDocuments = true;
-                $documents[] = UnitGroup::PRIMARY;
+                $dtype = UnitGroup::PRIMARY;
                 break;
             case UnitGroup::$reserved_slugs[2] :
                 $this->scopeOfDocuments = true;
-                $documents[] = UnitGroup::AGGREGATE;
+                $dtype = UnitGroup::AGGREGATE;
                 break;
             case UnitGroup::$reserved_slugs[3] :
             case UnitGroup::$reserved_slugs[4] :
@@ -223,7 +220,7 @@ class ControlPtreeTranslator
                 throw new \Exception("Группа $static_group не определена");
         }
 
-        return compact('units', 'documents');
+        return compact('units', 'dtype');
     }
 
     public function parseFunctionIndex()
@@ -299,7 +296,9 @@ class ControlPtreeTranslator
     public function getProperties()
     {
         $properties = [];
-        //$properties['boolean_sign'] = $this->boolean_sign;
+        if (property_exists($this, 'boolean_sign')) {
+            $properties['boolean_sign'] = $this->boolean_sign;
+        }
         $properties['iterations'] = $this->iterations;
         $properties['inform'] = $this->withinform;
         $properties['iteration_mode'] = isset($this->vector[0]) ? $this->vector[0] : null ;
@@ -309,8 +308,7 @@ class ControlPtreeTranslator
         $properties['scope_units'] = $this->scopeOfUnits;
         $properties['units'] = $this->units;
         $properties['scope_documents'] = $this->scopeOfDocuments;
-        $properties['incldocuments'] = $this->incldocuments;
-        $properties['excldocuments'] = $this->excldocuments;
+        $properties['documents'] = $this->documents;
         return $properties;
     }
 

@@ -34,13 +34,13 @@ class ControlFunctionEvaluator
         $this->setArguments();
     }
 
-    public function validateScope()
+    public function validateDocumentScope()
     {
         if ($this->properties['scope_documents']) {
-            if ($this->document->dtype === $this->properties['incldocuments'][0]) {
-                return true;
-            } elseif($this->document->dtype === $this->properties['excldocuments'][0]) {
+            if ($this->document->dtype === $this->properties['documents'][0]) {
                 return false;
+            } else {
+                return true;
             }
         }
         return true;
@@ -73,6 +73,15 @@ class ControlFunctionEvaluator
 
     public function prepareCellValues()
     {
+        if ($this->properties['inform']) {
+            $this->setInformCellValues();
+        } else {
+            $this->setCellValuesArbitrary();
+        }
+    }
+
+    public function setInformCellValues()
+    {
         foreach ($this->iterations as &$cell_adresses) {
             foreach ($cell_adresses as &$cell_adress) {
                 $cell = Cell::OfDRC($this->document->id, $cell_adress['ids']['r'], $cell_adress['ids']['c'])->first(['value']);
@@ -81,6 +90,28 @@ class ControlFunctionEvaluator
             }
         }
     }
+
+    public function setCellValuesArbitrary()
+    {
+        $dtype = $this->document->dtype;
+        $ou_id = $this->document->ou_id;
+        $period_id = $this->document->period_id;
+        $form_id = $this->document->form_id;
+
+        foreach ($this->iterations as &$cell_adresses) {
+            foreach ($cell_adresses as &$cell_adress) {
+                if ($cell_adress['ids']['f'] === $form_id) {
+                    $cell = Cell::OfDRC($this->document->id, $cell_adress['ids']['r'], $cell_adress['ids']['c'])->first(['value']);
+                } else {
+                    $document = Document::OfTUPF($dtype, $ou_id, $period_id, $cell_adress['ids']['f'])->first();
+                    $cell = $document ? Cell::OfDRC($document->id, $cell_adress['ids']['r'], $cell_adress['ids']['c'])->first(['value']) : null;
+                }
+                !$cell ? $value = 0 : $value = (float)$cell->value;
+                $cell_adress['value'] = $value;
+            }
+        }
+    }
+
 
     public function prepareCAstack()
     {
@@ -102,9 +133,7 @@ class ControlFunctionEvaluator
 
     public function makeControl()
     {
-        if (!$this->validateScope()) {
-            $this->not_in_scope = true;
-        }
+        $this->not_in_scope = $this->validateDocumentScope();
         $this->prepareCellValues();
         $this->prepareCAstack();
         $result = [];
@@ -128,6 +157,7 @@ class ControlFunctionEvaluator
             $i++;
         }
         $this->valid = $valid;
+        //dd($result);
         return $result;
     }
 
@@ -167,7 +197,7 @@ class ControlFunctionEvaluator
 
     public function multiplicity($number, $divider)
     {
-        return $number % $divider == 0 ? true : false;
+        return fmod($number, $divider) == 0 ? true : false;
     }
 
     public function evaluateSubtree(ParseTree $node)
@@ -231,7 +261,7 @@ class ControlFunctionEvaluator
                         return 0;
                         //break;
                     }
-                    return $left % $right;
+                    return fmod($left, $right);
                 //break;
             }
         }

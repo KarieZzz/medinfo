@@ -118,10 +118,11 @@ class DataCheck
             try {
                 $pTree = unserialize(base64_decode($function->ptree));
                 $props = json_decode($function->properties, true);
-                $evaluator = new ControlFunctionEvaluator($pTree, $props, $document);
+                //$evaluator = new ControlFunctionEvaluator($pTree, $props, $document);
+                $evaluator = \App\Medinfo\DSL\Evaluator::invoke($pTree, $props, $document);
                 $rule['iterations'] = $evaluator->makeControl();
                 $rule['valid'] = $evaluator->valid;
-                $rule['boolean_sign'] = $evaluator->boolean_op;
+                $rule['boolean_sign'] = isset($props['boolean_sign']) ? $props['boolean_sign'] : null;
                 $rule['formula'] = $props['formula'];
                 $rule['function_id'] = $props['function_id'];
                 $rule['function'] = $props['function'];

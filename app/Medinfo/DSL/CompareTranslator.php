@@ -12,11 +12,14 @@ namespace App\Medinfo\DSL;
 class CompareTranslator extends ControlPtreeTranslator
 {
 
+    public $boolean_sign;
+
     public function makeReadable() {
         foreach ($this->parser->argStack[0] as $node) {
             $this->scriptReadable .= $node;
         }
-        $this->scriptReadable .= $this->parser->root->children[2]->children[0];
+        $this->boolean_sign = ' ' . $this->parser->root->children[2]->children[0]->content;
+        $this->scriptReadable .= $this->boolean_sign;
         foreach ($this->parser->argStack[1] as $node) {
             $this->scriptReadable .= $node;
         }

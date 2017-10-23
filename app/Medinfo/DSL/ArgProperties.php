@@ -29,6 +29,7 @@ class ArgProperties
     const GROUPS        = 9;
     const ROWS          = 10;
     const COLUMNS       = 11;
+    const ITERATOR      = 12;
 
     public static $propNames = [
         "n/a",
@@ -43,6 +44,7 @@ class ArgProperties
         "группы",
         "строки",
         "графы",
+        "iterator",
     ];
 
     public function __construct($input) {
@@ -103,6 +105,9 @@ class ArgProperties
                     $this->propstack[] = self::ROWS;
                     break;
                 case 'графы' :
+                    $this->propstack[] = self::COLUMNS;
+                    break;
+                case 'iterator' :
                     $this->propstack[] = self::COLUMNS;
                     break;
                 default :
