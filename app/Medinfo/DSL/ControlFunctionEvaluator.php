@@ -36,14 +36,23 @@ class ControlFunctionEvaluator
 
     public function validateDocumentScope()
     {
+        $exclude_by_type = false;
+        $exclude_by_ou_id = false;
         if ($this->properties['scope_documents']) {
             if ($this->document->dtype === $this->properties['documents'][0]) {
-                return false;
+                $exclude_by_type = false;
             } else {
-                return true;
+                $exclude_by_type = true;
             }
         }
-        return true;
+        if ($this->properties['scope_units']) {
+            if (in_array($this->document->ou_id, $this->properties['units'])) {
+                $exclude_by_ou_id = false;
+            } else {
+                $exclude_by_type = true;
+            }
+        }
+        return $exclude_by_type xor $exclude_by_ou_id;
     }
 
     public function setIterations()

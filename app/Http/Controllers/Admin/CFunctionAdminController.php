@@ -94,7 +94,7 @@ class CFunctionAdminController extends Controller
     public function store1(Table $table, Request $request)
     {
         $this->validate($request, $this->validateRules());
-        $cache = $this->compile($request->script, $table);
+        $cache = $this->compile1($request->script, $table);
         if (!$cache) {
             return ['error' => 422, 'message' => $this->compile_error];
         }

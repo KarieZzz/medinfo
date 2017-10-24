@@ -23,9 +23,8 @@ class CompareEvaluator extends ControlFunctionEvaluator
     {
         $result['l'] = $this->evaluateSubtree($this->arguments[1]);
         $result['r'] = $this->evaluateSubtree($this->arguments[2]);
-        $result['d'] = abs($result['l'] - $result['r']);
+        $result['d'] = round(abs($result['l'] - $result['r']),2);
         $result['v'] = $this->compare($result['l'], $result['r'], $this->arguments[3]->content);
         return $result;
     }
-
 }

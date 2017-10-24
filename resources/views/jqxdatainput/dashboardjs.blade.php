@@ -76,7 +76,8 @@ let formlabels =
         compare: 1,
         dependency: 2,
         interannual: 3,
-        multiplicity: 4
+        iadiapazon: 4,
+        multiplicity: 5
     };
 
 initdatasources();

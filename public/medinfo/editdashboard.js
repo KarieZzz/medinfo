@@ -174,9 +174,9 @@ let renderDependencyControl = function(result, mode, level) {
     }
     return row;
 };
-let renderInterannualControl = function(result, level) {
+let renderInDiapazonControl = function(result, level) {
     //console.log(result.cells);
-    var error_level_mark = 'invalid';
+    let error_level_mark = 'invalid';
     switch (level) {
         case 1 :
             error_level_mark = 'invalid';
@@ -185,19 +185,19 @@ let renderInterannualControl = function(result, level) {
             error_level_mark = 'alerted';
             break;
     }
-    var row = $("<div class='control-row'></div>");
+    let row = $("<div class='control-row'></div>");
     result.valid ? valid = 'верно' : valid = 'не верно';
     if (typeof result.code !== 'undefined') {
-        var rule = $("<div class='showrule'><span class='text-info'><strong> По ячейке </strong></span> <em>" + result.code + "</em>:</div>");
+        let rule = $("<div class='showrule'><span class='text-info'><strong> По ячейке </strong></span> <em>" + result.code + "</em>:</div>");
         row.append(rule);
     }
-    var t = "<table class='control-result'><tr><td>Текущее</td>";
+    let t = "<table class='control-result'><tr><td>Текущее</td>";
     t += "<td>Прошлогоднее</td><td>Отклонение (%)</td>";
     t += "<td>Результат контроля</td></tr>";
     t += "<tr><td>" + result.left_part_value + "</td>" ;
     t += "<td>" + result.right_part_value + "</td>";
-    t += "<td>"+result.deviation_relative + "</td> <td class='check'>" + valid + "</td></tr></table>";
-    var explanation = $(t);
+    t += "<td>"+result.deviation + "</td> <td class='check'>" + valid + "</td></tr></table>";
+    let explanation = $(t);
 
     row.append(explanation);
     if (!result.valid) {
@@ -209,7 +209,7 @@ let renderInterannualControl = function(result, level) {
 };
 let renderFoldControl = function(result, level) {
     //console.log(result.cells);
-    var error_level_mark = 'invalid';
+    let error_level_mark = 'invalid';
     switch (level) {
         case 1 :
             error_level_mark = 'invalid';
@@ -218,17 +218,17 @@ let renderFoldControl = function(result, level) {
             error_level_mark = 'alerted';
             break;
     }
-    var row = $("<div class='control-row'></div>");
+    let row = $("<div class='control-row'></div>");
     result.valid ? valid = 'верно' : valid = 'не верно';
     if (typeof result.code !== 'undefined') {
-        var rule = $("<div class='showrule'><span class='text-info'><strong> По ячейке </strong></span> <em>" + result.code + "</em>:</div>");
+        let rule = $("<div class='showrule'><span class='text-info'><strong> По ячейке </strong></span> <em>" + result.code + "</em>:</div>");
         row.append(rule);
     }
-    var t = "<table class='control-result'><tr><td>Текущее значение</td>";
+    let t = "<table class='control-result'><tr><td>Текущее значение</td>";
     t += "<td>Результат контроля</td></tr>";
     t += "<tr><td>" + result.left_part_value + "</td>" ;
     t += "<td class='check'>" + valid + "</td></tr></table>";
-    var explanation = $(t);
+    let explanation = $(t);
 
     row.append(explanation);
     if (!result.valid) {
@@ -278,6 +278,9 @@ let renderFunctionProtocol = function (container, table_id, rule) {
                     break;
                 case formlabels.interannual :
                     row = renderInterannualControl(result, rule.level);
+                    break;
+                case formlabels.iadiapazon :
+                    row = renderInDiapazonControl(result, rule.level);
                     break;
                 case formlabels.multiplicity :
                     row = renderFoldControl(result, rule.level);

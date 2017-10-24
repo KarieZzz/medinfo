@@ -49,7 +49,7 @@ class MultiplicityEvaluator extends ControlFunctionEvaluator
             //$node->type = ControlFunctionLexer::NUMBER;
             //$node->content = $props['value'];
             $result[$i]['cells'][] = ['row' => $props['ids']['r'], 'column' => $props['ids']['c']  ];
-            $result[$i]['code'] = null;
+            $result[$i]['code'] = 'с.' . $props['codes']['r'] . ' г.' . $props['codes']['c'];
             $result[$i]['left_part_value'] = $props['value'];
             $result[$i]['right_part_value'] = null;
             $result[$i]['deviation'] = null;

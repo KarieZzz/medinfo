@@ -64,13 +64,20 @@ class IAdiapazonEvaluator extends ControlFunctionEvaluator
         //dd($this->iterations);
         foreach ($this->iterations as $cell_label => $props) {
             $result[$i]['cells'][] = ['row' => $props['ids']['r'], 'column' => $props['ids']['c']  ];
-            $result[$i]['code'] = null;
+            $result[$i]['code'] = 'с.' . $props['codes']['r'] . ' г.' . $props['codes']['c'];
             $result[$i]['left_part_value'] = $props['value'];
             $result[$i]['right_part_value'] = $props['prev_value'];
-            $d = round(abs(($props['prev_value'] - $props['value'])/$props['prev_value']*100), 1) ;
-            $result[$i]['deviation'] = $d;
+            $diff = abs($props['prev_value'] - $props['value']);
+            if ($diff > 0 && $props['prev_value'] !== 0) {
+                $increment = round($diff/$props['prev_value']*100, 1) ;
+            } elseif($diff > 0 && $props['prev_value'] === 0) {
+                $increment = 100;
+            } else {
+                $increment = 0;
+            }
+            $result[$i]['deviation'] = $increment;
             $result[$i]['boolean_op'] = null;
-            $result[$i]['valid'] = $d > $this->threshold ? false : true;
+            $result[$i]['valid'] = $increment > $this->threshold ? false : true;
             $valid = $valid &&  $result[$i]['valid'];
             $i++;
         }

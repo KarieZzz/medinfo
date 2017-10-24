@@ -149,7 +149,10 @@ class ControlPtreeTranslator
                     $static = $this->parseStaticGroup($group_slug);
                     if ($static) {
                         $includes = array_merge($includes, $static['units']);
-                        $this->documents[] = $static['dtype'];
+                        if(!is_null($static['dtype'])) {
+                            $this->documents[] = $static['dtype'];
+                        }
+
                     }
                 }
              }
@@ -174,6 +177,7 @@ class ControlPtreeTranslator
             $this->units = array_diff($includes, $excludes);
             //dd($this->units);
             $this->documents = array_unique($this->documents);
+            //dd($this->documents);
             if (count($this->documents) > 1 ) {
                 throw new \Exception("Не допускается дублирование включения или исключения документа в контроль в соответствии с типом (первичные, сводные)");
             }
@@ -194,7 +198,7 @@ class ControlPtreeTranslator
 
     public function parseStaticGroup($static_group) {
         $units = [];
-        $documents = [];
+        $dtype = null;
         switch ($static_group) {
             case UnitGroup::$reserved_slugs[1] :
                 $this->scopeOfDocuments = true;
