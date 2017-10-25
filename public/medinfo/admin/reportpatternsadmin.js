@@ -45,7 +45,7 @@ initpatternlist = function() {
     ilist.jqxGrid(
         {
             width: '98%',
-            height: '98%',
+            height: '93%',
             theme: theme,
             localization: localize(),
             source: patternDataAdapter,
@@ -54,20 +54,19 @@ initpatternlist = function() {
             filterable: true,
             columns: [
                 { text: 'Id', datafield: 'id', width: '40px' },
-                { text: 'Имя', datafield: 'name' , width: '897px'}
+                { text: 'Имя', datafield: 'name' , width: '885px'}
             ]
         });
     ilist.on('rowselect', function (event) {
-        var row = event.args.row;
-        var indexes_url = url + row.id + "/fetchindexes";
+        let row = event.args.row;
+        let indexes_url = url + row.id + "/fetchindexes";
         $.getJSON( indexes_url, function( data) {
-            var container = $('<div></div>');
-            var i = 1;
-            var html = '';
+            let container = $('<div></div>');
+            let i = 1;
+            let html = '';
             $.each(data, function(key, index) {
                 html += i + ". <span class='text-primary' >" + index.title + "</span> : <span class='text-info'>" + index.value + "</span><br>";
                 i++;
-                //console.log(index.title);
             });
             container.html(html);
             $('#indexes').html(container);
