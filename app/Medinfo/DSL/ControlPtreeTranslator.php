@@ -57,6 +57,7 @@ class ControlPtreeTranslator
 
     public function parseCellRanges()
     {
+        //dd($this->parser->cellrangeStack);
         foreach ($this->parser->cellrangeStack as &$range) {
             $first = $range['node']->children[0];
             $last = $range['node']->children[1];
@@ -67,11 +68,14 @@ class ControlPtreeTranslator
             $lprops = $this->identifyCA($last->content);
             $lprops['node'] = $last;
             $lprops['last'] = true;
-            $this->validateRange($fprops['codes'], $lprops['codes']);
-            $range = $this->inflateRangeMatrix($fprops, $lprops);
+            $cellrange_vector = $this->validateRange($fprops['codes'], $lprops['codes']);
+            //dd($cellrange_vector);
+            $range = $this->inflateRangeMatrix($fprops, $lprops, $cellrange_vector);
             //unset($range['node']->children[0]);
             //unset($range['node']->children[1]);
+
         }
+
     }
 
     public function parseRCRanges()
@@ -173,7 +177,11 @@ class ControlPtreeTranslator
                     }
                 }
             }
+            if (count($includes) === 0 ) {
+                $includes = Unit::Active()->get()->pluck('id')->toArray();
+            }
             //dd($includes);
+            //dd($excludes);
             $this->units = array_diff($includes, $excludes);
             //dd($this->units);
             $this->documents = array_unique($this->documents);
@@ -330,6 +338,7 @@ class ControlPtreeTranslator
 
     public function validateRange(array $topleft, array $bottomright)
     {
+        $cellrange_vector = null;
         if ($topleft['f'] !== $bottomright['f'] ) {
             throw new \Exception('Код формы, указанный в начале диапазона должен быть равен коду форму в конце диапазона');
         }
@@ -345,12 +354,143 @@ class ControlPtreeTranslator
         if ( ($bottomright['r'] === $topleft['r'])&& ($bottomright['c'] === $topleft['c']) ) {
             throw new \Exception("Неверный диапазон. Начало и конец диапазона ссылаются на одну и туже ячейку (С{$topleft['r']}Г{$topleft['c']})");
         }
+        if (empty($bottomright['r']) && empty($topleft['r'])) {
+            $cellrange_vector = 1;
+        } elseif (empty($bottomright['r']) xor empty($topleft['r'])) {
+            throw new \Exception("Неверный диапазон. В одном диапазоне не могут одновременно присутствовать полные и неполные ссылки (строки)");
+        }
+        if (empty($bottomright['c']) && empty($topleft['c'])) {
+            $cellrange_vector = 2;
+        } elseif (empty($bottomright['c']) xor empty($topleft['c'])) {
+            throw new \Exception("Неверный диапазон. В одном диапазоне не могут одновременно присутствовать полные и неполные ссылки (графы)");
+        }
+        return $cellrange_vector;
+
     }
 
-    public function inflateRangeMatrix($fprops, $lprops)
+    public function inflateRangeMatrix($fprops, $lprops, $cellrange_vector = null)
     {
+        if (isset($this->vector[0]) && (!is_null($cellrange_vector)) && ($this->vector[0] !== $cellrange_vector)) {
+            throw new \Exception("Итерация в диапазаоне ячеек должна совпадать с итерацией в функции");
+        }
+        //dd($fprops);
+        //dd($lprops);
         $range = [];
-        $r = $fprops['rowindex'];
+        switch ($cellrange_vector) {
+            case 1: // по строкам (контроль граф)
+                for ($j = 0, $first = (int)$fprops['codes']['c'], $last = (int)$lprops['codes']['c']; $j++, $first <= $last; $first++) {
+                    $column = Column::OfTableColumnIndex($fprops['ids']['t'], $first)->first();
+                    if (is_null($column)) {
+                        continue;
+                    }
+                    $columnid = $column->id;
+                    $colindex = $column->column_index;
+                    $cadrr = 'Г' . $colindex;
+                    $f = $fprops['codes']['f'];
+                    $t = $fprops['codes']['t'];
+                    $f === '' ? $faddr = '' : $faddr = 'Ф' . $f;
+                    $t === '' ? $taddr = '' : $taddr = 'Т' . $t;
+                    $new_ptnode = new ControlFunctionParseTree(ControlFunctionLexer::CELLADRESS, $faddr . $taddr . $cadrr);
+                    $range[$j]['node'] = $new_ptnode;
+                    $range[$j]['codes']['f'] = $f;
+                    $range[$j]['codes']['t'] = $t;
+                    $range[$j]['codes']['c'] = $colindex;
+                    $range[$j]['ids']['f'] = $fprops['ids']['f'];
+                    $range[$j]['ids']['t'] = $fprops['ids']['t'];
+                    $range[$j]['ids']['c'] = $columnid;
+                    $new_ptnode->parent = $fprops['node']->parent->parent;
+                    //$range->parent->addCild();
+                    $fprops['node']->parent->parent->addChild($range[$j]['node']);
+                    $this->parser->celladressStack[$faddr . $taddr . $cadrr ]['node'] = $new_ptnode;
+                    $this->parser->celladressStack[$faddr . $taddr . $cadrr ]['codes'] = $range[$j]['codes'];
+                    $this->parser->celladressStack[$faddr . $taddr . $cadrr ]['ids'] = $range[$j]['ids'];
+                    $this->parser->celladressStack[$faddr . $taddr . $cadrr ]['incomplete'] = true;
+                }
+                break;
+            case 2: // по графам (контроль строк)
+                for ($j = 0, $first = $fprops['rowindex'], $last =  $lprops['rowindex']; $j++, $first <= $last; $first++) {
+                    $row = Row::OfTableRowIndex($fprops['ids']['t'], $first)->first();
+                    $rowid = $row->id;
+                    $rowindex = $row->row_index;
+                    $rowcode = $row->row_code;
+                    $radrr = 'С' . $rowcode;
+                    $f = $fprops['codes']['f'];
+                    $t = $fprops['codes']['t'];
+                    $f === '' ? $faddr = '' : $faddr = 'Ф' . $f;
+                    $t === '' ? $taddr = '' : $taddr = 'Т' . $t;
+                    $new_ptnode = new ControlFunctionParseTree(ControlFunctionLexer::CELLADRESS, $faddr . $taddr . $radrr);
+                    $range[$j]['node'] = $new_ptnode;
+                    $range[$j]['codes']['f'] = $f;
+                    $range[$j]['codes']['t'] = $t;
+                    $range[$j]['codes']['r'] = $rowcode;
+                    $range[$j]['ids']['f'] = $fprops['ids']['f'];
+                    $range[$j]['ids']['t'] = $fprops['ids']['t'];
+                    $range[$j]['ids']['r'] = $rowid;
+                    $range[$j]['rowindex'] = $rowindex;
+                    $new_ptnode->parent = $fprops['node']->parent->parent;
+                    //$range->parent->addCild();
+                    $fprops['node']->parent->parent->addChild($range[$j]['node']);
+                    $this->parser->celladressStack[$faddr . $taddr . $radrr ]['node'] = $new_ptnode;
+                    $this->parser->celladressStack[$faddr . $taddr . $radrr ]['codes'] = $range[$j]['codes'];
+                    $this->parser->celladressStack[$faddr . $taddr . $radrr ]['ids'] = $range[$j]['ids'];
+                    $this->parser->celladressStack[$faddr . $taddr . $radrr ]['rowindex'] = $range[$j]['rowindex'];
+                    $this->parser->celladressStack[$faddr . $taddr . $radrr ]['incomplete'] = true;
+                }
+                break;
+            case null:
+                $j = 0;
+                for ($cfirst = (int)$fprops['codes']['c'], $clast = (int)$lprops['codes']['c']; $cfirst <= $clast; $cfirst++) {
+                    $column = Column::OfTableColumnIndex($fprops['ids']['t'], $cfirst)->first();
+                    if (is_null($column)) {
+                        continue;
+                    }
+                    $columnid = $column->id;
+                    $colindex = $column->column_index;
+                    $cadrr = 'Г' . $colindex;
+                    $f = $fprops['codes']['f'];
+                    $t = $fprops['codes']['t'];
+                    $f === '' ? $faddr = '' : $faddr = 'Ф' . $f;
+                    $t === '' ? $taddr = '' : $taddr = 'Т' . $t;
+                    for ($rfirst = $fprops['rowindex'], $rlast =  $lprops['rowindex']; $rfirst <= $rlast; $rfirst++) {
+                        $row = Row::OfTableRowIndex($fprops['ids']['t'], $rfirst)->first();
+                        $rowid = $row->id;
+                        $rowindex = $row->row_index;
+                        $rowcode = $row->row_code;
+                        $radrr = 'С' . $rowcode;
+                        $f = $fprops['codes']['f'];
+                        $t = $fprops['codes']['t'];
+                        $f === '' ? $faddr = '' : $faddr = 'Ф' . $f;
+                        $t === '' ? $taddr = '' : $taddr = 'Т' . $t;
+                        $new_ptnode = new ControlFunctionParseTree(ControlFunctionLexer::CELLADRESS, $faddr . $taddr . $radrr . $cadrr);
+                        $range[$j]['node'] = $new_ptnode;
+                        $range[$j]['codes']['f'] = $f;
+                        $range[$j]['codes']['t'] = $t;
+                        $range[$j]['codes']['r'] = $rowcode;
+                        $range[$j]['codes']['c'] = $colindex;
+
+                        $range[$j]['ids']['f'] = $fprops['ids']['f'];
+                        $range[$j]['ids']['t'] = $fprops['ids']['t'];
+                        $range[$j]['ids']['r'] = $rowid;
+                        $range[$j]['ids']['c'] = $columnid;
+                        $range[$j]['rowindex'] = $rowindex;
+
+                        $new_ptnode->parent = $fprops['node']->parent->parent;
+                        //$range->parent->addCild();
+                        $fprops['node']->parent->parent->addChild($range[$j]['node']);
+                        $this->parser->celladressStack[$faddr . $taddr . $radrr . $cadrr]['node'] = $new_ptnode;
+                        $this->parser->celladressStack[$faddr . $taddr . $radrr . $cadrr]['codes'] = $range[$j]['codes'];
+                        $this->parser->celladressStack[$faddr . $taddr . $radrr . $cadrr]['ids'] = $range[$j]['ids'];
+                        $this->parser->celladressStack[$faddr . $taddr . $radrr . $cadrr]['rowindex'] = $range[$j]['rowindex'];
+                        $this->parser->celladressStack[$faddr . $taddr . $radrr . $cadrr]['incomplete'] = false;
+                        $j++;
+                    }
+
+                }
+                break;
+        }
+/*        $r = $fprops['rowindex'];
+        //dd($r);
+        //dd( $lprops['rowindex']);
         $j = 0;
         do {
             $incomplete = false;
@@ -413,7 +553,8 @@ class ControlPtreeTranslator
                 $j++;
             } while($c <= (int)$lprops['codes']['c']);
             $r++;
-        } while ($r <= $lprops['rowindex']);
+        } while ($r <= $lprops['rowindex']);*/
+        //dd($range);
         return $range;
     }
 

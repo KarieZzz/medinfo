@@ -52,6 +52,8 @@ class LexerParserController extends Controller
         //$i = "сравнение(Г3, Г4, =)";
         //$i = "сравнение(С03Г4, Ф30Т1100С1Г9, =)";
         //$i = 'сравнение(С10.5, С10.5.1+С10.5.2+С10.5.3+С10.5.4, >=, группы(сводные, юл), графы(4,7))';
+        $i = "сравнение(С1, сумма(С4:С45)+сумма(С48:С67)+С69+С71+С73+сумма(С75:С96)+сумма(С101:С109)+сумма(С111:С122), =, группы(!музот), графы(3-5,7-9))";
+        //$i = "сравнение(Г4, сумма(Г6:Г8), =, группы(!музот), строки(3-43, 45-82, 84-90, 92-123, 127-135, 144-155, 159, 163, 170-173, 175-194, 198, 203, 204, 206, 208, 209, 213-218, 220))";
 
         //$i = "зависимость(Г4, Г16, группы(оп), строки(*))";
         //$i = 'зависимость(Г3, сумма(Г4:Г8))';
@@ -64,7 +66,7 @@ class LexerParserController extends Controller
         //$i = "мгдиапазон(диапазон(С16Г3:С18Г3), 0.2)";
         //$i = "мгдиапазон(диапазон(С11Г3, С16Г3:С18Г3, С20Г3, С32Г3, С16Г3:С18Г3),  20)";
 
-        $i = "кратность(диапазон(С01Г3:С02Г6),  0.25)";
+        //$i = "кратность(диапазон(С01Г3:С02Г6),  0.25)";
         //$i = "кратность(диапазон(С1Г3:С221Г8), 0.25 )";
         //$i = "кратность(диапазон(С01Г3:С02Г6),  .25)";
 
@@ -86,10 +88,14 @@ class LexerParserController extends Controller
         //dd($parser->root);
         //dd(json_decode(json_encode($parser->root)));
 
-        //$table = Table::find(10); // Ф30 Т1100
+        $table = Table::find(10); // Ф30 Т1100
         //$table = Table::find(112); // Ф12 Т2000
         //$table = Table::find(115); // Ф32 Т2120
-        $table = Table::find(151); // Ф41 Т2100
+        //$table = Table::find(151); // Ф41 Т2100
+
+        //$document = Document::find(13134); // 12 ф ГКБ№8 за 2016 год
+        //$document = Document::find(13753); // 41 ф ДР1 за 2016 год
+        $document = Document::find(12657); // 30 ф РБ Слюдянка за 2016 год
 
          $translator = Translator::invoke($parser, $table);
          //$translator = new ControlPtreeTranslator($parser, $table);
@@ -115,8 +121,7 @@ class LexerParserController extends Controller
         //dd(json_decode(json_encode($translator->iterations), TRUE));
         //dd($translator->getProperties());
 
-        //$document = Document::find(13134); // 12 ф ГКБ№8 за 2016 год
-        $document = Document::find(13753); // 41 ф ДР1 за 2016 год
+
         //$cfunc = CFunction::find(2652); // сравнение(С8.0, С8.1+С8.2+С8.3+С8.4+С8.5+С8.6+С8.7+С8.8+С8.9+С8.10+С8.11+С8.12, >=)) ф. 12 т. 2000
         //$cfunc = CFunction::find(3280);
         //dd($cfunc);
@@ -136,9 +141,9 @@ class LexerParserController extends Controller
         //dd($evaluator->caStack);
         //dd($evaluator->iterations);
 
-        //return $evaluator->makeControl();
-        $evaluator->makeControl();
-        dd($evaluator);
+        return $evaluator->makeControl();
+        //$evaluator->makeControl();
+        //dd($evaluator);
         //return ($evaluator->iterations);
         //dd($evaluator->pTree);
     }

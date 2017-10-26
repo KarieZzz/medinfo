@@ -143,6 +143,11 @@ class ControlFunctionEvaluator
     public function makeControl()
     {
         $this->not_in_scope = $this->validateDocumentScope();
+        if ($this->not_in_scope) {
+            $result[0]['valid'] = true;
+            $this->valid = true;
+            return $result;
+        }
         $this->prepareCellValues();
         $this->prepareCAstack();
         $result = [];

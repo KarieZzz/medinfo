@@ -1045,22 +1045,31 @@ let initdatagrid = function() {
             cell_protocol_panel.append(header);
             for (i = 0; i < count_of_rules ; i++) {
                 cell_protocol_panel.append("<strong>Правило контроля: </strong><span>" + cellprotocol[i].rule.formula + "</span>");
-                switch (cellprotocol[i].rule.function) {
-                    case 'compare' :
-                        cell_protocol_panel.append(renderCompareControl(cellprotocol[i].result, cellprotocol[i].rule.boolean_sign, cellprotocol[i].rule.iteration_mode, cellprotocol[i].rule.level));
+                let row;
+                let result = cellprotocol[i].result;
+                let rule = cellprotocol[i].rule;
+                switch (cellprotocol[i].rule.function_id) {
+                    case formlabels.compare :
+                        row = renderCompareControl(result, rule.boolean_sign, rule.iteration_mode, rule.level);
                         break;
-                    case 'fold' :
-                        cell_protocol_panel.append(renderFoldControl(cellprotocol[i].result, cellprotocol[i].rule.level));
+                    case formlabels.dependency :
+                        row = renderDependencyControl(result, rule.iteration_mode, rule.level);
                         break;
-                    case 'interannual' :
-                        cell_protocol_panel.append(renderInterannualControl(cellprotocol[i].result, cellprotocol[i].rule.level));
+                    case formlabels.interannual :
+                        row = renderInterannualControl(result, rule.level);
+                        break;
+                    case formlabels.iadiapazon :
+                        row = renderInDiapazonControl(result, rule.level);
+                        break;
+                    case formlabels.multiplicity :
+                        row = renderFoldControl(result, rule.level);
                         break;
                 }
+                cell_protocol_panel.append(row);
                 if (cellprotocol[i].rule.comment !== '') {
                     cell_protocol_panel.append("<div style='margin-bottom: 5px'><strong>^ </strong><small>" + cellprotocol[i].rule.comment + "</small></div>");
                 }
             }
-
         }
 
         if (doc_type === '2') {

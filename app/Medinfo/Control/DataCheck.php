@@ -89,9 +89,11 @@ class DataCheck
 
     public static function tableControl1(Document $document, Table $table, $forcereload = 0)
     {
+
         set_time_limit(240);
         $table_protocol = [];
-        if (ControlHelper::CashedProtocolActual($document->id, $table->id) && !$forcereload) {
+        //if (ControlHelper::CashedProtocolActual($document->id, $table->id) && !$forcereload) {
+        if (ControlHelper::CashedProtocolActual($document->id, $table->id) && config('medinfo.use_cashed_protocol')) {
             $table_protocol = ControlHelper::loadProtocol($document->id, $table->id);
             return $table_protocol;
         }
@@ -102,6 +104,7 @@ class DataCheck
         }
         $table_protocol['table_id'] = $table->id;
         $cfunctions = CFunction::OfTable($table->id)->Active()->get();
+        //dd('control');
         if (count($cfunctions) == 0) {
             $table_protocol['no_rules'] = true;
             $table_protocol['valid'] = true;
@@ -115,7 +118,7 @@ class DataCheck
         $do_not_alerted = true;
 
         foreach ($cfunctions as $function) {
-            try {
+            //try {
                 $pTree = unserialize(base64_decode($function->ptree));
                 $props = json_decode($function->properties, true);
                 //$evaluator = new ControlFunctionEvaluator($pTree, $props, $document);
@@ -151,10 +154,10 @@ class DataCheck
                     $do_not_alerted = $do_not_alerted && $rule['valid'];
                 }
 
-            }
-            catch (\Exception $e) {
-                $rules[] = ['error' => "<strong class='text-danger'>Ошибка при обработке правила контроля:</strong> <code>" . $function->script . '</code> ' . $e->getMessage() ];
-            }
+            //}
+            //catch (\Exception $e) {
+              //  $rules[] = ['error' => "<strong class='text-danger'>Ошибка при обработке правила контроля:</strong> <code>" . $function->script . '</code> ' . $e->getMessage() ];
+            //}
         }
         $table_protocol['valid'] = $valid;
         $table_protocol['no_alerts'] = $do_not_alerted;
