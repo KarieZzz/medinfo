@@ -53,9 +53,6 @@ class IAdiapazonEvaluator extends ControlFunctionEvaluator
 
     public function makeControl()
     {
-        if (!$this->validateDocumentScope()) {
-            $this->not_in_scope = true;
-        }
         $this->prepareCellValues();
         $this->prepareCAstack();
         $result = [];
