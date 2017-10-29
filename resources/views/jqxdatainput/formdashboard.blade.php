@@ -13,7 +13,8 @@
 @section('headertitle', 'Просмотр/редактирование первичного отчетного документа')
 
 @section('content')
-    @include('jqxdatainput.formeditlayout')
+    {{--@include('jqxdatainput.formeditlayout')--}}
+    @include('jqxdatainput.formeditsplitter')
 @endsection
 
 @push('loadcss')
@@ -22,8 +23,8 @@
 
 @push('loadjsscripts')
     @include('jqxdatainput.jsstack')
-    <script src="{{ asset('/medinfo/editdashboard.js?v=062') }}"></script>
-    <script src="{{ asset('/medinfo/primary.js?v=003') }}"></script>
+    <script src="{{ asset('/medinfo/editdashboard.js?v=068') }}"></script>
+    <script src="{{ asset('/medinfo/primary.js?v=005') }}"></script>
 @endpush('loadjsscripts')
 
 @section('inlinejs')

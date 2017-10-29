@@ -35,7 +35,6 @@ let current_document_form_name;
 let current_document_ou_name;
 let current_document_state;
 let currentlet_document_audits = [];
-let current_user_role = '{{ $worker->role }}';
 let statelabels =
     {
         performed: 'Выполняется',
@@ -617,6 +616,9 @@ initDropdowns = function () {
     terr.jqxDropDownButton('setContent', '<div style="margin: 9px">Медицинские организации (по территориям)</div>');
     groups.jqxDropDownButton({width: 350, height: 32, theme: theme});
     groups.jqxDropDownButton('setContent', '<div style="margin: 9px">Медицинские организации (по группам)</div>');
+    if (current_user_role === '1') {
+        groups.jqxDropDownButton({disabled:true});
+    }
     mondropdown.jqxDropDownButton({width: 350, height: 32, theme: theme});
     mondropdown.jqxDropDownButton('setContent', '<div style="margin: 9px"></i>Мониторинги</div>');
     mondropdown.on('close', function () {
@@ -809,6 +811,9 @@ initgrouptree = function() {
                 { text: 'Наименование', dataField: 'group_name', width: 545 }
             ]
         });
+    if (current_user_role === '1') {
+        grouptree.jqxTreeGrid({ disabled:true });
+    }
     grouptree.on('filter',
         function (event)
         {

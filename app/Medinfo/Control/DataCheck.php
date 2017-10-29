@@ -24,7 +24,7 @@ use App\Medinfo\DSL\ControlFunctionParser;
 class DataCheck
 {
 
-    public static function tableControl(Document $document, Table $table, $forcereload = 0)
+ /*   public static function tableControl(Document $document, Table $table, $forcereload = 0)
     {
         set_time_limit(240);
         if (ControlHelper::CashedProtocolActual($document->id, $table->id) && !$forcereload) {
@@ -85,7 +85,7 @@ class DataCheck
         $table_protocol['no_alerts'] = $do_not_alerted;
         ControlHelper::cashProtocol($table_protocol, $document->id, $table->id);
         return $table_protocol;
-    }
+    }*/
 
     public static function tableControl1(Document $document, Table $table, $forcereload = 0)
     {
@@ -165,7 +165,7 @@ class DataCheck
         return $table_protocol;
     }
 
-    public static function cacheOrCompile(CFunction $function, Table $table)
+/*    public static function cacheOrCompile(CFunction $function, Table $table)
     {
         //$fo = unserialize(base64_decode($function->compiled_cashe));
         //if (!$fo) {
@@ -182,6 +182,6 @@ class DataCheck
             //return $fo;
         //}
 
-    }
+    }*/
 
 }

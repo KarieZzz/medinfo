@@ -760,6 +760,29 @@ let initdatasources = function() {
         id: 'id',
         localdata: form_tables_data
     };
+
+/*
+    let form_table_source =
+        {
+            dataType: "json",
+            dataFields: [
+                { name: 'id', type: 'int' },
+                { name: 'parent_id', type: 'int' },
+                { name: 'code', type: 'string' },
+                { name: 'name', type: 'string' }
+            ],
+            hierarchy:
+                {
+                    keyDataField: { name: 'id' },
+                    parentDataField: { name: 'parent_id' }
+                },
+            id: 'id',
+            root: '',
+            localdata: form_tables_data
+        };
+*/
+
+
     tableListDataAdapter = new $.jqx.dataAdapter(form_table_source);
     tablesource =
     {
@@ -805,14 +828,67 @@ let fetchcelllayer = function(row, column) {
     });
     return { layers: layer_container, periods: period_container} ;
 };
+
+let inittablestree = function() {
+    tgrid.jqxTreeGrid(
+        {
+            width: 670,
+            height: 600,
+            theme: theme,
+            source: tableListDataAdapter,
+            selectionMode: "singleRow",
+            filterable: true,
+            filterMode: "simple",
+            localization: localize(),
+            columnsResize: true,
+            ready: function()
+            {
+                tgrid.jqxTreeGrid('expandRow', 0);
+            },
+            columns: [
+                { text: 'Код', dataField: 'group_code', width: 120 },
+                { text: 'Наименование', dataField: 'group_name', width: 545 }
+            ]
+        });
+    tgrid.on('filter',
+        function (event)
+        {
+            let args = event.args;
+            let filters = args.filters;
+            grouptree.jqxTreeGrid('expandAll');
+        }
+    );
+    tgrid.on('rowSelect',
+        function (event)
+        {
+            let args = event.args;
+            let new_top_level_node = args.key;
+            if (new_top_level_node === current_top_level_node && filter_mode === 2) {
+                return false;
+            }
+            filter_mode = 2; // режим отбора документов по группам
+            current_top_level_node =  new_top_level_node;
+            updatedocumenttable();
+            groups.jqxDropDownButton('close');
+            groups.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: #337ab7;"></i>Медицинские организации (по группам)</div>');
+            terr.jqxDropDownButton('setContent', '<div style="margin: 9px">Медицинские организации (по территориям)</div>');
+            return true;
+        }
+    );
+};
+
+
+
 // Инициализация перечня таблиц текущей формы
 let inittablelist = function() {
-    fgrid = $("#formTables");
     fgrid.jqxDataTable({
-        width: '99%',
-        height: '99%',
+        width: 700,
+        height: 400,
+        filterable: true,
+        filterMode: 'simple',
         theme: theme,
         source: tableListDataAdapter,
+        localization: localize(),
         ready: function () {
             fgrid.jqxDataTable('selectRow', 0);
         },
@@ -861,10 +937,12 @@ let inittablelist = function() {
         dgrid.jqxGrid( { columngroups: data_for_tables[current_table].columngroups } );
         dgrid.jqxGrid('updatebounddata');
         dgrid.jqxGrid('endupdate');
-        layout[0].items[1].items[0].items[0].title = "Таблица " + data_for_tables[current_table].tablecode + ', "' + data_for_tables[current_table].tablename + '"';
-        $('#formEditLayout').jqxLayout('refresh');
+        //layout[0].items[1].items[0].items[0].title = "Таблица " + data_for_tables[current_table].tablecode + ', "' + data_for_tables[current_table].tablename + '"';
+        $("#TableTitle").html("Таблица " + data_for_tables[current_table].tablecode + ', "' + data_for_tables[current_table].tablename + '"');
+        //$('#formEditLayout').jqxLayout('refresh');
         $("#tableprotocol").html('');
         $("#extrabuttons").hide();
+        tdropdown.jqxDropDownButton('close');
         //$("#formTables").jqxDataTable('focus');
     });
 
@@ -940,11 +1018,10 @@ let initfilters = function() {
     }
 };
 let initdatagrid = function() {
-    dgrid = $("#DataGrid");
     dgrid.jqxGrid(
         {
-            width: '99%',
-            height: '99%',
+            width: '100%',
+            height: '94%',
             source: dataAdapter,
             localization: localize(),
             selectionmode: 'singlecell',
@@ -954,8 +1031,8 @@ let initdatagrid = function() {
             clipboard: true,
             columnsresize: true,
             //showfilterrow: false,
-            showtoolbar: true,
-            rendertoolbar: rendertoolbar,
+            //showtoolbar: true,
+            //rendertoolbar: rendertoolbar,
             filterable: false,
             columns: data_for_tables[current_table].columns,
             columngroups: data_for_tables[current_table].columngroups
@@ -1189,6 +1266,51 @@ let rendertoolbar = function(toolbar) {
     });
     */
 };
+
+let inittoolbarbuttons = function () {
+    tdropdown.jqxDropDownButton({width: 100, height: 19, theme: theme});
+    tdropdown.jqxDropDownButton('setContent', '<div style="margin: 3px">Таблицы</div>');
+    filterinput.jqxInput({ width: 200, height: 21});
+    let oldVal = "";
+    filterinput.on('keydown', function (event) {
+        if (filterinput.val().length >= 2) {
+            if (this.timer) {
+                clearTimeout(this.timer);
+            }
+            if (oldVal !== filterinput.val()) {
+                this.timer = setTimeout(function () {
+                    row_name_filter(filterinput.val());
+                }, 500);
+                oldVal = filterinput.val();
+            }
+        }else {
+            dgrid.jqxGrid('removefilter', '1');
+        }
+    });
+    clearfilter.jqxButton({ height: 23, theme: theme });
+    clearfilter.click(function () { dgrid.jqxGrid('clearfilters'); filterinput.val(''); });
+    calculate.jqxButton({ theme: theme });
+    calculate.click(fillCalculatedFields);
+    if (!there_is_calculated) {
+        calculate.jqxButton({disabled: true });
+    }
+
+    fullscreen.jqxToggleButton({ theme: theme });
+    fullscreen.on('click', function () {
+        let toggled = fullscreen.jqxToggleButton('toggled');
+        if (toggled) {
+            $("#DataGrid").fullscreen();
+            /*            var elem = document.getElementById("DataGrid");
+                        if (elem.webkitrequestFullscreen) {
+                            elem.webkitrequestFullscreen();
+                        }*/
+        }
+        else $.fullscreen.exit();
+        return false;
+    });
+
+};
+
 let firefullscreenevent = function() {
     $(document).bind('fscreenchange', function(e, state, elem) {
         let fsel1 =  $('#togglefullscreen');

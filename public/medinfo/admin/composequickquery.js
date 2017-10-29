@@ -103,8 +103,8 @@ initFormTableFilter = function() {
         height: 32
     });
     plist.on('select', function (event) {
-        var args = event.args;
-        console.log(args.item);
+        let args = event.args;
+        //console.log(args.item);
         current_period = args.item.value;
         $("#periodSelected").html('<div class="text-bold text-info" style="margin-left: -100px">Выбран период: "'+ args.item.label +'"</div>');
     });
@@ -119,7 +119,7 @@ initFormTableFilter = function() {
         height: 32
     });
     flist.on('select', function (event) {
-        var args = event.args;
+        let args = event.args;
         current_form = args.item.value;
         updateTableDropdownList(args.item);
     });

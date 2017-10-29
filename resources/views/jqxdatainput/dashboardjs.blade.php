@@ -9,8 +9,13 @@ let default_album = '{{ $album->id }}';
 let current_user_role = '{{ $worker->role }}';
 let current_table = '{{ $laststate['currenttable']->id }}';
 let current_table_code = '{{ $laststate['currenttable']->table_code }}';
-let fgrid; // селектор для сетки с перечнем таблиц
-let dgrid; // селектор для сетки с данными таблиц
+let tdropdown = $('#TableList');
+let fgrid = $("#FormTables"); // селектор для сетки с перечнем таблиц
+let dgrid = $("#DataGrid"); // селектор для сетки с данными таблиц
+let filterinput = $("#SearchField");
+let clearfilter = $("#ClearFilter");
+let calculate = $("#calculate");
+let fullscreen = $("#togglefullscreen");
 let localizednumber = new Intl.NumberFormat('ru-RU');
 let edited_tables = [{!! implode(',', $editedtables) !!}];
 let not_editable_cells = {!! json_encode($noteditablecells) !!};
@@ -23,9 +28,9 @@ $.each(data_for_tables, function(table, content) {
         if (typeof properties.cellclassname !== 'undefined' && properties.cellclassname === 'cellclass') {
             properties.cellclassname = cellclass;
         }
-/*        if (typeof properties.createeditor !== 'undefined') {
-            properties.createeditor =  eval(properties.createeditor);
-        }*/
+        //if (typeof properties.createeditor !== 'undefined') {
+          //  properties.createeditor =  eval(properties.createeditor);
+        //}
         if (typeof properties.initeditor !== 'undefined') {
             properties.initeditor = eval(properties.initeditor);
         }
@@ -82,10 +87,14 @@ let formlabels =
 
 initdatasources();
 initnotifications();
+inittoolbarbuttons();
 inittablelist();
-initlayout();
-$('#formEditLayout').jqxLayout({ theme: theme, width: '99%', height: '98%', layout: layout });
-init_fc_extarbuttons();
+initSplitter();
+initfilters();
+initdatagrid();
+//initlayout();
+//$('#formEditLayout').jqxLayout({ theme: theme, width: '99%', height: '98%', layout: layout });
+/*init_fc_extarbuttons();
 initextarbuttons();
-firefullscreenevent();
+firefullscreenevent();*/
 </script>

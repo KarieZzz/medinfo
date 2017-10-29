@@ -133,13 +133,14 @@
 <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/documentdashboard.js?v=059') }}"></script>
+<script src="{{ asset('/medinfo/documentdashboard.js?v=061') }}"></script>
 @endpush
 
 @section('inlinejs')
     @parent
     <script type="text/javascript">
         let current_user_id = '{{ $worker->id }}';
+        let current_user_role = '{{ $worker->role }}';
         let audit_permission = {{ $audit_permission ? 'true' : 'false' }};
         let periods = {!! $periods !!};
         let states = {!! $states !!};

@@ -1,6 +1,25 @@
 /**
  * Created by shameev on 09.09.2016.
  */
+
+let initSplitter = function () {
+    $('#formEditLayout').jqxSplitter({
+        width: '100%',
+        height: '98%',
+        theme: theme,
+        splitBarSize: 10,
+        panels: [
+            { size: '80%', collapsible: false }
+            ]
+    });
+    $("#controltabs").jqxTabs({ theme: theme, height: '100%', width: '100%' });
+    $("#TableTitle").html('Таблица ' + data_for_tables[current_table].tablecode + ', "' + data_for_tables[current_table].tablename + '"');
+
+};
+
+
+
+/*
 let initlayout = function() {
     layout = [{
         type: 'layoutGroup',
@@ -81,4 +100,4 @@ let initlayout = function() {
             }]
         }]
     }];
-};
+};*/
