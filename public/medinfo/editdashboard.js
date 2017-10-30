@@ -829,56 +829,6 @@ let fetchcelllayer = function(row, column) {
     return { layers: layer_container, periods: period_container} ;
 };
 
-let inittablestree = function() {
-    tgrid.jqxTreeGrid(
-        {
-            width: 670,
-            height: 600,
-            theme: theme,
-            source: tableListDataAdapter,
-            selectionMode: "singleRow",
-            filterable: true,
-            filterMode: "simple",
-            localization: localize(),
-            columnsResize: true,
-            ready: function()
-            {
-                tgrid.jqxTreeGrid('expandRow', 0);
-            },
-            columns: [
-                { text: 'Код', dataField: 'group_code', width: 120 },
-                { text: 'Наименование', dataField: 'group_name', width: 545 }
-            ]
-        });
-    tgrid.on('filter',
-        function (event)
-        {
-            let args = event.args;
-            let filters = args.filters;
-            grouptree.jqxTreeGrid('expandAll');
-        }
-    );
-    tgrid.on('rowSelect',
-        function (event)
-        {
-            let args = event.args;
-            let new_top_level_node = args.key;
-            if (new_top_level_node === current_top_level_node && filter_mode === 2) {
-                return false;
-            }
-            filter_mode = 2; // режим отбора документов по группам
-            current_top_level_node =  new_top_level_node;
-            updatedocumenttable();
-            groups.jqxDropDownButton('close');
-            groups.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: #337ab7;"></i>Медицинские организации (по группам)</div>');
-            terr.jqxDropDownButton('setContent', '<div style="margin: 9px">Медицинские организации (по территориям)</div>');
-            return true;
-        }
-    );
-};
-
-
-
 // Инициализация перечня таблиц текущей формы
 let inittablelist = function() {
     fgrid.jqxDataTable({
@@ -932,7 +882,7 @@ let inittablelist = function() {
         tablesource.datafields = data_for_tables[current_table].datafields;
         tablesource.url = source_url + current_table;
         data_for_tables[current_table].calcfields.length > 0 ? there_is_calculated = true : there_is_calculated = false;
-        there_is_calculated ? $("#calculate").jqxButton({disabled: false }) : $("#calculate").jqxButton({disabled: true });
+        there_is_calculated ? calculate.prop('disabled', false ) : calculate.attr('disabled', true );
         dgrid.jqxGrid( { columns: data_for_tables[current_table].columns } );
         dgrid.jqxGrid( { columngroups: data_for_tables[current_table].columngroups } );
         dgrid.jqxGrid('updatebounddata');
@@ -1021,7 +971,7 @@ let initdatagrid = function() {
     dgrid.jqxGrid(
         {
             width: '100%',
-            height: '94%',
+            height: '855px',
             source: dataAdapter,
             localization: localize(),
             selectionmode: 'singlecell',
@@ -1268,9 +1218,9 @@ let rendertoolbar = function(toolbar) {
 };
 
 let inittoolbarbuttons = function () {
-    tdropdown.jqxDropDownButton({width: 100, height: 19, theme: theme});
-    tdropdown.jqxDropDownButton('setContent', '<div style="margin: 3px">Таблицы</div>');
-    filterinput.jqxInput({ width: 200, height: 21});
+    tdropdown.jqxDropDownButton({width: 120, height:20, theme: theme});
+    tdropdown.jqxDropDownButton('setContent', '<div style="margin-top: 3px">Таблицы</div>');
+    //filterinput.jqxInput({ width: 200, height: 21});
     let oldVal = "";
     filterinput.on('keydown', function (event) {
         if (filterinput.val().length >= 2) {
@@ -1287,27 +1237,33 @@ let inittoolbarbuttons = function () {
             dgrid.jqxGrid('removefilter', '1');
         }
     });
-    clearfilter.jqxButton({ height: 23, theme: theme });
+    //clearfilter.jqxButton({ height: 23, theme: theme });
     clearfilter.click(function () { dgrid.jqxGrid('clearfilters'); filterinput.val(''); });
-    calculate.jqxButton({ theme: theme });
-    calculate.click(fillCalculatedFields);
+    //calculate.jqxButton({ theme: theme });
     if (!there_is_calculated) {
-        calculate.jqxButton({disabled: true });
+        calculate.attr('disabled', true );
     }
+    calculate.click(fillCalculatedFields);
 
-    fullscreen.jqxToggleButton({ theme: theme });
-    fullscreen.on('click', function () {
-        let toggled = fullscreen.jqxToggleButton('toggled');
-        if (toggled) {
-            $("#DataGrid").fullscreen();
+
+    //fullscreen.jqxToggleButton({ theme: theme });
+
+    fullscreen.click(function() {
+        dgrid.fullscreen();
+    });
+
+    //fullscreen.on('click', function () {
+        //let toggled = fullscreen.jqxToggleButton('toggled');
+        //if (toggled) {
+      //      $("#DataGrid").fullscreen();
             /*            var elem = document.getElementById("DataGrid");
                         if (elem.webkitrequestFullscreen) {
                             elem.webkitrequestFullscreen();
                         }*/
-        }
-        else $.fullscreen.exit();
-        return false;
-    });
+        //}
+        //else $.fullscreen.exit();
+      //  return false;
+    //});
 
 };
 

@@ -1,14 +1,27 @@
 <div id="formEditLayout">
     <div>
-        <div class="row">
-            <div class="col-lg-12" style="margin-left: 10px">
-                <div id="TableList" class="btn btn-default btn-xs"><div id="FormTables"></div></div>
-                <input placeholder="поиск строки" type="text" id="SearchField">
-                <button class="btn btn-default btn-xs" id="ClearFilter">Очистить</button>
-                <button class="btn btn-default btn-xs" id='calculate' title='Рассчитать'><span class='fa fa-calculator'></span></button>
-                <button class="btn btn-default btn-xs" id='togglefullscreen' title='Полноэкранный режим'><span class='glyphicon glyphicon-fullscreen'></span></button>
+        <nav class="navbar navbar-default" style="margin-bottom: 0px">
+            <div class="container-fluid">
+                <div id="TableList" class="btn btn-default"><div id="FormTables"></div></div>
+{{--                <ul class="nav navbar-nav">
+                    <li><a href="#">Link</a></li>
+                    <li><a href="#">Link</a></li>
+                </ul>--}}
+                <button class="btn btn-default navbar-btn" id="Сalculate" title="Рассчитать"> <span class='fa fa-calculator'></span></button>
+                <button class="btn btn-default navbar-btn" id="ToggleFullscreen" title="Полноэкранный режим"> <span class='glyphicon glyphicon-fullscreen'></span></button>
+                <form class="navbar-form navbar-right">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="SearchField" placeholder="Поиск строки">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" id="ClearFilter">
+                            <i class="glyphicon glyphicon-remove"></i>
+                        </button>
+                    </div>
+                </div>
+                </form>
             </div>
-        </div>
+        </nav>
+
         <div class="row" >
             <div class="col-lg-12" style="margin-left: 10px"><h4 id="TableTitle"></h4></div>
         </div>
@@ -17,7 +30,7 @@
 
     </div>
     <div>
-        <div class="jqx-hideborder jqx-hidescrollbars" id="controltabs">
+        <div class="jqx-hideborder jqx-hidescrollbars" id="controltabs" style="padding-top: 10px">
             <ul>
                 <li style="margin-left: 30px;">Контроль таблицы</li>
                 <li>Контроль формы</li>

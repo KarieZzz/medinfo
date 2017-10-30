@@ -5,7 +5,7 @@
 let initSplitter = function () {
     $('#formEditLayout').jqxSplitter({
         width: '100%',
-        height: '98%',
+        height: '945px',
         theme: theme,
         splitBarSize: 10,
         panels: [

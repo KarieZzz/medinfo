@@ -25,7 +25,7 @@
             width:100%;
             height: 100%;
             /* Pad bottom by footer height */
-            padding: 30px 0 0 0;
+            padding: 40px 0 0 0;
         }
     </style>
     <title id="Description">@yield('headertitle')</title>
@@ -45,8 +45,6 @@
 <div id="wrap">
     @include('jqxdatainput.top')
     <!-- Begin page content -->
-    <div class="container-fluid" style="margin-top: 20px">
-    </div>
     <div id="widgets-content-wrap" style="visibility: hidden">
         @yield('content')
     </div>
