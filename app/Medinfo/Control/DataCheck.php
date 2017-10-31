@@ -87,10 +87,27 @@ class DataCheck
         return $table_protocol;
     }*/
 
-    public static function tableControl1(Document $document, Table $table, $forcereload = 0)
+    public static function inFormtableControl(Document $document, Table $table, $forcereload = 0)
+    {
+        $cfunctions = CFunction::OfTable($table->id)->InForm()->Active()->get();
+        $protocol = self::tableControl1($document, $table, $cfunctions, $forcereload = 0);
+        return $protocol;
+    }
+
+    public static function interPeriodTableControl(Document $document, Table $table, $forcereload = 0)
+    {
+        $cfunctions = CFunction::OfTable($table->id)->InterPeriod()->Active()->get();
+        $protocol = self::tableControl1($document, $table, $cfunctions, $forcereload = 0);
+        return $protocol;
+    }
+
+    public static function tableControl1(Document $document, Table $table, $cfunctions = null, $forcereload = 0)
     {
 
         set_time_limit(240);
+        if (!$cfunctions) {
+            $cfunctions = CFunction::OfTable($table->id)->Active()->get();
+        }
         $table_protocol = [];
         //if (ControlHelper::CashedProtocolActual($document->id, $table->id) && !$forcereload) {
         if (ControlHelper::CashedProtocolActual($document->id, $table->id) && config('medinfo.use_cashed_protocol')) {
@@ -103,7 +120,7 @@ class DataCheck
             $table_protocol['no_data'] = true;
         }
         $table_protocol['table_id'] = $table->id;
-        $cfunctions = CFunction::OfTable($table->id)->Active()->get();
+
         //dd('control');
         if (count($cfunctions) == 0) {
             $table_protocol['no_rules'] = true;

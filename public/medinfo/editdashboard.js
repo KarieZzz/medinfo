@@ -5,11 +5,22 @@
 // Пометка/снятие пометки волнистой чертой неверных таблиц
 
 // Контроль таблицы - вывод протокола контроля на страницу и для печати
-let tabledatacheck = function(table_id) {
+let tabledatacheck = function(table_id, type) {
     let data = "";
+    let url = "";
+    switch (type) {
+        case 'inform' :
+            url = informTableDataCheck + table_id + "/" + forcereload;
+            break;
+        case 'interperiod' :
+            url = interPeriodTableDataCheck + table_id + "/" + forcereload;
+            break;
+    }
+
+
     $.ajax({
         dataType: "json",
-        url: tabledatacheck_url + table_id + "/" + forcereload,
+        url: url,
         data: data,
         beforeSend: beforecheck,
         success: gettableprotocol
@@ -338,23 +349,23 @@ let renderTableProtocol = function (table_id, data) {
 };
 // Инициализация дополнительных кнопок на панели инструментов контроля формы
 let init_fc_extarbuttons = function () {
-    //$("#fc_extrabuttons").hide();
-    //$("#showallfcrule").jqxCheckBox({ theme: theme, checked: true });
-    //$("#showallfcrule").on('checked', function (event) {
-        //$(".rule-valid ").parent(".jqx-expander-header").hide().next().hide();
-    //});
-    //$("#showallfcrule").on('unchecked', function (event) {
-        //$(".rule-valid ").parent(".jqx-expander-header").show().next().show();
-    //});
-    $("#toggle_formcontrolscreen").jqxToggleButton({ theme: theme });
-    $("#toggle_formcontrolscreen").on('click', function () {
-        var toggled = $("#toggle_formcontrolscreen").jqxToggleButton('toggled');
-        if (toggled) {
-            $("#formprotocol").fullscreen();
-        }
-        else $.fullscreen.exit();
-        return false;
+    $("#fc_extrabuttons").hide();
+    $("#showallfcrule").jqxCheckBox({ theme: theme, checked: true });
+    $("#showallfcrule").on('checked', function (event) {
+        $(".rule-valid ").parent(".jqx-expander-header").hide().next().hide();
     });
+    $("#showallfcrule").on('unchecked', function (event) {
+        $(".rule-valid ").parent(".jqx-expander-header").show().next().show();
+    });
+    //$("#toggle_formcontrolscreen").jqxToggleButton({ theme: theme });
+    //$("#toggle_formcontrolscreen").on('click', function () {
+      //  var toggled = $("#toggle_formcontrolscreen").jqxToggleButton('toggled');
+//        if (toggled) {
+  //          $("#formprotocol").fullscreen();
+    //    }
+      //  else $.fullscreen.exit();
+        //return false;
+    //});
     $('#printformprotocol').jqxButton({ theme: theme });
 };
 // Инициализация дополнительных кнопок на панели инструментов контроля таблицы
@@ -364,24 +375,24 @@ let initextarbuttons = function () {
     $("#showallrule").on('checked', function (event) {
         $(".rule-valid").hide();
         $(".control-valid").hide();
-        //$(".rule-valid ").parent(".jqx-expander-header").hide().next().hide();
-        //$(".control-valid ").hide();
     });
     $("#showallrule").on('unchecked', function (event) {
-        console.log('Все правила!!!');
         $(".rule-valid").show();
         $(".control-valid").show();
-        //$(".rule-valid").parent(".jqx-expander-header").show().next().show();
-        //$(".control-valid").show();
     });
     $("#togglecontrolscreen").jqxToggleButton({ theme: theme });
     $("#togglecontrolscreen").on('click', function () {
         let toggled = $("#togglecontrolscreen").jqxToggleButton('toggled');
         if (toggled) {
-            $("#tableprotocol-co").fullscreen();
-        }
-        else $.fullscreen.exit();
-        return false;
+            splitter.jqxSplitter({panels: [{ size: 100, collapsible: false }, { size: '50%'}]})
+        } else {
+            splitter.jqxSplitter({panels: [ { size: '60%', min: 100, collapsible: false }, {collapsed:true} ]});
+        };
+
+
+
+
+
     });
     $('#printtableprotocol').jqxButton({ theme: theme });
     //$("#expandprotocolrow").jqxToggleButton({ theme: theme });
@@ -692,7 +703,7 @@ let gettableprotocol = function (data, status, xhr) {
             expandMode: 'multiple',
             theme: theme
         });*/
-        protocol_wrapper.jqxPanel({ autoUpdate: true, width: '98%', height: '75%'});
+        //protocol_wrapper.jqxPanel({ autoUpdate: true, width: '98%', height: '75%'});
         tableprotocol.append(header);
         tableprotocol.append(protocol_wrapper);
         if ($("#showallrule").jqxCheckBox('checked'))  {
@@ -1109,118 +1120,11 @@ let initdatagrid = function() {
     });
 };
 // Панель инструментов для редактируемой таблицы
-let rendertoolbar = function(toolbar) {
-    let container = $("<div style='margin: 5px;'></div>");
-    let filterinput = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='searchField' type='text' style='height: 23px; float: left; width: 150px;' />");
-    let clearfilter = $("<input id='clearfilters' type='button' value='Очистить фильтр' />");
-    let calculate = $("<button id='calculate' style='margin-left: 2px;' title='Рассчитать'><span class='fa fa-calculator'></span></button>");
-    let fullscreen = $("<a id='togglefullscreen' style='margin-left: 2px;' target='_blank' title='Полноэкранный режим'><span class='glyphicon glyphicon-fullscreen'></span></a>");
-    /*
-       var input3 = $("<input id='notnullstrings' type='button' value='Непустые строки' />");
-       var input5 = $("<input id='savestate' type='button' value='Сохранить настройки таблицы' />");
-       var input6 = $("<input id='loadstate' type='button' value='Загрузить настройки таблицы' />");
-       var excelexport = $("<a id='excelexport' style='margin-left: 2px;' target='_blank'><span class='glyphicon glyphicon-export'></span></a>");
-       */
-    toolbar.append(container);
-    container.append(filterinput);
-    container.append(clearfilter);
-    container.append(calculate);
-    container.append(fullscreen);
-    /*
-        container.append(input3);
-        container.append(input5);
-        container.append(input6);
-        container.append(excelexport);
-        */
-    filterinput.addClass('jqx-widget-content-' + theme);
-    filterinput.addClass('jqx-rc-all-' + theme);
-    filterinput.jqxInput({ width: 200, placeHolder: "Поиск строки" });
-    let oldVal = "";
-    filterinput.on('keydown', function (event) {
-        if (filterinput.val().length >= 2) {
-            if (this.timer) {
-                clearTimeout(this.timer);
-            }
-            if (oldVal !== filterinput.val()) {
-                this.timer = setTimeout(function () {
-                    row_name_filter(filterinput.val());
-                }, 500);
-                oldVal = filterinput.val();
-            }
-        }else {
-            dgrid.jqxGrid('removefilter', '1');
-        }
-    });
-    clearfilter.jqxButton({ theme: theme });
-    clearfilter.click(function () { dgrid.jqxGrid('clearfilters'); filterinput.val(''); });
-    calculate.jqxButton({ theme: theme });
-    calculate.click(fillCalculatedFields);
-    if (!there_is_calculated) {
-        calculate.jqxButton({disabled: true });
-    }
 
-    // TODO: Работает только в Хроме и Опере, разобраться с совместимостью вызова полноэкранного режима
-    fullscreen.jqxToggleButton({ theme: theme });
-    fullscreen.on('click', function () {
-        let toggled = fullscreen.jqxToggleButton('toggled');
-        if (toggled) {
-            $("#DataGrid").fullscreen();
-            /*            var elem = document.getElementById("DataGrid");
-                        if (elem.webkitrequestFullscreen) {
-                            elem.webkitrequestFullscreen();
-                        }*/
-        }
-        else $.fullscreen.exit();
-        return false;
-    });
-    firefullscreenevent();
-    /*input5.jqxButton({ theme: theme });
-    input3.jqxButton({ theme: theme });
-    input3.click(function () { not_null_filter(); });
-        input5.click(function () {
-            var tablestate = $("#DataGrid").jqxGrid('savestate');
-            var data = "state=" + JSON.stringify(tablestate);
-            $.ajax({
-                dataType: 'json',
-                url: table_state_url + '&table='+ current_table + '&action=save' ,
-                data: data,
-                success: function (data, status, xhr) {
-                    //console.log(data.responce);
-                },
-                error: function (xhr, status, errorThrown) {
-                    raiseError("Ошибка сохранения настроек редактирования таблицы. " + xhr.status + ' (' + xhr.statusText + ') - ' + status);
-                    //$("#currentError").text("Ошибка сохранения настроек редактирования таблицы. " + xhr.status + ' (' + xhr.statusText + ') - ' + status);
-                    //$("#serverErrorNotification").jqxNotification("open");
-                }
-            });
-        });
-    input6.jqxButton({ theme: theme });
-        input6.click(function () {
-            get_state_url = table_state_url + '&table='+ current_table + '&action=get';
-            $.getJSON( get_state_url, function( data ) {
-                if (data.responce != 0) {
-                    $("#DataGrid").jqxGrid('loadstate', data.responce);
-                }
-                else {
-                    $("#currentInfoMessage").text("Для данной таблицы нет сохраненных настроек редактирования");
-                    $("#infoNotification").jqxNotification("open");
-                }
-            });
-        });
-    excelexport.jqxButton({ theme: theme });
-    excelexport.on('click', function () {
-    var exported;
-    exported = $("#DataGrid").jqxGrid('exportdata', 'json');
-    console.log(dataAdapter.records);
-    tabledataexport(current_table);
-    });
-    */
-};
 
 let inittoolbarbuttons = function () {
     tdropdown.jqxDropDownButton({width: 120, height:20, theme: theme});
     tdropdown.jqxDropDownButton('setContent', '<div style="margin-top: 3px">Таблицы</div>');
-    //filterinput.jqxInput({ width: 200, height: 21});
     let oldVal = "";
     filterinput.on('keydown', function (event) {
         if (filterinput.val().length >= 2) {
@@ -1237,37 +1141,25 @@ let inittoolbarbuttons = function () {
             dgrid.jqxGrid('removefilter', '1');
         }
     });
-    //clearfilter.jqxButton({ height: 23, theme: theme });
     clearfilter.click(function () { dgrid.jqxGrid('clearfilters'); filterinput.val(''); });
-    //calculate.jqxButton({ theme: theme });
     if (!there_is_calculated) {
         calculate.attr('disabled', true );
     }
     calculate.click(fillCalculatedFields);
-
-
-    //fullscreen.jqxToggleButton({ theme: theme });
-
     fullscreen.click(function() {
         dgrid.fullscreen();
     });
-
-    //fullscreen.on('click', function () {
-        //let toggled = fullscreen.jqxToggleButton('toggled');
-        //if (toggled) {
-      //      $("#DataGrid").fullscreen();
-            /*            var elem = document.getElementById("DataGrid");
-                        if (elem.webkitrequestFullscreen) {
-                            elem.webkitrequestFullscreen();
-                        }*/
-        //}
-        //else $.fullscreen.exit();
-      //  return false;
-    //});
-
+    tcheck.click( function() {
+        tabledatacheck(current_table, 'inform');
+        splitter.jqxSplitter('expand');
+    });
+    iptcheck.click( function() {
+        tabledatacheck(current_table, 'interperiod');
+        splitter.jqxSplitter('expand');
+    });
 };
 
-let firefullscreenevent = function() {
+/*let firefullscreenevent = function() {
     $(document).bind('fscreenchange', function(e, state, elem) {
         let fsel1 =  $('#togglefullscreen');
         let fsel2 =  $('#togglecontrolscreen');
@@ -1282,7 +1174,8 @@ let firefullscreenevent = function() {
             fsel3.jqxToggleButton('unCheck');
         }
     });
-};
+};*/
+
 // проверяем ли находится ли данная ячейка в списке запрещенных к редактированию ячеек
 let cellbeginedit = function (row, datafield, columntype, value) {
     let rowid = dgrid.jqxGrid('getrowid', row);

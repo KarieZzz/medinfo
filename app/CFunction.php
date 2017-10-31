@@ -26,6 +26,21 @@ class CFunction extends Model
         return $query->where('type', $type);
     }
 
+    public function scopeInForm($query)
+    {
+        return $query->where('type', 1);
+    }
+
+    public function scopeInterForm($query)
+    {
+        return $query->where('type', 2);
+    }
+
+    public function scopeInterPeriod($query)
+    {
+        return $query->where('type', 3);
+    }
+
     public function scopeActive($query)
     {
         return $query->where('blocked', 0);

@@ -9,6 +9,7 @@ let default_album = '{{ $album->id }}';
 let current_user_role = '{{ $worker->role }}';
 let current_table = '{{ $laststate['currenttable']->id }}';
 let current_table_code = '{{ $laststate['currenttable']->table_code }}';
+let splitter = $("#formEditLayout");
 let tdropdown = $('#TableList');
 let fgrid = $("#FormTables"); // селектор для сетки с перечнем таблиц
 let dgrid = $("#DataGrid"); // селектор для сетки с данными таблиц
@@ -16,6 +17,9 @@ let filterinput = $("#SearchField");
 let clearfilter = $("#ClearFilter");
 let calculate = $("#Сalculate");
 let fullscreen = $("#ToggleFullscreen");
+let tcheck = $("#TableCheck");
+let iptcheck = $("#IPTableCheck");
+
 let localizednumber = new Intl.NumberFormat('ru-RU');
 let edited_tables = [{!! implode(',', $editedtables) !!}];
 let not_editable_cells = {!! json_encode($noteditablecells) !!};
@@ -67,9 +71,10 @@ let current_edited_cell = {};
 let current_protocol_source = [];
 let source_url = "/datainput/fetchvalues/" + doc_id + "/" + default_album + "/";
 let savevalue_url = "/datainput/savevalue/" + doc_id + "/";
-let validate_table_url = "/datainput/tablecontrol/" + doc_id + "/";
+//let validate_table_url = "/datainput/tablecontrol/" + doc_id + "/";
 let validate_form_url = "/datainput/formcontrol/" + doc_id;
-let tabledatacheck_url = "/datainput/dcheck/table/" + doc_id + "/";
+let informTableDataCheck = "/datainput/ifdcheck/table/" + doc_id + "/";
+let interPeriodTableDataCheck = "/datainput/interperioddcheck/table/" + doc_id + "/";
 let formdatacheck_url = "/datainput/dcheck/form/" + doc_id;
 let medstat_control_url = "medstat_control_protocol.php?document=" + doc_id;
 let valuechangelog_url = "/datainput/valuechangelog/" + doc_id;
@@ -94,7 +99,7 @@ initfilters();
 initdatagrid();
 //initlayout();
 //$('#formEditLayout').jqxLayout({ theme: theme, width: '99%', height: '98%', layout: layout });
-/*init_fc_extarbuttons();
+//init_fc_extarbuttons();
 initextarbuttons();
-firefullscreenevent();*/
+//firefullscreenevent();
 </script>

@@ -206,6 +206,8 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('datainput/formcontrol/{document}', 'StatDataInput\FormDashboardController@formControl');
     Route::get('datainput/tablecontrol/{document}/{table}', 'StatDataInput\FormDashboardController@tableControl');
 
+    Route::get('datainput/ifdcheck/table/{document}/{table}/{forcereload}', 'StatDataInput\DataCheckController@informTableControl');
+    Route::get('datainput/interperioddcheck/table/{document}/{table}/{forcereload}', 'StatDataInput\DataCheckController@interPeriodControl');
     Route::get('datainput/dcheck/table/{document}/{table}/{forcereload}', 'StatDataInput\DataCheckController@check_table');
     Route::get('datainput/dcheck/form/{document}/{forcereload}', 'StatDataInput\DataCheckController@check_document');
 
