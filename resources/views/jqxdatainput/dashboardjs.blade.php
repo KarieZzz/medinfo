@@ -10,6 +10,7 @@ let current_user_role = '{{ $worker->role }}';
 let current_table = '{{ $laststate['currenttable']->id }}';
 let current_table_code = '{{ $laststate['currenttable']->table_code }}';
 let splitter = $("#formEditLayout");
+let controltabs = $("#ControlTabs");
 let tdropdown = $('#TableList');
 let fgrid = $("#FormTables"); // селектор для сетки с перечнем таблиц
 let dgrid = $("#DataGrid"); // селектор для сетки с данными таблиц
@@ -18,6 +19,7 @@ let clearfilter = $("#ClearFilter");
 let calculate = $("#Сalculate");
 let fullscreen = $("#ToggleFullscreen");
 let tcheck = $("#TableCheck");
+let idtcheck = $("#IDTableCheck");
 let iptcheck = $("#IPTableCheck");
 
 let localizednumber = new Intl.NumberFormat('ru-RU');
@@ -74,6 +76,7 @@ let savevalue_url = "/datainput/savevalue/" + doc_id + "/";
 //let validate_table_url = "/datainput/tablecontrol/" + doc_id + "/";
 let validate_form_url = "/datainput/formcontrol/" + doc_id;
 let informTableDataCheck = "/datainput/ifdcheck/table/" + doc_id + "/";
+let interFormTableDataCheck = "/datainput/interformdcheck/table/" + doc_id + "/";
 let interPeriodTableDataCheck = "/datainput/interperioddcheck/table/" + doc_id + "/";
 let formdatacheck_url = "/datainput/dcheck/form/" + doc_id;
 let medstat_control_url = "medstat_control_protocol.php?document=" + doc_id;

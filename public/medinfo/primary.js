@@ -12,7 +12,7 @@ let initSplitter = function () {
             { size: '60%', min: 100, collapsible: false }, {collapsed:true}
             ]
     });
-    $("#controltabs").jqxTabs({ theme: theme, height: '100%', width: '100%' });
+    $("#ControlTabs").jqxTabs({ theme: theme, height: '100%', width: '100%' });
     $("#TableTitle").html('Таблица ' + data_for_tables[current_table].tablecode + ', "' + data_for_tables[current_table].tablename + '"');
 
 };

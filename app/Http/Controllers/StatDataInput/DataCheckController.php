@@ -25,6 +25,11 @@ class DataCheckController extends Controller
         return DataCheck::inFormtableControl($document, $table, $forcereload);
     }
 
+    public function interFormControl(Document $document, Table $table, int $forcereload = 0)
+    {
+        return DataCheck::interFormTableControl($document, $table, $forcereload);
+    }
+
     public function interPeriodControl(Document $document, Table $table, int $forcereload = 0)
     {
         return DataCheck::interPeriodTableControl($document, $table, $forcereload);

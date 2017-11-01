@@ -1,7 +1,25 @@
 /**
  * Created by shameev on 09.09.2016.
  */
-var initlayout = function() {
+
+let initSplitter = function () {
+    $('#formEditLayout').jqxSplitter({
+        width: '100%',
+        height: '945px',
+        theme: theme,
+        splitBarSize: 10,
+        panels: [
+            { size: '60%', min: 100, collapsible: false }, {collapsed:true}
+        ]
+    });
+    $("#ControlTabs").jqxTabs({ theme: theme, height: '100%', width: '100%' });
+    $("#TableTitle").html('Таблица ' + data_for_tables[current_table].tablecode + ', "' + data_for_tables[current_table].tablename + '"');
+
+};
+
+
+/*
+let initlayout = function() {
     layout = [{
         type: 'layoutGroup',
         orientation: 'horizontal',
@@ -95,4 +113,4 @@ var initlayout = function() {
             }]
         }]
     }];
-};
+};*/

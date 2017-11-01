@@ -94,6 +94,13 @@ class DataCheck
         return $protocol;
     }
 
+    public static function interFormTableControl(Document $document, Table $table, $forcereload = 0)
+    {
+        $cfunctions = CFunction::OfTable($table->id)->InterForm()->Active()->get();
+        $protocol = self::tableControl1($document, $table, $cfunctions, $forcereload = 0);
+        return $protocol;
+    }
+
     public static function interPeriodTableControl(Document $document, Table $table, $forcereload = 0)
     {
         $cfunctions = CFunction::OfTable($table->id)->InterPeriod()->Active()->get();

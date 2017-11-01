@@ -23,8 +23,8 @@
 
 @push('loadjsscripts')
     @include('jqxdatainput.jsstack')
-    <script src="{{ asset('/medinfo/editdashboard.js?v=074') }}"></script>
-    <script src="{{ asset('/medinfo/primary.js?v=011') }}"></script>
+    <script src="{{ asset('/medinfo/editdashboard.js?v=075') }}"></script>
+    <script src="{{ asset('/medinfo/primary.js?v=013') }}"></script>
 @endpush('loadjsscripts')
 
 @section('inlinejs')

@@ -12,6 +12,9 @@ let tabledatacheck = function(table_id, type) {
         case 'inform' :
             url = informTableDataCheck + table_id + "/" + forcereload;
             break;
+        case 'interform' :
+            url = interFormTableDataCheck + table_id + "/" + forcereload;
+            break;
         case 'interperiod' :
             url = interPeriodTableDataCheck + table_id + "/" + forcereload;
             break;
@@ -678,7 +681,7 @@ let gettableprotocol = function (data, status, xhr) {
     }
     else*/
     if (typeof data.no_rules !== 'undefined' && data.no_rules) {
-        tableprotocol.html("<div class='alert alert-info'>"+ timestamp+" Для данной таблицы не заданы правила контроля</div>");
+        tableprotocol.html("<div class='alert alert-info'>"+ timestamp+" Для данной таблицы не заданы правила этого типа контроля</div>");
         protocol_control_created = false;
     }
     else if (data.valid && data.no_alerts) {
@@ -1153,10 +1156,19 @@ let inittoolbarbuttons = function () {
     tcheck.click( function() {
         tabledatacheck(current_table, 'inform');
         splitter.jqxSplitter('expand');
+        controltabs.jqxTabs('select', 0);
+
+    });
+    idtcheck.click( function() {
+        tabledatacheck(current_table, 'interform');
+        splitter.jqxSplitter('expand');
+        controltabs.jqxTabs('select', 0);
+
     });
     iptcheck.click( function() {
         tabledatacheck(current_table, 'interperiod');
         splitter.jqxSplitter('expand');
+        controltabs.jqxTabs('select', 0);
     });
 };
 
