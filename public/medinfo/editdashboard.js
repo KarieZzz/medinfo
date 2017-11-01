@@ -904,6 +904,7 @@ let inittablelist = function() {
         $("#tableprotocol").html('');
         $("#extrabuttons").hide();
         tdropdown.jqxDropDownButton('close');
+        splitter.jqxSplitter('collapse');
         //$("#formTables").jqxDataTable('focus');
     });
 

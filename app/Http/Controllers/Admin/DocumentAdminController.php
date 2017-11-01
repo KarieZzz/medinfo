@@ -50,6 +50,11 @@ class DocumentAdminController extends Controller
         return UnitTree::getSimpleTree($parent);
     }
 
+    public function fetch_monitorings()
+    {
+        return \App\MonitoringView::orderBy('name')->get();
+    }
+
     public function fetch_unitgroups()
     {
         //return UnitTree::getSimpleTree($parent);

@@ -172,6 +172,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     // Менеджер отчетных документов
     Route::get('admin/documents', 'Admin\DocumentAdminController@index');
     Route::get('admin/fetchugroups', 'Admin\DocumentAdminController@fetch_unitgroups');
+    Route::get('admin/fetch_mon_tree', 'Admin\DocumentAdminController@fetch_monitorings');
     Route::get('admin/fetchdocuments', 'Admin\DocumentAdminController@fetchDocuments');
     Route::post('admin/createdocuments', 'Admin\DocumentAdminController@createDocuments');
     Route::delete('admin/deletedocuments', 'Admin\DocumentAdminController@deleteDocuments');

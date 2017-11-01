@@ -1,7 +1,7 @@
 /**
  * Created by shameev on 28.06.2016.
  */
-let mon_tree_url = '/datainput/fetch_mon_tree/';
+let mon_tree_url = '/admin/fetch_mon_tree/';
 let docsource_url = '/admin/fetchdocuments?';
 let createdocuments_url = '/admin/createdocuments';
 let deletedocuments_url = '/admin/deletedocuments';
@@ -101,7 +101,7 @@ initfilterdatasources = function() {
         id: 'id',
         localdata: monitorings
     };
-    var forms_source =
+    let forms_source =
         {
             datatype: "json",
             datafields: [
@@ -111,7 +111,7 @@ initfilterdatasources = function() {
             id: 'id',
             localdata: forms
         };
-    var states_source =
+    let states_source =
     {
         datatype: "array",
         datafields: [
@@ -121,7 +121,7 @@ initfilterdatasources = function() {
         id: 'code',
         localdata: states
     };
-    var periods_source =
+    let periods_source =
     {
         datatype: "json",
         datafields: [
@@ -131,7 +131,7 @@ initfilterdatasources = function() {
         id: 'id',
         localdata: periods
     };
-    var dtypes_source =
+    let dtypes_source =
     {
         datatype: "array",
         datafields: [
@@ -730,19 +730,19 @@ initdocumentactions = function() {
                 dlist.jqxGrid('updatebounddata');
             },
             error: function (xhr, status, errorThrown) {
-                var error_text = "Ошибка сохранения данных на сервере. " + xhr.status + ' (' + xhr.statusText + ') - ' + status + ". Обратитесь к администратору.";
+                let error_text = "Ошибка сохранения данных на сервере. " + xhr.status + ' (' + xhr.statusText + ') - ' + status + ". Обратитесь к администратору.";
                 raiseError(error_text);
             }
         });
     });
     $("#protectAggregates").jqxButton ({ theme: theme});
     $("#protectAggregates").click(function () {
-        var row_ids = noselected_error("Не выбрано ни одного документа защиты от повторного свода");
+        let row_ids = noselected_error("Не выбрано ни одного документа защиты от повторного свода");
         if (!row_ids) {
             return false;
         }
-        var data = "documents=" + row_ids;
-        var confirm_text = 'Подтвердите установку защиты от повторного свода для документов №№ ' + row_ids + '. \n';
+        let data = "documents=" + row_ids;
+        let confirm_text = 'Подтвердите установку защиты от повторного свода для документов №№ ' + row_ids + '. \n';
         if (!confirm(confirm_text)) {
             return false;
         }
@@ -759,7 +759,7 @@ initdocumentactions = function() {
                 dlist.jqxGrid('updatebounddata');
             },
             error: function (xhr, status, errorThrown) {
-                var error_text = "Ошибка сохранения данных на сервере. " + xhr.status + ' (' + xhr.statusText + ') - ' + status + ". Обратитесь к администратору.";
+                let error_text = "Ошибка сохранения данных на сервере. " + xhr.status + ' (' + xhr.statusText + ') - ' + status + ". Обратитесь к администратору.";
                 raiseError(error_text);
             }
         });
@@ -767,13 +767,13 @@ initdocumentactions = function() {
 
 };
 linkrenderer = function (row, column, value) {
-    var html = "<div class='jqx-grid-cell-left-align' style='margin-top: 6px'>";
+    let html = "<div class='jqx-grid-cell-left-align' style='margin-top: 6px'>";
     html += "<a href='/datainput/formdashboard/" + value + "' target='_blank' title='Открыть для редактирования'>" + value + "</a></div>";
     return html;
 };
 noselected_error = function(message) {
-    var row_ids = getselecteddocuments();
-    if (row_ids.length == 0) {
+    let row_ids = getselecteddocuments();
+    if (row_ids.length === 0) {
         raiseError(message);
         return false;
     }
