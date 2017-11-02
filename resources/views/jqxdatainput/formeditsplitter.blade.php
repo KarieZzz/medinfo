@@ -48,14 +48,14 @@
                     <div style="clear: both"></div>
                     <div style="display: none; margin-left: 10px" id="protocolloader"><h5>Выполнение проверки и загрузка протокола контроля <img src='/jqwidgets/styles/images/loader-small.gif' /></h5></div>
                     <div style="display: none" class="inactual-protocol"><span class='text-danger'>Протокол неактуален (в таблице произведены изменения после его формирования)</span></div>
-                    <div style="width: 100%; height: 950px" id="tableprotocol"></div>
+                    <div style="width: 100%; height: 820px; overflow-y: scroll" id="tableprotocol"></div>
                 </div>
             </div>
             <div>
                 Content 2
             </div>
             <div>
-                <div id="cellprotocol"></div>
+                <div style="width: 100%; height: 850px; overflow-y: scroll" id="cellprotocol"></div>
             </div>
             @yield('additionalTabDiv')
         </div>

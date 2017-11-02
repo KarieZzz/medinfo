@@ -986,7 +986,7 @@ let initdatagrid = function() {
     dgrid.jqxGrid(
         {
             width: '100%',
-            height: '855px',
+            height: 812,
             source: dataAdapter,
             localization: localize(),
             selectionmode: 'singlecell',
