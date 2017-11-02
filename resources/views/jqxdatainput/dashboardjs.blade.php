@@ -92,7 +92,12 @@ let formlabels =
         iadiapazon: 4,
         multiplicity: 5
     };
-
+let initialViewport = $(window).height();
+let topOffset1 = 135;
+initDgridSize();
+initTableProtSize();
+initCellProtSize();
+onResizeEventLitener();
 initdatasources();
 initnotifications();
 inittoolbarbuttons();

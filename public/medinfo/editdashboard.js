@@ -4,6 +4,26 @@
 // Обработка состояния кнопочек перевода в полноэкранный режим
 // Пометка/снятие пометки волнистой чертой неверных таблиц
 
+let initDgridSize = function () {
+    return initialViewport - topOffset1;
+};
+
+let initTableProtSize = function () {
+    $("#tableprotocol").height(initialViewport - topOffset1);
+};
+
+let initCellProtSize = function () {
+    $("#cellprotocol").height(initialViewport - topOffset1);
+};
+
+let onResizeEventLitener = function () {
+    $( window ).resize(function() {
+        dgrid.jqxGrid({ height: $(window).height()-topOffset1 });
+        $("#tableprotocol").height($(window).height()-topOffset1);
+        $("#cellprotocol").height($(window).height()-topOffset1);
+    });
+};
+
 // Контроль таблицы - вывод протокола контроля на страницу и для печати
 let tabledatacheck = function(table_id, type) {
     let data = "";
@@ -986,7 +1006,7 @@ let initdatagrid = function() {
     dgrid.jqxGrid(
         {
             width: '100%',
-            height: 812,
+            height: initDgridSize(),
             source: dataAdapter,
             localization: localize(),
             selectionmode: 'singlecell',
