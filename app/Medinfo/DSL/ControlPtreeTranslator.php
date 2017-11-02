@@ -21,7 +21,7 @@ class ControlPtreeTranslator
     public $table;
     public $form;
     public $currentForm;
-    public $withinform = true;
+    public $type = 1;
     public $findex;
     public $scriptReadable;
     public $vector = [];
@@ -73,9 +73,7 @@ class ControlPtreeTranslator
             $range = $this->inflateRangeMatrix($fprops, $lprops, $cellrange_vector);
             //unset($range['node']->children[0]);
             //unset($range['node']->children[1]);
-
         }
-
     }
 
     public function parseRCRanges()
@@ -244,12 +242,12 @@ class ControlPtreeTranslator
     {
         $this->makeReadable();
         $this->setParentNodesFromRoot();
+        $this->parseFunctionIndex();
         $this->parseCellAdresses();
         $this->parseCellRanges();
         $this->validateVector();
         $this->parseRCRanges();
         $this->parseGroupScopes();
-        $this->parseFunctionIndex();
 
         foreach ($this->parser->celladressStack as $caLabel => $caProps) {
             $lightweightCAStack[$caLabel]['codes'] = $caProps['codes'];
@@ -312,7 +310,7 @@ class ControlPtreeTranslator
             $properties['boolean_sign'] = $this->boolean_sign;
         }
         $properties['iterations'] = $this->iterations;
-        $properties['inform'] = $this->withinform;
+        $properties['type'] = $this->type;
         $properties['iteration_mode'] = isset($this->vector[0]) ? $this->vector[0] : null ;
         $properties['formula'] = $this->scriptReadable;
         $properties['function_id'] = $this->findex;
@@ -595,15 +593,19 @@ class ControlPtreeTranslator
 
     public function identifyControlType($code)
     {
-        if ($code == $this->form->form_code || empty($code) ) {
+        if ($this->findex == 3 || $this->findex == 4) {
+            $this->type = (int)\App\DicCfunctionType::InterPeriod()->first(['code'])->code;
+            return $this->form->id;
+        } elseif ($code == $this->form->form_code || empty($code) ) {
+            $this->type = (int)\App\DicCfunctionType::InForm()->first(['code'])->code;
             return $this->form->id;
         } else {
             $form = Form::OfCode($code)->first();
             if (is_null($form)) {
-                throw new \Exception("Форме с кодом $code не существует");
+                throw new \Exception("Формы с кодом $code не существует");
             }
             $this->currentForm = $form;
-            $this->withinform = false;
+            $this->type = (int)\App\DicCfunctionType::InterForm()->first(['code'])->code;
             return $form->id;
         }
     }

@@ -171,7 +171,7 @@ class CFunctionAdminController extends Controller
         $cfunction->script = $request->script;
         $cfunction->comment = $request->comment;
         $cfunction->blocked = $request->blocked;
-        $cfunction->type = ($cache['properties']['inform'] ? 1 : 2);
+        $cfunction->type = $cache['properties']['type'];
         $cfunction->function = $cache['properties']['function_id'];
         $cfunction->ptree = $cache['ptree'];
         $cfunction->properties = json_encode($cache['properties']);
@@ -231,7 +231,7 @@ class CFunctionAdminController extends Controller
             $cache = $this->compile1($function->script, $table);
             if ($cache) {
                 //echo $i . ' Компиляция функции: ' . $function->script . '<br/>';
-                $function->type = ($cache['properties']['inform'] ? 1 : 2);
+                $function->type = $cache['properties']['type'];
                 $function->function = $cache['properties']['function_id'];
                 $function->ptree = $cache['ptree'];
                 $function->properties = json_encode($cache['properties']);
