@@ -104,7 +104,7 @@ class CFunctionAdminController extends Controller
         $newfunction->script = $request->script;
         $newfunction->comment = $request->comment;
         $newfunction->blocked = $request->blocked;
-        $newfunction->type = $cache['properties']['inform'] ? 1 : 2;
+        $newfunction->type = $cache['properties']['type'];
         $newfunction->function =  $cache['properties']['function_id'];
         $newfunction->ptree = $cache['ptree'];
         $newfunction->properties = json_encode($cache['properties']);
