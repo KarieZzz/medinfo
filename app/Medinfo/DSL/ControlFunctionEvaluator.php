@@ -82,7 +82,7 @@ class ControlFunctionEvaluator
 
     public function prepareCellValues()
     {
-        if ($this->properties['inform']) {
+        if ($this->properties['type'] === 1 ) {
             $this->setInformCellValues();
         } else {
             $this->setCellValuesArbitrary();
