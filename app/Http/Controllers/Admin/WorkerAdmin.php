@@ -65,7 +65,7 @@ class WorkerAdmin extends Controller
     {
         //
         $this->validate($request, [
-                'name' => 'required|unique:workers|max:16',
+                'name' => 'required|unique:workers|max:24',
                 'password' => 'required|max:16|min:4',
                 'email' => 'email',
                 'role' => 'digits:1',
@@ -82,7 +82,7 @@ class WorkerAdmin extends Controller
     public function worker_update(Worker $worker, Request $request)
     {
         $this->validate($request, [
-                'name' => 'required|max:16',
+                'name' => 'required|max:24',
                 'password' => 'required|max:16|min:4',
                 'email' => 'email',
                 'role' => 'digits:1',
