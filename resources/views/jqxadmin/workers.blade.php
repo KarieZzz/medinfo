@@ -24,6 +24,9 @@
                         <div class="col-sm-3">
                             <input type="text" class="form-control" id="password">
                         </div>
+                        <div class="col-sm-3">
+                            <button class="btn btn-default" id="pvdGen">Генерировать</button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label class="control-label col-sm-3" for="description">Описание:</label>
@@ -57,8 +60,8 @@
                     </div>
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-7">
-                            <button type="button" id="save" class="btn btn-default">Сохранить изменения</button>
-                            <button type="button" id="insert" class="btn btn-default">Вставить новую запись</button>
+                            <button type="button" id="save" class="btn btn-primary">Сохранить изменения</button>
+                            <button type="button" id="insert" class="btn btn-success">Вставить новую запись</button>
                             <button type="button" id="delete" class="btn btn-danger">Удалить запись</button>
                         </div>
                     </div>
@@ -98,6 +101,8 @@
     <script src="{{ asset('/jqwidgets/jqxgrid.selection.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
+    <script src="{{ asset('/plugins/pgenerator/jquery.pGenerator.js') }}"></script>
+
     <script src="{{ asset('/medinfo/admin/workeradmin.js') }}"></script>
 @endpush
 

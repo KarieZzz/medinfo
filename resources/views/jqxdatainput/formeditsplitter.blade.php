@@ -5,9 +5,11 @@
                 <div id="TableList" class="btn btn-default"><div id="FormTables"></div></div>
                 <button class="btn btn-default navbar-btn" id="Сalculate" title="Рассчитать"> <span class='fa fa-calculator'></span></button>
                 <button class="btn btn-default navbar-btn" id="ToggleFullscreen" title="Полноэкранный режим"> <span class='glyphicon glyphicon-fullscreen'></span></button>
-                <button class="btn btn-default navbar-btn" id="TableCheck" title="Контроль таблицы внутриформенный"><i>К</i><small>вф</small></button>
-                <button class="btn btn-default navbar-btn" id="IDTableCheck" title="Контроль таблицы межформенный"><i>К</i><small>мф</small></button>
-                <button class="btn btn-default navbar-btn" id="IPTableCheck" title="Контроль таблицы межпериодный"><i>К</i><small>мп</small></button>
+                <div class="btn-group">
+                    <button class="btn btn-default navbar-btn" id="TableCheck" title="Контроль таблицы внутриформенный"><i>К</i><small>вф</small></button>
+                    <button class="btn btn-default navbar-btn" id="IDTableCheck" title="Контроль таблицы межформенный"><i>К</i><small>мф</small></button>
+                    <button class="btn btn-default navbar-btn" id="IPTableCheck" title="Контроль таблицы межпериодный"><i>К</i><small>мп</small></button>
+                </div>
                 <form class="navbar-form navbar-right">
                 <div class="input-group">
                     <input type="text" class="form-control" id="SearchField" placeholder="Поиск строки">

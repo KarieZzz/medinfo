@@ -276,4 +276,15 @@ initactions = function() {
             }
         });
     });
+
+    $("#pvdGen").pGenerator({
+        'bind': 'click',
+        'passwordElement': '#password',
+        'displayElement': null,
+        'passwordLength': 6,
+        'uppercase': true,
+        'lowercase': true,
+        'numbers':   true,
+        'specialChars': false
+    });
 };
