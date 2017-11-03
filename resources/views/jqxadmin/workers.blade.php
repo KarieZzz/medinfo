@@ -102,8 +102,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/plugins/pgenerator/jquery.pGenerator.js') }}"></script>
-
-    <script src="{{ asset('/medinfo/admin/workeradmin.js') }}"></script>
+    <script src="{{ asset('/medinfo/admin/workeradmin.js?v=001') }}"></script>
 @endpush
 
 @section('inlinejs')
