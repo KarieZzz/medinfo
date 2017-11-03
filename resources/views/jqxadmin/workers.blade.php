@@ -25,7 +25,7 @@
                             <input type="text" class="form-control" id="password">
                         </div>
                         <div class="col-sm-3">
-                            <button class="btn btn-default" id="pvdGen">Генерировать</button>
+                            <button class="btn btn-default" id="pvdGen" type="button">Генерировать</button>
                         </div>
                     </div>
                     <div class="form-group">
