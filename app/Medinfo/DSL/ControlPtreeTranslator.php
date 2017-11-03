@@ -103,8 +103,8 @@ class ControlPtreeTranslator
                     //dump($i);
                     $intermediate = Row::OfTableRowIndex($this->table->id, $i)->first();
                     if (is_null($intermediate)) {
-                        //throw new \Exception("В таблице id:{$this->table->id} не существует строка с индексом $i");
-                        continue;
+                        throw new \Exception("В таблице id:{$this->table->id} не существует строка с индексом $i");
+                        //continue;
                     }
                     $new_ptnode = new ControlFunctionParseTree(ControlFunctionLexer::NUMBER, $intermediate->row_code);
                     $rcfunc->addChild($new_ptnode);
@@ -408,6 +408,10 @@ class ControlPtreeTranslator
             case 2: // по графам (контроль строк)
                 for ($j = 0, $first = $fprops['rowindex'], $last =  $lprops['rowindex']; $j++, $first <= $last; $first++) {
                     $row = Row::OfTableRowIndex($fprops['ids']['t'], $first)->first();
+                    if (is_null($row)) {
+                        throw new \Exception("В таблице отсутствует строка с индексом $first");
+                        //continue;
+                    }
                     $rowid = $row->id;
                     $rowindex = $row->row_index;
                     $rowcode = $row->row_code;

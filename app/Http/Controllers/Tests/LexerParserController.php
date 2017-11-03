@@ -52,7 +52,8 @@ class LexerParserController extends Controller
         //$i = "сравнение(Г3, Г4, =)";
         //$i = "сравнение(С03Г4, Ф30Т1100С1Г9, =)";
         //$i = 'сравнение(С10.5, С10.5.1+С10.5.2+С10.5.3+С10.5.4, >=, группы(сводные, юл), графы(4,7))';
-        //$i = "сравнение(С1, сумма(С4:С45)+сумма(С48:С67)+С69+С71+С73+сумма(С75:С96)+сумма(С101:С109)+сумма(С111:С122), =, группы(!музот), графы(3-5,7-9))";
+        //$i = "сравнение(С1, С69+сумма(С4:С45)+сумма(С48:С67)+С71+С73+сумма(С75:С96)+сумма(С101:С109)+сумма(С111:С122), =, группы(!музот), графы(3-5,7-9))";
+        $i = "сравнение(С1, С5+сумма(С6:С45)+сумма(С48:С67)+С69+С71+С73+сумма(С75:С96)+сумма(С101:С109)+сумма(С112:С122), =, группы(*), графы(*))";
         //$i = "сравнение(Г4, сумма(Г6:Г8), =, группы(!музот), строки(3-43, 45-82, 84-90, 92-123, 127-135, 144-155, 159, 163, 170-173, 175-194, 198, 203, 204, 206, 208, 209, 213-218, 220))";
 
         //$i = "зависимость(Г4, Г16, группы(оп), строки(*))";
@@ -63,7 +64,7 @@ class LexerParserController extends Controller
         //$i = "межгодовой(С1Г3+С4Г3, С1Г3,  20)";
 
         //$i = "мгдиапазон(диапазон(С01Г3:С02Г6), 20)";
-        $i = "мгдиапазон(диапазон(С16Г3:С18Г3), 0.2)";
+        //$i = "мгдиапазон(диапазон(С16Г3:С18Г3), 0.2)";
         //$i = "мгдиапазон(диапазон(С11Г3, С16Г3:С18Г3, С20Г3, С32Г3, С16Г3:С18Г3),  20)";
 
         //$i = "кратность(диапазон(С01Г3:С02Г6),  0.25)";
@@ -89,6 +90,7 @@ class LexerParserController extends Controller
         //dd(json_decode(json_encode($parser->root)));
 
         $table = Table::find(10); // Ф30 Т1100
+        $table = Table::find(15); // Ф30 Т2100
         //$table = Table::find(112); // Ф12 Т2000
         //$table = Table::find(115); // Ф32 Т2120
         //$table = Table::find(151); // Ф41 Т2100
@@ -104,7 +106,7 @@ class LexerParserController extends Controller
         //$translator->parseCellRanges();
         //$translator->validateVector();
          $translator->prepareIteration();
-        //dd($translator);
+        dd($translator);
         //dd($translator->getProperties());
         //dd($translator->parser->root);
         //echo (json_encode($translator->parser->root, JSON_PARTIAL_OUTPUT_ON_ERROR));
@@ -141,9 +143,9 @@ class LexerParserController extends Controller
         //dd($evaluator->caStack);
         //dd($evaluator->iterations);
 
-        //return $evaluator->makeControl();
-        $evaluator->makeControl();
-        dd($evaluator);
+        return $evaluator->makeControl();
+        //$evaluator->makeControl();
+        //dd($evaluator);
         //return ($evaluator->iterations);
         //dd($evaluator->pTree);
     }
