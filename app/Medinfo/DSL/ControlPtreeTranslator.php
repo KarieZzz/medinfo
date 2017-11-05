@@ -68,7 +68,8 @@ class ControlPtreeTranslator
             $lprops = $this->identifyCA($last->content);
             $lprops['node'] = $last;
             $lprops['last'] = true;
-            $cellrange_vector = $this->validateRange($fprops['codes'], $lprops['codes']);
+
+            $cellrange_vector = $this->validateRange($fprops, $lprops);
             //dd($cellrange_vector);
             $range = $this->inflateRangeMatrix($fprops, $lprops, $cellrange_vector);
             //unset($range['node']->children[0]);
@@ -337,29 +338,29 @@ class ControlPtreeTranslator
     public function validateRange(array $topleft, array $bottomright)
     {
         $cellrange_vector = null;
-        if ($topleft['f'] !== $bottomright['f'] ) {
+        if ($topleft['codes']['f'] !== $bottomright['codes']['f'] ) {
             throw new \Exception('Код формы, указанный в начале диапазона должен быть равен коду форму в конце диапазона');
         }
-        if ($topleft['t'] !== $bottomright['t'] ) {
+        if ($topleft['codes']['t'] !== $bottomright['codes']['t'] ) {
             throw new \Exception('Код таблицы, указанный в начале диапазона должен быть равен коду таблицы в конце диапазона');
         }
-        if ($bottomright['r'] < $topleft['r'] ) {
-            throw new \Exception("Код строки, указанный в конце диапазона ({$bottomright['r']}) не может предшествовавать коду строки в начале диапазона ({$topleft['r']})");
+        if ($bottomright['rowindex'] < $topleft['rowindex']) {
+            throw new \Exception("Код строки, указанный в конце диапазона ({$bottomright['codes']['r']}) не может предшествовавать коду строки в начале диапазона ({$topleft['codes']['r']})");
         }
-        if ($bottomright['c'] < $topleft['c'] ) {
-            throw new \Exception("Код графы, указанный в конце диапазона ({$bottomright['r']}) не может предшествовавать коду графы в начале диапазона ({$topleft['r']})");
+        if ($bottomright['codes']['c'] < $topleft['codes']['c'] ) {
+            throw new \Exception("Код графы, указанный в конце диапазона ({$bottomright['codes']['c']}) не может предшествовавать коду графы в начале диапазона ({$topleft['codes']['c']})");
         }
-        if ( ($bottomright['r'] === $topleft['r'])&& ($bottomright['c'] === $topleft['c']) ) {
-            throw new \Exception("Неверный диапазон. Начало и конец диапазона ссылаются на одну и туже ячейку (С{$topleft['r']}Г{$topleft['c']})");
+        if ( ($bottomright['codes']['r'] === $topleft['codes']['r'])&& ($bottomright['codes']['c'] === $topleft['codes']['c']) ) {
+            throw new \Exception("Неверный диапазон. Начало и конец диапазона ссылаются на одну и туже ячейку (С{$topleft['codes']['r']}Г{$topleft['codes']['c']})");
         }
-        if (empty($bottomright['r']) && empty($topleft['r'])) {
+        if (empty($bottomright['codes']['r']) && empty($topleft['codes']['r'])) {
             $cellrange_vector = 1;
-        } elseif (empty($bottomright['r']) xor empty($topleft['r'])) {
+        } elseif (empty($bottomright['codes']['r']) xor empty($topleft['codes']['r'])) {
             throw new \Exception("Неверный диапазон. В одном диапазоне не могут одновременно присутствовать полные и неполные ссылки (строки)");
         }
-        if (empty($bottomright['c']) && empty($topleft['c'])) {
+        if (empty($bottomright['codes']['c']) && empty($topleft['codes']['c'])) {
             $cellrange_vector = 2;
-        } elseif (empty($bottomright['c']) xor empty($topleft['c'])) {
+        } elseif (empty($bottomright['codes']['c']) xor empty($topleft['codes']['c'])) {
             throw new \Exception("Неверный диапазон. В одном диапазоне не могут одновременно присутствовать полные и неполные ссылки (графы)");
         }
         return $cellrange_vector;
