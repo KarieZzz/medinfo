@@ -243,6 +243,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('tests/lexer', 'Tests\LexerParserController@lexerTest');
     Route::get('tests/ast_w_bool', 'Tests\LexerParserController@test_making_AST_w_bool');
     Route::get('tests/parser', 'Tests\LexerParserController@func_parser');
+    Route::get('tests/batchRename', 'Tests\LexerParserController@batchRename');
 
     // mail test
     Route::get('mailtest', 'StatDataInput\DocumentMessageController@testmail');

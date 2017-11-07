@@ -289,4 +289,18 @@ class LexerParserController extends Controller
         //dd($lexer->tokenstack->stack->valid());
         //echo($lexer->tokenstack->stack->key());
     }
+
+    public function batchRename()
+    {
+        $cfunctions = CFunction::all();
+        $i = 0;
+        foreach ($cfunctions as $cfunction) {
+            $upd = str_replace(", группы(*), строки(*)", "", $cfunction->script);
+            $cfunction->script = $upd;
+            $cfunction->save();
+            $i++;
+        }
+        return 'Обработано функций: ' . $i;
+
+    }
 }
