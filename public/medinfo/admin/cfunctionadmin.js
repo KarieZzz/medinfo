@@ -168,12 +168,19 @@ let initFunctionActions = function() {
         current_function = fgrid.jqxGrid('getrowid', row);
         raiseConfirm("Удалить функцию контроля № " + current_function + "?" )
     });
-    $("#recompile").click(function () {
+    $("#recompileTable").click(function () {
         if (current_table === 0) {
             raiseError("Не выбрана таблица в которой будут перекомпилированы функции");
             return false;
         }
-        window.open(recompile_url + current_table);
+        window.open(recompileTable_url + current_table);
+    });
+    $("#recompileForm").click(function () {
+        if (current_form === 0) {
+            raiseError("Не выбрана форма в которой будут перекомпилированы функции");
+            return false;
+        }
+        window.open(recompileForm_url + current_form);
     });
 };
 

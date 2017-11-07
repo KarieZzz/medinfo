@@ -212,7 +212,23 @@ class CFunctionAdminController extends Controller
         }
     }*/
 
-    public function recompileFunctions($scopeTable)
+    public function recompileForm($scopeForm)
+    {
+        $protocol = [];
+        $form = Form::find($scopeForm);
+        $tables = Table::OfForm($scopeForm)->orderBy('table_index')->get();
+        //dd($tables);
+        foreach ($tables as $table) {
+            //dd($table);
+            $protocol[$table->table_code] = $this->recompile($table);
+            //dd($protocol);
+        }
+        //return $protocol;
+        return view('jqxadmin.recompileformprotocol', compact('form','protocol'));
+    }
+
+
+    public function recompileTable($scopeTable)
     {
         //if ($scopeTable === 0) {
           //  $functions = CFunction::all();
@@ -221,7 +237,13 @@ class CFunctionAdminController extends Controller
         //}
         $table = Table::find($scopeTable);
         $form = Form::find($table->form_id);
-        $functions = CFunction::ofTable($scopeTable)->get();
+        $protocol = $this->recompile($table);
+        return view('jqxadmin.recompileprotocol', compact('form','table', 'protocol'));
+    }
+
+    public function recompile($table)
+    {
+        $functions = CFunction::ofTable($table->id)->get();
         $protocol = [];
         $i = 1;
         foreach ($functions as $function) {
@@ -247,8 +269,9 @@ class CFunctionAdminController extends Controller
             //usleep(50000);
             $i++;
         }
-        return view('jqxadmin.recompileprotocol', compact('form','table', 'protocol'));
+        return $protocol;
     }
+
 
     public function compile1($script, Table $table)
     {

@@ -36,11 +36,16 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-7">
-                            <button type="button" id="save" class="btn btn-primary">Сохранить изменения</button>
-                            <button type="button" id="insert" class="btn btn-success">Вставить новую запись</button>
-                            <button type="button" id="delete" class="btn btn-danger">Удалить запись</button>
-                            <button type="button" id="recompile" class="btn btn-default">Перекомпилировать все функции в таблице</button>
+                        <div class="row">
+                            <div class="col-sm-offset-2 col-sm-4">
+                                <button type="button" id="save" class="btn btn-primary">Сохранить изменения</button>
+                                <button type="button" id="insert" class="btn btn-success">Вставить новую запись</button>
+                                <button type="button" id="delete" class="btn btn-danger">Удалить запись</button>
+                            </div>
+                            <div class="col-sm-offset-1 col-sm-3"><span>Перекомпилировать все функции: </span>
+                                <button type="button" id="recompileTable" class="btn btn-default">В таблице</button>
+                                <button type="button" id="recompileForm" class="btn btn-default">В форме</button>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -69,8 +74,8 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/tablepicker.js?v=009') }}"></script>
-    <script src="{{ asset('/medinfo/admin/cfunctionadmin.js?v=003') }}"></script>
+    <script src="{{ asset('/medinfo/admin/tablepicker.js?v=010') }}"></script>
+    <script src="{{ asset('/medinfo/admin/cfunctionadmin.js?v=004') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -83,7 +88,8 @@
         let rowsource;
         let columnsource;
         let functionfetch_url = '/admin/cfunctions/fetchcf/';
-        let recompile_url = '/admin/cfunctions/recompile/';
+        let recompileTable_url = '/admin/cfunctions/recompiletable/';
+        let recompileForm_url = '/admin/cfunctions/recompileform/';
         let forms = {!! $forms  !!};
         let errorLevels = {!! $error_levels !!};
         let fgrid = $("#functionList");

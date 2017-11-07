@@ -158,7 +158,8 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::post('admin/cfunctions/create/{table}', 'Admin\CFunctionAdminController@store1');
     Route::patch('admin/cfunctions/update/{cfunction}', 'Admin\CFunctionAdminController@update1');
     Route::delete('admin/cfunctions/delete/{cfunction}', 'Admin\CFunctionAdminController@delete');
-    Route::get('admin/cfunctions/recompile/{scopeTable}', 'Admin\CFunctionAdminController@recompileFunctions');
+    Route::get('admin/cfunctions/recompiletable/{scopeTable}', 'Admin\CFunctionAdminController@recompileTable');
+    Route::get('admin/cfunctions/recompileform/{scopeFrom}', 'Admin\CFunctionAdminController@recompileForm');
     Route::get('admin/dcheck/selected', 'StatDataInput\DataCheckController@selectControlConditions');
     Route::get('admin/dcheck/selectedcheck', 'StatDataInput\DataCheckController@selectedControl');
 
