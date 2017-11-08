@@ -295,7 +295,8 @@ class LexerParserController extends Controller
         $cfunctions = CFunction::all();
         $i = 0;
         foreach ($cfunctions as $cfunction) {
-            $upd = str_replace(", группы(*), строки(*)", "", $cfunction->script);
+            $remove = array(", группы(*), строки(*)", ", группы(*), графы(*)", ", группы(*), строки()", ", группы(*), графы()");
+            $upd = str_replace($remove, "", $cfunction->script);
             $cfunction->script = $upd;
             $cfunction->save();
             $i++;
