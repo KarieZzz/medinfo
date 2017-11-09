@@ -13,19 +13,19 @@ let initSpplitterSize = function () {
 };
 
 let initTableProtSize = function () {
-    $("#tableprotocol").height(initialViewport - topOffset1);
+    $("#tableprotocol").height(initialViewport - topOffset3);
 };
 
 let initCellProtSize = function () {
-    $("#cellprotocol").height(initialViewport - topOffset1);
+    $("#cellprotocol").height(initialViewport - topOffset3);
 };
 
 let onResizeEventLitener = function () {
     $( window ).resize(function() {
         dgrid.jqxGrid({ height: $(window).height()-topOffset1 });
         $('#formEditLayout').jqxSplitter({ height: $(window).height()-topOffset2});
-        $("#tableprotocol").height($(window).height()-topOffset1);
-        $("#cellprotocol").height($(window).height()-topOffset1);
+        $("#tableprotocol").height($(window).height()-topOffset3);
+        $("#cellprotocol").height($(window).height()-topOffset3);
     });
 };
 
