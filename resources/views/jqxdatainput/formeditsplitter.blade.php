@@ -31,7 +31,7 @@
 
     </div>
     <div>
-        <div class="jqx-hideborder jqx-hidescrollbars" id="ControlTabs" style="padding-top: 10px">
+        <div class="jqx-hideborder jqx-hidescrollbars" id="ControlTabs" style="padding-top: 10px; margin-top: 48px">
             <ul>
                 <li style="margin-left: 30px;">Контроль таблицы</li>
                 <li>Контроль формы</li>
