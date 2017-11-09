@@ -4,9 +4,9 @@
 @section('headertitle', 'Статистические отчетные документы')
 
 @section('content')
-    <div id="mainSplitter">
+    <div id="mainSplitter" style="padding-top: 50px">
         <div>
-            <div id="filterPanelSplitter">
+            <div id="filterPanelSplitter" style="padding-top: 50px; margin-bottom: 20px">
                 <div>
                     <div class="row">
                         <div class="col-sm-12">
@@ -131,7 +131,7 @@
 <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/documentdashboard.js?v=062') }}"></script>
+<script src="{{ asset('/medinfo/documentdashboard.js?v=063') }}"></script>
 @endpush
 
 @section('inlinejs')

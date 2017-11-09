@@ -53,8 +53,8 @@ let audit_state_ids =
 initSplitters = function () {
     $("#mainSplitter").jqxSplitter(
         {
-            width: '99%',
-            height: '96%',
+            width: '100%',
+            height: '95%',
             theme: theme,
             panels:
                 [

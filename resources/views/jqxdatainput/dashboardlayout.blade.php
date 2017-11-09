@@ -42,15 +42,13 @@
 <body>
 
 <!-- Wrap all page content here -->
-<div id="wrap">
+
     @include('jqxdatainput.top')
     <!-- Begin page content -->
-    <div id="widgets-content-wrap" style="visibility: hidden">
+    <div class="container-fluid" style="height: 100%; overflow: hidden">
         @yield('content')
     </div>
     @include('jqxdatainput.notifications')
-</div>
-
 
 <!-- Bootstrap core JavaScript -->
 <script src="{{ asset('/plugins/jQuery/jquery-1.12.4.min.js') }}" type="text/javascript" ></script>
@@ -73,7 +71,7 @@
                 }
             }
         });
-        $("#widgets-content-wrap").css("visibility", "visible");
+        //$("#widgets-content-wrap").css("visibility", "visible");
     });
 </script>
 @yield('inlinejs')
