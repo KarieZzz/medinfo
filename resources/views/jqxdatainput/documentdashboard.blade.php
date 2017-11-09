@@ -70,11 +70,9 @@
                         </div>
                         <div class="jqx-hideborder">
                             <div id="DocumentPropertiesSplitter">
-                                <div class="jqx-hideborder">
-                                    <div id="messagesExpander">
-                                        <div id="messagesTitle">Сообщения и комментарии <a href="#" id="openMessagesListWindow"><...></a></div>
-                                        <div id="DocumentMessages"></div>
-                                    </div>
+                                <div id="messagesExpander" class="panel panel-default panel">
+                                    <div id="messagesTitle" class="panel-heading">Сообщения и комментарии <a href="#" id="openMessagesListWindow"><...></a></div>
+                                    <div id="DocumentMessages" class="panel-body" style="height: 90%; padding: 0; overflow-y: auto"></div>
                                 </div>
                                 <div class="jqx-hideborder" >
                                     <div id="auditExpander">
@@ -133,7 +131,7 @@
 <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/documentdashboard.js?v=061') }}"></script>
+<script src="{{ asset('/medinfo/documentdashboard.js?v=062') }}"></script>
 @endpush
 
 @section('inlinejs')

@@ -249,6 +249,9 @@ class ControlFunctionEvaluator
             }
             return $value;
         } else {
+            if (is_null($node->left())) {
+                dd($this->properties);
+            }
             $left = $this->evaluateSubtree($node->left());
             $right = $this->evaluateSubtree($node->right());
             switch (ControlFunctionLexer::$tokenNames[$node->type]) {

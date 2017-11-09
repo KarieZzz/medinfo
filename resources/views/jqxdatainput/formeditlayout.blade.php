@@ -1,3 +1,5 @@
+{{-- Использовался до 2016 года. Сейчас переделано в сплиттер --}}
+
 <div id="formEditLayout">
     <div data-container="FormPanel">
         <div id="flist" style="width: 100%; height: 100%">

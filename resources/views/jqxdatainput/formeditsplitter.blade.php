@@ -1,6 +1,6 @@
 <div id="formEditLayout">
     <div>
-        <nav class="navbar navbar-default" style="margin-bottom: 0px; margin-top: 10px">
+        <nav class="navbar navbar-default" style="margin-bottom: 0; margin-top: 8px">
             <div class="container-fluid">
                 <div id="TableList" class="btn btn-default"><div id="FormTables"></div></div>
                 <button class="btn btn-default navbar-btn" id="Сalculate" title="Рассчитать"> <span class='fa fa-calculator'></span></button>

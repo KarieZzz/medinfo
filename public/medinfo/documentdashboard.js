@@ -1099,27 +1099,26 @@ initdocumentproperties = function() {
         orientation: 'vertical',
         panels: [{ size: '80%', min: 100, collapsible: false }, { min: '100px', collapsible: true}]
     });
-    $("#messagesExpander").jqxExpander({toggleMode: 'none', showArrow: false, width: "100%", height: "100%", theme: theme  });
     $("#openMessagesListWindow").on('click', function(event) {
         let bootstrap_link = "<link href='http://homestead.app/bootstrap/css/bootstrap.min.css' rel='stylesheet' type='text/css'>";
         let table = $('#DocumentMessages').clone();
         //var print_style = "<style>.printlist { font-size: 0.8em; } .control_result { border: 1px solid #7f7f7f; width: 400;";
         //print_style += "border-collapse: collapse; margin-bottom: 10px; } .control_result td { border: 1px solid #7f7f7f; } </style>";
-        var link_to_print ="<a href='#' onclick='window.print()'>Распечатать</a>";
-        var header = "<h3>Комментарии к форме №" + current_document_form_code + " " + current_document_form_name;
+        let link_to_print ="<a href='#' onclick='window.print()'>Распечатать</a>";
+        let header = "<h3>Комментарии к форме №" + current_document_form_code + " \"" + current_document_form_name + "\"";
         header += " по учреждению: " + current_document_ou_name +"</h3>";
-        var pWindow = window.open("", "messagesWindow", "width=1000, height=600, scrollbars=yes");
+        let pWindow = window.open("", "messagesWindow", "width=1000, height=600, scrollbars=yes");
 
         table.find('td').addClass('small');
         pWindow.document.write(bootstrap_link + link_to_print + header + table.html());
     });
     $("#openAuditionListWindow").on('click', function(event) {
-        var print_style = "<style>.printlist { font-size: 0.8em; } .control_result { border: 1px solid #7f7f7f; width: 400;";
+        let print_style = "<style>.printlist { font-size: 0.8em; } .control_result { border: 1px solid #7f7f7f; width: 400;";
         print_style += "border-collapse: collapse; margin-bottom: 10px; } .control_result td { border: 1px solid #7f7f7f; } </style>";
-        var link_to_print ="<a href='#' onclick='window.print()'>Распечатать</a>";
-        var header = "<h3>Перечень проверок формы №" + current_document_form_code + " " + current_document_form_name;
+        let link_to_print ="<a href='#' onclick='window.print()'>Распечатать</a>";
+        let header = "<h3>Перечень проверок формы №" + current_document_form_code + " " + current_document_form_name;
         header += " по учреждению: " + current_document_ou_name +"</h3>";
-        var pWindow = window.open("", "messagesWindow", "width=1000, height=600, scrollbars=yes");
+        let pWindow = window.open("", "messagesWindow", "width=1000, height=600, scrollbars=yes");
         pWindow.document.write(print_style + link_to_print + header + $("#DocumentAuditions").html());
     });
     $("#auditExpander").jqxExpander({toggleMode: 'none', showArrow: false, width: "100%", height: "100%", theme: theme  });
