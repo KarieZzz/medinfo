@@ -8,6 +8,10 @@ let initDgridSize = function () {
     return initialViewport - topOffset1;
 };
 
+let initSpplitterSize = function () {
+    return initialViewport - topOffset2;
+};
+
 let initTableProtSize = function () {
     $("#tableprotocol").height(initialViewport - topOffset1);
 };
@@ -19,10 +23,27 @@ let initCellProtSize = function () {
 let onResizeEventLitener = function () {
     $( window ).resize(function() {
         dgrid.jqxGrid({ height: $(window).height()-topOffset1 });
+        $('#formEditLayout').jqxSplitter({ height: $(window).height()-topOffset2});
         $("#tableprotocol").height($(window).height()-topOffset1);
         $("#cellprotocol").height($(window).height()-topOffset1);
     });
 };
+
+let initSplitter = function () {
+    $('#formEditLayout').jqxSplitter({
+        width: '100%',
+        height: initSpplitterSize(),
+        theme: theme,
+        splitBarSize: 10,
+        panels: [
+            { size: '60%', min: 100, collapsible: false }, {collapsed:true}
+        ]
+    });
+    $("#ControlTabs").jqxTabs({ theme: theme, height: '100%', width: '100%' });
+    $("#TableTitle").html('Таблица ' + data_for_tables[current_table].tablecode + ', "' + data_for_tables[current_table].tablename + '"');
+
+};
+
 
 // Контроль таблицы - вывод протокола контроля на страницу и для печати
 let tabledatacheck = function(table_id, type) {

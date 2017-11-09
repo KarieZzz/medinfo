@@ -24,14 +24,14 @@
         </nav>
 
         <div class="row" >
-            <div class="col-lg-12" style="margin-left: 10px"><h4 id="TableTitle"></h4></div>
+            <div class="col-lg-12" style="margin-left: 5px"><h4 id="TableTitle"></h4></div>
         </div>
         <div id="DataGrid"></div>
 
 
     </div>
     <div>
-        <div class="jqx-hideborder jqx-hidescrollbars" id="ControlTabs" style="padding-top: 10px; margin-top: 48px">
+        <div class="jqx-hideborder jqx-hidescrollbars" id="ControlTabs" style="margin-top: 48px">
             <ul>
                 <li style="margin-left: 30px;">Контроль таблицы</li>
                 <li>Контроль формы</li>

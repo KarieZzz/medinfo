@@ -44,8 +44,8 @@
 
 @push('loadjsscripts')
 @include('jqxdatainput.jsstack')
-    <script src="{{ asset('/medinfo/editdashboard.js?v=081') }}"></script>
-    <script src="{{ asset('/medinfo/aggregate.js?v=017') }}"></script>
+    <script src="{{ asset('/medinfo/editdashboard.js?v=085') }}"></script>
+{{--    <script src="{{ asset('/medinfo/aggregate.js?v=017') }}"></script>--}}
 @endpush('loadjsscripts')
 
 @section('inlinejs')

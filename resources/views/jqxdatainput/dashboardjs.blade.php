@@ -93,7 +93,8 @@ let formlabels =
         multiplicity: 5
     };
 let initialViewport = $(window).height();
-let topOffset1 = 135;
+let topOffset1 = 145;
+let topOffset2 = 10;
 initDgridSize();
 initTableProtSize();
 initCellProtSize();
