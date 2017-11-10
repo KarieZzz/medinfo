@@ -463,9 +463,10 @@ function selectedcell_protocol(form_protocol, table_id, table_code, column_id, r
         return false;
     } else {
         $.each(tableprotocol.rules, function (rule_idx, rule) {
+            //console.log(rule);
             if (!rule.no_rules) {
                 $.each(rule.iterations, function (iteration_idx, iteration) {
-                    //console.log(cellfound(iteration.cells, column_id, row_id));
+                    //console.log(iteration.cells, column_id, row_id);
                     if (cellfound(iteration.cells, column_id, row_id)) {
                         cell_protocol.push({ rule: rule, result: iteration });
                     }
@@ -480,7 +481,7 @@ function cellfound(cells, column_id, row_id) {
     let found = false;
     $.each(cells, function(cell_idx, cell) {
         //console.log(cell.column == column_id && cell.row == row_id);
-        if (cell.column === column_id && cell.row === row_id) {
+        if (cell.column === column_id && cell.row === parseInt(row_id)) {
             found = true;
         }
     });

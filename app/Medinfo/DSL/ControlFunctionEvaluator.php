@@ -250,9 +250,14 @@ class ControlFunctionEvaluator
             return $value;
         } else {
             if (is_null($node->left())) {
-                dd($this->properties);
+                throw new \Exception('ParseTree узел слева в дереве AST пуст');
+                //dd($this->properties);
             }
             $left = $this->evaluateSubtree($node->left());
+            if (is_null($node->right())) {
+                throw new \Exception('ParseTree узел справа в дереве AST пуст');
+                //dd($this->properties);
+            }
             $right = $this->evaluateSubtree($node->right());
             switch (ControlFunctionLexer::$tokenNames[$node->type]) {
                 case 'PLUS' :
