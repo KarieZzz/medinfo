@@ -476,7 +476,6 @@ function selectedcell_protocol(form_protocol, table_id, table_code, column_id, r
     }
     return cell_protocol;
 }
-
 function cellfound(cells, column_id, row_id) {
     let found = false;
     $.each(cells, function(cell_idx, cell) {
@@ -938,35 +937,38 @@ let inittablelist = function() {
         if (event.args.row.id === current_table) {
             return false;
         }
-        //$("#formTables").jqxDataTable('render');
-        dgrid.jqxGrid('endcelledit', current_edited_cell.r, current_edited_cell.c, false);
-        dgrid.jqxGrid('clearselection');
-        dgrid.jqxGrid('clearfilters');
-        current_table = event.args.row.id;
-        current_table_code = data_for_tables[current_table].tablecode;
-        current_table_index = data_for_tables[current_table].index;
-        current_row_name_datafield = data_for_tables[current_table].columns[1].dataField;
-        current_row_number_datafield = data_for_tables[current_table].columns[2].dataField;
-        dgrid.jqxGrid('beginupdate');
-        tablesource.datafields = data_for_tables[current_table].datafields;
-        tablesource.url = source_url + current_table;
-        data_for_tables[current_table].calcfields.length > 0 ? there_is_calculated = true : there_is_calculated = false;
-        there_is_calculated ? calculate.prop('disabled', false ) : calculate.attr('disabled', true );
-        dgrid.jqxGrid( { columns: data_for_tables[current_table].columns } );
-        dgrid.jqxGrid( { columngroups: data_for_tables[current_table].columngroups } );
-        dgrid.jqxGrid('updatebounddata');
-        dgrid.jqxGrid('endupdate');
-        //layout[0].items[1].items[0].items[0].title = "Таблица " + data_for_tables[current_table].tablecode + ', "' + data_for_tables[current_table].tablename + '"';
-        $("#TableTitle").html("Таблица " + data_for_tables[current_table].tablecode + ', "' + data_for_tables[current_table].tablename + '"');
-        //$('#formEditLayout').jqxLayout('refresh');
-        $("#tableprotocol").html('');
-        $("#extrabuttons").hide();
-        tdropdown.jqxDropDownButton('close');
-        splitter.jqxSplitter('collapse');
-        //$("#formTables").jqxDataTable('focus');
+        renderDgrid(event.args.row.id);
     });
 
 };
+
+function renderDgrid(rowid) {
+    dgrid.jqxGrid('endcelledit', current_edited_cell.r, current_edited_cell.c, false);
+    dgrid.jqxGrid('clearselection');
+    dgrid.jqxGrid('clearfilters');
+    current_table = rowid;
+    current_table_code = data_for_tables[current_table].tablecode;
+    current_table_index = data_for_tables[current_table].index;
+    current_row_name_datafield = data_for_tables[current_table].columns[1].dataField;
+    current_row_number_datafield = data_for_tables[current_table].columns[2].dataField;
+    dgrid.jqxGrid('beginupdate');
+    tablesource.datafields = data_for_tables[current_table].datafields;
+    tablesource.url = source_url + current_table;
+    data_for_tables[current_table].calcfields.length > 0 ? there_is_calculated = true : there_is_calculated = false;
+    there_is_calculated ? calculate.prop('disabled', false ) : calculate.attr('disabled', true );
+    dgrid.jqxGrid( { columns: data_for_tables[current_table].columns } );
+    dgrid.jqxGrid( { columngroups: data_for_tables[current_table].columngroups } );
+    dgrid.jqxGrid('updatebounddata');
+    dgrid.jqxGrid('endupdate');
+    //layout[0].items[1].items[0].items[0].title = "Таблица " + data_for_tables[current_table].tablecode + ', "' + data_for_tables[current_table].tablename + '"';
+    $("#TableTitle").html("Таблица " + data_for_tables[current_table].tablecode + ', "' + data_for_tables[current_table].tablename + '"');
+    //$('#formEditLayout').jqxLayout('refresh');
+    $("#tableprotocol").html('');
+    $("#extrabuttons").hide();
+    tdropdown.jqxDropDownButton('close');
+    splitter.jqxSplitter('collapse');
+}
+
 // Инициализация вкладки протокола контроля формы
 let initcheckformtab = function() {
     //$("#checkform").jqxButton({ theme: theme, disabled: control_disabled });
@@ -1185,10 +1187,24 @@ let inittoolbarbuttons = function () {
     tdropdown.jqxDropDownButton({width: 120, height:20, theme: theme});
     tdropdown.jqxDropDownButton('setContent', '<div style="margin-top: 3px">Таблицы</div>');
     nexttable.click( function() {
+        let oldindex = current_table_index;
         let next = ++current_table_index;
         let found = searchTableByIndex(next);
-        console.log(found);
-
+        if (!found) {
+            current_table_index = oldindex;
+            return false;
+        }
+        renderDgrid(found);
+    });
+    prevtable.click( function() {
+        let oldindex = current_table_index;
+        let prev = --current_table_index;
+        let found = searchTableByIndex(prev);
+        if (!found) {
+            current_table_index = oldindex;
+            return false;
+        }
+        renderDgrid(found);
     });
     if (!there_is_calculated) {
         calculate.attr('disabled', true );
