@@ -71,8 +71,7 @@
         let gridsource;
         let columnsource;
         let sellselectbegin;
-        let grid =  $("#tableGrid");
-        let tablefetch_url = '/admin/rc/fetchtables/';
+        let grid = $("#tableGrid");
         let gridfetch_url = '/admin/necells/grid/';
         let cellsfetch_url = '/admin/necells/fetchnecells/';
         let fetchcellcondition_url = '/admin/necells/fetchcellcondition/';

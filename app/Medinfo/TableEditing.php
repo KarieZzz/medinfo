@@ -146,7 +146,7 @@ class TableEditing
         $cols = Column::OfTable($table->id)->orderBy('column_index')->get();
         foreach ($cols as $col) {
             $datafields_arr[] = ['name'  => $col->id, 'type'  => 'string', ];
-            $width = $col->size * 10;
+            $width = $col->size;
             $contentType = $col->getMedinfoContentType();
             if ($contentType == 'data') {
                 $columns_arr[] = array(
