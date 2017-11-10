@@ -56,13 +56,14 @@
             </div>
         </div>
         <div id="ContentPanel">
-            <div class="jqx-hideborder jqx-hidescrollbars" id="documenttabs" style="width: 100%; height: 100%">
+            <div class="jqx-hideborder jqx-hidescrollbars" id="documenttabs" style="margin-top: 48px">
                 <ul>
                     <li style="margin-left: 30px;">Отчеты субъектов</li>
                     <li>Сводные отчеты</li>
                     <li>Последние документы</li>
                 </ul>
-                <div class="jqx-hideborder jqx-hidescrollbars" style="width: 100%; height: 100%">
+                <div>
+                    <div class="jqx-hideborder jqx-hidescrollbars" style="width: 100%; height: 100%">
                     <h3 style="margin-left: 30px">Первичные отчеты</h3>
                     <div id="DocumentPanelSplitter">
                         <div >
@@ -72,7 +73,7 @@
                             <div id="DocumentPropertiesSplitter">
                                 <div id="messagesExpander" class="panel panel-default panel">
                                     <div id="messagesTitle" class="panel-heading">Сообщения и комментарии <a href="#" id="openMessagesListWindow"><...></a></div>
-                                    <div id="DocumentMessages" class="panel-body" style="height: 90%; padding: 0; overflow-y: auto"></div>
+                                    <div id="DocumentMessages" class="panel-body" style="height: 85%; padding: 0; overflow-y: auto"></div>
                                 </div>
                                 <div class="jqx-hideborder" >
                                     <div id="auditExpander">
@@ -84,6 +85,7 @@
                         </div>
                     </div>
 
+                    </div>
                 </div>
                 <div>
                     <div class="jqx-hideborder jqx-hidescrollbars" style="width: 100%; height: 100%">

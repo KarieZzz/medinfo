@@ -114,6 +114,7 @@ class TableEditing
         }
         $fortable['tablecode'] = $table->table_code;
         $fortable['tablename'] = $table->table_name;
+        $fortable['index'] = $table->table_index;
         $fortable['datafields'] = $datafields_arr;
         $fortable['calcfields'] = $calculated_fields;
         $fortable['columns'] = $columns_arr;

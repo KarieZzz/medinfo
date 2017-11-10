@@ -304,4 +304,10 @@ class LexerParserController extends Controller
         return 'Обработано функций: ' . $i;
 
     }
+
+    public function normalizeTableOrder()
+    {
+
+    }
+
 }

@@ -9,11 +9,16 @@ let default_album = '{{ $album->id }}';
 let current_user_role = '{{ $worker->role }}';
 let current_table = '{{ $laststate['currenttable']->id }}';
 let current_table_code = '{{ $laststate['currenttable']->table_code }}';
+let current_table_index = '{{ $laststate['currenttable']->table_index }}';
 let splitter = $("#formEditLayout");
-let controltabs = $("#ControlTabs");
-let tdropdown = $('#TableList');
 let fgrid = $("#FormTables"); // селектор для сетки с перечнем таблиц
 let dgrid = $("#DataGrid"); // селектор для сетки с данными таблиц
+let controltabs = $("#ControlTabs");
+
+let tdropdown = $('#TableList');
+let prevtable = $('#Previous');
+let nexttable = $('#Following');
+
 let filterinput = $("#SearchField");
 let clearfilter = $("#ClearFilter");
 let calculate = $("#Сalculate");

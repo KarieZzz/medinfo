@@ -480,12 +480,24 @@ function cellfound(cells, column_id, row_id) {
     let found = false;
     $.each(cells, function(cell_idx, cell) {
         //console.log(cell.column == column_id && cell.row == row_id);
-        if (cell.column == column_id && cell.row == row_id) {
+        if (cell.column === column_id && cell.row === row_id) {
             found = true;
         }
     });
     return found;
 }
+
+function searchTableByIndex(index) {
+    let found = false;
+    $.each(data_for_tables, function(table, content) {
+        //console.log(content);
+        if (content.index === index) {
+            found = table;
+        }
+    });
+    return found;
+}
+
 
 let checkform = function () {
     let data;
@@ -931,6 +943,7 @@ let inittablelist = function() {
         dgrid.jqxGrid('clearfilters');
         current_table = event.args.row.id;
         current_table_code = data_for_tables[current_table].tablecode;
+        current_table_index = data_for_tables[current_table].index;
         current_row_name_datafield = data_for_tables[current_table].columns[1].dataField;
         current_row_number_datafield = data_for_tables[current_table].columns[2].dataField;
         dgrid.jqxGrid('beginupdate');
@@ -1170,23 +1183,12 @@ let initdatagrid = function() {
 let inittoolbarbuttons = function () {
     tdropdown.jqxDropDownButton({width: 120, height:20, theme: theme});
     tdropdown.jqxDropDownButton('setContent', '<div style="margin-top: 3px">Таблицы</div>');
-    let oldVal = "";
-    filterinput.on('keydown', function (event) {
-        if (filterinput.val().length >= 2) {
-            if (this.timer) {
-                clearTimeout(this.timer);
-            }
-            if (oldVal !== filterinput.val()) {
-                this.timer = setTimeout(function () {
-                    row_name_filter(filterinput.val());
-                }, 500);
-                oldVal = filterinput.val();
-            }
-        }else {
-            dgrid.jqxGrid('removefilter', '1');
-        }
+    nexttable.click( function() {
+        let next = ++current_table_index;
+        let found = searchTableByIndex(next);
+        console.log(found);
+
     });
-    clearfilter.click(function () { dgrid.jqxGrid('clearfilters'); filterinput.val(''); });
     if (!there_is_calculated) {
         calculate.attr('disabled', true );
     }
@@ -1211,6 +1213,23 @@ let inittoolbarbuttons = function () {
         splitter.jqxSplitter('expand');
         controltabs.jqxTabs('select', 0);
     });
+    let oldVal = "";
+    filterinput.on('keydown', function (event) {
+        if (filterinput.val().length >= 2) {
+            if (this.timer) {
+                clearTimeout(this.timer);
+            }
+            if (oldVal !== filterinput.val()) {
+                this.timer = setTimeout(function () {
+                    row_name_filter(filterinput.val());
+                }, 500);
+                oldVal = filterinput.val();
+            }
+        }else {
+            dgrid.jqxGrid('removefilter', '1');
+        }
+    });
+    clearfilter.click(function () { dgrid.jqxGrid('clearfilters'); filterinput.val(''); });
 };
 
 /*let firefullscreenevent = function() {

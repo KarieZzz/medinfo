@@ -2,7 +2,11 @@
     <div>
         <nav class="navbar navbar-default" style="margin-bottom: 0; margin-top: 48px">
             <div class="container-fluid">
-                <div id="TableList" class="btn btn-default"><div id="FormTables"></div></div>
+                <div class="btn-group">
+                    <div id="TableList" class="btn btn-default" style="margin-top: 8px"><div id="FormTables"></div></div>
+                    <button class="btn btn-default navbar-btn" id="Previous" title="Предыдущая таблица"> <span class='fa fa-arrow-left'></span></button>
+                    <button class="btn btn-default navbar-btn" id="Following" title="Следующая таблица"> <span class='fa fa-arrow-right'></span></button>
+                </div>
                 <button class="btn btn-default navbar-btn" id="Сalculate" title="Рассчитать"> <span class='fa fa-calculator'></span></button>
                 <button class="btn btn-default navbar-btn" id="ToggleFullscreen" title="Полноэкранный режим"> <span class='glyphicon glyphicon-fullscreen'></span></button>
                 <div class="btn-group">
