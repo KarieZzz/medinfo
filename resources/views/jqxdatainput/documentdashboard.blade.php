@@ -133,7 +133,7 @@
 <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/documentdashboard.js?v=063') }}"></script>
+<script src="{{ asset('/medinfo/documentdashboard.js?v=064') }}"></script>
 @endpush
 
 @section('inlinejs')

@@ -37,7 +37,7 @@ class InterannualEvaluator extends ControlFunctionEvaluator
         $dtype = $this->document->dtype;
         $ou_id = $this->document->ou_id;
         $period_id = $this->document->period_id;
-
+        dd($this->iterations);
         foreach ($this->iterations as &$cell_adresses) {
             foreach ($cell_adresses as &$cell_adress) {
                 if ($cell_adress['ids']['p'] === $period_id) {

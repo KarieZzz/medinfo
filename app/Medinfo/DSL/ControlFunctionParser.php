@@ -34,7 +34,8 @@ class ControlFunctionParser extends Parser {
         } elseif ($this->lookahead->type == ControlFunctionLexer::CELLADRESS) {
             $node = new ControlFunctionParseTree($this->lookahead->type, $this->lookahead->text);
             $this->argStack[$this->currentArgIndex][] = $node;
-            $this->celladressStack[$this->lookahead->text]['node'] = $node;
+            $this->insertInCAStack($node);
+            //$this->celladressStack[$this->lookahead->text]['node'] = $node;
             $this->match(ControlFunctionLexer::CELLADRESS);
         } elseif ($this->lookahead->type == ControlFunctionLexer::LPARENTH) {
             $this->match(ControlFunctionLexer::LPARENTH);
@@ -157,11 +158,13 @@ class ControlFunctionParser extends Parser {
                 }
             } elseif ($this->lookahead->type == ControlFunctionLexer::COMMA) {
                 $func_node->addChild($celladress_left);
-                $this->celladressStack[$celladress_left->content]['node'] = $celladress_left;
+                //$this->celladressStack[$celladress_left->content]['node'] = $celladress_left;
+                $this->insertInCAStack($celladress_left);
                 $this->match(ControlFunctionLexer::COMMA);
             } elseif ($this->lookahead->type == ControlFunctionLexer::RPARENTH) {
                 $func_node->addChild($celladress_left);
-                $this->celladressStack[$celladress_left->content]['node'] = $celladress_left ;
+                //$this->celladressStack[$celladress_left->content]['node'] = $celladress_left ;
+                $this->insertInCAStack($celladress_left);
             }
         }
     }
@@ -339,8 +342,6 @@ class ControlFunctionParser extends Parser {
         $missing_arg = false;
         $this->match(ControlFunctionLexer::LPARENTH);
         $arguments = new ArgParser(FunctionDispatcher::getProperties($this->function_name));
-
-
         $i = 1;
         do {
             $arg_type = $arguments->lookahead->argType;
@@ -428,6 +429,12 @@ class ControlFunctionParser extends Parser {
         //$this->carg();
         $this->match(ControlFunctionLexer::RPARENTH);
 
+    }
+
+    public function insertInCAStack(ParseTree $node)
+    {
+        $this->celladressStack[$node->content]['node'] = $node;
+        $this->celladressStack[$node->content]['arg'] = $this->currentArgIndex;
     }
 
     public function func()

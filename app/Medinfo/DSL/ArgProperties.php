@@ -30,6 +30,8 @@ class ArgProperties
     const ROWS          = 10;
     const COLUMNS       = 11;
     const ITERATOR      = 12;
+    const THISYEAR      = 13;
+    const PREVYEAR      = 14;
 
     public static $propNames = [
         "n/a",
@@ -45,6 +47,8 @@ class ArgProperties
         "строки",
         "графы",
         "iterator",
+        "thisyear",
+        "prevyear",
     ];
 
     public function __construct($input) {
@@ -109,6 +113,12 @@ class ArgProperties
                     break;
                 case 'iterator' :
                     $this->propstack[] = self::COLUMNS;
+                    break;
+                case 'thisyear' :
+                    $this->propstack[] = self::THISYEAR;
+                    break;
+                case 'prevyear' :
+                    $this->propstack[] = self::PREVYEAR;
                     break;
                 default :
                     throw new \Exception("Неизвестное ствойство аргумента: " . $prop);

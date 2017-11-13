@@ -88,7 +88,7 @@ class FunctionDispatcher
         null,
         'сравнение'     => ['expression|required', 'expression|required','boolean|required', 'subfunction|группы', 'subfunction|строки|графы|iterator'],
         'зависимость'   => ['expression|required','expression|required','subfunction|группы','subfunction|строки|графы|iterator'],
-        'межгодовой'    => ['expression|required', 'expression|required','factor|required'],
+        'межгодовой'    => ['expression|required|thisyear', 'expression|required|prevyear','factor|required'],
         'мгдиапазон'    => ['subfunction|required|diapazon|iterator', 'factor|required'],
         'кратность'     => ['subfunction|required|diapazon|iterator', 'factor|required'],
     ];
