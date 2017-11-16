@@ -70,7 +70,7 @@ class DocumentMessageController extends Controller
         $data['sent_to'] = implode(",", $emails);
         $error_emails = Mail::failures();
         if( count($error_emails) > 0 ) {
-            foreach(Mail::failures() as $email_address) {
+            foreach($error_emails as $email_address) {
                 $data['error_emails'][] = $email_address;
             }
             $data['message_sent'] = false;
@@ -94,7 +94,7 @@ class DocumentMessageController extends Controller
             $m->to($emails)->subject('Сообщение/комментарий к отчетному документу Мединфо');
         });
         if( count(Mail::failures()) > 0 ) {
-            foreach (Mail::failures as $email_address) {
+            foreach (Mail::failures() as $email_address) {
                 echo 'Не доставлено ' . $email_address;
             }
         } else {

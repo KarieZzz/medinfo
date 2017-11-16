@@ -42,6 +42,7 @@ class Worker extends Model
             ->join('worker_scopes', 'worker_scopes.worker_id' ,'=', 'workers.id')
             ->join('mo_hierarchy', 'mo_hierarchy.id', '=', 'worker_scopes.ou_id')
             ->where('workers.role', 1)
+            ->where('workers.blocked', '<>', 1)
             ->where('workers.email', '<>', '')
             ->whereIn('mo_hierarchy.id', $ou_ids)
             ->pluck('workers.email');
