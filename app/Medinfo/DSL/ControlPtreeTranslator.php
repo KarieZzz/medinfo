@@ -39,6 +39,8 @@ class ControlPtreeTranslator
         $this->parser = $parser;
         $this->table = $table;
         $this->form = Form::find($table->form_id);
+        //dd($this->parser->cellrangeStack);
+        //dd($this->parser->celladressStack);
     }
 
     public function makeReadable() {  }
@@ -64,14 +66,17 @@ class ControlPtreeTranslator
             $range['node']->children = [];
             $fprops = $this->identifyCA($first->content);
             $fprops['node'] = $first;
+            $fprops['arg'] = $range['arg'];
             $fprops['last'] = false;
             $lprops = $this->identifyCA($last->content);
             $lprops['node'] = $last;
+            $lprops['arg'] = $range['arg'];
             $lprops['last'] = true;
 
             $cellrange_vector = $this->validateRange($fprops, $lprops);
             //dd($cellrange_vector);
             $range = $this->inflateRangeMatrix($fprops, $lprops, $cellrange_vector);
+            //dd($range);
             //unset($range['node']->children[0]);
             //unset($range['node']->children[1]);
         }
@@ -251,6 +256,7 @@ class ControlPtreeTranslator
         $this->parseGroupScopes();
 
         foreach ($this->parser->celladressStack as $caLabel => $caProps) {
+            $lightweightCAStack[$caLabel]['arg'] = $caProps['arg'];
             $lightweightCAStack[$caLabel]['codes'] = $caProps['codes'];
             $lightweightCAStack[$caLabel]['ids'] = $caProps['ids'];
             //$lightweightCAStack[$caLabel]['rowindex'] = $caProps['rowindex'];
@@ -364,7 +370,6 @@ class ControlPtreeTranslator
             throw new \Exception("Неверный диапазон. В одном диапазоне не могут одновременно присутствовать полные и неполные ссылки (графы)");
         }
         return $cellrange_vector;
-
     }
 
     public function inflateRangeMatrix($fprops, $lprops, $cellrange_vector = null)
@@ -389,7 +394,8 @@ class ControlPtreeTranslator
                     $t = $fprops['codes']['t'];
                     $f === '' ? $faddr = '' : $faddr = 'Ф' . $f;
                     $t === '' ? $taddr = '' : $taddr = 'Т' . $t;
-                    $new_ptnode = new ControlFunctionParseTree(ControlFunctionLexer::CELLADRESS, $faddr . $taddr . $cadrr);
+                    $key = $faddr . $taddr . $cadrr . "|" . $fprops['arg'];
+                    $new_ptnode = new ControlFunctionParseTree(ControlFunctionLexer::CELLADRESS, $key);
                     $range[$j]['node'] = $new_ptnode;
                     $range[$j]['codes']['f'] = $f;
                     $range[$j]['codes']['t'] = $t;
@@ -400,10 +406,11 @@ class ControlPtreeTranslator
                     $new_ptnode->parent = $fprops['node']->parent->parent;
                     //$range->parent->addCild();
                     $fprops['node']->parent->parent->addChild($range[$j]['node']);
-                    $this->parser->celladressStack[$faddr . $taddr . $cadrr ]['node'] = $new_ptnode;
-                    $this->parser->celladressStack[$faddr . $taddr . $cadrr ]['codes'] = $range[$j]['codes'];
-                    $this->parser->celladressStack[$faddr . $taddr . $cadrr ]['ids'] = $range[$j]['ids'];
-                    $this->parser->celladressStack[$faddr . $taddr . $cadrr ]['incomplete'] = true;
+                    $this->parser->celladressStack[$key]['node'] = $new_ptnode;
+                    $this->parser->celladressStack[$key]['arg'] = $fprops['arg'];
+                    $this->parser->celladressStack[$key]['codes'] = $range[$j]['codes'];
+                    $this->parser->celladressStack[$key]['ids'] = $range[$j]['ids'];
+                    $this->parser->celladressStack[$key]['incomplete'] = true;
                 }
                 break;
             case 2: // по графам (контроль строк)
@@ -421,7 +428,8 @@ class ControlPtreeTranslator
                     $t = $fprops['codes']['t'];
                     $f === '' ? $faddr = '' : $faddr = 'Ф' . $f;
                     $t === '' ? $taddr = '' : $taddr = 'Т' . $t;
-                    $new_ptnode = new ControlFunctionParseTree(ControlFunctionLexer::CELLADRESS, $faddr . $taddr . $radrr);
+                    $key = $faddr . $taddr . $radrr . "|" . $fprops['arg'];
+                    $new_ptnode = new ControlFunctionParseTree(ControlFunctionLexer::CELLADRESS, $key );
                     $range[$j]['node'] = $new_ptnode;
                     $range[$j]['codes']['f'] = $f;
                     $range[$j]['codes']['t'] = $t;
@@ -433,11 +441,12 @@ class ControlPtreeTranslator
                     $new_ptnode->parent = $fprops['node']->parent->parent;
                     //$range->parent->addCild();
                     $fprops['node']->parent->parent->addChild($range[$j]['node']);
-                    $this->parser->celladressStack[$faddr . $taddr . $radrr ]['node'] = $new_ptnode;
-                    $this->parser->celladressStack[$faddr . $taddr . $radrr ]['codes'] = $range[$j]['codes'];
-                    $this->parser->celladressStack[$faddr . $taddr . $radrr ]['ids'] = $range[$j]['ids'];
-                    $this->parser->celladressStack[$faddr . $taddr . $radrr ]['rowindex'] = $range[$j]['rowindex'];
-                    $this->parser->celladressStack[$faddr . $taddr . $radrr ]['incomplete'] = true;
+                    $this->parser->celladressStack[$key]['node'] = $new_ptnode;
+                    $this->parser->celladressStack[$key]['arg'] = $fprops['arg'];
+                    $this->parser->celladressStack[$key]['codes'] = $range[$j]['codes'];
+                    $this->parser->celladressStack[$key]['ids'] = $range[$j]['ids'];
+                    $this->parser->celladressStack[$key]['rowindex'] = $range[$j]['rowindex'];
+                    $this->parser->celladressStack[$key]['incomplete'] = true;
                 }
                 break;
             case null:
@@ -464,7 +473,8 @@ class ControlPtreeTranslator
                         $t = $fprops['codes']['t'];
                         $f === '' ? $faddr = '' : $faddr = 'Ф' . $f;
                         $t === '' ? $taddr = '' : $taddr = 'Т' . $t;
-                        $new_ptnode = new ControlFunctionParseTree(ControlFunctionLexer::CELLADRESS, $faddr . $taddr . $radrr . $cadrr);
+                        $key = $faddr . $taddr . $radrr . $cadrr . "|" . $fprops['arg'];
+                        $new_ptnode = new ControlFunctionParseTree(ControlFunctionLexer::CELLADRESS, $key);
                         $range[$j]['node'] = $new_ptnode;
                         $range[$j]['codes']['f'] = $f;
                         $range[$j]['codes']['t'] = $t;
@@ -480,14 +490,14 @@ class ControlPtreeTranslator
                         $new_ptnode->parent = $fprops['node']->parent->parent;
                         //$range->parent->addCild();
                         $fprops['node']->parent->parent->addChild($range[$j]['node']);
-                        $this->parser->celladressStack[$faddr . $taddr . $radrr . $cadrr]['node'] = $new_ptnode;
-                        $this->parser->celladressStack[$faddr . $taddr . $radrr . $cadrr]['codes'] = $range[$j]['codes'];
-                        $this->parser->celladressStack[$faddr . $taddr . $radrr . $cadrr]['ids'] = $range[$j]['ids'];
-                        $this->parser->celladressStack[$faddr . $taddr . $radrr . $cadrr]['rowindex'] = $range[$j]['rowindex'];
-                        $this->parser->celladressStack[$faddr . $taddr . $radrr . $cadrr]['incomplete'] = false;
+                        $this->parser->celladressStack[$key]['node'] = $new_ptnode;
+                        $this->parser->celladressStack[$key]['arg'] = $fprops['arg'];
+                        $this->parser->celladressStack[$key]['codes'] = $range[$j]['codes'];
+                        $this->parser->celladressStack[$key]['ids'] = $range[$j]['ids'];
+                        $this->parser->celladressStack[$key]['rowindex'] = $range[$j]['rowindex'];
+                        $this->parser->celladressStack[$key]['incomplete'] = false;
                         $j++;
                     }
-
                 }
                 break;
         }
@@ -655,6 +665,11 @@ class ControlPtreeTranslator
             throw new \Exception("В таблице id:{$table} не существует графы для ввода данных с индексом $code");
         }
         return $column->id;
+    }
+
+    public function identifyPeriod($code)
+    {
+
     }
 
     public static function setParentNode(ParseTree $node)

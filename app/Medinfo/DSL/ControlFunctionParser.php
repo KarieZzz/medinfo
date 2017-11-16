@@ -146,13 +146,9 @@ class ControlFunctionParser extends Parser {
                 $this->match(ControlFunctionLexer::COLON);
                 $celladress_right = new ControlFunctionParseTree($this->lookahead->type, $this->lookahead->text);
                 $this->match(ControlFunctionLexer::CELLADRESS);
-                $cellrange_key = $celladress_left->content . ' ' .  $celladress_right->content;
-                $cellrange = new ControlFunctionParseTree(ControlFunctionLexer::CELLRANGE, $cellrange_key);
-                $cellrange->addChild($celladress_left);
-                $cellrange->addChild($celladress_right);
+                $cellrange = $this->insertInCellrangeStack($celladress_left, $celladress_right);
                 $func_node->addChild($cellrange);
-                $this->cellrangeStack[$cellrange_key]['node'] = $cellrange;
-                //$this->argStack->push($cellrange);
+                //$this->argStack[$this->currentArgIndex][] = $cellrange;
                 if ($this->lookahead->type == ControlFunctionLexer::COMMA) {
                     $this->match(ControlFunctionLexer::COMMA);
                 }
@@ -433,8 +429,26 @@ class ControlFunctionParser extends Parser {
 
     public function insertInCAStack(ParseTree $node)
     {
-        $this->celladressStack[$node->content]['node'] = $node;
-        $this->celladressStack[$node->content]['arg'] = $this->currentArgIndex;
+        $key = $node->content . '|' . $this->currentArgIndex;
+        if (array_key_exists($key, $this->celladressStack)) {
+              throw new \Exception('Ссылка на одну и ту же ячейку дублируется в одном выражении');
+            }
+        $node->content = $key;
+        $this->celladressStack[$key]['node'] = $node;
+        $this->celladressStack[$key]['arg'] = $this->currentArgIndex;
+    }
+
+    public function insertInCellrangeStack(ParseTree $left, ParseTree $right)
+    {
+        $cellrange_key = $left->content . '|' .  $right->content . '|' . $this->currentArgIndex;
+        $cellrange = new ControlFunctionParseTree(ControlFunctionLexer::CELLRANGE, $cellrange_key);
+        $left->content = $left->content . '|' . $this->currentArgIndex;
+        $right->content = $right->content . '|' . $this->currentArgIndex;
+        $cellrange->addChild($left);
+        $cellrange->addChild($right);
+        $this->cellrangeStack[$cellrange_key]['node'] = $cellrange;
+        $this->cellrangeStack[$cellrange_key]['arg'] = $this->currentArgIndex;
+        return $cellrange;
     }
 
     public function func()

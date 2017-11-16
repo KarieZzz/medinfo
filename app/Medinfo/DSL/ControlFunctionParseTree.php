@@ -15,14 +15,15 @@ class ControlFunctionParseTree extends ParseTree
     {
         switch ($this->type) {
             case ControlFunctionLexer::CELLADRESS:
-                $s = $this->humanizeCA($this->content);
+                list($ca, $arg) = explode('|', $this->content);
+                $s = $this->humanizeCA($ca);
                 return $s;
             case ControlFunctionLexer::NAME:
                 $s = $this->content . '( ';
                 $a = [];
                 foreach ($this->children as $child) {
                     if ($child->type === ControlFunctionLexer::CELLRANGE) {
-                        $range = explode(' ', $child->content);
+                        $range = explode('|', $child->content);
                         $a[] = $this->humanizeCA($range[0]) . ' по ' . $this->humanizeCA($range[1]);
                     } elseif ($child->type === ControlFunctionLexer::CELLADRESS) {
                         $a[] = $this->humanizeCA($child->content);

@@ -13,6 +13,7 @@ class IAdiapazonTranslator extends ControlPtreeTranslator
 {
 
     public function makeReadable() {
+        //dd($this->parser->argStack);
         $this->scriptReadable = "данные ячейки входящей в ";
         foreach ($this->parser->argStack[0] as $node) {
             $this->scriptReadable .= $node;

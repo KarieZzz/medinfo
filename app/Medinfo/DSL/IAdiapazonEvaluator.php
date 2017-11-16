@@ -58,7 +58,6 @@ class IAdiapazonEvaluator extends ControlFunctionEvaluator
         $result = [];
         $valid = true;
         $i = 0;
-        //dd($this->iterations);
         foreach ($this->iterations as $cell_label => $props) {
             $result[$i]['cells'][] = ['row' => $props['ids']['r'], 'column' => $props['ids']['c']  ];
             $result[$i]['code'] = 'с.' . $props['codes']['r'] . ' г.' . $props['codes']['c'];

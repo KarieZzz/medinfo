@@ -14,6 +14,7 @@ class InterannualEvaluator extends ControlFunctionEvaluator
 
     public $previous_document;
     public $threshold = 0;
+    public $markOnlyFirstArg = true;
 
     public function setArguments()
     {
@@ -21,6 +22,24 @@ class InterannualEvaluator extends ControlFunctionEvaluator
         $this->getArgument(2);
         $this->getArgument(3);
         $this->threshold = $this->arguments[3]->content;
+    }
+
+    public function evaluate()
+    {
+        $result['l'] = $this->evaluateSubtree($this->arguments[1]);
+        $result['r'] = $this->evaluateSubtree($this->arguments[2]);
+        $result['d'] = round(abs($result['l'] - $result['r']),2);
+        $result['v'] = $this->compare($result['l'], $result['r'], $this->arguments[3]->content);
+        if ($result['d'] > 0 && $result['r'] !== 0) {
+            $increment = round($result['d']/$result['r']*100, 1) ;
+        } elseif($result['d'] > 0 && $result['r'] === 0) {
+            $increment = 100;
+        } else {
+            $increment = 0;
+        }
+        $result['d'] = $increment;
+        $result['v'] = $increment > $this->threshold ? false : true;
+        return $result;
     }
 
     public function prepareCellValues()
@@ -34,55 +53,19 @@ class InterannualEvaluator extends ControlFunctionEvaluator
         if (!$this->previous_document) {
             throw new \Exception('Документ за прошлогодний отчетный период по данной организиционной единице не найден');
         }
-        $dtype = $this->document->dtype;
-        $ou_id = $this->document->ou_id;
-        $period_id = $this->document->period_id;
-        dd($this->iterations);
         foreach ($this->iterations as &$cell_adresses) {
-            foreach ($cell_adresses as &$cell_adress) {
-                if ($cell_adress['ids']['p'] === $period_id) {
-                    $cell = Cell::OfDRC($this->document->id, $cell_adress['ids']['r'], $cell_adress['ids']['c'])->first(['value']);
-                } else {
-                    $document = Document::OfTUPF($dtype, $ou_id, $period_id, $cell_adress['ids']['f'])->first();
-                    $cell = $document ? Cell::OfDRC($document->id, $cell_adress['ids']['r'], $cell_adress['ids']['c'])->first(['value']) : null;
+            foreach ($cell_adresses as $key => &$cell_adress) {
+                $arg = $cell_adress['arg'];
+                $cell = null;
+                if ($arg === 0) {
+                    $cell = \App\Cell::OfDRC($this->document->id, $cell_adress['ids']['r'], $cell_adress['ids']['c'])->first(['value']);
+                } elseif ($arg === 1) {
+                    $cell = \App\Cell::OfDRC($this->previous_document->id, $cell_adress['ids']['r'], $cell_adress['ids']['c'])->first(['value']);
                 }
                 !$cell ? $value = 0 : $value = (float)$cell->value;
                 $cell_adress['value'] = $value;
             }
         }
     }
-
-    public function makeControl()
-    {
-        $this->prepareCellValues();
-        $this->prepareCAstack();
-        $result = [];
-        $valid = true;
-        $i = 0;
-        //dd($this->iterations);
-        foreach ($this->iterations as $cell_label => $props) {
-            $result[$i]['cells'][] = ['row' => $props['ids']['r'], 'column' => $props['ids']['c']  ];
-            $result[$i]['code'] = 'с.' . $props['codes']['r'] . ' г.' . $props['codes']['c'];
-            $result[$i]['left_part_value'] = $props['value'];
-            $result[$i]['right_part_value'] = $props['prev_value'];
-            $diff = abs($props['prev_value'] - $props['value']);
-            if ($diff > 0 && $props['prev_value'] !== 0) {
-                $increment = round($diff/$props['prev_value']*100, 1) ;
-            } elseif($diff > 0 && $props['prev_value'] === 0) {
-                $increment = 100;
-            } else {
-                $increment = 0;
-            }
-            $result[$i]['deviation'] = $increment;
-            $result[$i]['boolean_op'] = null;
-            $result[$i]['valid'] = $increment > $this->threshold ? false : true;
-            $valid = $valid &&  $result[$i]['valid'];
-            $i++;
-        }
-        $this->valid = $valid;
-        return $result;
-    }
-
-
 
 }

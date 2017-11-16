@@ -27,8 +27,6 @@ class ControlFunctionEvaluator
     {
         $this->pTree = $ptree;
         $this->properties = $properties;
-        //dd($properties);
-        //dd($this->iterations);
         $this->document = $document;
         $this->setIterations();
         $this->setArguments();
@@ -77,7 +75,6 @@ class ControlFunctionEvaluator
             throw new \Exception("Аргумент $index не найден");
         }
         $this->arguments[$index] = $this->pTree->children[$index-1]->children[0];
-
     }
 
     public function prepareCellValues()
@@ -106,7 +103,6 @@ class ControlFunctionEvaluator
         $ou_id = $this->document->ou_id;
         $period_id = $this->document->period_id;
         $form_id = $this->document->form_id;
-
         foreach ($this->iterations as &$cell_adresses) {
             foreach ($cell_adresses as &$cell_adress) {
                 if ($cell_adress['ids']['f'] === $form_id) {
@@ -127,15 +123,15 @@ class ControlFunctionEvaluator
         $this->getCAnode($this->pTree);
     }
 
-    public function getCAnode(ParseTree $parseTree)
+    public function getCAnode(ParseTree $parseTree, $arg = 0)
     {
         $children  = $parseTree->children;
         if (count($children) > 0) {
-            foreach ($children as $child) {
+            foreach ($children as $index => $child) {
                 if ($child->type == ControlFunctionLexer::CELLADRESS) {
                     $this->caStack[$child->content] = $child;
                 }
-                $this->getCAnode($child);
+                $this->getCAnode($child, $arg);
             }
         }
     }
@@ -154,13 +150,8 @@ class ControlFunctionEvaluator
         $valid = true;
         $i = 0;
         foreach ($this->iterations as $code => $iteration) {
-            foreach ($iteration as $cell_label => $props) {
-                //$node = $caStack[$cell_label]['node'];
-                $node = $this->caStack[$cell_label];
-                $node->type = ControlFunctionLexer::NUMBER;
-                $node->content = $props['value'];
-                $result[$i]['cells'][] = ['row' => $props['ids']['r'], 'column' => $props['ids']['c']  ];
-            }
+            $cells = $this->convertCANodes($iteration);
+            $result[$i]['cells'] = $cells;
             $result[$i]['code'] = $code !== 0 ? $code : null;
             $r = $this->evaluate();
             $result[$i]['left_part_value'] = $r['l'];
@@ -171,8 +162,28 @@ class ControlFunctionEvaluator
             $i++;
         }
         $this->valid = $valid;
-        //dd($result);
         return $result;
+    }
+
+    public function convertCANodes(Array &$iteration)
+    {
+        $cells = [];
+        property_exists($this, 'markOnlyFirstArg') ? $markOnlyFirstArg = true : $markOnlyFirstArg = false;
+        foreach ($iteration as $cell_label => $props) {
+            if (!array_key_exists($cell_label, $this->caStack)) {
+                throw new \Exception("Ключ " . $cell_label . " не найден в стэке узлов адресов ячеек");
+            }
+            $node = $this->caStack[$cell_label];
+            $node->type = ControlFunctionLexer::NUMBER;
+            $node->content = $props['value'];
+            if ($props['arg'] == 0) {
+                $cells[] = ['row' => $props['ids']['r'], 'column' => $props['ids']['c']  ];
+            } elseif ($props['arg'] > 0 && $markOnlyFirstArg === false) {
+                $cells[] = ['row' => $props['ids']['r'], 'column' => $props['ids']['c']  ];
+            }
+
+        }
+        return $cells;
     }
 
     public function compare($lp, $rp, $boolean)
@@ -186,7 +197,6 @@ class ControlFunctionEvaluator
             case '=' :
             case '==' :
                 $result = abs($lp - $rp) < $delta ? true : false;
-                //dd($rp);
                 break;
             case '>' :
                 $result = $lp > $rp;
@@ -262,29 +272,20 @@ class ControlFunctionEvaluator
             switch (ControlFunctionLexer::$tokenNames[$node->type]) {
                 case 'PLUS' :
                     return $left + $right;
-                    //break;
                 case 'MINUS' :
                     return $left - $right;
-                    //break;
                 case 'MULTIPLY' :
                     return $left * $right;
-                    //break;
                 case 'DIVIDE' :
-                    //dump($right);
                     if ($right === 0) {
                         return 0;
-                        //break;
                     }
                     return $left / $right;
-                    //break;
                 case 'DIVIDEMOD' :
-                    //dump($right);
                     if ($right === 0) {
                         return 0;
-                        //break;
                     }
                     return fmod($left, $right);
-                //break;
             }
         }
         return null;
