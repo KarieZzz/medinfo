@@ -59,7 +59,7 @@ return [
         '4' => "'performed', 'prepared'",
     ],
     'control_disabled' => false,
-    'miac_emails' => 'nuv@miac-io.ru,zhsa@miac-io.ru',
+    'miac_emails' => 'nuv@miac-io.ru,zhsa@miac-io.ru,eaa@miac-io.ru,tat@miac-io.ru',
     'director_emails' => 'shameev@miac-io.ru,evb@miac-io.ru',
     // id пользователей (users), имеющих доступ к администрированию - изменение/добавление/удаление мониторингов, форм, таблиц ...
     'administrators' => '1,2,3,4,5,6,7,8,9,10',

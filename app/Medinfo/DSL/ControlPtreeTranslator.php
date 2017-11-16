@@ -272,20 +272,21 @@ class ControlPtreeTranslator
                 $rows = Row::OfTable($this->table->id)->orderBy('row_index')->get();
             }
             foreach ($rows as $row) {
-                //$iterations = $this->parser->argStack;
-                $iterations = $lightweightCAStack;
-
-                //dd($iterations);
-                foreach ($iterations as &$ca) {
-                    if ($ca['incomplete'] ) {
-                        $ca['codes']['r'] = $row->row_code;
-                        $ca['ids']['r'] = $row->id;
-                        //$ca['rowindex'] = $row->row_index;
+                //dd($row);
+                foreach ($lightweightCAStack as $key => $ca) {
+                    if ($ca['ids']['t'] === $this->table->id) {
+                        $lightweightCAStack[$key]['codes']['r'] = $row->row_code;
+                        $lightweightCAStack[$key]['ids']['r'] = $row->id;
+                    } else {
+                        $r = Row::OfTableRowCode($ca['ids']['t'], $row->row_code)->first();
+                        if (is_null($r)) {
+                            throw new \Exception("В таблице id:{$ca['ids']['t']} не существует строки с кодом {$row->row_code}");
+                        }
+                        $lightweightCAStack[$key]['codes']['r'] = $r->row_code;
+                        $lightweightCAStack[$key]['ids']['r'] = $r->id;
                     }
                 }
-                //$iterations['code'] = $row->row_code;
-                $this->iterations[$row->row_code] = $iterations;
-
+                $this->iterations[$row->row_code] = $lightweightCAStack;
             }
         }  elseif ($this->vector[0] === self::COLUMNS) {
             // Если аргумент ограничивающий итерацию по графам (графы(...)) не пустой, выбираем графы из дапазона
@@ -296,14 +297,22 @@ class ControlPtreeTranslator
             }
             foreach ($columns as $column) {
                 //$iterations = $this->parser->argStack;
-                $iterations = $lightweightCAStack;
-                foreach ($iterations as &$ca) {
-                    if ($ca['incomplete']) {
-                        $ca['codes']['c'] = $column->column_index;
-                        $ca['ids']['c'] = $column->id;
+                foreach ($lightweightCAStack as $key => $ca) {
+                    if ($ca['ids']['t'] === $this->table->id) {
+                        $lightweightCAStack[$key]['codes']['c'] = $column->column_index;
+                        $lightweightCAStack[$key]['ids']['c'] = $column->id;
+                    } else {
+                        $c = Column::OfTableColumnIndex($ca['ids']['t'], $column->column_index)->first();
+                        if (is_null($c)) {
+                            throw new \Exception("В таблице id:{$ca['ids']['t']} не существует графы с индексом {$column->column_index}");
+                        }
+                        $lightweightCAStack[$key]['codes']['r'] = $c->column_index;
+                        $lightweightCAStack[$key]['ids']['r'] = $c->id;
                     }
+
+
                 }
-                $this->iterations[$column->column_index] = $iterations;
+                $this->iterations[$column->column_index] = $lightweightCAStack;
             }
         }
         //dd($this->iterations);
@@ -592,7 +601,6 @@ class ControlPtreeTranslator
         if ($props['ids']['r'] == null || $props['ids']['c'] == null) {
             $props['incomplete'] = true;
         }
-
         return $props;
     }
 

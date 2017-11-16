@@ -58,6 +58,8 @@ class LexerParserController extends Controller
         //$i = "сравнение(С22, сумма(С22.1:С22.8)+сумма(С22.9:С22.11), =, группы(*), графы(*))";
         //$i = "сравнение(С1Г3, С2Г3, =)";
         //$i= "сравнение(С214Г3-С214Г5-С214Г7, Т1105С1Г6, =, группы(!музот))";
+        //$i= "сравнение(Г4, Т3000СГ4, <=)";
+        $i= "сравнение(С1.0, Т3000С2.0+С3.0+С4.0+С5.0+С6.0+С7.0+С8.0+С9.0+С10.0+С11.0+С12.0+С13.0+С14.0+С15.0+С16.0+С18.0+С19.0+С20.0, =)";
 
         //$i = "зависимость(Г4, Г16, группы(оп), строки(*))";
         //$i = 'зависимость(Г3, сумма(Г4:Г8))';
@@ -95,13 +97,14 @@ class LexerParserController extends Controller
         //dd($parser->cellrangeStack);
         //dd($parser->argStack);
 
-        //$table = Table::find(10); // Ф30 Т1100
-        //$table = Table::find(15); // Ф30 Т2100
-        //$table = Table::find(50); // Ф30 Т5117
-        //$table = Table::find(252); // Ф30 Т5301
-        $table = Table::find(112); // Ф12 Т2000
-        //$table = Table::find(115); // Ф32 Т2120
-        //$table = Table::find(151); // Ф41 Т2100
+        //$table = Table::find(10);     // Ф30 Т1100
+        //$table = Table::find(15);     // Ф30 Т2100
+        //$table = Table::find(50);     // Ф30 Т5117
+        //$table = Table::find(252);    // Ф30 Т5301
+        //$table = Table::find(112);    // Ф12 Т2000
+        $table = Table::find(441);      // Ф12 Т4000
+        //$table = Table::find(115);    // Ф32 Т2120
+        //$table = Table::find(151);    // Ф41 Т2100
 
         //$document = Document::find(13134); // 12 ф ГКБ№8 за 2016 год
         $document = Document::find(12269); // 12 ф Все организации 2016 год
