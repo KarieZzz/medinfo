@@ -43,7 +43,7 @@
                     </form>
                     <div class="panel panel-default" style="height: 100%">
                         <div class="panel-heading">Перечень показателей в альбоме</div>
-                        <div class="panel-body" id="indexes">Выберите шаблон отчета</div>
+                        <div class="panel-body" id="indexes" style="max-height:460px;overflow: auto;">Выберите шаблон отчета</div>
                     </div>
                     <div class="panel panel-default">
                         <div class="panel-body" id="indexes">

@@ -68,8 +68,9 @@ class DocumentMessageController extends Controller
             $m->to($emails)->subject('Сообщение/комментарий к отчетному документу Мединфо');
         });
         $data['sent_to'] = implode(",", $emails);
-        if( count(Mail::failures()) > 0 ) {
-            foreach(Mail::failures as $email_address) {
+        $error_emails = Mail::failures();
+        if( count($error_emails) > 0 ) {
+            foreach(Mail::failures() as $email_address) {
                 $data['error_emails'][] = $email_address;
             }
             $data['message_sent'] = false;
