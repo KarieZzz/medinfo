@@ -3,32 +3,28 @@
  */
 // Обработка состояния кнопочек перевода в полноэкранный режим
 // Пометка/снятие пометки волнистой чертой неверных таблиц
-
 let initDgridSize = function () {
     return initialViewport - topOffset1;
 };
-
 let initSpplitterSize = function () {
     return initialViewport - topOffset2;
 };
-
-let initTableProtSize = function () {
+let initProtSize = function () {
     $("#tableprotocol").height(initialViewport - topOffset3);
+    $("#formprotocol").height(initialViewport - topOffset3);
 };
-
 let initCellProtSize = function () {
     $("#cellprotocol").height(initialViewport - topOffset3);
 };
-
 let onResizeEventLitener = function () {
     $( window ).resize(function() {
         dgrid.jqxGrid({ height: $(window).height()-topOffset1 });
         $('#formEditLayout').jqxSplitter({ height: $(window).height()-topOffset2});
         $("#tableprotocol").height($(window).height()-topOffset3);
+        $("#formprotocol").height($(window).height()-topOffset3);
         $("#cellprotocol").height($(window).height()-topOffset3);
     });
 };
-
 let initSplitter = function () {
     $('#formEditLayout').jqxSplitter({
         width: '100%',
@@ -43,8 +39,6 @@ let initSplitter = function () {
     $("#TableTitle").html('Таблица ' + data_for_tables[current_table].tablecode + ', "' + data_for_tables[current_table].tablename + '"');
 
 };
-
-
 // Контроль таблицы - вывод протокола контроля на страницу и для печати
 let tabledatacheck = function(table_id, type) {
     let data = "";
@@ -60,7 +54,6 @@ let tabledatacheck = function(table_id, type) {
             url = interPeriodTableDataCheck + table_id + "/" + forcereload;
             break;
     }
-
 
     $.ajax({
         dataType: "json",
@@ -229,7 +222,6 @@ let renderDependencyControl = function(result, mode, level) {
     }
     return row;
 };
-
 let renderInDiapazonControl = function(result, level) {
     //console.log(result.cells);
     let error_level_mark = 'invalid';
@@ -263,7 +255,6 @@ let renderInDiapazonControl = function(result, level) {
     }
     return row;
 };
-
 let renderInterannualControl = function(result, level) {
     //console.log(result.cells);
     let error_level_mark = 'invalid';
@@ -297,8 +288,6 @@ let renderInterannualControl = function(result, level) {
     }
     return row;
 };
-
-
 let renderFoldControl = function(result, level) {
     //console.log(result.cells);
     let error_level_mark = 'invalid';
@@ -431,13 +420,14 @@ let renderTableProtocol = function (table_id, data) {
 // Инициализация дополнительных кнопок на панели инструментов контроля формы
 let init_fc_extarbuttons = function () {
     $("#fc_extrabuttons").hide();
-    $("#showallfcrule").jqxCheckBox({ theme: theme, checked: true });
+    $('#printformprotocol').jqxButton({ theme: theme });
+/*    $("#showallfcrule").jqxCheckBox({ theme: theme, checked: true });
     $("#showallfcrule").on('checked', function (event) {
         $(".rule-valid ").parent(".jqx-expander-header").hide().next().hide();
     });
     $("#showallfcrule").on('unchecked', function (event) {
         $(".rule-valid ").parent(".jqx-expander-header").show().next().show();
-    });
+    });*/
     //$("#toggle_formcontrolscreen").jqxToggleButton({ theme: theme });
     //$("#toggle_formcontrolscreen").on('click', function () {
       //  var toggled = $("#toggle_formcontrolscreen").jqxToggleButton('toggled');
@@ -447,7 +437,6 @@ let init_fc_extarbuttons = function () {
       //  else $.fullscreen.exit();
         //return false;
     //});
-    $('#printformprotocol').jqxButton({ theme: theme });
 };
 // Инициализация дополнительных кнопок на панели инструментов контроля таблицы
 let initextarbuttons = function () {
@@ -535,7 +524,6 @@ function searchTableByIndex(index) {
     return found;
 }
 
-
 let checkform = function () {
     let data;
     $.ajax({
@@ -608,7 +596,7 @@ let checkform = function () {
             formprotocol.append(protocol_wrapper);
             printable = formprotocol.clone();
 
-            formprotocol.jqxPanel({ autoUpdate: true, width: '97%', height: '80%'});
+            //formprotocol.jqxPanel({ autoUpdate: true, width: '97%', height: '80%'});
             $("#formprotocol .tableprotocol-header").click(function() {
                 $(this).next().toggle();
                 let glyph = $(this.firstChild);
@@ -624,7 +612,7 @@ let checkform = function () {
 
             //$("#formprotocol .rule-valid").hide();
             $("#formprotocol .tableprotocol-content").hide();
-            $("#formprotocol .tableprotocol-content").each( function() {
+/*            $("#formprotocol .tableprotocol-content").each( function() {
                 //consol.log(this.firstChild);
                 $(this.firstChild).jqxNavigationBar({
                     width: 'auto',
@@ -632,7 +620,7 @@ let checkform = function () {
                     expandMode: 'multiple',
                     theme: theme
                 });
-            });
+            });*/
             $(".rule-valid ").parent(".jqx-expander-header").hide().next().hide();
             $(".control-valid ").hide();
             formprotocolheader ="<a href='#' onclick='window.print()'>Распечатать</a>";
@@ -650,14 +638,13 @@ let checkform = function () {
             print_style += ".control-result td { border: 1px solid #7f7f7f; }";
             print_style += "</style>";
             $('#printformprotocol').click(function () {
-                var pWindow = window.open("", "ProtocolWindow", "width=900, height=600, scrollbars=yes");
+                let pWindow = window.open("", "ProtocolWindow", "width=900, height=600, scrollbars=yes");
                 pWindow.document.body.innerHTML = " ";
                 pWindow.document.write(print_style + formprotocolheader + printable.html());
             });
-
             protocol_control_created = true;
-            $("#formTables").jqxDataTable('refresh');
-            $('#DataGrid').jqxGrid('refresh');
+            fgrid.jqxDataTable('refresh');
+            dgrid.jqxGrid('refresh');
         }
     }).fail(function(jqXHR, textStatus, errorThrown) {
         $('#formprotocol').html('');
@@ -1167,9 +1154,9 @@ let initdatagrid = function() {
         let analitic_header = "<b>Строка " + row_code + ", Графа " + colindex +  ": </b><br/>";
         cell_protocol_panel.html('');
         if (current_protocol_source.length === 0) {
-            cell_protocol_panel.html("<div class='alert alert-danger'><p>Протокол контроля формы не найден. Выполните контроль формы или контроль текущей таблицы</p></div>");
+            cell_protocol_panel.html("<div class='alert alert-danger'><p>Протокол контроля формы не найден. Выполните контроль текущей таблицы</p></div>");
         } else if (typeof current_protocol_source[current_table_code] === 'undefined') {
-            cell_protocol_panel.html("<div class='alert alert-danger'><p>Протокол контроля текущей таблицы не найден. Выполните контроль формы или контроль текущей таблицы</p></div>");
+            cell_protocol_panel.html("<div class='alert alert-danger'><p>Протокол контроля текущей таблицы не найден. Выполните контроль текущей таблицы</p></div>");
         } else {
             let cellprotocol = selectedcell_protocol(current_protocol_source, current_table, current_table_code, column_id, row_id);
             let count_of_rules  = cellprotocol.length > 0 ? cellprotocol.length : " не определены ";
@@ -1266,6 +1253,11 @@ let inittoolbarbuttons = function () {
         tabledatacheck(current_table, 'interperiod');
         splitter.jqxSplitter('expand');
         controltabs.jqxTabs('select', 0);
+    });
+    formcheck.click( function () {
+        splitter.jqxSplitter('expand');
+        controltabs.jqxTabs('select', 1);
+        checkform();
     });
     let oldVal = "";
     filterinput.on('keydown', function (event) {

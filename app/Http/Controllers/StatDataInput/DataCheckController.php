@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\StatDataInput;
 
-use App\CFunction;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-use App\Medinfo\Control\DataCheck;
 use App\Form;
 use App\Table;
 use App\Document;
 use App\Period;
+use App\CFunction;
+use App\Medinfo\Control\DataCheck;
 use App\Medinfo\DocumentTree;
 use App\Medinfo\Lexer\FunctionDispatcher;
 
@@ -37,7 +37,7 @@ class DataCheckController extends Controller
 
     public function check_table(Document $document, Table $table, int $forcereload = 0)
     {
-        return DataCheck::tableControl1($document, $table, $forcereload);
+        return DataCheck::tableControl($document, $table, $forcereload);
     }
 
     public function check_document(Document $document, int $forcereload = 0)
@@ -50,11 +50,14 @@ class DataCheckController extends Controller
             $form_protocol['forcereloaded'] = true;
         }
         $form_id = $document->form_id;
-        $tables = Table::OfForm($form_id)->where('deleted', 0)->get();
+        $album_id = $document->album_id;
+        $tables = Table::OfForm($form_id)->whereDoesntHave('excluded', function ($query) use($album_id) {
+            $query->where('album_id', $album_id);
+        })->orderBy('table_index')->get();
         foreach ($tables as $table) {
             $offset = $table->table_code;
-            $control = DataCheck::tableControl($document, $table, $forcereload);
-            if ($control['no_data'] == false) {
+            $control = DataCheck::tableControl($document, $table, null, $forcereload, true);
+            if (!$control['valid'] || !$control['no_alerts']) {
                 //dd($control);
                 $form_protocol[$offset] = $control;
                 $form_protocol['valid'] = $form_protocol['valid'] && $control['valid'];

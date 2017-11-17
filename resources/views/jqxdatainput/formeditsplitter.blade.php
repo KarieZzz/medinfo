@@ -14,6 +14,7 @@
                     <button class="btn btn-default navbar-btn" id="IDTableCheck" title="Контроль таблицы межформенный"><i>К</i><small>мф</small></button>
                     <button class="btn btn-default navbar-btn" id="IPTableCheck" title="Контроль таблицы межпериодный"><i>К</i><small>мп</small></button>
                 </div>
+                <button class="btn btn-default navbar-btn" id="FormCheck" title="Контроль формы"><i>К</i><small>формы</small></button>
                 <form class="navbar-form navbar-right">
                 <div class="input-group">
                     <input type="text" class="form-control" id="SearchField" placeholder="Поиск строки">
@@ -26,13 +27,10 @@
                 </form>
             </div>
         </nav>
-
         <div class="row" >
             <div class="col-lg-12" style="margin-left: 5px"><h4 id="TableTitle"></h4></div>
         </div>
         <div id="DataGrid"></div>
-
-
     </div>
     <div>
         <div class="jqx-hideborder jqx-hidescrollbars" id="ControlTabs" style="margin-top: 48px">
@@ -44,8 +42,8 @@
             </ul>
             <div>
                 <div id="TableControlPanel">
-                    <div style="padding: 4px" id="ProtocolToolbar">
-                        <div style="padding: 4px" id="extrabuttons">
+                    <div style="padding: 4px; margin: 4px" id="ProtocolToolbar">
+                        <div id="extrabuttons">
                             <div id="showallrule" class="extrabutton" style="float: left"><span>Показать только ошибки</span></div>
                             <a id="togglecontrolscreen" style="margin-left: 2px;" target="_blank" title="Рассширить"><span class='glyphicon glyphicon-resize-full'></span></a>
                             <a id='printtableprotocol' style="margin-left: 2px;" target="_blank" title="Распечатать протокол"><span class='glyphicon glyphicon-print'></span></a>
@@ -58,7 +56,15 @@
                 </div>
             </div>
             <div>
-                Content 2
+                <div id="formControlToolbar" style="padding: 4px; margin: 4px">
+                    <div id="fc_extrabuttons">
+                        <a id='printformprotocol' style="margin-left: 2px;" target="_blank" title="Распечатать протокол"><span class='glyphicon glyphicon-print'></span></a>
+                    </div>
+                </div>
+                <div style="clear: both"></div>
+                <div style="display: none" class="inactual-protocol"><span class='text-danger'>Протокол неактуален (в форме произведены изменения после его формирования)</span></div>
+                <div style="display: none; margin-left: 10px" id="formprotocolloader"><h5>Выполнение проверки и загрузка протокола контроля <img src='/jqwidgets/styles/images/loader-small.gif' /></h5></div>
+                <div style="width: 100%; overflow-y: auto" id="formprotocol"></div>
             </div>
             <div>
                 <div style="width: 100%; overflow-y: auto" id="cellprotocol"></div>

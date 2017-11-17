@@ -26,6 +26,7 @@ let fullscreen = $("#ToggleFullscreen");
 let tcheck = $("#TableCheck");
 let idtcheck = $("#IDTableCheck");
 let iptcheck = $("#IPTableCheck");
+let formcheck = $("#FormCheck");
 
 let localizednumber = new Intl.NumberFormat('ru-RU');
 let edited_tables = [{!! implode(',', $editedtables) !!}];
@@ -98,11 +99,11 @@ let formlabels =
         multiplicity: 5
     };
 let initialViewport = $(window).height();
-let topOffset1 = 145;
+let topOffset1 = 150;
 let topOffset2 = 10;
-let topOffset3 = 105;
+let topOffset3 = 115;
 initDgridSize();
-initTableProtSize();
+initProtSize();
 initCellProtSize();
 onResizeEventLitener();
 initdatasources();
@@ -114,7 +115,7 @@ initfilters();
 initdatagrid();
 //initlayout();
 //$('#formEditLayout').jqxLayout({ theme: theme, width: '99%', height: '98%', layout: layout });
-//init_fc_extarbuttons();
+init_fc_extarbuttons();
 initextarbuttons();
 //firefullscreenevent();
 </script>

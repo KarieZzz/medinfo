@@ -6,7 +6,7 @@
  * Time: 16:33
  */
 
-namespace App\Medinfo;
+namespace App\Medinfo\Control;
 
 use App\ControlCashe;
 use Carbon\Carbon;
@@ -25,7 +25,7 @@ class ControlHelper
         return $cahed_at->gt($updated_at);
     }
 
-    public static function chekoutCompareRule(array $condition)
+/*    public static function chekoutCompareRule(array $condition)
     {
         $lp = $condition['left_part_value'];
         $rp = $condition['right_part_value'];
@@ -57,7 +57,7 @@ class ControlHelper
                 $result = false;
         }
         return $result;
-    }
+    }*/
 
     public static function cashProtocol($protocol, int $document, int $table)
     {
