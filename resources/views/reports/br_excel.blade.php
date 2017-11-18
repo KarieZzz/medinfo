@@ -2,18 +2,18 @@
 
 @section('content')
 <div class="container">
-    <table class="table table-bordered table-condensed">
+    <table>
         <tr>
-            <th colspan="4"><h3>Справка по форме №{{ $form->form_code }}. {{ $form->form_name }} за период "{{ $period->name }}"</h3></th>
+            <td colspan="{{ count($column_titles)+2 }}"><h2>Справка по форме №{{ $form->form_code }}. {{ $form->form_name }} за период "{{ $period->name }}"</h2></td>
         </tr>
         <tr>
-            <th colspan="4"><h4>Таблица: {{ $table->table_code }}. {{ $table->table_name  }}. </h4></th>
+            <td colspan="{{ count($column_titles)+2 }}"><h3>Таблица: {{ $table->table_code }}. {{ $table->table_name  }}. </h3></td>
         </tr>
         <tr>
-            <th colspan="4"><h4>{{ $group_title }} {{ $el_name }}</h4></th>
+            <td colspan="{{ count($column_titles)+2 }}"><h4>{{ $group_title }} {{ $el_name }}</h4></td>
         </tr>
         <tr>
-            <th colspan="4"><h4>Ограничение по территории/группе: {{ $top->unit_name or $top->group_name }}</h4></th>
+            <td colspan="{{ count($column_titles)+2 }}"><h4>Ограничение по территории/группе: {{ $top->unit_name or $top->group_name }}</h4></td>
         </tr>
         <tr>
             <th>Код</th>
@@ -24,27 +24,19 @@
         </tr>
         @foreach($units as $unit)
             <tr>
-                <td width="7" align="right">{{ $unit->unit_code }}</td>
-                <td width="100">{{ $unit->unit_name }}</td>
+                <td align="right">{{ $unit->unit_code }}</td>
+                <td width="70">{{ $unit->unit_name }}</td>
                 @foreach($values[$unit->id] as $v)
-                    <td>{{ $v }}</td>
+                    <td width="18">{{ $v }}</td>
                 @endforeach
             </tr>
         @endforeach
         <tr>
             <td colspan="2"><strong>Иркутская область</strong></td>
             @foreach($values[999999] as $aggregate)
-                <td>{{ $aggregate }}</td>
+                <td><strong>{{ $aggregate }}</strong></td>
             @endforeach
         </tr>
     </table>
     </div>
-@endsection
-
-@push('loadjsscripts')
-
-@endpush
-
-@section('inlinejs')
-    @parent
 @endsection

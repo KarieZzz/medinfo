@@ -126,8 +126,16 @@ class BriefReferenceMaker extends Controller
             return view('reports.briefreference', compact('form', 'table', 'top','group_title', 'el_name', 'period', 'units', 'column_titles', 'values'));
         } elseif ($output == 2) {
             $excel = Excel::create('Reference');
-            $excel->sheet($table->table_code , function($sheet) use ($form, $table, $top, $group_title, $el_name, $period, $units, $column_titles, $values) {
+            $excel->sheet("Форма {$form->form_code}, таблица {$table->table_code}" , function($sheet) use ($form, $table, $top, $group_title, $el_name, $period, $units, $column_titles, $values) {
                 $sheet->loadView('reports.br_excel', compact('form', 'table', 'top','group_title', 'el_name', 'period', 'units', 'column_titles', 'values'));
+                //$highestrow = $sheet->getHighestRow();
+                //$sheet->getColumnDimensionByColumn('C5:BZ5')->setAutoSize(false);
+                //$sheet->getColumnDimensionByColumn('C5:BZ5')->setWidth('10');
+                //$sheet->getColumnDimensionByColumn('B')->setAutoSize(false);
+                //$sheet->getColumnDimensionByColumn('B')->setWidth('80');
+                $sheet->getRowDimension('5')->setRowHeight(-1);
+                $sheet->getStyle('C5:BZ5')->getAlignment()->setWrapText(true);
+                $sheet->getStyle('B5:B999')->getAlignment()->setWrapText(true);
             });
             $excel->export('xlsx');
         }

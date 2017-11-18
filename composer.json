@@ -8,7 +8,7 @@
         "php": ">=5.5.9",
         "laravel/framework": "5.2.*",
         "barryvdh/laravel-ide-helper": "^2.1",
-        "maatwebsite/excel": "~2.1.0",
+        "maatwebsite/excel": "~2.1.23",
         "phpoffice/phpword": "v0.13.*"
     },
     "require-dev": {
