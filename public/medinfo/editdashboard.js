@@ -1259,6 +1259,12 @@ let inittoolbarbuttons = function () {
         controltabs.jqxTabs('select', 1);
         checkform();
     });
+
+    $("#tableExcelExport").click(function () {
+        let url = tableexport_url + current_table ;
+        location.replace(url);
+    });
+
     let oldVal = "";
     filterinput.on('keydown', function (event) {
         if (filterinput.val().length >= 2) {

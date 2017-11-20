@@ -122,23 +122,37 @@ class BriefReferenceMaker extends Controller
             //dd($units);
             $values = self::getAggregatedValues($units, $period, $form, $table, $column_titles, $columns, $rows, $mode, $output, $aggregate_level);
         }
+        $tablewidth = count($column_titles) + 2;
+        $tableheight = count($units) + 7;
         if ($output == 1) {
             return view('reports.briefreference', compact('form', 'table', 'top','group_title', 'el_name', 'period', 'units', 'column_titles', 'values'));
         } elseif ($output == 2) {
             $excel = Excel::create('Reference');
-            $excel->sheet("Форма {$form->form_code}, таблица {$table->table_code}" , function($sheet) use ($form, $table, $top, $group_title, $el_name, $period, $units, $column_titles, $values) {
+            $excel->sheet("Форма {$form->form_code}, таблица {$table->table_code}" , function($sheet) use ($form, $table, $top, $group_title, $el_name, $period, $units,
+                $column_titles, $tablewidth, $tableheight, $values) {
                 $sheet->loadView('reports.br_excel', compact('form', 'table', 'top','group_title', 'el_name', 'period', 'units', 'column_titles', 'values'));
                 //$highestrow = $sheet->getHighestRow();
                 //$sheet->getColumnDimensionByColumn('C5:BZ5')->setAutoSize(false);
                 //$sheet->getColumnDimensionByColumn('C5:BZ5')->setWidth('10');
                 //$sheet->getColumnDimensionByColumn('B')->setAutoSize(false);
                 //$sheet->getColumnDimensionByColumn('B')->setWidth('80');
-                $sheet->getRowDimension('5')->setRowHeight(-1);
-                $sheet->getStyle('C5:BZ5')->getAlignment()->setWrapText(true);
-                $sheet->getStyle('B5:B999')->getAlignment()->setWrapText(true);
+                $sheet->getRowDimension('6')->setRowHeight(-1);
+                //dd(self::getCellByRC(6, 0) . ':' . self::getCellByRC(6, $tablewidth));
+                $sheet->getStyle(self::getCellByRC(6, 1) . ':' . self::getCellByRC(6, $tablewidth))->getAlignment()->setWrapText(true);
+                $sheet->getStyle('B7:B430')->getAlignment()->setWrapText(true);
+                $sheet->getStyle(self::getCellByRC(6, 1) . ':' . self::getCellByRC($tableheight, $tablewidth))->getBorders()
+                    ->getAllBorders()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THIN);
             });
             $excel->export('xlsx');
         }
+    }
+
+    public static function getCellByRC(int $row, int $column)
+    {
+        $alphabetic = array('n/a', 'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
+            'AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ',);
+        return $alphabetic[$column] . $row;
+
     }
 
     public static function getValues($units, Period $period, Form $form, Table $table, $column_titles, $columns, $rows, $mode, $document_type = 1, $output = 1)

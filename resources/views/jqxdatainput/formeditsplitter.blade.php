@@ -15,6 +15,7 @@
                     <button class="btn btn-default navbar-btn" id="IPTableCheck" title="Контроль таблицы межпериодный"><i>К</i><small>мп</small></button>
                 </div>
                 <button class="btn btn-default navbar-btn" id="FormCheck" title="Контроль формы"><i>К</i><small>формы</small></button>
+                <button class="btn btn-default navbar-btn" id="tableExcelExport" title="Экспорт данных таблицы в MS Excel"> <span class='fa fa-file-excel-o fa-lg' ></span></button>
                 <form class="navbar-form navbar-right">
                 <div class="input-group">
                     <input type="text" class="form-control" id="SearchField" placeholder="Поиск строки">

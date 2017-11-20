@@ -1,0 +1,8 @@
+
+.data tr > td {
+    border: 1px solid #000000;
+}
+.data tr > th {
+    border: 1px solid #000000;
+    word-break:break-all;
+ }

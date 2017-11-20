@@ -15,6 +15,8 @@
         <tr>
             <td colspan="{{ count($column_titles)+2 }}"><h4>Ограничение по территории/группе: {{ $top->unit_name or $top->group_name }}</h4></td>
         </tr>
+    </table>
+    <table class="data">
         <tr>
             <th>Код</th>
             <th>Субъект</th>
