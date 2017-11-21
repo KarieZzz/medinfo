@@ -58,6 +58,11 @@ class Column extends Model
         return $query->where('content_type', self::DATA);
     }
 
+    public function scopeWhithoutComment($query)
+    {
+        return $query->where('content_type', '<>' , self::COMMENT);
+    }
+
     public function scopeOfTable($query, $table)
     {
         return $query

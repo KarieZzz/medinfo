@@ -33,7 +33,7 @@ class ExcelExportController extends Controller
         $rows = \App\Row::OfTable($table->id)->whereDoesntHave('excluded', function ($query) use($album) {
             $query->where('album_id', $album);
         })->orderBy('row_index')->get();
-        $cols = \App\Column::OfTable($table->id)->whereDoesntHave('excluded', function ($query) use($album) {
+        $cols = \App\Column::OfTable($table->id)->WhithoutComment()->whereDoesntHave('excluded', function ($query) use($album) {
             $query->where('album_id', $album);
         })->orderBy('column_index')->get();
 /*        $column_titles = [];
@@ -63,9 +63,7 @@ class ExcelExportController extends Controller
                             $row[] = null;
                         }
                         break;
-                    default:
-                        $row[] = '#ЧИСЛО!';
-                }
+                  }
             }
             $data[$i] = $row;
             $i++;
@@ -81,10 +79,10 @@ class ExcelExportController extends Controller
             //$sheet->getRowDimension('6')->setRowHeight(-1);
             $sheet->getStyle(ExcelExport::getCellByRC(4, 1) . ':' . ExcelExport::getCellByRC(4, count($cols)))->getAlignment()->setWrapText(true);
             //$sheet->getStyle('B7:B430')->getAlignment()->setWrapText(true);
-            $sheet->getStyle(ExcelExport::getCellByRC(4, 1) . ':' . ExcelExport::getCellByRC(count($data)+4, count($cols)))->getBorders()
+            $sheet->getStyle(ExcelExport::getCellByRC(4, 1) . ':' . ExcelExport::getCellByRC(count($data)+5, count($cols)))->getBorders()
                 ->getAllBorders()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THIN);
             //$sheet->getStyle(ExcelExport::getCellByRC(3, 2) . ':' . ExcelExport::getCellByRC(count($data)+3, 2))->setQuotePrefix(true);
-            $sheet->getStyle(ExcelExport::getCellByRC(4, 2) . ':' . ExcelExport::getCellByRC(count($data)+4, 2))->getNumberFormat()
+            $sheet->getStyle(ExcelExport::getCellByRC(4, 2) . ':' . ExcelExport::getCellByRC(count($data)+5, 2))->getNumberFormat()
                 ->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_TEXT);
 
 /*            $sheet->setColumnFormat(array(
