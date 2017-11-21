@@ -6,7 +6,7 @@
             <td colspan="{{ count($cols) }}"><h3>Таблица: {{ $table->table_code }}. {{ $table->table_name  }}. </h3></td>
         </tr>
         <tr>
-            <td colspan="{{ count($cols) }}" style="color: red">Не для предоставления в МИАЦ в качестве отчетной формы!</td>
+            <td colspan="{{ count($cols) }}" style="color: #f00000;">Не для предоставления в МИАЦ в качестве отчетной формы!</td>
         </tr>
     </table>
     <table class="data">
@@ -17,7 +17,7 @@
         </tr>
         <tr>
             @foreach($cols as $col)
-                <th>{{ $col->column_index }}</th>
+                <th align="center">{{ $col->column_index }}</th>
             @endforeach
         </tr>
         @foreach($data as $row)

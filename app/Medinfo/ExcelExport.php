@@ -8,8 +8,7 @@
 
 namespace App\Medinfo;
 
-use App\Table;
-use App\UnitGroup;
+
 use PHPExcel_IOFactory;
 use PHPExcel_Cell;
 use Storage;
@@ -21,6 +20,8 @@ use App\Period;
 use App\Document;
 use App\Unit;
 use App\Form;
+use App\Table;
+use App\UnitGroup;
 use App\Cell;
 
 class ExcelExport
@@ -272,6 +273,47 @@ class ExcelExport
         ];
         return $output;
     }
+
+    public static function getTableDataForExport(Document $document, Table $table)
+    {
+        $album = $document->album_id;
+        $rows = \App\Row::OfTable($table->id)->whereDoesntHave('excluded', function ($query) use($album) {
+            $query->where('album_id', $album);
+        })->orderBy('row_index')->get();
+        $cols = \App\Column::OfTable($table->id)->WhithoutComment()->whereDoesntHave('excluded', function ($query) use($album) {
+            $query->where('album_id', $album);
+        })->orderBy('column_index')->get();
+        $data = array();
+        $i=0;
+        foreach ($rows as $r) {
+            $row = array();
+            //$row['id'] = $r->id;
+            foreach($cols as $col) {
+                switch ($col->content_type) {
+                    case \App\Column::HEADER :
+                        if ($col->column_index == 1) {
+                            $row[] = $r->row_name;
+                        } elseif ($col->column_index == 2) {
+                            $row[] = "$r->row_code;";
+                            //$row[] = $r->row_code;
+                        }
+                        break;
+                    case \App\Column::CALCULATED :
+                    case \App\Column::DATA :
+                        if ($c = \App\Cell::OfDTRC($document->id, $table->id, $r->id, $col->id)->first()) {
+                            $row[] = number_format($c->value, $col->decimal_count, '.', '');
+                        } else {
+                            $row[] = null;
+                        }
+                        break;
+                }
+            }
+            $data[$i] = $row;
+            $i++;
+        }
+        return ['data' => $data, 'cols' => $cols];
+    }
+
 
     public static function getCellByRC(int $row, int $column)
     {

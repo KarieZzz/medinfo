@@ -216,8 +216,8 @@ Route::group(['middleware' => ['medinfo']], function () {
 
     // Эспорт данных в Эксель/Word и заполнение печатных форм-шаблонов
     Route::get('datainput/wordexport/{document}', 'StatDataInput\WordExportController@formExport');
-    Route::get('datainput/formexport/{document}', 'StatDataInput\ExcelExportController@formExport');
-    Route::get('datainput/tableexport/{doc_id}/{table_id}', 'StatDataInput\ExcelExportController@dataTableExport');
+    Route::get('datainput/formexport/{document}', 'StatDataInput\ExcelExportController@dataFormExport');
+    Route::get('datainput/tableexport/{document}/{table}', 'StatDataInput\ExcelExportController@dataTableExport');
 
     // Рабочий стол для сводных документов
     Route::get('datainput/aggregatedashboard/{document}', 'StatDataInput\AggregatesDashboardController@index');
