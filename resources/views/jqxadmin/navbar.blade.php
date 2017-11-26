@@ -4,7 +4,7 @@
             <a class="navbar-brand" href="#">Адмнистрирование Мединфо</a>
         </div>
         <ul class="nav navbar-nav">
-            <li><a href="/admin">К началу</a></li>
+{{--            <li><a href="/admin">К началу</a></li>
             <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">Данные
                     <span class="caret"></span></a>
@@ -12,7 +12,7 @@
                         <li><a href="/datainput">Ввод и корректировка</a></li>
                         <li><a href="/medstatexport">Экспорт в Медстат</a></li>
                     </ul>
-            </li>
+            </li>--}}
             <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">Пользователи
                     <span class="caret"></span></a>
@@ -42,13 +42,13 @@
                 <ul class="dropdown-menu">
                     <li><a href="/admin/cfunctions">Функции контроля</a></li>
                     <li><a href="/admin/dcheck/selected">Выборочный контроль</a></li>
-                    <li><a href="#">Функции рассчета</a></li>
+                    <li><a href="/admin/consolidation">Функции рассчета</a></li>
                     <li><a href="/reports/patterns">Отчеты</a></li>
                     <li><a href="/reports/br/querycomposer">Справка</a></li>
                     <li type="separator"></li>
-                    <li><a href="/admin/micontrols/vtk">Методики контроля Мединфо (внутритабличные)</a></li>
+{{--                    <li><a href="/admin/micontrols/vtk">Методики контроля Мединфо (внутритабличные)</a></li>
                     <li><a href="/admin/micontrols/vfk">Методики контроля Мединфо (внутриформенные)</a></li>
-                    <li><a href="/admin/micontrols/mfk">Методики контроля Мединфо (межформенные)</a></li>
+                    <li><a href="/admin/micontrols/mfk">Методики контроля Мединфо (межформенные)</a></li>--}}
 
 
                 </ul>

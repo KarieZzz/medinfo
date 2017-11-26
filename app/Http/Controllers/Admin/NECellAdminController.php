@@ -40,7 +40,8 @@ class NECellAdminController extends Controller
     public function fetchGrid(Table $table)
     {
         //$general_album = Album::General()->first(['id']);
-        return TableEditing::tableRender($table);
+        $column_type = 'checkbox';
+        return TableEditing::tableRender($table, $column_type);
     }
 
     public function fetchValues(Table $table)

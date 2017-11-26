@@ -80,7 +80,6 @@ initTableGrid = function() {
             theme: theme,
             editable: true,
             editmode: 'selectedcell',
-            clipboard: true,
             columnsresize: true,
             filterable: false,
             columns: columns,
@@ -114,7 +113,7 @@ initTableGrid = function() {
             url: changecellstate_url + rowid + '_' + colid + '/' + newstate + '/' + condition,
             method: "PATCH",
             success: function (data, status, xhr) {
-                if (typeof data.error != 'undefined') {
+                if (typeof data.error !== 'undefined') {
                     raiseError(data.message);
                 }
 /*                else {
@@ -184,8 +183,9 @@ updateTableGrid = function() {
         url: gridfetch_url + current_table,
         method: "GET",
         success: function (data, status, xhr) {
+            grid.jqxGrid('beginupdate');
             columns = data.columns;
-            $.each(columns, function(column, properties) {
+/*            $.each(columns, function(column, properties) {
                 if (typeof properties.cellclassname !== 'undefined') {
                     //properties.cellclassname = cellclass;
                     properties.cellclassname = eval(properties.cellclassname);
@@ -200,12 +200,12 @@ updateTableGrid = function() {
                 if (typeof properties.cellbeginedit !== 'undefined') {
                     properties.cellbeginedit = cellbeginedit;
                 }
-            });
+            });*/
             columngroups = data.columngroups;
-            $.each(columngroups, function(group, properties) {
+/*            $.each(columngroups, function(group, properties) {
                 if (typeof properties.rendered !== 'undefined')
                     properties.rendered = tooltiprenderer;
-            });
+            });*/
             datafields = data.datafields;
             gridsource.datafields = datafields;
             gridsource.url = cellsfetch_url + current_table;
@@ -251,7 +251,7 @@ setcellrange = function(noedit) {
         method: "PATCH",
         data: data,
         success: function (data, status, xhr) {
-            if (typeof data.error != 'undefined') {
+            if (typeof data.error !== 'undefined') {
                 raiseError(data.message);
             } else {
                 raiseInfo(data.message);
@@ -269,22 +269,10 @@ setcellrange = function(noedit) {
     });
 };
 
-cellbeginedit = function (row, datafield, columntype, value) {
-
-};
-defaultEditor = function (row, cellvalue, editor, celltext, pressedChar) {
-
-};
 cellclass = function (row, columnfield, value, rowdata) {
-    var not_editable = '';
-    if (value == true) {
+    let not_editable = '';
+    if (value === true) {
         not_editable = 'jqx-grid-cell-pinned jqx-grid-cell-pinned-bootstrap';
     }
     return not_editable;
-};
-validation = function(cell, value) {
-    return true;
-};
-tooltiprenderer = function (element) {
-
 };

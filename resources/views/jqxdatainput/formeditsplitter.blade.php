@@ -53,7 +53,7 @@
                     <div style="clear: both"></div>
                     <div style="display: none; margin-left: 10px" id="protocolloader"><h5>Выполнение проверки и загрузка протокола контроля <img src='/jqwidgets/styles/images/loader-small.gif' /></h5></div>
                     <div style="display: none" class="inactual-protocol"><span class='text-danger'>Протокол неактуален (в таблице произведены изменения после его формирования)</span></div>
-                    <div style="width: 100%; overflow-y: auto" id="tableprotocol"></div>
+                    <div style="width: 100%; overflow-y: auto; margin-left: 5px" id="tableprotocol"></div>
                 </div>
             </div>
             <div>
@@ -68,7 +68,7 @@
                 <div style="width: 100%; overflow-y: auto" id="formprotocol"></div>
             </div>
             <div>
-                <div style="width: 100%; overflow-y: auto" id="cellprotocol"></div>
+                <div style="width: 100%; overflow-y: auto; margin-left: 5px" id="cellprotocol"></div>
             </div>
             @yield('additionalTabDiv')
         </div>

@@ -163,12 +163,16 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('admin/dcheck/selected', 'StatDataInput\DataCheckController@selectControlConditions');
     Route::get('admin/dcheck/selectedcheck', 'StatDataInput\DataCheckController@selectedControl');
 
-    Route::get('admin/micontrols/vtk', 'Admin\MedinfoControlsAdminController@index');
+    Route::resource('admin/consolidation', 'Admin\ConsolidationRuleAdminController');
+    Route::get('admin/consolidation/getstruct/{table}', 'Admin\ConsolidationRuleAdminController@getTableStruct' );
+    Route::get('admin/consolidation/getrules/{table}', 'Admin\ConsolidationRuleAdminController@getRules' );
+
+/*    Route::get('admin/micontrols/vtk', 'Admin\MedinfoControlsAdminController@index');
     Route::get('admin/micontrols/fetchcontrolledrows/{table}/{scope}', 'Admin\MedinfoControlsAdminController@fetchControlledRows');
     Route::get('admin/micontrols/vtk/fetchcontrollingrows/{table}/{relation}', 'Admin\MedinfoControlsAdminController@fetchControllingRows');
     Route::get('admin/micontrols/fetchcolumns/{firstcol}/{countcol}', 'Admin\MedinfoControlsAdminController@fetchColumns');
     Route::get('admin/micontrols/translate/{form}', 'Admin\MedinfoControlsAdminController@MIRulesTranslate');
-    Route::get('admin/micontrols/saverules', 'Admin\MedinfoControlsAdminController@BatchRuleSave');
+    Route::get('admin/micontrols/saverules', 'Admin\MedinfoControlsAdminController@BatchRuleSave');*/
 
     // Менеджер отчетных документов
     Route::get('admin/documents', 'Admin\DocumentAdminController@index');

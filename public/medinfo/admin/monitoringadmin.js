@@ -11,7 +11,7 @@ initsplitter = function() {
     });
 };
 initMonitoringList = function() {
-    var monSource =
+    let monSource =
     {
         datatype: "json",
         datafields: [
@@ -27,7 +27,7 @@ initMonitoringList = function() {
         url: fetchmonitoring_url,
         root: null
     };
-    var dataAdapter = new $.jqx.dataAdapter(monSource);
+    let dataAdapter = new $.jqx.dataAdapter(monSource);
     mlist.jqxGrid(
         {
             width: '98%',
@@ -47,7 +47,7 @@ initMonitoringList = function() {
             ]
         });
     mlist.on('rowselect', function (event) {
-        var row = event.args.row;
+        let row = event.args.row;
         $("#name").val(row.name);
         $("#periodicity").val(row.periodicity);
         $("#accumulation").val(row.accumulation === true);
@@ -63,7 +63,7 @@ initbuttons = function () {
         offLabel: 'Нет',
         checked: false
     });
-    var preiodicitysource =
+    let preiodicitysource =
         {
             datatype: "json",
             datafields: [
@@ -84,7 +84,7 @@ initbuttons = function () {
         height: 34
     });
 
-    var albumsource =
+    let albumsource =
         {
             datatype: "json",
             datafields: [
@@ -104,7 +104,6 @@ initbuttons = function () {
         width: 300,
         height: 34
     });
-
 };
 
 setquerystring = function() {
@@ -127,7 +126,7 @@ initactions = function() {
                 } else {
                     mlist.jqxGrid('updatebounddata', 'data');
                     mlist.on("bindingcomplete", function (event) {
-                        var newindex = mlist.jqxGrid('getrowboundindexbyid', data.id);
+                        let newindex = mlist.jqxGrid('getrowboundindexbyid', data.id);
                         mlist.jqxGrid('selectrow', newindex);
                     });
                     raiseInfo(data.message);
@@ -141,12 +140,12 @@ initactions = function() {
         });
     });
     $("#save").click(function () {
-        var row = mlist.jqxGrid('getselectedrowindex');
+        let row = mlist.jqxGrid('getselectedrowindex');
         if (row === -1) {
             raiseError("Выберите запись для изменения/сохранения данных");
             return false;
         }
-        var rowid = mlist.jqxGrid('getrowid', row);
+        let rowid = mlist.jqxGrid('getrowid', row);
         $.ajax({
             dataType: 'json',
             url: monitoringupdate_url + rowid,
@@ -160,7 +159,7 @@ initactions = function() {
                 }
                 mlist.jqxGrid('updatebounddata', 'data');
                 mlist.on("bindingcomplete", function (event) {
-                    var newindex = mlist.jqxGrid('getrowboundindexbyid', rowid);
+                    let newindex = mlist.jqxGrid('getrowboundindexbyid', rowid);
                     mlist.jqxGrid('selectrow', newindex);
                 });
             },
@@ -172,13 +171,13 @@ initactions = function() {
         });
     });
     $("#delete").click(function () {
-        var row = mlist.jqxGrid('getselectedrowindex');
+        let row = mlist.jqxGrid('getselectedrowindex');
         if (row === -1) {
             raiseError("Выберите запись для удаления");
             return false;
         }
-        var rowid = mlist.jqxGrid('getrowid', row);
-        var confirm_text = 'Подтвердите удаление мониторинга Id' + rowid ;
+        let rowid = mlist.jqxGrid('getrowid', row);
+        let confirm_text = 'Подтвердите удаление мониторинга Id' + rowid ;
         if (!confirm(confirm_text)) {
             return false;
         }
@@ -199,6 +198,5 @@ initactions = function() {
                 raiseError('Ошибка сохранения данных на сервере', xhr);
             }
         });
-
     });
 };

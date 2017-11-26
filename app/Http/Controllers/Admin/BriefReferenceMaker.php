@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\UnitGroup;
 use Illuminate\Http\Request;
 
 //use App\Http\Requests;
@@ -11,6 +10,7 @@ use App\Form;
 use App\Row;
 use App\Table;
 use App\Unit;
+use App\UnitGroup;
 use App\UnitGroupMember;
 use App\UnitsView;
 use App\Album;
@@ -18,6 +18,7 @@ use App\Period;
 use App\Cell;
 use App\Column;
 use App\Document;
+use App\Medinfo\ExcelExport;
 use App\Medinfo\ReportMaker;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -138,21 +139,13 @@ class BriefReferenceMaker extends Controller
                 //$sheet->getColumnDimensionByColumn('B')->setWidth('80');
                 $sheet->getRowDimension('6')->setRowHeight(-1);
                 //dd(self::getCellByRC(6, 0) . ':' . self::getCellByRC(6, $tablewidth));
-                $sheet->getStyle(self::getCellByRC(6, 1) . ':' . self::getCellByRC(6, $tablewidth))->getAlignment()->setWrapText(true);
+                $sheet->getStyle(ExcelExport::getCellByRC(6, 1) . ':' . ExcelExport::getCellByRC(6, $tablewidth))->getAlignment()->setWrapText(true);
                 $sheet->getStyle('B7:B430')->getAlignment()->setWrapText(true);
-                $sheet->getStyle(self::getCellByRC(6, 1) . ':' . self::getCellByRC($tableheight, $tablewidth))->getBorders()
+                $sheet->getStyle(ExcelExport::getCellByRC(6, 1) . ':' . ExcelExport::getCellByRC($tableheight, $tablewidth))->getBorders()
                     ->getAllBorders()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THIN);
             });
             $excel->export('xlsx');
         }
-    }
-
-    public static function getCellByRC(int $row, int $column)
-    {
-        $alphabetic = array('n/a', 'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
-            'AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ',);
-        return $alphabetic[$column] . $row;
-
     }
 
     public static function getValues($units, Period $period, Form $form, Table $table, $column_titles, $columns, $rows, $mode, $document_type = 1, $output = 1)

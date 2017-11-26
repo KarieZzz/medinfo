@@ -34,16 +34,16 @@ class Column extends Model
     public function getMedinfoContentType()
     {
         switch ($this->content_type) {
-            case 1 :
+            case self::HEADER :
                 $contentType = 'header';
                 break;
-            case 2:
+            case self::CALCULATED :
                 $contentType = 'calculated';
                 break;
-            case 4 :
+            case self::DATA :
                 $contentType = 'data';
                 break;
-            case 5 :
+            case self::COMMENT :
                 $contentType = 'comment';
                 break;
             default :

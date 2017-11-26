@@ -74,14 +74,14 @@
 @section('inlinejs')
     @parent
     <script type="text/javascript">
-        var preiodicityDataAdapter;
-        var albumDataAdapter;
-        var periodicities = {!! $periodicities !!};
-        var albums = {!! $albums !!};
-        var monitoringinsert_url = '/admin/monitorings';
-        var monitoringupdate_url = '/admin/monitorings/';
-        var fetchmonitoring_url = '/admin/monitorings/fetchlist/';
-        var mlist = $('#monitoringList');
+        let preiodicityDataAdapter;
+        let albumDataAdapter;
+        let periodicities = {!! $periodicities !!};
+        let albums = {!! $albums !!};
+        let monitoringinsert_url = '/admin/monitorings';
+        let monitoringupdate_url = '/admin/monitorings/';
+        let fetchmonitoring_url = '/admin/monitorings/fetchlist/';
+        let mlist = $('#monitoringList');
         initsplitter();
         initMonitoringList();
         initbuttons();

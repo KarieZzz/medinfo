@@ -126,7 +126,7 @@ class TableEditing
         return $fortable;
     }
 
-    public static function tableRender(Table $table)
+    public static function tableRender(Table $table, $columntype = 'textbox')
     {
         if (!$table) {
             return [];
@@ -153,20 +153,20 @@ class TableEditing
                     'text'  => $col->column_index,
                     'dataField' => $col->id,
                     'width' => $width,
-                    'cellsalign' => 'right',
+                    //'cellsalign' => 'right',
                     'align' => 'center',
-                    'columntype' => 'checkbox',
+                    'columntype' => $columntype,
                     'columngroup' => $col->id,
-                    'filtertype' => 'number',
+/*                    'filtertype' => 'number',
                     'cellclassname' => 'cellclass',
                     'cellbeginedit' => 'cellbeginedit',
-                    'validation' => 'validation'
+                    'validation' => 'validation'*/
                 );
                 $column_groups_arr[] = array(
                     'text' => $col->column_name,
                     'align' => 'center',
                     'name' => $col->id,
-                    'rendered' => 'tooltiprenderer'
+                    //'rendered' => 'tooltiprenderer'
                 );
             } else if ($contentType == 'header') {
                 $columns_arr[] = array(
@@ -177,7 +177,7 @@ class TableEditing
                     'align' => 'center',
                     'pinned' => true,
                     'editable' => false,
-                    'filtertype' => 'textbox'
+                    //'filtertype' => 'textbox'
                 );
             }
         }
