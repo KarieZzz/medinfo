@@ -55,6 +55,7 @@ class BriefReferenceMaker extends Controller
                 'output' => 'required|in:1,2',
             ]
         );
+        set_time_limit(240);
         $document_type = 1;
         $period = Period::find($request->period);
         $form = Form::find($request->form);

@@ -15,9 +15,7 @@ function updateRelated() {
         url: 'consolidation/getstruct/' + picked_table,
         method: "GET",
         success: function (data, status, xhr) {
-
             grid.jqxGrid('beginupdate');
-
             let gridsource = {
                 datatype: "json",
                 datafields: data.datafields,
