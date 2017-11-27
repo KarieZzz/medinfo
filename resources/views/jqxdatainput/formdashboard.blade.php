@@ -10,6 +10,12 @@
         <i class="fa fa-edit fa-lg"></i> <span class="text-info">{{ $editmode }} </span>
     </h5>
 @endsection
+
+@section('rp-open')
+    <span class="text-right pull-right" id="rp-open" title="Открыть боковую панель"><i style="font-size: 1.5em" class="fa fa-align-justify"></i></span>
+@endsection
+
+
 @section('headertitle', 'Просмотр/редактирование первичного отчетного документа')
 
 @section('content')
@@ -23,7 +29,7 @@
 
 @push('loadjsscripts')
     @include('jqxdatainput.jsstack')
-    <script src="{{ asset('/medinfo/editdashboard.js?v=100') }}"></script>
+    <script src="{{ asset('/medinfo/editdashboard.js?v=101') }}"></script>
 {{--    <script src="{{ asset('/medinfo/primary.js?v=018') }}"></script>--}}
 @endpush('loadjsscripts')
 

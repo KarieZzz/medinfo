@@ -11,10 +11,11 @@
                     <h5><i class="fa fa-user fa-lg"></i> {{ Auth::guard('datainput')->user()->description }}</h5>
                 </div>
             </div>
-            <div class="col-md-1"><h5><a href="/workerlogout" class="pull-right"> <span class="glyphicon glyphicon-log-out"></span> Выйти</a></h5></div>
-
-            {{--<ul class="nav navbar-nav pull-right">
-
-            </ul>--}}
+            <div class="col-md-1 pull-right">
+                <h5>
+                    <a href="/workerlogout"> <span class="glyphicon glyphicon-log-out"></span> Выйти</a>
+                    @yield('rp-open')
+                </h5>
+            </div>
         </div>
     </nav>

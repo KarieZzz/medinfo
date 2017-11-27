@@ -1281,6 +1281,13 @@ let inittoolbarbuttons = function () {
         }
     });
     clearfilter.click(function () { dgrid.jqxGrid('clearfilters'); filterinput.val(''); });
+    $("#rp-open").click(function () {
+        if ($("#ControlTabs")[0].clientWidth === 0) {
+            splitter.jqxSplitter('expand');
+        } else {
+            splitter.jqxSplitter('collapse');
+        }
+    });
 };
 
 /*let firefullscreenevent = function() {
