@@ -5,26 +5,28 @@
 
 @section('content')
     @include('jqxadmin.table_picker')
-        <form style="margin-top: 3px" >
-            <div class="form-group row">
-                <label class="sr-only"  for="rule">Правило рассчета:</label>
-                <div class="col-sm-9">
-                    <input type="text" class="form-control mb-2 mr-sm-2 mb-sm-0" id="rule" placeholder="Правило рассчета">
-                </div>
-                <div class="col-sm-3">
-                    <button type="button" class="btn btn-default">Сохранить</button>
-                    <button type="button" class="btn btn-default">Отменить</button>
-                </div>
+    <form style="margin-top: 3px" >
+        <div class="form-group row">
+            <label class="sr-only"  for="rule">Правило рассчета:</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control mb-2 mr-sm-2 mb-sm-0" id="rule" placeholder="Правило рассчета">
             </div>
-
-        </form>
+            <div class="col-sm-3">
+                <button type="button" class="btn btn-default">Сохранить</button>
+                <button type="button" class="btn btn-default">Отменить</button>
+            </div>
+        </div>
+    </form>
+    <div class="row">
+        <div class="col-lg-1"><span class="text-info"><strong>Выбрано</strong></span></div>
+        <div class="col-lg-1">Строка: </div>
+        <div class="col-lg-2"><p><i>код и наименование строки</i></p></div>
+        <div class="col-lg-1">Графа: </div>
+        <div class="col-lg-2"><p><i>код и наименование графы</i></p></div>
+    </div>
     <div class="row">
         <div class="col-lg-12"><div id="Grid"></div></div>
     </div>
-    <div>
-
-    </div>
-
 @endsection
 
 @push('loadjsscripts')

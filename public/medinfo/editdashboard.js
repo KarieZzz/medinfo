@@ -1276,7 +1276,7 @@ let inittoolbarbuttons = function () {
                 }, 500);
                 oldVal = filterinput.val();
             }
-        }else {
+        } else {
             dgrid.jqxGrid('removefilter', '1');
         }
     });
@@ -1337,7 +1337,7 @@ let cellclass = function (row, columnfield, value, rowdata) {
     let class_by_edited_row = '';
     let not_editable = '';
     for (let i = 0; i < not_editable_cells.length; i++) {
-        if (not_editable_cells[i].t === current_table && not_editable_cells[i].r === rowdata.id && not_editable_cells[i].c === columnfield) {
+        if (not_editable_cells[i].t == current_table && not_editable_cells[i].r == rowdata.id && not_editable_cells[i].c == columnfield) {
             not_editable = 'jqx-grid-cell-pinned jqx-grid-cell-pinned-bootstrap';
         }
     }

@@ -29,7 +29,7 @@
 
 @push('loadjsscripts')
     @include('jqxdatainput.jsstack')
-    <script src="{{ asset('/medinfo/editdashboard.js?v=101') }}"></script>
+    <script src="{{ asset('/medinfo/editdashboard.js?v=102') }}"></script>
 {{--    <script src="{{ asset('/medinfo/primary.js?v=018') }}"></script>--}}
 @endpush('loadjsscripts')
 
