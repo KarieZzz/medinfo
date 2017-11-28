@@ -20,7 +20,7 @@ class ConsolidationRuleAdminController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, $this->validateRules());
-        $rule = ConsolidationRule::firstOrCreate([ 'row_id' => $request->row, 'col_id' => $request->column,  ]);
+        $rule = ConsolidationRule::firstOrNew([ 'row_id' => $request->row, 'col_id' => $request->column,  ]);
         $rule->script = $request->rule;
         $rule->save();
         return ['message' => 'Новая запись создана/сохранена. Id:' . $rule->id, 'id' => $rule->id, ];
