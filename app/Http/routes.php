@@ -162,10 +162,13 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('admin/cfunctions/recompileform/{scopeFrom}', 'Admin\CFunctionAdminController@recompileForm');
     Route::get('admin/dcheck/selected', 'StatDataInput\DataCheckController@selectControlConditions');
     Route::get('admin/dcheck/selectedcheck', 'StatDataInput\DataCheckController@selectedControl');
-
+    // Менеджер правил рассчета консолидированных таблиц
     Route::resource('admin/consolidation', 'Admin\ConsolidationRuleAdminController');
+    Route::delete('admin/consolidation/{row}/{column}', 'Admin\ConsolidationRuleAdminController@destroy');
     Route::get('admin/consolidation/getstruct/{table}', 'Admin\ConsolidationRuleAdminController@getTableStruct' );
     Route::get('admin/consolidation/getrules/{table}', 'Admin\ConsolidationRuleAdminController@getRules' );
+    // Менеджер списков МО для рассчета консолидированных таблиц
+    Route::resource('admin/units/lists', 'Admin\ListMOAdminController');
 
 /*    Route::get('admin/micontrols/vtk', 'Admin\MedinfoControlsAdminController@index');
     Route::get('admin/micontrols/fetchcontrolledrows/{table}/{scope}', 'Admin\MedinfoControlsAdminController@fetchControlledRows');

@@ -59,6 +59,7 @@
                 <ul class="dropdown-menu">
                     <li><a href="/admin/units">Территории/Медицинские организации</a></li>
                     <li><a href="/admin/units/groups">Группы медицинских организаций</a></li>
+                    <li><a href="/admin/units/lists">Списки медицинских организаций для расчетных таблиц</a></li>
                 </ul>
             </li>
             <li><a href="/admin/documents">Документы</a></li>

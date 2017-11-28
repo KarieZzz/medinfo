@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\ConsolidationRule;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\ConsolidationRule;
 
 class ConsolidationRuleAdminController extends Controller
 {
@@ -15,6 +15,25 @@ class ConsolidationRuleAdminController extends Controller
     {
         $forms = \App\Form::orderBy('form_index')->get(['id', 'form_code']);
         return view('jqxadmin.consolidationrules', compact('forms'));
+    }
+
+    public function store(Request $request)
+    {
+        $this->validate($request, $this->validateRules());
+        $rule = ConsolidationRule::firstOrCreate([ 'row_id' => $request->row, 'col_id' => $request->column,  ]);
+        $rule->script = $request->rule;
+        $rule->save();
+        return ['message' => 'Новая запись создана/сохранена. Id:' . $rule->id, 'id' => $rule->id, ];
+    }
+
+    public function destroy($row, $column)
+    {
+        $rule = ConsolidationRule::OfRC($row, $column)->first();
+        if (!is_null($rule)) {
+            $rule->delete();
+            return ['message' => 'Запись удалена. Id:' . $rule->id, 'id' => $rule->id, ];
+        }
+        return ['message' => 'Запись удалена.' ];
     }
 
     public function getTableStruct(\App\Table $table)
@@ -50,5 +69,15 @@ class ConsolidationRuleAdminController extends Controller
             $i++;
         }
         return $data;
+    }
+
+    protected function validateRules()
+    {
+        return [
+            'rule' => 'required|max:512',
+            'comment' => 'max:128',
+            'row' => 'required|integer|exists:rows,id',
+            'column' => 'required|integer|exists:columns,id',
+        ];
     }
 }

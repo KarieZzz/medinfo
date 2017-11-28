@@ -1085,7 +1085,7 @@ let initdatagrid = function() {
         });
     dgrid.on('cellvaluechanged', function (event) {
         let rowBoundIndex = args.rowindex;
-        let rowid = $('#DataGrid').jqxGrid('getrowid', rowBoundIndex);
+        let rowid = dgrid.jqxGrid('getrowid', rowBoundIndex);
         let colid = event.args.datafield;
         let value = args.newvalue;
         let oldvalue;

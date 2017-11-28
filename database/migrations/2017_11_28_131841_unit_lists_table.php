@@ -15,8 +15,8 @@ class UnitListsTable extends Migration
         //
         Schema::create('unit_lists', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name', 128)->index();
-            $table->string('slug', 64)->index();
+            $table->string('name', 128)->unique();
+            $table->string('slug', 64)->unique();
             $table->timestamps();
         });
     }
