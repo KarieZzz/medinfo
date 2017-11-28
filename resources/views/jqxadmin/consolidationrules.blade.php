@@ -20,9 +20,9 @@
     <div class="row">
         <div class="col-lg-1"><span class="text-info"><strong>Выбрано</strong></span></div>
         <div class="col-lg-1">Строка: </div>
-        <div class="col-lg-2"><p><i>код и наименование строки</i></p></div>
+        <div class="col-lg-3"><p><i id="row"></i></p></div>
         <div class="col-lg-1">Графа: </div>
-        <div class="col-lg-2"><p><i>код и наименование графы</i></p></div>
+        <div class="col-lg-3"><p><i id="column"></i></p></div>
     </div>
     <div class="row">
         <div class="col-lg-12"><div id="Grid"></div></div>
@@ -56,6 +56,10 @@
     @parent
     <script type="text/javascript">
         let grid = $("#Grid");
+        let current_row_name_datafield;
+        let current_row_number_datafield;
+        let selected = { row_id: 0, column_id: 0};
+        gridEventsInit();
     </script>
     @include('jqxadmin.table_pickerjs')
 @endsection

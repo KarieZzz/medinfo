@@ -25,7 +25,8 @@ function updateRelated() {
                 root: null
             };
             let adapter = new $.jqx.dataAdapter(gridsource);
-
+            current_row_name_datafield = data.columns[1].dataField;
+            current_row_number_datafield = data.columns[2].dataField;
             //gridsource.datafields = datafields;
             //gridsource.url = cellsfetch_url + current_table;
             grid.jqxGrid( { columns: data.columns } );
@@ -38,5 +39,19 @@ function updateRelated() {
             raiseError("Ошибка загрузки структуры таблицы");
         }
     });
-
 }
+
+let gridEventsInit = function () {
+    grid.on('cellselect', function (event)
+    {
+        let args = event.args;
+        let rowindex = event.args.rowindex;
+        selected.column_id = args.datafield;
+        selected.row_id = grid.jqxGrid('getrowid', rowindex);
+        let row_code = grid.jqxGrid('getcellvaluebyid', selected.row_id, current_row_number_datafield);
+        let row_name = grid.jqxGrid('getcellvaluebyid', selected.row_id, current_row_name_datafield);
+        let colindex = grid.jqxGrid('getcolumnproperty', selected.column_id, 'text');
+        $("#row").html(row_code + '. ' + row_name);
+        $("#column").html(colindex);
+    });
+};

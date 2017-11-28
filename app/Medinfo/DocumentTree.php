@@ -154,7 +154,7 @@ class DocumentTree
               CASE WHEN (SELECT sum(v.value) FROM statdata v where d.id = v.doc_id) > 0 THEN 1 ELSE 0 END filled
               FROM documents d
                 JOIN forms f on d.form_id = f.id
-                LEFT JOIN mo_hierarchy u ON d.ou_id = u.id
+                JOIN mo_hierarchy u ON d.ou_id = u.id
                 JOIN dic_document_states s ON d.state = CAST(s.code AS numeric)
                 JOIN dic_document_types t ON d.dtype = CAST(t.code AS numeric)
                 JOIN monitorings m ON d.monitoring_id = m.id
@@ -171,7 +171,7 @@ class DocumentTree
                   CASE WHEN (SELECT sum(v.value) FROM statdata v where d.id = v.doc_id) > 0 THEN 1 ELSE 0 END filled
                   FROM documents d
                     JOIN forms f on d.form_id = f.id
-                    LEFT JOIN unit_groups u on d.ou_id = u.id
+                    JOIN unit_groups u on d.ou_id = u.id
                     JOIN dic_document_states s on d.state = CAST(s.code AS numeric)
                     JOIN dic_document_types t on d.dtype = CAST(t.code AS numeric)
                     JOIN monitorings m ON d.monitoring_id = m.id

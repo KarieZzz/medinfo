@@ -1007,7 +1007,7 @@ initdocumentstabs = function() {
     agrid.jqxGrid(
         {
             width: '100%',
-            height: '93%',
+            height: '85%',
             theme: theme,
             source: aggregate_report_table,
             columnsresize: true,
@@ -1041,8 +1041,8 @@ initRecentDocuments = function () {
             datatype: "json",
             datafields: [
                 { name: 'document_id', type: 'int' },
-                { name: 'unit_code', map: 'document>unit>unit_code', type: 'string' },
-                { name: 'unit_name', map: 'document>unit>unit_name', type: 'string' },
+                { name: 'unit_code', map: 'document>unitsview>code', type: 'string' },
+                { name: 'unit_name', map: 'document>unitsview>name', type: 'string' },
                 { name: 'form_code', map: 'document>form>form_code', type: 'string' },
                 { name: 'monitoring', map: 'document>monitoring>name', type: 'string' },
                 { name: 'period', map: 'document>period>name', type: 'string' },
