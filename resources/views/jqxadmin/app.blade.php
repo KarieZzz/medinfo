@@ -15,7 +15,7 @@
         }
         #widgets-content-wrap {
             position: absolute;
-            margin-top: 50px;
+            margin-top: 53px;
             width:100%;
             height: 100%;
         }

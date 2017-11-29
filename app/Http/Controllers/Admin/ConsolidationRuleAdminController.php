@@ -11,6 +11,11 @@ use App\ConsolidationRule;
 class ConsolidationRuleAdminController extends Controller
 {
     //
+    public function __construct()
+    {
+        $this->middleware('admins');
+    }
+
     public function index()
     {
         $forms = \App\Form::orderBy('form_index')->get(['id', 'form_code']);

@@ -14,6 +14,11 @@ class UnitListMember extends Model
         return $this->belongsTo('App\UnitList' , 'list_id', 'id' );
     }
 
+    public function unit()
+    {
+        return $this->belongsTo('App\Unit', 'ou_id', 'id');
+    }
+
     public function scopeList($query, $list)
     {
         return $query->where('list_id', $list);

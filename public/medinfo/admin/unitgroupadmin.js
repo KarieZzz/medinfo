@@ -16,7 +16,7 @@ initsplitter = function() {
     );
 };
 initdatasources = function() {
-    var unitgroupsource =
+    let unitgroupsource =
     {
         datatype: "json",
         datafields: [
