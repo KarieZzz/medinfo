@@ -210,18 +210,18 @@ checkdtypefilter = function() {
 };
 // Возвращает массив с идентификаторами выделенных документов
 getselecteddocuments = function () {
-    var rowindexes = dlist.jqxGrid('getselectedrowindexes');
-    var indexes_length =  rowindexes.length;
-    var row_ids = [];
+    let rowindexes = dlist.jqxGrid('getselectedrowindexes');
+    let indexes_length =  rowindexes.length;
+    let row_ids = [];
     for (i = 0; i < indexes_length; i++) {
         row_ids.push(dlist.jqxGrid('getrowid', rowindexes[i]));
     }
     return row_ids;
 };
 getcheckedunits = function() {
-    var ids = [];
-    var checkedRows;
-    var i;
+    let ids = [];
+    let checkedRows;
+    let i;
     if (filter_mode === 1) {
         checkedRows = motree.jqxTreeGrid('getCheckedRows');
         for (i = 0; i < checkedRows.length; i++) {
@@ -246,7 +246,7 @@ updatedocumenttable = function() {
     }
 };
 
-// Инициализация панели инструкментов
+// Инициализация окна ввода нового документа
 initnewdocumentwindow = function () {
     let savebutton = $('#saveButton');
     let newdoc_form = $('#newForm').jqxWindow({

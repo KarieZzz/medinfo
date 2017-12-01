@@ -110,7 +110,7 @@ inittablelist = function() {
         });
     $('#unitList').on('rowselect', function (event) {
         $("#parent_id").jqxDropDownList('clearFilter');
-        var row = event.args.row;
+        let row = event.args.row;
         $("#unit_name").val(row.unit_name);
         $("#parent_id").val(row.parent_id);
         $("#unit_code").val(row.unit_code);
@@ -156,14 +156,14 @@ initunitactions = function() {
         offLabel: 'Нет',
         checked: false });
     $("#insert").click(function () {
-        var data = setquerystring();
+        let data = setquerystring();
         $.ajax({
             dataType: 'json',
             url: unitcreate_url,
             method: "POST",
             data: data,
             success: function (data, status, xhr) {
-                if (typeof data.error != 'undefined') {
+                if (typeof data.error !=+ 'undefined') {
                     raiseError(data.message);
                 } else {
                     raiseInfo(data.message);
@@ -199,7 +199,6 @@ initunitactions = function() {
                 $("#unitList").jqxGrid('updatebounddata', 'data');
                 $("#unitList").on("bindingcomplete", function (event) {
                     var newindex = $('#unitList').jqxGrid('getrowboundindexbyid', rowid);
-                    console.log(newindex);
                     $("#unitList").jqxGrid('selectrow', newindex);
 
                 });

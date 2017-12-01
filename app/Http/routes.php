@@ -170,8 +170,11 @@ Route::group(['middleware' => ['medinfo']], function () {
 
     // Менеджер списков МО для рассчета консолидированных таблиц
     Route::resource('admin/units/lists', 'Admin\ListMOAdminController');
+    Route::get('admin/units/fetchlists', 'Admin\ListMOAdminController@fetchlits');
     Route::get('admin/units/fetchlistmembers/{list}', 'Admin\ListMOAdminController@fetchListMembers');
     Route::get('admin/units/nonmembers/{list}', 'Admin\ListMOAdminController@fetchNonMembers');
+    Route::post('admin/units/addlistmembers/{list}', 'Admin\ListMOAdminController@addMembers');
+    Route::delete('admin/units/removelistmembers/{list}/{members}', 'Admin\ListMOAdminController@removeMembers');
 
 /*    Route::get('admin/micontrols/vtk', 'Admin\MedinfoControlsAdminController@index');
     Route::get('admin/micontrols/fetchcontrolledrows/{table}/{scope}', 'Admin\MedinfoControlsAdminController@fetchControlledRows');

@@ -23,131 +23,10 @@ initdatasources = function() {
     columnsDataAdapter = new $.jqx.dataAdapter(columnsource);
 };
 
-// Инициализация списков-фильтров форма -> таблица
-initFormTableFilter = function() {
-    plist.jqxDropDownList({
-        theme: theme,
-        source: periodsDataAdapter,
-        displayMember: "name",
-        valueMember: "id",
-        placeHolder: "Выберите период:",
-        //selectedIndex: 2,
-        width: 250,
-        height: 32
-    });
-    plist.on('select', function (event) {
-        let args = event.args;
-        //console.log(args.item);
-        current_period = args.item.value;
-        $("#periodSelected").html('<div class="text-bold text-info" style="margin-left: -100px">Выбран период: "'+ args.item.label +'"</div>');
-    });
-    flist.jqxDropDownList({
-        theme: theme,
-        source: formsDataAdapter,
-        displayMember: "form_code",
-        valueMember: "id",
-        placeHolder: "Выберите форму:",
-        //selectedIndex: 2,
-        width: 250,
-        height: 32
-    });
-    flist.on('select', function (event) {
-        let args = event.args;
-        current_form = args.item.value;
-        updateTableDropdownList(args.item);
-    });
-    $("#tableListContainer").jqxDropDownButton({ width: 250, height: 32, theme: theme });
-    tlist.jqxDataTable({
-        theme: theme,
-        source: tablesDataAdapter,
-        width: 420,
-        height: 400,
-        columns: [{
-            text: 'Код',
-            dataField: 'table_code',
-            width: 100
-        },
-            {
-                text: 'Наименование',
-                dataField: 'table_name',
-                width: 300
-            }
-        ]
-    });
-    tlist.on('rowSelect', function (event) {
-        $("#tableListContainer").jqxDropDownButton('close');
-        var args = event.args;
-        var r = args.row;
-        current_table = args.key;
-        $("#tableSelected").html('<div class="text-bold text-info" style="margin-left: -100px">Таблица: (' + r.table_code + ') ' + r.table_name + '</div>');
-        updateRelated();
-    });
-    $("#levelListContainer").jqxDropDownButton({ width: 250, height: 32, theme: theme });
-    levellist.jqxGrid(
-        {
-            width: '540px',
-            height: '340px',
-            theme: theme,
-            localization: localize(),
-            source: levelsDataAdapter,
-            columnsresize: true,
-            showfilterrow: true,
-            filterable: true,
-            sortable: true,
-            columns: [
-                { text: 'Код', datafield: 'code', width: '70px'  },
-                { text: 'Тип', datafield: 'type', width: '70px'  },
-                { text: 'Имя', datafield: 'name' , width: '380px'}
-            ]
-        });
-
-/*    levellist.jqxDropDownList({
-        theme: theme,
-        source: levelsDataAdapter,
-        displayMember: "name",
-        valueMember: "id",
-        selectedIndex: 0,
-        width: 300,
-        height: 32
-    });
-    levellist.on('select', function (event) {
-        var args = event.args;
-        current_level = args.item.value;
-        //console.log(args.item);
-        $("#levelSelected").html('<div class="text-bold text-info" style="margin-left: -100px">Установлено ограничение по: "' + args.item.label + '"</div>');
-    });*/
-    levellist.on('rowselect', function (event) {
-        $("#levelListContainer").jqxDropDownButton('close');
-        var args = event.args;
-        if (args.rowindex == -1) {
-            return false;
-        }
-        var r = args.row;
-        current_level = r.id;
-        current_type = r.type;
-        //console.log(current_level);
-        $("#levelSelected").html('<div class="text-bold text-info" style="margin-left: -100px">Установлено ограничение по: "' + r.code + ' "'+ r.name + '"</div>');
-        if (current_level == 0) {
-            $( "#legacy" ).prop( "disabled", false );
-            $( "#territory" ).prop( "disabled", false );
-        } else if (current_level !== 0) {
-            $( "#primary" ).prop( "checked", true );
-            $( "#legacy" ).prop( "disabled", true );
-            $( "#territory" ).prop( "disabled", true );
-        }
-    });
-};
-
-// Обновление списка таблиц при выборе формы
-updateTableDropdownList = function(form) {
-    tablesource.url = tablefetch_url + current_form;
-    $("#tableListContainer").jqxDropDownButton('setContent', '<div style="margin-top: 9px">Выберите таблицу из формы ' + form.label + '</div>');
-    tlist.jqxDataTable('updateBoundData');
-};
-
 // Таблица списков
 let initList = function() {
-    $("#ListContainer").jqxDropDownButton({ width: 250, height: 32, theme: theme });
+    listbutton.jqxDropDownButton({ width: 250, height: 32, theme: theme });
+    listbutton.jqxDropDownButton('setContent', '<div style="margin-top: 9px">Выберите список</div>');
     let listsource = {
         datatype: "json",
         datafields: [
@@ -156,13 +35,13 @@ let initList = function() {
             { name: 'name', type: 'string' }
         ],
         id: 'id',
-        localdata: lists,
+        url: lists
     };
     let dadapter =  new $.jqx.dataAdapter(listsource);
     list.jqxGrid(
         {
             width: '500px',
-            height: '300px',
+            height: '500px',
             theme: theme,
             localization: localize(),
             source: dadapter,
@@ -171,7 +50,7 @@ let initList = function() {
             filterable: true,
             sortable: true,
             columns: [
-                { text: 'Пседоним', datafield: 'slug', width: '70px'  },
+                { text: 'Пседоним', datafield: 'slug', width: '100px'  },
                 { text: 'Наименование', datafield: 'name' , width: '380px'}
             ]
         });
@@ -185,31 +64,36 @@ let initList = function() {
         let r = args.row;
         currentlist = r.id;
         $("#ListName").html('<strong>"' + r.name + '"</strong>');
+        $("#name").val(r.name);
+        $("#slug").val(r.slug);
         membersource.url = member_url + currentlist;
         unitsource.url = units_url + currentlist;
         listterms.jqxGrid('updatebounddata');
         units.jqxGrid('updatebounddata');
     });
 };
-
+// Состав выбранного списка
 let initListMembers = function () {
     membersource =
         {
             datatype: "json",
             datafields: [
                 { name: 'id', type: 'int' },
-                { name: 'list_id', type: 'int' },
-                { name: 'uname', map: 'unit>unit_name', type: 'string' },
-                { name: 'ou_id', type: 'int' }
+                //{ name: 'list_id', type: 'int' },
+                //{ name: 'uname', map: 'unit>unit_name', type: 'string' },
+                { name: 'unit_name', type: 'string' },
+                //{ name: 'ucode', map: 'unit>unit_code', type: 'string' },
+                { name: 'unit_code', type: 'string' }
+                //{ name: 'ou_id', type: 'int' }
             ],
             id: 'id',
-            url: member_url + currentlist,
-            root: 'member'
+            url: member_url + currentlist
         };
     let memberDataAdapter =  new $.jqx.dataAdapter(membersource);
     listterms.jqxGrid(
         {
             width: '100%',
+            height: '100%',
             theme: theme,
             localization: localize(),
             source: memberDataAdapter,
@@ -227,11 +111,15 @@ let initListMembers = function () {
                         return "<div style='margin:4px;'>" + (value + 1) + "</div>";
                     }
                 },
-                { text: 'МО', datafield: 'uname' , width: '580px'}
+                { text: 'id', datafield: 'id' , width: '50px'},
+                //{ text: 'код', datafield: 'ucode' , width: '50px'},
+                { text: 'код', datafield: 'unit_code' , width: '50px'},
+                //{ text: 'МО', datafield: 'uname' , width: '580px'}
+                { text: 'МО', datafield: 'unit_name' , width: '580px'}
             ]
         });
 };
-
+// Список юнитов не включенных в выбранный список
 let initUnitsNonmembers = function () {
     unitsource =
         {
@@ -258,6 +146,7 @@ let initUnitsNonmembers = function () {
     units.jqxGrid(
         {
             width: '100%',
+            height: '100%',
             theme: theme,
             localization: localize(),
             source: unitDataAdapter,
@@ -277,7 +166,215 @@ let initUnitsNonmembers = function () {
         });
 };
 
-// функция для обновления связанных объектов после выбора таблицы
+let getselectednonmembers = function () {
+    let rowindexes = units.jqxGrid('getselectedrowindexes');
+    let indexes_length =  rowindexes.length;
+    let selectedunits = [];
+    for (i = 0; i < indexes_length; i++) {
+        selectedunits.push(units.jqxGrid('getrowid', rowindexes[i]));
+    }
+    return selectedunits;
+};
+
+let getselectedmembers = function () {
+    let rowindexes = listterms.jqxGrid('getselectedrowindexes');
+    let indexes_length =  rowindexes.length;
+    let selectedunits = [];
+    for (i = 0; i < indexes_length; i++) {
+        selectedunits.push(listterms.jqxGrid('getrowid', rowindexes[i]));
+    }
+    return selectedunits;
+};
+
+let initeditlistwindow = function () {
+    let updbutton = $('#update');
+    let createbutton = $('#create');
+    listeditform.jqxWindow({
+        width: 700,
+        height: 320,
+        resizable: false,
+        autoOpen: false,
+        isModal: true,
+        cancelButton: $('#cancel'),
+        position: { x: 310, y: 125 }
+    });
+
+    updbutton.click(function() {
+        data = "&name=" + $("#name").val() + "&slug=" + $("#slug").val();
+        $.ajax({
+            dataType: 'json',
+            url: list_url + '/' + currentlist,
+            method: "PUT",
+            data: data,
+            success: function (data, status, xhr) {
+                if (data.updated) {
+                    raiseInfo("Изменения сохранены");
+                    //list.jqxGrid('clearselection');
+                    list.jqxGrid('updatebounddata', 'data');
+                    list.on("bindingcomplete", function (event) {
+                        let newindex = list.jqxGrid('getrowboundindexbyid', currentlist);
+                        list.jqxGrid('selectrow', newindex);
+                    });
+                }
+                else {
+                    raiseError("Изменения не сохранены");
+                }
+            },
+            error: function (xhr, status, errorThrown) {
+                $.each(xhr.responseJSON, function(field, errorText) {
+                    raiseError(errorText);
+                });
+            }
+        });
+        listeditform.jqxWindow('hide');
+    });
+
+    createbutton.click(function() {
+        data = "&name=" + $("#name").val() + "&slug=" + $("#slug").val();
+        $.ajax({
+            dataType: 'json',
+            url: list_url,
+            method: "POST",
+            data: data,
+            success: function (data, status, xhr) {
+                if (data.stored) {
+                    raiseInfo("Новый список учреждений создан");
+                    //list.jqxGrid('clearselection');
+                    list.jqxGrid('updatebounddata', 'data');
+                    list.on("bindingcomplete", function (event) {
+                        let newindex = list.jqxGrid('getrowboundindexbyid', data.id);
+                        list.jqxGrid('selectrow', newindex);
+                    });
+                }
+                else {
+                    raiseError("Изменения не сохранены");
+                }
+            },
+            error: function (xhr, status, errorThrown) {
+                $.each(xhr.responseJSON, function(field, errorText) {
+                    raiseError(errorText);
+                });
+            }
+        });
+        listeditform.jqxWindow('hide');
+    });
+
+};
+
+let initActions = function() {
+    $("#edit").click(function () {
+        if (currentlist === 0) {
+            raiseError('Не выбран список МО для редактирования');
+            return false;
+        }
+        listeditform.jqxWindow('open');
+    });
+
+    $("#delete").click(function () {
+        if (currentlist === 0) {
+            raiseError('Не выбран список МО для удаления');
+            return false;
+        }
+        if (!confirm('Удалить текущий список учреждений?')) {
+            return false;
+        }
+        $.ajax({
+            dataType: 'json',
+            url: list_url + '/' + currentlist,
+            method: "DELETE",
+            success: function (data, status, xhr) {
+                if (data.removed) {
+                    raiseInfo("Удален список Id " + data.id);
+                    listterms.jqxGrid('clearselection');
+                    listterms.jqxGrid('updatebounddata');
+                    units.jqxGrid('clearselection');
+                    units.jqxGrid('updatebounddata');
+                    list.jqxGrid('clearselection');
+                    list.jqxGrid('updatebounddata');
+                }
+                else {
+                    raiseError("Списрк учреждений не удален");
+                }
+            },
+            error: function (xhr, status, errorThrown) {
+                $.each(xhr.responseJSON, function(field, errorText) {
+                    raiseError(errorText);
+                });
+            }
+        });
+    });
+
+    $("#AddSelected").click(function () {
+        if (currentlist === 0) {
+            raiseError('Не выбран список МО для редактирования');
+            return false;
+        }
+        let added_units = getselectednonmembers();
+        if (added_units.length === 0) {
+            raiseError('Не выбраны МО для добавления в список');
+            return false;
+        }
+        let data = "&units=" + added_units;
+        $.ajax({
+            dataType: 'json',
+            url: addmembers_url + currentlist,
+            method: "POST",
+            data: data,
+            success: function (data, status, xhr) {
+                if (data.count_of_inserted > 0) {
+                    raiseInfo("Добавлено учреждений в список " + data.count_of_inserted);
+                    listterms.jqxGrid('clearselection');
+                    listterms.jqxGrid('updatebounddata');
+                    units.jqxGrid('clearselection');
+                    units.jqxGrid('updatebounddata');
+                }
+                else {
+                    raiseError("Учреждения не добавлены");
+                }
+            },
+            error: function (xhr, status, errorThrown) {
+                $.each(xhr.responseJSON, function(field, errorText) {
+                    raiseError(errorText);
+                });
+            }
+        });
+    });
+    $("#RemoveSelected").click(function () {
+        if (currentlist === 0) {
+            raiseError('Не выбран список МО для редактирования');
+            return false;
+        }
+        let removed_units = getselectedmembers();
+        if (removed_units.length === 0) {
+            raiseError('Не выбраны МО для удаления из списка');
+            return false;
+        }
+        $.ajax({
+            dataType: 'json',
+            url: removemembers_url + currentlist + '/' + removed_units,
+            method: "DELETE",
+            success: function (data, status, xhr) {
+                if (data.count_of_removed > 0) {
+                    raiseInfo("Удалено учреждений из списка " + data.count_of_removed);
+                    listterms.jqxGrid('clearselection');
+                    listterms.jqxGrid('updatebounddata');
+                    units.jqxGrid('clearselection');
+                    units.jqxGrid('updatebounddata');
+                }
+                else {
+                    raiseError("Учреждения не удалены");
+                }
+            },
+            error: function (xhr, status, errorThrown) {
+                $.each(xhr.responseJSON, function(field, errorText) {
+                    raiseError(errorText);
+                });
+            }
+        });
+    });
+};
+
+
 updateRelated = function() {
     updateRowList();
     updateColumnList();
@@ -289,12 +386,6 @@ updateRowList = function() {
     rowsource.url = rowfetch_url + current_table;
     rlist.jqxGrid('clearselection');
     rlist.jqxGrid('updatebounddata');
-};
-// Обновление списка граф при выборе таблицы
-updateColumnList = function() {
-    columnsource.url = columnfetch_url + current_table;
-    clist.jqxGrid('clearselection');
-    clist.jqxGrid('updatebounddata');
 };
 
 setquery = function() {
@@ -358,32 +449,5 @@ initButtons = function() {
     });
 };
 
-initActions = function() {
-    $("#make").click(function () {
-        var data = setquery();
-        var url = output_url + data;
-        //console.log(url);
-        //window.open(url);
-        location.replace(url);
-    });
-};
 
-var getselectedrows = function () {
-    var rowindexes = rlist.jqxGrid('getselectedrowindexes');
-    var indexes_length =  rowindexes.length;
-    rows = [];
-    for (i = 0; i < indexes_length; i++) {
-        rows.push(rlist.jqxGrid('getrowid', rowindexes[i]));
-    }
-    return rows;
-};
 
-var getselectedcolumns = function () {
-    var rowindexes = clist.jqxGrid('getselectedrowindexes');
-    var indexes_length =  rowindexes.length;
-    columns = [];
-    for (i = 0; i < indexes_length; i++) {
-        columns.push(clist.jqxGrid('getrowid', rowindexes[i]));
-    }
-    return columns;
-};
