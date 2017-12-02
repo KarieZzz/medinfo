@@ -264,9 +264,12 @@ let initeditlistwindow = function () {
 let initActions = function() {
     $("#edit").click(function () {
         if (currentlist === 0) {
-            raiseError('Не выбран список МО для редактирования');
-            return false;
+            raiseInfo('Не выбран список МО для редактирования');
+            $("#update").addClass('disabled');
+        } else {
+            $("#update").removeClass('disabled');
         }
+
         listeditform.jqxWindow('open');
     });
 
