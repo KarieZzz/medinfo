@@ -175,6 +175,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('admin/units/nonmembers/{list}', 'Admin\ListMOAdminController@fetchNonMembers');
     Route::post('admin/units/addlistmembers/{list}', 'Admin\ListMOAdminController@addMembers');
     Route::delete('admin/units/removelistmembers/{list}/{members}', 'Admin\ListMOAdminController@removeMembers');
+    Route::delete('admin/units/removeall/{list}', 'Admin\ListMOAdminController@removeAll');
 
 /*    Route::get('admin/micontrols/vtk', 'Admin\MedinfoControlsAdminController@index');
     Route::get('admin/micontrols/fetchcontrolledrows/{table}/{scope}', 'Admin\MedinfoControlsAdminController@fetchControlledRows');

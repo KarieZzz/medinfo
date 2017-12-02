@@ -20,8 +20,7 @@ class ListMOAdminController extends Controller
 
     public function index()
     {
-        $lists = UnitList::all();
-        return view('jqxadmin.unit_lists', compact('lists'));
+        return view('jqxadmin.unit_lists');
     }
 
     public function store(Request $request)
@@ -81,7 +80,7 @@ class ListMOAdminController extends Controller
     public function fetchNonMembers(int $list)
     {
         $listmembers = UnitListMember::List($list)->get()->pluck('ou_id');
-        return Unit::Primary()->whereNotIn('id', $listmembers)->orderBy('unit_code')->with('parent')->get();
+        return Unit::Legal()->whereNotIn('id', $listmembers)->orderBy('unit_code')->with('parent')->get();
     }
 
     public function addMembers(UnitList $list, Request $request)
@@ -101,6 +100,12 @@ class ListMOAdminController extends Controller
         //dd($removed);
         //$removed_members = UnitListMember::List($list)->destroy($removed);
         $removed_members = UnitListMember::List($list)->whereIn('ou_id', $removed)->delete();
+        return [ 'count_of_removed' => $removed_members ];
+    }
+
+    public function removeAll($list)
+    {
+        $removed_members = UnitListMember::List($list)->delete();
         return [ 'count_of_removed' => $removed_members ];
     }
 }

@@ -21,11 +21,10 @@
     <div class="row">
         <div class="col-lg-6">
             <button id="RemoveSelected" type="button" class="btn btn-danger pull-right">Удалить</button>
-            <button id="RemoveAll" type="button" class="btn btn-default pull-right">Удалить все</button>
+            <button id="RemoveAll" type="button" class="btn pull-right">Очистить список</button>
         </div>
         <div class="col-lg-6">
             <button id="AddSelected" type="button" class="btn btn-info">Добавить</button>
-            <button id="AddAll" type="button" class="btn btn-default">Добавить все</button>
         </div>
     </div>
     <div class="row">
@@ -92,7 +91,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
     {{--<script src="{{ asset('/medinfo/admin/tablepicker.js?v=008') }}"></script>--}}
-    <script src="{{ asset('/medinfo/admin/unitlistadmin.js?v=003') }}"></script>
+    <script src="{{ asset('/medinfo/admin/unitlistadmin.js?v=004') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -109,6 +108,7 @@
         let member_url = '/admin/units/fetchlistmembers/';
         let addmembers_url = '/admin/units/addlistmembers/';
         let removemembers_url = '/admin/units/removelistmembers/';
+        let removeall_url = '/admin/units/removeall/';
         let units_url = '/admin/units/nonmembers/';
         initList();
         initListMembers();

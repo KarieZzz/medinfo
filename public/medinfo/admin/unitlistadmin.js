@@ -101,7 +101,7 @@ let initListMembers = function () {
             showfilterrow: true,
             filterable: true,
             sortable: true,
-            selectionmode: 'checkbox',
+            selectionmode: 'multiplerowsextended',
             columns: [
                 {
                     text: '№ п/п', sortable: false, filterable: false, editable: false,
@@ -154,7 +154,7 @@ let initUnitsNonmembers = function () {
             showfilterrow: true,
             filterable: true,
             sortable: true,
-            selectionmode: 'checkbox',
+            selectionmode: 'multiplerowsextended',
             columns: [
                 { text: 'Id', datafield: 'id', width: '30px' },
                 { text: 'Входит в', datafield: 'parent', width: '120px' },
@@ -352,6 +352,38 @@ let initActions = function() {
         $.ajax({
             dataType: 'json',
             url: removemembers_url + currentlist + '/' + removed_units,
+            method: "DELETE",
+            success: function (data, status, xhr) {
+                if (data.count_of_removed > 0) {
+                    raiseInfo("Удалено учреждений из списка " + data.count_of_removed);
+                    listterms.jqxGrid('clearselection');
+                    listterms.jqxGrid('updatebounddata');
+                    units.jqxGrid('clearselection');
+                    units.jqxGrid('updatebounddata');
+                }
+                else {
+                    raiseError("Учреждения не удалены");
+                }
+            },
+            error: function (xhr, status, errorThrown) {
+                $.each(xhr.responseJSON, function(field, errorText) {
+                    raiseError(errorText);
+                });
+            }
+        });
+    });
+
+    $("#RemoveAll").click(function () {
+        if (currentlist === 0) {
+            raiseError('Не выбран список МО для редактирования');
+            return false;
+        }
+        if (!confirm('Очистить текущий список учреждений?')) {
+            return false;
+        }
+        $.ajax({
+            dataType: 'json',
+            url: removeall_url + currentlist,
             method: "DELETE",
             success: function (data, status, xhr) {
                 if (data.count_of_removed > 0) {
