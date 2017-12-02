@@ -66,7 +66,7 @@ class ListMOAdminController extends Controller
 
     public function fetchlits()
     {
-        return UnitList::all();
+        return UnitList::orderBy('slug')->get();
     }
 
     public function fetchListMembers(int $list)
