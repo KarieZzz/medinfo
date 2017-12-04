@@ -1,20 +1,16 @@
 <div id="changeStateWindow">
     <div>Изменение статуса документа (код формы: <span id="changeStateFormCode"></span>, код МО: <span id="changeStateMOCode"></span>)</div>
     <div style="overflow: hidden;">
-        <div id="changeStateAlertMessage" style="display: none" class="alert alert-danger"></div>
-        <div style='margin-top: 10px;' class="stateradio" id='performed'>
-            <span>Выполняется</span></div>
-        <div style='margin-top: 10px;' class="stateradio" id='prepared'>
-            <span>Подготовлен к проверке</span></div>
-        <div style='margin-top: 10px;' class="stateradio" id='accepted'>
-            <span>Принят</span></div>
-        <div style='margin-top: 10px;' class="stateradio" id='declined'>
-            <span>Возвращен на доработку</span></div>
-        <div style='margin-top: 10px;' class="stateradio" id='approved'>
-            <span>Утвержден</span></div>
+        <div style='margin-top: 10px;' class="stateradio" id='performed'>Выполняется</div>
+        <div style='margin-top: 10px;' class="stateradio" id='inadvance'>Подготовлен к предварительной проверке</div>
+        <div style='margin-top: 10px;' class="stateradio" id='prepared'>Подготовлен к проверке</div>
+        <div style='margin-top: 10px;' class="stateradio" id='accepted'>Принят</div>
+        <div style='margin-top: 10px;' class="stateradio" id='declined'>Возвращен на доработку</div>
+        <div style='margin-top: 10px;' class="stateradio" id='approved'>Утвержден</div>
         <textarea id="statusChangeMessage" style="margin: 10px"></textarea>
         <input style="margin-right: 5px;" type="button" id="SaveState" value="Сохранить" />
         <input id="CancelStateChanging" type="button" value="Отменить" /></td>
+        <div id="changeStateAlertMessage" style="margin-top: 5px; display: none" class="alert alert-danger"></div>
     </div>
 </div>
 <div id="changeAuditStateWindow">

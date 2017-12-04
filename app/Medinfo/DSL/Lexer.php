@@ -21,16 +21,13 @@ abstract class Lexer {
         $this->tokenstack = new \SplDoublyLinkedList;
     }
 
-    /** Move one character; detect "end of file" */
     public function consume() {
         $this->p++;
-        //if ($this->p >= strlen($this->input)) {
         if ($this->p >= mb_strlen($this->input)) {
             $this->c = Lexer::EOF;
         }
         else {
             $this->c = mb_substr($this->input, $this->p, 1);
-            //$this->c = substr($this->input, $this->p, 1);
         }
     }
 

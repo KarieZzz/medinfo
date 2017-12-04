@@ -31,7 +31,7 @@ class DocumentDashboardController extends Controller
         $last_scope = WorkerSetting::where('worker_id', $worker->id)->where('name','ou')->first(['value']);
         $filter_mode = WorkerSetting::where('worker_id', $worker->id)->where('name','filter_mode')->first(['value']);
         $permission = $worker->permission;
-          $disabled_states = config('medinfo.disabled_states.' . $worker->role);
+        $disabled_states = config('medinfo.disabled_states.' . $worker->role);
         if (!is_null($worker_scope)) {
             $mo_tree = UnitTree::getSimpleTree();
         }

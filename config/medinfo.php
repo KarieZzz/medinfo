@@ -54,9 +54,9 @@ return [
     'disabled_states' => [
         '0' => "",
         '1' => "'performed', 'accepted', 'declined', 'approved'",
-        '2' => "'performed', 'prepared', 'accepted', 'declined', 'approved'",
-        '3' => "'performed', 'prepared', 'approved'",
-        '4' => "'performed', 'prepared'",
+        '2' => "'performed', 'inadvance', 'prepared', 'accepted', 'declined', 'approved'",
+        '3' => "'performed', 'inadvance', 'prepared', 'approved'",
+        '4' => "'performed', 'inadvance', 'prepared'",
     ],
     'control_disabled' => false,
     'miac_emails' => 'nuv@miac-io.ru,zhsa@miac-io.ru,eaa@miac-io.ru,tat@miac-io.ru',

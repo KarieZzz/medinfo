@@ -76,6 +76,7 @@ class DocumentStateController extends Controller
                         $data['comment'] = "Недостаточно прав для изменения статуса документа на \"Выполняется\"";
                     }
                     break;
+                case 3 :
                 case 4 :
                     if($p & config('medinfo.permission.permission_set_status_prepared')) {
                         $document->save();

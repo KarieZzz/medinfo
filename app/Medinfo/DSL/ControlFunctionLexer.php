@@ -363,7 +363,7 @@ class ControlFunctionLexer extends Lexer
     public function isFORMCODE()
     {
         return
-            $this->c != 'Т' && (
+            $this->c !== 'Т' && (
                 ($this->c >= '0' && $this->c <= '9') ||
                 ($this->c >= 'а' && $this->c <= 'я') ||
                 $this->c == '.' ||
