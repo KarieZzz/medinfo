@@ -133,7 +133,7 @@
 <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/documentdashboard.js?v=071') }}"></script>
+<script src="{{ asset('/medinfo/documentdashboard.js?v=076') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -144,6 +144,7 @@
         let audit_permission = {{ $audit_permission ? 'true' : 'false' }};
         let periods = {!! $periods !!};
         let states = {!! $states !!};
+        console.log(states);
         let checkedmf = [{!! $mf->value or '' !!}]; // Выбранные в последнем сеансе мониторинги и формы
         let lasstscope = {!! $last_scope->value or $worker_scope !!};
         let checkedmonitorings = [{!! $mon_ids->value or '' !!}];

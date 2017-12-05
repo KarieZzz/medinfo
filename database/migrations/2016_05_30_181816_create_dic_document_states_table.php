@@ -13,7 +13,7 @@ class CreateDicDocumentStatesTable extends Migration
     public function up()
     {
         Schema::create('dic_document_states', function (Blueprint $table) {
-            $table->string('code', 16)->primary();
+            $table->smallInteger('code')->primary();
             $table->string('name', 64);
             $table->string('comment', 128)->nullable();
             $table->timestamps();

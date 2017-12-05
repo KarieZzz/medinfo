@@ -440,13 +440,23 @@ renderdoctoolbar = function (toolbar) {
                 this_document_state = state;
             }
         });
+        //console.log(current_user_role === '1' && this_document_state === 'inadvance');
         //console.log(this_document_state === 'performed');
         $('#changeStateFormCode').html(data.form_code);
         $('#changeStateMOCode').html(data.unit_code);
         if (current_user_role === '1' && this_document_state !== 'performed' && this_document_state !== 'inadvance' && this_document_state !== 'declined') {
+            $('#inadvance').jqxRadioButton('disable');
             $('#prepared').jqxRadioButton('disable');
-        } else if (current_user_role === '1' && (this_document_state === 'performed' || this_document_state === 'declined')) {
+        } else if (current_user_role === '1' && this_document_state === 'performed') {
+            $('#inadvance').jqxRadioButton('enable');
             $('#prepared').jqxRadioButton('enable');
+        } else if (current_user_role === '1' && this_document_state === 'declined') {
+            $('#inadvance').jqxRadioButton('disable');
+            $('#prepared').jqxRadioButton('enable');
+        } else if (current_user_role === '1' && this_document_state === 'inadvance') {
+            $('#inadvance').jqxRadioButton('disable');
+            $('#prepared').jqxRadioButton('enable');
+            $('#performed').jqxRadioButton('enable');
         }
         if ((current_user_role === '3' || current_user_role === '4') && this_document_state === 'performed') {
             console.log(this_document_state);
@@ -853,7 +863,7 @@ initPeriodTree = function () {
     periodTree.jqxTreeGrid(
         {
             width: 345,
-            height: 600,
+            height: 500,
             theme: theme,
             source: periodsDataAdapter,
             selectionMode: "singleRow",
@@ -906,7 +916,7 @@ initStatusList = function() {
         displayMember: 'name',
         valueMember: 'code',
         checkboxes: true,
-        width: 230,
+        width: 290,
         height: 200
     });
     for(let i = 0; i < checkedstates.length; i++) {

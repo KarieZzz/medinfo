@@ -27,7 +27,6 @@ class DocumentStateController extends Controller
         );
         $data = [];
         $checker = new DataCheckController();
-
         $remark = $request->message;
         $new_state = Document::$state_aliases_keys[$request->state];
         $document = Document::find($request->document);

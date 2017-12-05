@@ -47,7 +47,7 @@ class DocumentDashboardController extends Controller
         $mf = WorkerSetting::where('worker_id', $worker->id)->where('name','mf')->first(['value']);
         //dd($form_ids);
         //$form_ids = $forms->pluck('value');
-        $states = DicDocumentState::all(['code', 'name']);
+        $states = DicDocumentState::orderBy('code')->get();
         $state_ids = WorkerSetting::where('worker_id', $worker->id)->where('name','states')->first(['value']);
         $periods = Period::orderBy('begin_date', 'desc')->get(['id', 'name']);
         // Периоды отображаемые по умолчанию (поставил последний и предпоследний по датам убывания)
