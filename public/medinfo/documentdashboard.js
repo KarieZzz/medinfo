@@ -422,7 +422,7 @@ renderdoctoolbar = function (toolbar) {
         let offset = dgrid.offset();
         stateWindow.jqxWindow({ position: { x: parseInt(offset.left) + 100, y: parseInt(offset.top) + 100 } });
         let data = dgrid.jqxGrid('getrowdata', rowindex);
-        if (!data.filled) {
+        if (!data.filled && current_user_role === '1') {
             raiseError('Внимание! Документ не содержит данные. Необходимо, В ОБЯЗАТЕЛЬНОМ ПОРЯДКЕ, пояснить в сообщении по какой причине!');
             $("#statusChangeMessage").val('Документ не заполнен по причине: ');
         } else {
@@ -1140,7 +1140,7 @@ initpopupwindows = function() {
         cancelButton: $("#CancelStateChanging"),
         theme: theme
     });
-    stateWindow.on('close', function (event) { $('#changeStateAlertMessage').hide(); });
+    stateWindow.on('close', function (event) { $('#changeStateAlertMessage').html('').hide(); });
     $("#performed").jqxRadioButton({ width: 450, height: 25, theme: theme });
     $("#inadvance").jqxRadioButton({ width: 450, height: 25, theme: theme });
     $("#prepared").jqxRadioButton({ width: 450, height: 25, theme: theme });
@@ -1152,13 +1152,20 @@ initpopupwindows = function() {
     $("#SaveState").jqxButton({ theme: theme });
     $(".stateradio").on('checked', function (event) {
         let alert_message = '';
-        if ($(this).attr('id') === 'prepared') {
-            alert_message = '<strong>Внимание!</strong> Смена статуса документа допускается только в то случае если ВСЕ правки документа выполнены! <br />';
-            alert_message += 'Если Вы не уверены, что закончили редактирование - отмените действие!';
-            $('#changeStateAlertMessage').html(alert_message).show();
-        } else {
-            $('#changeStateAlertMessage').html('').hide();
+        if (current_user_role === '1') {
+            if ($(this).attr('id') === 'prepared') {
+                alert_message = '<div class="alert alert-danger"><strong>Внимание!</strong> Выбор статуса документа "Подготовлен к проверке" допускается только в то случае если ВСЕ правки документа выполнены! <br />';
+                alert_message += 'Если Вы не уверены, что закончили редактирование - отмените действие!</div>';
+                $('#changeStateAlertMessage').html(alert_message).show();
+            } else if ($(this).attr('id') === 'inadvance') {
+                alert_message = '<div class="alert alert-info"><strong>Внимание!</strong> Данный статус предназначен для проверки некоторых данных в сроки до ОФИЦИАЛЬНОЙ сдачи отчетной формы! <br />';
+                alert_message += 'Документ при этом доступен для дальнейшего редактирования';
+                $('#changeStateAlertMessage').html(alert_message).show();
+            } else {
+                $('#changeStateAlertMessage').html('').hide();
+            }
         }
+
     });
     $("#SaveState").click(function () {
         let rowindex = dgrid.jqxGrid('getselectedrowindex');
@@ -1180,6 +1187,13 @@ initpopupwindows = function() {
             dataType: 'json',
             url: changestate_url,
             method: "POST",
+            beforeSend: function (xhr) {
+                if (selected_state === 'prepared') {
+                    $("#changeStateAlertMessage").html('<div class="alert alert-warning"><h5>Выполнение проверки документа перед сменой статуса <img src="/jqwidgets/styles/images/loader-small.gif" /></h5></div>')
+                    $("#SaveState").jqxButton({disabled: true });
+                    $("#CancelStateChanging").jqxButton({disabled: true });
+                }
+            },
             data: data,
             success: function (data, status, xhr) {
                 if (data.status_changed == 1) {
@@ -1191,12 +1205,20 @@ initpopupwindows = function() {
                 else if(data.status_changed == 0) {
                     raiseError("Статус не изменен! " + data.comment);
                 }
+                $("#changeStateAlertMessage").html('')
+                $("#SaveState").jqxButton({disabled: false });
+                $("#CancelStateChanging").jqxButton({disabled: false });
+                stateWindow.jqxWindow('hide');
             },
             error: function (xhr, status, errorThrown) {
                 raiseError('Ошибка сохранения данных на сервере', xhr);
+                $("#changeStateAlertMessage").html('')
+                $("#SaveState").jqxButton({disabled: false });
+                $("#CancelStateChanging").jqxButton({disabled: false });
+                stateWindow.jqxWindow('hide');
             }
         });
-        stateWindow.jqxWindow('hide');
+
     });
     $("#changeAuditStateWindow").jqxWindow({
         width: 430,

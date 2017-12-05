@@ -10,7 +10,7 @@
         <textarea id="statusChangeMessage" style="margin: 10px"></textarea>
         <input style="margin-right: 5px;" type="button" id="SaveState" value="Сохранить" />
         <input id="CancelStateChanging" type="button" value="Отменить" /></td>
-        <div id="changeStateAlertMessage" style="margin-top: 5px; display: none" class="alert alert-danger"></div>
+        <div id="changeStateAlertMessage" style="margin-top: 5px; display: none"></div>
     </div>
 </div>
 <div id="changeAuditStateWindow">

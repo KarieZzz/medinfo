@@ -144,7 +144,6 @@
         let audit_permission = {{ $audit_permission ? 'true' : 'false' }};
         let periods = {!! $periods !!};
         let states = {!! $states !!};
-        console.log(states);
         let checkedmf = [{!! $mf->value or '' !!}]; // Выбранные в последнем сеансе мониторинги и формы
         let lasstscope = {!! $last_scope->value or $worker_scope !!};
         let checkedmonitorings = [{!! $mon_ids->value or '' !!}];
