@@ -59,7 +59,7 @@ class LexerParserController extends Controller
         //$i = "сравнение(С1Г3, С2Г3, =)";
         //$i= "сравнение(С214Г3-С214Г5-С214Г7, Т1105С1Г6, =, группы(!музот))";
         //$i= "сравнение(Г4, Т3000СГ4, <=)";
-        $i= "сравнение(С1.0, Т3000С2.0+С3.0+С4.0+С5.0+С6.0+С7.0+С8.0+С9.0+С10.0+С11.0+С12.0+С13.0+С14.0+С15.0+С16.0+С18.0+С19.0+С20.0, =)";
+        //$i= "сравнение(С1.0, Т3000С2.0+С3.0+С4.0+С5.0+С6.0+С7.0+С8.0+С9.0+С10.0+С11.0+С12.0+С13.0+С14.0+С15.0+С16.0+С18.0+С19.0+С20.0, =)";
 
         //$i = "зависимость(Г4, Г16, группы(оп), строки(*))";
         //$i = 'зависимость(Г3, сумма(Г4:Г8))';
@@ -76,7 +76,12 @@ class LexerParserController extends Controller
         //$i = "кратность(диапазон(С1Г3:С221Г8), 0.25 )";
         //$i = "кратность(диапазон(С01Г3:С02Г6),  .25)";
 
+        // функции рассчета
+        $i = "счетмо(список(u47_100_09, u47_100_10))";
+
         //$i = '(a2 - a1)/a2 * 100 > a3';
+
+
 
         //$cellcount = preg_match_all('/Ф([а-я0-9.-]+)Т([\w.-]+)С([\w.-]+)Г(\d{1,})/u', $i, $matches, PREG_SET_ORDER);
         //$res = preg_match('|(?:\()(.*?),(.*?)\)|usei', $i, $matches);
@@ -85,13 +90,14 @@ class LexerParserController extends Controller
 
          $lexer = new ControlFunctionLexer($i);
          $tockenstack = $lexer->getTokenStack();
+        //dd($tockenstack);
         //dd($lexer->normalizeInput());
         //dd($lexer);
 
          $parser = new ControlFunctionParser($tockenstack);
          $parser->func();
         //dd($parser);
-        //dd($parser->root);
+        dd($parser->root);
         //dd(json_decode(json_encode($parser->root)));
         //dd($parser->celladressStack);
         //dd($parser->cellrangeStack);

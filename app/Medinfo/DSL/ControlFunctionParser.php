@@ -260,6 +260,7 @@ class ControlFunctionParser extends Parser {
                 $this->num_range_args($node);
                 break;
             case FunctionDispatcher::GROUPS :
+            case FunctionDispatcher::UNITLIST :
                 $this->group_range_args($node);
                 break;
             default :
@@ -327,6 +328,11 @@ class ControlFunctionParser extends Parser {
                 }
                 break;
         }
+    }
+
+    public function bool()
+    {
+        return null;
     }
 
     public function cargs()

@@ -177,6 +177,7 @@ class ControlFunctionLexer extends Lexer
                 case $this->c >= '1' && $this->c <= '9':
                     return $this->number();
                 case $this->c >= 'а' && $this->c <= 'я' :
+                case $this->c >= 'a' && $this->c <= 'z' :
                     return $this->name();
                 case 'Ф':
                 case 'Т':
@@ -347,7 +348,7 @@ class ControlFunctionLexer extends Lexer
 
     public function isFUNCNAME()
     {
-        return $this->c >= 'а' && $this->c <= 'я';
+        return ($this->c >= 'а' && $this->c <= 'я') || ($this->c >= 'a' && $this->c <= 'z') || ($this->c >= '0' && $this->c <= '9') || $this->c === '_';
     }
 
     public function isNUMBER()

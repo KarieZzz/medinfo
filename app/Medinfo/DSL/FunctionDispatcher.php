@@ -19,6 +19,8 @@ class FunctionDispatcher
     const GROUPS        = 12;
     const ROWS          = 13;
     const COLUMNS       = 14;
+    const UNITCOUNT     = 15;
+    const UNITLIST      = 16;
 
     const DSL = 'App\\Medinfo\\DSL\\';
 
@@ -38,6 +40,8 @@ class FunctionDispatcher
         "группы"        => self::GROUPS,
         "строки"        => self::ROWS,
         "графы"         => self::COLUMNS,
+        "счетмо"        => self::UNITCOUNT,
+        "список"        => self::UNITLIST,
     ];
 
     public static $functionIndexes = [
@@ -56,6 +60,8 @@ class FunctionDispatcher
         "группы",
         "строки",
         "графы",
+        "счетмо",
+        "список",
     ];
 
     public static $translators = [
@@ -65,6 +71,7 @@ class FunctionDispatcher
         "InterannualTranslator",
         "IAdiapazonTranslator",
         "MultiplicityTranslator",
+        "UnitCountTranslator",
     ];
 
     public static $evaluators = [
@@ -74,6 +81,7 @@ class FunctionDispatcher
         "InterannualEvaluator",
         "IAdiapazonEvaluator",
         "MultiplicityEvaluator",
+        "UnitCountEvaluator",
     ];
 
 /*    public static $interpreterNames = [
@@ -91,6 +99,7 @@ class FunctionDispatcher
         'межгодовой'    => ['expression|required|thisyear', 'expression|required|prevyear','factor|required'],
         'мгдиапазон'    => ['subfunction|required|diapazon|iterator', 'factor|required'],
         'кратность'     => ['subfunction|required|diapazon|iterator', 'factor|required'],
+        'счетмо'        => ['subfunction|required|unitlist', 'bool'],
     ];
 
     public static $algorithms = [

@@ -32,6 +32,8 @@ class ArgProperties
     const ITERATOR      = 12;
     const THISYEAR      = 13;
     const PREVYEAR      = 14;
+    const UNITLIST      = 15;
+    const BOOL          = 16; // true or false
 
     public static $propNames = [
         "n/a",
@@ -49,6 +51,8 @@ class ArgProperties
         "iterator",
         "thisyear",
         "prevyear",
+        "unitlist",
+        "bool",
     ];
 
     public function __construct($input) {
@@ -119,6 +123,12 @@ class ArgProperties
                     break;
                 case 'prevyear' :
                     $this->propstack[] = self::PREVYEAR;
+                    break;
+                case 'unitlist' :
+                    $this->propstack[] = self::UNITLIST;
+                    break;
+                case 'bool' :
+                    $this->propstack[] = self::BOOL;
                     break;
                 default :
                     throw new \Exception("Неизвестное ствойство аргумента: " . $prop);
