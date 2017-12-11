@@ -254,6 +254,8 @@ class ControlPtreeTranslator
         $this->validateVector();
         $this->parseRCRanges();
         $this->parseGroupScopes();
+        //dd($this->vector);
+        $lightweightCAStack = [];
 
         foreach ($this->parser->celladressStack as $caLabel => $caProps) {
             $lightweightCAStack[$caLabel]['arg'] = $caProps['arg'];

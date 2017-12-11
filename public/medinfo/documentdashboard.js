@@ -1170,6 +1170,7 @@ initpopupwindows = function() {
     $("#SaveState").click(function () {
         let rowindex = dgrid.jqxGrid('getselectedrowindex');
         let rowdata = dgrid.jqxGrid('getrowdata', rowindex);
+        let oldstate = rowdata.state;
         let row_id = dgrid.jqxGrid('getrowid', rowindex);
         let message = $("#statusChangeMessage").val();
         let radiostates = $('.stateradio');
@@ -1182,7 +1183,7 @@ initpopupwindows = function() {
         if (statelabels[selected_state] === current_document_state ) {
             return false;
         }
-        let data = "&document=" + row_id + "&state=" + selected_state + "&message=" + message;
+        let data = "&document=" + row_id + "&state=" + selected_state + "&oldstate=" + oldstate + "&message=" + message;
         $.ajax({
             dataType: 'json',
             url: changestate_url,

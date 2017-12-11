@@ -97,7 +97,8 @@ class LexerParserController extends Controller
          $parser = new ControlFunctionParser($tockenstack);
          $parser->func();
         //dd($parser);
-        dd($parser->root);
+        //dd($parser->root);
+        //dd($parser->function_index);
         //dd(json_decode(json_encode($parser->root)));
         //dd($parser->celladressStack);
         //dd($parser->cellrangeStack);
@@ -108,24 +109,27 @@ class LexerParserController extends Controller
         //$table = Table::find(50);     // Ф30 Т5117
         //$table = Table::find(252);    // Ф30 Т5301
         //$table = Table::find(112);    // Ф12 Т2000
-        $table = Table::find(441);      // Ф12 Т4000
+        //$table = Table::find(441);      // Ф12 Т4000
         //$table = Table::find(115);    // Ф32 Т2120
         //$table = Table::find(151);    // Ф41 Т2100
+        $table = Table::find(2);    // Ф47 Т0100
 
         //$document = Document::find(13134); // 12 ф ГКБ№8 за 2016 год
-        $document = Document::find(12269); // 12 ф Все организации 2016 год
+        //$document = Document::find(12269); // 12 ф Все организации 2016 год
         //$document = Document::find(13753); // 41 ф ДР1 за 2016 год
         //$document = Document::find(12657); // 30 ф РБ Слюдянка за 2016 год
         //$document = Document::find(12268); // 30 ф Свод за 2016 год
+        $document = Document::find(16218); // 47 ф за 2017 год
 
          $translator = Translator::invoke($parser, $table);
+        //dd($translator);
          //$translator = new ControlPtreeTranslator($parser, $table);
         //$translator->setParentNodesFromRoot();
         //$translator->parseCellAdresses();
         //$translator->parseCellRanges();
         //$translator->validateVector();
          $translator->prepareIteration();
-        //dd($translator);
+        dd($translator);
         //dd($translator->getProperties());
         //dd($translator->parser->root);
         //echo (json_encode($translator->parser->root, JSON_PARTIAL_OUTPUT_ON_ERROR));

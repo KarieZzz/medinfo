@@ -71,7 +71,7 @@ class FunctionDispatcher
         "InterannualTranslator",
         "IAdiapazonTranslator",
         "MultiplicityTranslator",
-        "UnitCountTranslator",
+        15 => "UnitCountTranslator",
     ];
 
     public static $evaluators = [
@@ -81,16 +81,8 @@ class FunctionDispatcher
         "InterannualEvaluator",
         "IAdiapazonEvaluator",
         "MultiplicityEvaluator",
-        "UnitCountEvaluator",
+        15 => "UnitCountEvaluator",
     ];
-
-/*    public static $interpreterNames = [
-        null,
-        "CompareEvaluator",
-        "DependencyEvaluator",
-        "InterannualEvaluator",
-        "MultiplicityEvaluator",
-    ];*/
 
     public static $functionArgs = [
         null,

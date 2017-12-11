@@ -364,71 +364,10 @@ class ControlFunctionParser extends Parser {
                 $this->match(ControlFunctionLexer::COMMA);
 
             }
-
             //dump($arg_node);
             $i++;
 
         } while ($arguments->next());
-/*        for ($this->currentArgIndex = 0; $this->currentArgIndex < count($this->arguments); $this->currentArgIndex++) {
-            $properties =  new ArgProperties($this->arguments[$this->currentArgIndex]);
-            $properties->makeStack();
-            $arg_type = $properties->argType;
-            $exp_node = $this->$arg_type();
-            //dump($exp_node);
-            $arg_node = new ControlFunctionParseTree(ControlFunctionLexer::ARG, 'arg_' . $this->currentArgIndex);
-            if (!is_null($exp_node)) {
-                $arg_node->addChild($exp_node);
-            } elseif ($properties->argRequired) {
-                throw  new \Exception("Аргумент {$i} <$arg_type> является обязательным для функции <{$this->function_name}>");
-            }
-            $this->root->addChild($arg_node);
-            if ($this->lookahead->type === ControlFunctionLexer::RPARENTH) {
-                break;
-            }
-            $this->match(ControlFunctionLexer::COMMA);
-
-        }*/
-        //dd($this->root);
-        //dd($this->root);
-/*        foreach ($this->arguments as $argument) {
-
-            $function_name = $props[0];
-
-            if ($this->lookahead->type == ControlFunctionLexer::COMMA) {
-                $missing_arg = true;
-            } else {
-                $missing_arg = false;
-            }
-            if (($missing_arg || $no_more_args) && $required) {
-                throw new \Exception("Аргумент {$this->currentArgIndex} обязателен для функции {$this->function_name}");
-            } elseif (($missing_arg || $no_more_args)) {
-                break;
-            }
-            $exp_node = $this->$function_name();
-
-            if (is_null($exp_node && $required)) {
-                throw new \Exception("Аргумент {$this->currentArgIndex} обязателен для функции {$this->function_name}");
-            }
-            if (!is_null($exp_node)) {
-                $arg_node = new ControlFunctionParseTree(ControlFunctionLexer::ARG, 'arg_' . $this->currentArgIndex);
-                $arg_node->addChild($exp_node);
-                $this->root->addChild($arg_node);
-                $this->currentArgIndex++;
-            }
-
-            if ($this->lookahead->type == ControlFunctionLexer::COMMA) {
-                $this->match(ControlFunctionLexer::COMMA);
-            } elseif ($this->lookahead->type == ControlFunctionLexer::RPARENTH) {
-                $no_more_args = true;
-            } else {
-                throw new \Exception("Ожидалось завершение функции <)> Получено " . ControlFunctionLexer::$tokenNames[$this->lookahead->type]);
-            }
-
-            if ($this->currentArgIndex === 4) {
-                dd($missing_arg);
-            }
-        }*/
-        //$this->carg();
         $this->match(ControlFunctionLexer::RPARENTH);
 
     }
@@ -463,7 +402,8 @@ class ControlFunctionParser extends Parser {
         if ($this->lookahead->type == ControlFunctionLexer::NAME) {
             if (array_key_exists($this->lookahead->text, FunctionDispatcher::$functionNames)) {
                 $this->function_name = $this->lookahead->text;
-                $this->function_index = FunctionDispatcher::$functionNames[$this->lookahead->text];
+                //$this->function_index = FunctionDispatcher::$functionNames[$this->lookahead->text];
+                $this->function_index = FunctionDispatcher::functionIndex($this->lookahead->text);
             } else {
                 throw new \Exception("Функция <$this->function_name> не существует");
             }
