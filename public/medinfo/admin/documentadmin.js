@@ -9,6 +9,7 @@ let erasedocuments_url = '/admin/erasedocuments';
 let changestate_url = '/admin/documentstatechange';
 let group_tree_url = '/admin/fetchugroups';
 let protectaggregate_url = '/admin/protectaggregates';
+let calculate_url = '/admin/consolidate/';
 let current_top_level_node = 0;
 let filter_mode = 1; // 1 - по территориям; 2 - по группам
 let grouptree = $("#groupTree");
@@ -754,6 +755,30 @@ initdocumentactions = function() {
             success: function (data, status, xhr) {
                 if (data.statdata_erased == 1) {
                     raiseInfo(data.comment);
+                }
+                dlist.jqxGrid('clearselection');
+                dlist.jqxGrid('updatebounddata');
+            },
+            error: function (xhr, status, errorThrown) {
+                let error_text = "Ошибка сохранения данных на сервере. " + xhr.status + ' (' + xhr.statusText + ') - ' + status + ". Обратитесь к администратору.";
+                raiseError(error_text);
+            }
+        });
+    });
+    $("#Сalculate").jqxButton ({ theme: theme});
+    $("#Сalculate").click(function () {
+        let row_ids = noselected_error("Не выбрано ни одного документа для расчета (консолидации)");
+        if (row_ids.length > 1) {
+            raiseError("Необходимо выбрать только один документ для выполнения консолидации");
+            return false;
+        }
+        $.ajax({
+            dataType: 'json',
+            url: calculate_url + row_ids[0],
+            method: "GET",
+            success: function (data, status, xhr) {
+                if (data.consolidated === true) {
+                    raiseInfo("Консолидация данных выполнена. Заполнено ячеек " + data.cell_affected + ".");
                 }
                 dlist.jqxGrid('clearselection');
                 dlist.jqxGrid('updatebounddata');

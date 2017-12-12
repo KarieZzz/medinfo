@@ -11,7 +11,7 @@ namespace App\Medinfo\DSL;
 use App\Document;
 use App\Cell;
 
-class ControlFunctionEvaluator
+class CalculationFunctionEvaluator
 {
     public $document;
     public $pTree;
@@ -19,8 +19,6 @@ class ControlFunctionEvaluator
     public $iterations;
     public $caStack = [];
     public $arguments;
-    public $not_in_scope = false;
-    public $valid;
 
     public function __construct(ParseTree $ptree, $properties, Document $document)
     {
@@ -29,27 +27,6 @@ class ControlFunctionEvaluator
         $this->document = $document;
         $this->setIterations();
         $this->setArguments();
-    }
-
-    public function validateDocumentScope()
-    {
-        $exclude_by_type = false;
-        $exclude_by_ou_id = false;
-        if ($this->properties['scope_documents']) {
-            if ($this->document->dtype === $this->properties['documents'][0]) {
-                $exclude_by_type = false;
-            } else {
-                $exclude_by_type = true;
-            }
-        }
-        if ($this->properties['scope_units']) {
-            if (in_array($this->document->ou_id, $this->properties['units'])) {
-                $exclude_by_ou_id = false;
-            } else {
-                $exclude_by_type = true;
-            }
-        }
-        return $exclude_by_type xor $exclude_by_ou_id;
     }
 
     public function setIterations()
@@ -61,10 +38,7 @@ class ControlFunctionEvaluator
 
     public function evaluate()
     {
-        $result['l'] = null;
-        $result['r'] = null;
-        $result['d'] = null;
-        $result['v'] = null;
+        $result[] = null;
         return $result;
     }
 
@@ -77,26 +51,6 @@ class ControlFunctionEvaluator
     }
 
     public function prepareCellValues()
-    {
-        if ($this->properties['type'] === 1 ) {
-            $this->setInformCellValues();
-        } else {
-            $this->setCellValuesArbitrary();
-        }
-    }
-
-    public function setInformCellValues()
-    {
-        foreach ($this->iterations as &$cell_adresses) {
-            foreach ($cell_adresses as &$cell_adress) {
-                $cell = Cell::OfDRC($this->document->id, $cell_adress['ids']['r'], $cell_adress['ids']['c'])->first(['value']);
-                !$cell ? $value = 0 : $value = (float)$cell->value;
-                $cell_adress['value'] = $value;
-            }
-        }
-    }
-
-    public function setCellValuesArbitrary()
     {
         $dtype = $this->document->dtype;
         $ou_id = $this->document->ou_id;
@@ -133,35 +87,6 @@ class ControlFunctionEvaluator
                 $this->getCAnode($child, $arg);
             }
         }
-    }
-
-    public function makeControl()
-    {
-        $this->not_in_scope = $this->validateDocumentScope();
-        if ($this->not_in_scope) {
-            $result[0]['valid'] = true;
-            $this->valid = true;
-            return $result;
-        }
-        $this->prepareCellValues();
-        $this->prepareCAstack();
-        $result = [];
-        $valid = true;
-        $i = 0;
-        foreach ($this->iterations as $code => $iteration) {
-            $cells = $this->convertCANodes($iteration);
-            $result[$i]['cells'] = $cells;
-            $result[$i]['code'] = $code !== 0 ? $code : null;
-            $r = $this->evaluate();
-            $result[$i]['left_part_value'] = $r['l'];
-            $result[$i]['right_part_value'] = $r['r'];
-            $result[$i]['deviation'] = $r['d'];
-            $result[$i]['valid'] = $r['v'];
-            $valid = $valid &&  $result[$i]['valid'];
-            $i++;
-        }
-        $this->valid = $valid;
-        return $result;
     }
 
     public function convertCANodes(Array &$iteration)
@@ -216,11 +141,6 @@ class ControlFunctionEvaluator
                 $result = false;
         }
         return $result;
-    }
-
-    public function multiplicity($number, $divider)
-    {
-        return fmod($number, $divider) == 0 ? true : false;
     }
 
     public function evaluateSubtree(ParseTree $node)

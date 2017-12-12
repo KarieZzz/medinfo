@@ -1205,7 +1205,6 @@ let initdatagrid = function() {
     });
 };
 // Панель инструментов для редактируемой таблицы
-
 let inittoolbarbuttons = function () {
     tdropdown.jqxDropDownButton({width: 120, height:20, theme: theme});
     tdropdown.jqxDropDownButton('setContent', '<div style="margin-top: 3px">Таблицы</div>');

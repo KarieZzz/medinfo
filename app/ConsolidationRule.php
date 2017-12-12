@@ -16,4 +16,14 @@ class ConsolidationRule extends Model
             ->where('col_id', $column);
     }
 
+    public function row()
+    {
+        return $this->belongsTo('App\Row');
+    }
+
+    public function column()
+    {
+        return $this->belongsTo('App\Column', 'col_id');
+    }
+
 }

@@ -129,7 +129,7 @@ class LexerParserController extends Controller
         //$translator->parseCellRanges();
         //$translator->validateVector();
          $translator->prepareIteration();
-        dd($translator);
+        //dd($translator);
         //dd($translator->getProperties());
         //dd($translator->parser->root);
         //echo (json_encode($translator->parser->root, JSON_PARTIAL_OUTPUT_ON_ERROR));
@@ -166,7 +166,9 @@ class LexerParserController extends Controller
         //dd($evaluator->caStack);
         //dd($evaluator->iterations);
 
-        return $evaluator->makeControl();
+        //return $evaluator->makeControl();
+        return $evaluator->evaluate();
+
         //$evaluator->makeControl();
         //dd($evaluator);
         //return ($evaluator->iterations);
