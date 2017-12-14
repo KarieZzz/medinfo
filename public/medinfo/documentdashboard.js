@@ -460,7 +460,7 @@ renderdoctoolbar = function (toolbar) {
             $('#inadvance').jqxRadioButton('enable');
             $('#prepared').jqxRadioButton('enable');
         } else if (current_user_role === '1' && this_document_state === 'declined') {
-            $('#inadvance').jqxRadioButton('disable');
+            $('#inadvance').jqxRadioButton('enable');
             $('#prepared').jqxRadioButton('enable');
         } else if (current_user_role === '1' && this_document_state === 'inadvance') {
             //console.log("Переход с предварительной проверки");
