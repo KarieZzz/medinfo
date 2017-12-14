@@ -45,6 +45,16 @@ let statelabels =
         declined: 'Возвращен на доработку',
         approved: 'Утвержден'
     };
+let stateIds =
+    {
+        'Выполняется' : 'performed',
+        'Подготовлен к предварительной проверке' : 'inadvance',
+        'Подготовлен к проверке' : 'prepared',
+        'Принят' : 'accepted',
+        'Возвращен на доработку' : 'declined',
+        'Утвержден' : 'approved'
+    };
+
 let audit_state_ids =
     {
         noaudit: 1,
@@ -414,7 +424,7 @@ renderdoctoolbar = function (toolbar) {
     });
     changestatus.click(function () {
         let rowindex = dgrid.jqxGrid('getselectedrowindex');
-        let alert_message;
+        //let alert_message;
         let this_document_state = '';
         if (rowindex === -1 && typeof rowindex !== 'undefined') {
             return false;
@@ -428,7 +438,6 @@ renderdoctoolbar = function (toolbar) {
         } else {
             $("#statusChangeMessage").val('');
         }
-
         let radiostates = $('.stateradio');
         radiostates.each(function() {
             let state = $(this).attr('id');
@@ -441,7 +450,7 @@ renderdoctoolbar = function (toolbar) {
             }
         });
         //console.log(current_user_role === '1' && this_document_state === 'inadvance');
-        //console.log(this_document_state === 'performed');
+        //console.log(data.state);
         $('#changeStateFormCode').html(data.form_code);
         $('#changeStateMOCode').html(data.unit_code);
         if (current_user_role === '1' && this_document_state !== 'performed' && this_document_state !== 'inadvance' && this_document_state !== 'declined') {
@@ -454,12 +463,12 @@ renderdoctoolbar = function (toolbar) {
             $('#inadvance').jqxRadioButton('disable');
             $('#prepared').jqxRadioButton('enable');
         } else if (current_user_role === '1' && this_document_state === 'inadvance') {
+            //console.log("Переход с предварительной проверки");
             $('#inadvance').jqxRadioButton('disable');
             $('#prepared').jqxRadioButton('enable');
             $('#performed').jqxRadioButton('enable');
         }
         if ((current_user_role === '3' || current_user_role === '4') && this_document_state === 'performed') {
-            console.log(this_document_state);
             $('#declined').jqxRadioButton('disable');
         } else if ((current_user_role === 3 || current_user_role === 4) && this_document_state !== 'performed') {
             $('#declined').jqxRadioButton('enable');
@@ -1159,7 +1168,7 @@ initpopupwindows = function() {
                 $('#changeStateAlertMessage').html(alert_message).show();
             } else if ($(this).attr('id') === 'inadvance') {
                 alert_message = '<div class="alert alert-info"><strong>Внимание!</strong> Данный статус предназначен для проверки некоторых данных в сроки до ОФИЦИАЛЬНОЙ сдачи отчетной формы! <br />';
-                alert_message += 'Документ при этом доступен для дальнейшего редактирования';
+                alert_message += 'Если имеется необходимость внесения/коррекции данных, измените статус на "Выполняется"';
                 $('#changeStateAlertMessage').html(alert_message).show();
             } else {
                 $('#changeStateAlertMessage').html('').hide();
@@ -1183,7 +1192,7 @@ initpopupwindows = function() {
         if (statelabels[selected_state] === current_document_state ) {
             return false;
         }
-        let data = "&document=" + row_id + "&state=" + selected_state + "&oldstate=" + oldstate + "&message=" + message;
+        let data = "&document=" + row_id + "&state=" + selected_state + "&oldstate=" + stateIds[oldstate] + "&message=" + message;
         $.ajax({
             dataType: 'json',
             url: changestate_url,

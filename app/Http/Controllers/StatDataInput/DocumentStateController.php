@@ -28,7 +28,10 @@ class DocumentStateController extends Controller
         $data = [];
         $checker = new DataCheckController();
         $remark = $request->message;
+
+        $old_state = Document::$state_aliases_keys[$request->oldstate];
         $new_state = Document::$state_aliases_keys[$request->state];
+
         $document = Document::find($request->document);
         if ($new_state == 4) {
             $protocol = $checker->check_document($document);
@@ -48,7 +51,6 @@ class DocumentStateController extends Controller
         $worker = Auth::guard('datainput')->user();
         $miac_emails = explode(",", config('medinfo.miac_emails'));
         $director_emails = explode(",", config('medinfo.director_emails'));
-        $old_state = $document->state;
         $document->state = $new_state;
         $parents = UnitTree::getParents($current_unit->id);
         $parents[] = $current_unit->id;
@@ -70,7 +72,11 @@ class DocumentStateController extends Controller
                     if($p & config('medinfo.permission.permission_set_status_accepted_declined')) {
                         $document->save();
                         $data['status_changed'] = 1;
-                    } else {
+                    } elseif ($old_state === 3) {
+                        $document->save();
+                        $data['status_changed'] = 1;
+                    }
+                    else {
                         $data['status_changed'] = 0;
                         $data['comment'] = "Недостаточно прав для изменения статуса документа на \"Выполняется\"";
                     }

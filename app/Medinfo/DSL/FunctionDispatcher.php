@@ -21,6 +21,7 @@ class FunctionDispatcher
     const COLUMNS       = 14;
     const UNITCOUNT     = 15;
     const UNITLIST      = 16;
+    const CALCULATION   = 17;
 
     const DSL = 'App\\Medinfo\\DSL\\';
 
@@ -42,6 +43,7 @@ class FunctionDispatcher
         "графы"         => self::COLUMNS,
         "счетмо"        => self::UNITCOUNT,
         "список"        => self::UNITLIST,
+        "расчет"        => self::CALCULATION,
     ];
 
     public static $functionIndexes = [
@@ -62,6 +64,7 @@ class FunctionDispatcher
         "графы",
         "счетмо",
         "список",
+        "расчет",
     ];
 
     public static $translators = [
@@ -72,6 +75,7 @@ class FunctionDispatcher
         "IAdiapazonTranslator",
         "MultiplicityTranslator",
         15 => "UnitCountTranslator",
+        17 => "CalculationTranslator",
     ];
 
     public static $evaluators = [
@@ -82,6 +86,7 @@ class FunctionDispatcher
         "IAdiapazonEvaluator",
         "MultiplicityEvaluator",
         15 => "UnitCountEvaluator",
+        17 => "CalculationEvaluator",
     ];
 
     public static $functionArgs = [
@@ -92,6 +97,7 @@ class FunctionDispatcher
         'мгдиапазон'    => ['subfunction|required|diapazon|iterator', 'factor|required'],
         'кратность'     => ['subfunction|required|diapazon|iterator', 'factor|required'],
         'счетмо'        => ['subfunction|required|unitlist', 'bool'],
+        'расчет'        => ['expression|required', 'subfunction|unitlist'],
     ];
 
     public static $algorithms = [
