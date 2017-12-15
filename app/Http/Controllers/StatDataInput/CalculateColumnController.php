@@ -78,11 +78,13 @@ class CalculateColumnController extends Controller
                         $color = 'black';
                 }*/
                 try {
+                    $cell = Cell::firstOrCreate(['doc_id' => $document->id, 'table_id' => $table->id, 'row_id' => $el[0]->r, 'col_id' => $c->id, ]);
                     if ($calculated !== 0) {
-                        $cell = Cell::firstOrCreate(['doc_id' => $document->id, 'table_id' => $table->id, 'row_id' => $el[0]->r, 'col_id' => $c->id, ]);
                         $cell->value = $calculated;
-                        $cell->save();
+                    } else {
+                        $cell->value = null;
                     }
+                    $cell->save();
                 } catch (\Exception $e) {
                     $result['errors'][] = 'Ошибка записи данных в графу' . $c->column_index . ' по строке ' . Row::find($el[0]->r)->row_code;
                 }

@@ -26,6 +26,11 @@ class AggregatesDashboardController extends DashboardController
     {
         $aggregate = Aggregate::find($document->id);
         $protected = is_null($aggregate) ? 0 : $aggregate->protected;
+        $calc = Column::Calculated()->pluck('id')->toArray();
+        $calc[] = 0;
+        $calculatedColumns = implode(',', $calc);
+        //dd($calculatedColumns);
+        //echo implode(',', $calculatedColumns);
         if ($protected) {
             $result['aggregate_status'] = 500;
             $result['error_message'] =  'Данный документ защищен от повторного сведения';
@@ -53,6 +58,7 @@ class AggregatesDashboardController extends DashboardController
             return $result;
         }
         $now = Carbon::now();
+
         $query = "INSERT INTO statdata
             (doc_id, table_id, row_id, col_id, value, created_at, updated_at )
           SELECT '{$document->id}', v.table_id, v.row_id, v.col_id, SUM(value), '$now', '$now'  FROM statdata v
@@ -60,7 +66,7 @@ class AggregatesDashboardController extends DashboardController
             JOIN tables t on (v.table_id = t.id)
             JOIN forms f on d.form_id = f.id
             JOIN mo_hierarchy h on d.ou_id = h.id
-          WHERE d.id in ({$strigified_documents}) AND h.blocked <> 1 GROUP BY v.table_id, v.row_id, v.col_id";
+          WHERE d.id in ({$strigified_documents}) AND h.blocked <> 1 AND v.col_id NOT IN ($calculatedColumns) GROUP BY v.table_id, v.row_id, v.col_id";
         $affected_cells = \DB::select($query);
         $aggregate = Aggregate::firstOrCreate(['doc_id' => $document->id]);
         $aggregate->include_docs = $strigified_documents;
