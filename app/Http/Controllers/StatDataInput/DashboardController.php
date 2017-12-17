@@ -45,7 +45,11 @@ class DashboardController extends Controller
         if (!$current_unit) {
             $current_unit = UnitGroup::find($document->ou_id);
         }
-        $editpermission = $this->isEditPermission($worker->permission, $document->state);
+        if ($worker->role === 0 ) {
+            $editpermission = true;
+        } else {
+            $editpermission = $this->isEditPermission($worker->permission, $document->state);
+        }
         $editpermission ? $editmode = 'Редактирование' : $editmode = 'Только чтение';
         $period = Period::find($document->period_id);
         $editedtables = Table::editedTables($document->id, $album->id);
@@ -94,7 +98,6 @@ class DashboardController extends Controller
                 $edit_permission = true;
                 break;
             default:
-
                 $edit_permission = false;
         }
         return $edit_permission;
