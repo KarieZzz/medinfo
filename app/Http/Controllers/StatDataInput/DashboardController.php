@@ -198,7 +198,11 @@ class DashboardController extends Controller
     {
         $worker = Auth::guard('datainput')->user();
         $document = Document::find($document);
-        $editpermission = $this->isEditPermission($worker->permission, $document->state);
+        if ($worker->role === 0 ) {
+            $editpermission = true;
+        } else {
+            $editpermission = $this->isEditPermission($worker->permission, $document->state);
+        }
         if ($editpermission) {
             $ou = $document->ou_id;
             $f = $document->form_id;
