@@ -102,4 +102,15 @@ class ControlHelper
         $res = \DB::selectOne($q);
         return $res->sum_of_values > 0 ? true : false;
     }
+
+    public static function formContainsData(int $document)
+    {
+        if (!$document) {
+            throw new \Exception("Не указан идентификатор документа для проверки наличия данных");
+        }
+        $q = "SELECT SUM(value) sum_of_values FROM statdata WHERE doc_id = $document";
+        $res = \DB::selectOne($q);
+        return $res->sum_of_values > 0 ? true : false;
+    }
+
 }

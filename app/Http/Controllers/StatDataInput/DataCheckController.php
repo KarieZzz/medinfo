@@ -14,6 +14,7 @@ use App\CFunction;
 use App\Medinfo\Control\DataCheck;
 use App\Medinfo\DocumentTree;
 use App\Medinfo\Lexer\FunctionDispatcher;
+use App\Medinfo\Control\ControlHelper;
 
 class DataCheckController extends Controller
 {
@@ -45,7 +46,7 @@ class DataCheckController extends Controller
         $form_protocol = [];
         $form_protocol['valid'] = true;
         $form_protocol['no_alerts'] = true;
-        $form_protocol['no_data'] = true;
+        ControlHelper::formContainsData($document->id) ? $form_protocol['no_data'] = false : $form_protocol['no_data'] = true;
         if ($forcereload) {
             $form_protocol['forcereloaded'] = true;
         }
@@ -62,7 +63,7 @@ class DataCheckController extends Controller
                 $form_protocol[$offset] = $control;
                 $form_protocol['valid'] = $form_protocol['valid'] && $control['valid'];
                 $form_protocol['no_alerts'] = $form_protocol['no_alerts'] && $control['no_alerts'];
-                $form_protocol['no_data'] = false;
+                //$form_protocol['no_data'] = false;
             }
         }
         return $form_protocol;
