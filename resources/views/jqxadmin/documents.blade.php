@@ -84,6 +84,12 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label class="control-label col-sm-3" for="selectAlbum">Альбом форм</label>
+                    <div class="col-sm-6">
+                        <div id="selectAlbum"></div>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label class="control-label col-sm-3" for="selectForm">Формы</label>
                     <div class="col-sm-6">
                         <div id="selectForm"></div>
@@ -148,6 +154,7 @@
     <script type="text/javascript">
         let checkeddtypes = {!! $dtype_ids !!};
         let monitorings = {!! $monitorings  !!};
+        let albums = {!! $albums  !!};
         let forms = {!! $forms  !!};
         let states = {!! $states !!};
         let periods = {!! $periods !!};

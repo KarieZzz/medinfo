@@ -32,6 +32,7 @@ class DocumentAdminController extends Controller
     public function index()
     {
         $monitorings = \App\Monitoring::orderBy('name')->get();
+        $albums = \App\Album::orderBy('album_name')->get();
         $forms = Form::orderBy('form_index')->get(['id', 'form_code']);
         $states = DicDocumentState::all(['code', 'name']);
         $dtypes = DicDocumentType::all(['code', 'name']);
@@ -42,7 +43,7 @@ class DocumentAdminController extends Controller
         $dtype_ids = $dtypes->pluck('code');
         //dd($periods);
         //return $periods;
-        return view('jqxadmin.documents', compact('monitorings', 'forms', 'form_ids', 'states', 'state_ids', 'periods', 'period_ids', 'dtypes', 'dtype_ids'));
+        return view('jqxadmin.documents', compact('monitorings', 'albums', 'forms', 'form_ids', 'states', 'state_ids', 'periods', 'period_ids', 'dtypes', 'dtype_ids'));
     }
 
     public function fetch_mo_hierarchy(int $parent = 0)
@@ -84,6 +85,7 @@ class DocumentAdminController extends Controller
         $allowaggregate = false;
         $units = explode(",", $request->units);
         $monitoring = Monitoring::find($request->monitoring);
+        $album = $request->album;
         $forms = explode(",", $request->forms);
         $create_primary = $request->primary;
         $create_aggregate = $request->aggregate;
@@ -102,7 +104,7 @@ class DocumentAdminController extends Controller
                 $unit = UnitGroup::find($unit_id);
             }
             foreach ($forms as $form_id) {
-                $newdoc = ['ou_id' => $unit->id, 'monitoring_id' => $monitoring->id, 'album_id' => $monitoring->album_id, 'form_id' => $form_id ,
+                $newdoc = ['ou_id' => $unit->id, 'monitoring_id' => $monitoring->id, 'album_id' => $album, 'form_id' => $form_id ,
                     'period_id' => $period_id, 'state' => $initial_state ];
 
                 if ($create_primary && $allowprimary) {

@@ -102,6 +102,16 @@ initfilterdatasources = function() {
         id: 'id',
         localdata: monitorings
     };
+    let albums_source =
+        {
+            datatype: "json",
+            datafields: [
+                { name: 'id' },
+                { name: 'album_name' }
+            ],
+            id: 'id',
+            localdata: albums
+        };
     let forms_source =
         {
             datatype: "json",
@@ -143,6 +153,7 @@ initfilterdatasources = function() {
         localdata: dtypes
     };
     monitoringssDataAdapter = new $.jqx.dataAdapter(monitorings_source);
+    albumsDataAdapter = new $.jqx.dataAdapter(albums_source);
     formsDataAdapter = new $.jqx.dataAdapter(forms_source);
     statesDataAdapter = new $.jqx.dataAdapter(states_source);
     changestateDA =  new $.jqx.dataAdapter(states_source);
@@ -274,6 +285,17 @@ initnewdocumentwindow = function () {
         width: 350,
         height: 25
     });
+
+    $("#selectAlbum").jqxDropDownList({
+        theme: theme,
+        source: albumsDataAdapter,
+        displayMember: "album_name",
+        valueMember: "id",
+        placeHolder: "Выберите альбом форм:",
+        width: 350,
+        height: 25
+    });
+
     $("#selectForm").jqxDropDownList({
         theme: theme,
         checkboxes: true,
@@ -310,6 +332,7 @@ initnewdocumentwindow = function () {
         let aggregate;
         let selectedunits = getcheckedunits();
         let selectedmonitoring = $("#selectMonitoring").jqxDropDownList('getSelectedItem').value;
+        let selectedalbum = $("#selectAlbum").jqxDropDownList('getSelectedItem').value;
         let selectedforms = [];
         let checked = $("#selectForm").jqxDropDownList('getCheckedItems');
         for (let i = 0; i < checked.length; i++) {
@@ -328,8 +351,8 @@ initnewdocumentwindow = function () {
             raiseError("Не выбрано ни одного типа создаваемых документов (первичные, сводные");
             return false;
         }
-        data = "&filter_mode=" + filter_mode + "&units=" + selectedunits + "&monitoring=" + selectedmonitoring + "&forms=" + selectedforms + "&period=" + selectedperiod;
-        data += "&state=" + selectedstate + "&primary=" + primary + "&aggregate=" + aggregate;
+        data = "&filter_mode=" + filter_mode + "&units=" + selectedunits + "&monitoring=" + selectedmonitoring + "&album=" + selectedalbum;
+        data += "&forms=" + selectedforms + "&period=" + selectedperiod + "&state=" + selectedstate + "&primary=" + primary + "&aggregate=" + aggregate;
         $.ajax({
             dataType: 'json',
             url: createdocuments_url,
