@@ -9,7 +9,7 @@ use App\Http\Controllers\Controller;
 use Symfony\Component\DomCrawler\Crawler;
 use App\Column;
 use App\Document;
-use App\Unit;
+use App\UnitsView;
 use App\Form;
 use App\Row;
 use App\Table;
@@ -34,7 +34,7 @@ class WordExportController extends Controller
     public function formExport(Document $document)
     {
         $this->document = $document;
-        $this->unit = Unit::find($document->ou_id);
+        $this->unit = UnitsView::find($document->ou_id);
         $this->form = Form::find($document->form_id);
         $this->period = Period::find($document->period_id);
         $this->openTemplate();
@@ -93,7 +93,7 @@ class WordExportController extends Controller
                     case 'z0002_000_00' :
                     case 'Z0002_000_00' :
                         $this->unit_node = $node;
-                        $this->writeValue($this->unit_node, $this->unit->unit_name);
+                        $this->writeValue($this->unit_node, $this->unit->name);
                         break;
                     case $node_name[0] === 'z' :
                     case $node_name[0] === 'Z' :
