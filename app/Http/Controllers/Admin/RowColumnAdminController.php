@@ -251,7 +251,7 @@ class RowColumnAdminController extends Controller
             $count_ms = 0;
             $errors[$table->id] = [];
             //if (!$table->medstat_code) break;
-            $rows = Row::OfTable($table->id)->whereDoesntHave('excluded', function ($query) use($default_album) {
+            $rows = Row::OfTable($table->id)->whereNotNull('medstat_code')->whereDoesntHave('excluded', function ($query) use($default_album) {
                 $query->where('album_id', $default_album->id);
             })->orderBy('row_index')->get();
             $i = 0;
