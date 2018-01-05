@@ -44,7 +44,8 @@ class WordExportController extends Controller
     }
 
     public function openTemplate() {
-        $template_path = storage_path('app/templates/word/' . $this->form->form_code .'.docx');
+        $template_path = storage_path('app/templates/word/' . rtrim($this->form->short_ms_code) .'.docx');
+        //dd($template_path);
         if (!is_file($template_path)) {
             throw new \Exception('Файл шаблона отчета не существует');
         }

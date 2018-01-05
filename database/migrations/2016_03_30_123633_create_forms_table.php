@@ -21,6 +21,7 @@ class CreateFormsTable extends Migration
             $table->integer('form_index')->index();
             $table->string('file_name', 16)->nullable();
             $table->char('medstat_code', 5)->nullable()->unique();
+            $table->char('short_ms_code', 5)->nullable()->unique();
             $table->integer('medinfo_id')->nullable()->unique();
             $table->timestamps();
         });
