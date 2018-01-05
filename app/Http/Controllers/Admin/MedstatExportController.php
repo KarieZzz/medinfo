@@ -37,7 +37,7 @@ class MedstatExportController extends Controller
         });
         //dd($tables);
 
-        $a1_code = '16'; // код отчетного года
+        $a1_code = '17'; // код отчетного года
         $a2_code = '1125'; // код Иркутской области
         $a4_code = $form->medstat_code . '00'; // код формы
         $offset = 4; // сдвиг до индекса массива, где начинаются данные ячеек
