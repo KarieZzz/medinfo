@@ -2,7 +2,7 @@
     <div>Изменение статуса документа (код формы: <span id="changeStateFormCode"></span>, код МО: <span id="changeStateMOCode"></span>)</div>
     <div style="overflow: hidden;">
         <div style='margin-top: 10px;' class="stateradio" id='performed'>Выполняется</div>
-        <div style='margin-top: 10px;' class="stateradio" id='inadvance'>Подготовлен к предварительной проверке</div>
+        {{--<div style='margin-top: 10px;' class="stateradio" id='inadvance'>Подготовлен к предварительной проверке</div>--}}
         <div style='margin-top: 10px;' class="stateradio" id='prepared'>Подготовлен к проверке</div>
         <div style='margin-top: 10px;' class="stateradio" id='accepted'>Принят</div>
         <div style='margin-top: 10px;' class="stateradio" id='declined'>Возвращен на доработку</div>

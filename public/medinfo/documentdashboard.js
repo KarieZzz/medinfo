@@ -454,17 +454,17 @@ renderdoctoolbar = function (toolbar) {
         $('#changeStateFormCode').html(data.form_code);
         $('#changeStateMOCode').html(data.unit_code);
         if (current_user_role === '1' && this_document_state !== 'performed' && this_document_state !== 'inadvance' && this_document_state !== 'declined') {
-            $('#inadvance').jqxRadioButton('disable');
+            //$('#inadvance').jqxRadioButton('disable');
             $('#prepared').jqxRadioButton('disable');
         } else if (current_user_role === '1' && this_document_state === 'performed') {
-            $('#inadvance').jqxRadioButton('enable');
+            //$('#inadvance').jqxRadioButton('enable');
             $('#prepared').jqxRadioButton('enable');
         } else if (current_user_role === '1' && this_document_state === 'declined') {
-            $('#inadvance').jqxRadioButton('enable');
+            //$('#inadvance').jqxRadioButton('enable');
             $('#prepared').jqxRadioButton('enable');
         } else if (current_user_role === '1' && this_document_state === 'inadvance') {
             //console.log("Переход с предварительной проверки");
-            $('#inadvance').jqxRadioButton('disable');
+            //$('#inadvance').jqxRadioButton('disable');
             $('#prepared').jqxRadioButton('enable');
             $('#performed').jqxRadioButton('enable');
         }
@@ -1151,7 +1151,7 @@ initpopupwindows = function() {
     });
     stateWindow.on('close', function (event) { $('#changeStateAlertMessage').html('').hide(); });
     $("#performed").jqxRadioButton({ width: 450, height: 25, theme: theme });
-    $("#inadvance").jqxRadioButton({ width: 450, height: 25, theme: theme });
+    //$("#inadvance").jqxRadioButton({ width: 450, height: 25, theme: theme });
     $("#prepared").jqxRadioButton({ width: 450, height: 25, theme: theme });
     $("#accepted").jqxRadioButton({ width: 450, height: 25, theme: theme });
     $("#declined").jqxRadioButton({ width: 450, height: 25, theme: theme });
