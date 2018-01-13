@@ -13,7 +13,7 @@ class Column extends Model
     const COMMENT       = 5;
 
     protected $fillable = [
-        'table_id', 'column_index', 'column_name', 'content_type', 'size', 'decimal_count', 'medstat_code', 'medinfo_id',
+        'table_id', 'column_index', 'column_code', 'column_name', 'content_type', 'size', 'decimal_count', 'medstat_code', 'medinfo_id',
     ];
 
     public function excluded()
@@ -75,6 +75,20 @@ class Column extends Model
         return $query
             ->where('table_id', $table)
             ->where('column_index', $columnindex);
+    }
+
+    public function scopeOfTableColumnCode($query, $table, $code)
+    {
+        return $query
+            ->where('table_id', $table)
+            ->where('column_code', $code);
+    }
+
+    public function scopeOfTableMedstatCode($query, $table, $mscode)
+    {
+        return $query
+            ->where('table_id', $table)
+            ->where('medstat_code', $mscode);
     }
 
     public function scopeCalculated($query)

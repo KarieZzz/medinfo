@@ -107,39 +107,28 @@ class WordExportController extends Controller
                         try {
                             $table = Table::OfFormTableCode($this->document->form_id, $table_code)->first();
                             if (!$table->transposed ) {
-                                try {
-                                    $row = Row::OfTableRowMedstatcode($table->id, $row_medstatcode)->first();
-                                    $column = Column::OfTableColumnIndex($table->id, $column_index)->first();
-                                    if ($cell = Cell::OfDTRC($this->document->id, $table->id, $row->id, $column->id)->first()) {
-                                        $value = number_format($cell->value, $column->decimal_count, ',', '');
-                                        $this->writeValue($node, $value, $table_code, $row_medstatcode, $column_index);
-                                    } else {
-                                        $value = 'null';
-                                    }
-                                    //echo "Закладка на ячейку $node_name, указанная в шаблоне MS Word обработана. Записано значение $value  <br />";
-                                } catch (\Exception $e) {
-                                    //echo "<p style='color:red '> Закладка на ячейку $node_name, указанная в шаблоне MS Word не верна</p>";
+                                $row = Row::OfTableRowMedstatcode($table->id, $row_medstatcode)->first();
+                                $column = Column::OfTableMedstatCode($table->id, $cell_arguments[2])->first();
+                                if ($cell = Cell::OfDTRC($this->document->id, $table->id, $row->id, $column->id)->first()) {
+                                    $value = number_format($cell->value, $column->decimal_count, ',', '');
+                                    //$this->writeValue($node, $value, $table_code, $row_medstatcode, $column_index);
+                                    $this->writeValue($node, $value, $table_code, $row_medstatcode, $cell_arguments[2]);
+                                } else {
+                                    $value = 'null';
                                 }
                             }
-                            try {
-                                if ($table->transposed == 1) {
-                                    $row = Row::OfTableRowMedstatcode($table->id, str_pad($column_index, '3', '0', STR_PAD_LEFT ))->first();
-                                    $column = Column::OfTableColumnIndex($table->id, 3)->first();
-                                    if ($cell = Cell::OfDTRC($this->document->id, $table->id, $row->id, $column->id)->first()) {
-                                        $value = number_format($cell->value, $column->decimal_count, ',', '');
-                                        $this->writeValue($node, $value, $table_code, $row_medstatcode, $column_index);
-                                    } else {
-                                        $value = 'null';
-                                    }
-                                    //echo "Закладка на ячейку $node_name, указанная в шаблоне MS Word обработана. Записано значение $value  <br />";
+                            if ($table->transposed == 1) {
+                                $row = Row::OfTableRowMedstatcode($table->id, str_pad($column_index, '3', '0', STR_PAD_LEFT ))->first();
+                                $column = Column::OfTableColumnIndex($table->id, 3)->first();
+                                if ($cell = Cell::OfDTRC($this->document->id, $table->id, $row->id, $column->id)->first()) {
+                                    $value = number_format($cell->value, $column->decimal_count, ',', '');
+                                    $this->writeValue($node, $value, $table_code, $row_medstatcode, $column_index);
+                                } else {
+                                    $value = 'null';
                                 }
-                            } catch (\Exception $e) {
-                                //echo "<p style='color:red '> Таблица транспонирована. Закладка на ячейку $node_name, указанная в шаблоне MS Word не верна</p>";
                             }
-
                         } catch (\Exception $e) {
                             //echo "<p style='color:red '> Закладка на таблицу $node_name, указанная в шаблоне MS Word не верна</p>";
-
                         }
                         break;
                 }

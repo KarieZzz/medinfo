@@ -16,6 +16,7 @@ class CreateColumnsTable extends Migration
             $table->increments('id');
             $table->integer('table_id')->index();
             $table->integer('column_index')->index();
+            $table->string('column_code', 8)->index();
             $table->string('column_name', 128)->index();
             $table->smallInteger('content_type')->default(4)->index();
             $table->smallInteger('size')->default(10);
