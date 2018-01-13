@@ -81,6 +81,12 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label class="control-label col-md-3" for="column_code">Код:</label>
+                        <div class="col-md-2">
+                            <input type="text" class="form-control input-sm" id="column_code">
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label class="control-label col-md-3" for="column_type">Тип поля:</label>
                         <div class="col-md-3">
                             <div id="column_type"></div>
@@ -107,7 +113,7 @@
                             <input type="text" class="form-control input-sm" id="column_medstat_code">
                         </div>
                     </div>
-                    <div class="form-group">
+{{--                    <div class="form-group">
                         <label class="control-label col-md-3" for="column_medinfo_id">Мединфо Id:</label>
                         <div class="col-md-2">
                             <input type="text" class="form-control input-sm" id="column_medinfo_id">
@@ -118,7 +124,7 @@
                             <button type="button" id="down" class="btn btn-sm btn-default">Вниз</button>
                             <button type="button" id="bottom" class="btn btn-sm btn-default">В конец</button>
                         </div>
-                    </div>
+                    </div>--}}
                     <div class="form-group">
                         <label class="control-label col-md-3" for="excludedColumn">
                             Исключена из текущего альбома <a href="albums" target="_blank" class="text-primary album-name" title="Изменить текущий альбом">("{{ $album->album_name }}")</a>:
@@ -189,7 +195,7 @@
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
     <script src="{{ asset('/medinfo/admin/tablepicker.js?v=007') }}"></script>
-    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=027') }}"></script>
+    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=028') }}"></script>
 @endpush
 
 @section('inlinejs')

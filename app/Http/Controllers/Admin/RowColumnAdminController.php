@@ -149,6 +149,7 @@ class RowColumnAdminController extends Controller
         $this->validate($request, [
                 'column_index' => 'digits_between:1,99',
                 'column_name' => 'required|max:128',
+                'column_code' => 'required|max:8',
                 'content_type' => 'integer',
                 'size' => 'integer',
                 'decimal_count' => 'integer',
@@ -159,6 +160,7 @@ class RowColumnAdminController extends Controller
         );
         $column->column_index = $request->column_index;
         $column->column_name = $request->column_name;
+        $column->column_code = $request->column_code;
         $column->content_type = $request->content_type;
         $column->size = $request->size;
         $column->decimal_count = $request->decimal_count;
@@ -189,11 +191,12 @@ class RowColumnAdminController extends Controller
                 'table_id' => 'required|exists:tables,id',
                 'column_index' => 'digits_between:1,99',
                 'column_name' => 'required|max:128',
+                'column_code' => 'required|max:8',
                 'content_type' => 'integer',
                 'size' => 'integer',
                 'decimal_count' => 'integer',
                 'medstat_code' => 'digits:2',
-                'medinfo_id' => 'integer',
+                //'medinfo_id' => 'integer',
                 'excluded' => 'required|in:1,0',
             ]
         );
@@ -201,6 +204,7 @@ class RowColumnAdminController extends Controller
         $newcolumn->table_id = $request->table_id;
         $newcolumn->column_index = $request->column_index;
         $newcolumn->column_name = $request->column_name;
+        $newcolumn->column_code = $request->column_code;
         $newcolumn->content_type = $request->content_type;
         $newcolumn->size = $request->size;
         $newcolumn->decimal_count = $request->decimal_count;

@@ -54,6 +54,7 @@ initdatasources = function() {
             { name: 'excluded', map: 'excluded>0>album_id', type: 'bool' },
             { name: 'column_index', type: 'int' },
             { name: 'column_name', type: 'string' },
+            { name: 'column_code', type: 'string' },
             { name: 'content_type', type: 'int' },
             { name: 'size', type: 'int' },
             { name: 'decimal_count', type: 'int' },
@@ -122,6 +123,7 @@ initColumnList = function() {
                 { text: 'Исключена из альбома', datafield: 'excluded', columntype: 'checkbox', width: '90px'  },
                 //{ text: 'Код таблицы', datafield: 'table_code', width: '70px'  },
                 { text: 'Имя', datafield: 'column_name' , width: '300px'},
+                { text: 'Код', datafield: 'column_code' , width: '50px'},
                 { text: 'Тип', datafield: 'content_type', width: '50px' },
                 { text: 'Размер', datafield: 'size', width: '70px' },
                 { text: 'Десятичные', datafield: 'decimal_count', width: '90px' },
@@ -133,11 +135,12 @@ initColumnList = function() {
         let row = event.args.row;
         $("#column_index").val(row.column_index);
         $("#column_name").val(row.column_name);
+        $("#column_code").val(row.column_code);
         $("#column_type").val(row.content_type);
         $("#size").val(row.size);
         $("#decimal_count").val(row.decimal_count);
         $("#column_medstat_code").val(row.medstat_code);
-        $("#column_medinfo_id").val(row.medinfo_id);
+        //$("#column_medinfo_id").val(row.medinfo_id);
         $("#excludedColumn").val(row.excluded);
     });
 };
@@ -176,11 +179,12 @@ setcolumnquery = function() {
     return "&table_id=" + current_table +
         "&column_index=" + $("#column_index").val() +
         "&column_name=" + $("#column_name").val() +
+        "&column_code=" + $("#column_code").val() +
         "&content_type=" + $("#column_type").val() +
         "&size=" + $("#size").val() +
         "&decimal_count=" + $("#decimal_count").val() +
         "&medstat_code=" + $("#column_medstat_code").val() +
-        "&medinfo_id=" + $("#column_medinfo_id").val() +
+        //"&medinfo_id=" + $("#column_medinfo_id").val() +
         "&excluded=" + ($("#excludedColumn").val() ? 1 : 0);
 };
 
