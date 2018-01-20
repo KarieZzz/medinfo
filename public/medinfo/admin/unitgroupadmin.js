@@ -218,6 +218,8 @@ initmemberactions = function() {
                     raiseInfo("Добавлено учреждений в группу " + data.count_of_inserted);
                     memberlist.jqxGrid('clearselection');
                     memberlist.jqxGrid('updatebounddata');
+                    units.jqxGrid('clearselection');
+                    units.jqxGrid('updatebounddata');
                 }
                 else {
                     raiseError("Учреждения не добавлены");
