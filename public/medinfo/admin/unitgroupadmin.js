@@ -37,10 +37,11 @@ initdatasources = function() {
         datafields: [
             { name: 'id', type: 'int' },
             { name: 'group_id', type: 'int' },
+            { name: 'ucode', map: 'unit>unit_code', type: 'string' },
             { name: 'uname', map: 'unit>unit_name', type: 'string' },
             { name: 'ou_id', type: 'int' }
         ],
-        id: 'id',
+        id: 'ou_id',
         url: member_url + currentgroup,
         root: 'member'
     };
@@ -48,7 +49,7 @@ initdatasources = function() {
     memberDataAdapter = new $.jqx.dataAdapter(membersource);
 };
 inittablelist = function() {
-    $("#unitGroupList").jqxGrid(
+    grouplist.jqxGrid(
         {
             width: '98%',
             height: '30%',
@@ -67,20 +68,22 @@ inittablelist = function() {
                 { text: 'Псевдоним', datafield: 'slug' , width: '200px'}
             ]
         });
-    $('#unitGroupList').on('rowselect', function (event) {
-        $("#parent_id").jqxDropDownList('clearFilter');
-        var row = event.args.row;
+    grouplist.on('rowselect', function (event) {
+        parentid.jqxDropDownList('clearFilter');
+        let row = event.args.row;
         currentgroup = row.id;
         //console.log(row.id);
         membersource.url = member_url + currentgroup;
-        $("#memberList").jqxGrid('updatebounddata');
+        unitsource.url = units_url + currentgroup;
+        memberlist.jqxGrid('updatebounddata');
+        units.jqxGrid('updatebounddata');
         $("#group_code").val(row.group_code);
         $("#group_name").val(row.group_name);
         $("#slug").val(row.slug);
-        $("#parent_id").val(row.parent_id);
+        parentid.val(row.parent_id);
         $("#medinfo_id").val(row.medinfo_id);
     });
-    $("#memberList").jqxGrid(
+    memberlist.jqxGrid(
         {
             width: '98%',
             height: '65%',
@@ -91,6 +94,7 @@ inittablelist = function() {
             showfilterrow: true,
             filterable: true,
             sortable: true,
+            selectionmode: 'multiplerowsextended',
             columns: [
                 {
                 text: '№ п/п', sortable: false, filterable: false, editable: false,
@@ -100,6 +104,8 @@ inittablelist = function() {
                         return "<div style='margin:4px;'>" + (value + 1) + "</div>";
                     }
                 },
+                { text: 'id', datafield: 'ou_id' , width: '50px'},
+                { text: 'код', datafield: 'ucode' , width: '50px'},
                 { text: 'МО', datafield: 'uname' , width: '580px'}
             ]
         });
@@ -168,30 +174,40 @@ initgroupactions = function() {
         });
     });
     $("#delete").click(function () {
-        var row = $('#unitGroupList').jqxGrid('getselectedrowindex');
-        if (row == -1) {
+        let row = grouplist.jqxGrid('getselectedrowindex');
+        if (row === -1) {
             raiseError("Выберите запись для удаления");
             return false;
         }
-        currentgroup = $("#unitGroupList").jqxGrid('getrowid', row);
+        currentgroup = grouplist.jqxGrid('getrowid', row);
         raiseConfirm("<strong>Внимание!</strong> Выбранная группа будет удалена вместе со всеми входящими в состав элементами и созданными документами.", event);
     });
 };
 
-getcheckedunits = function() {
-    var ids = [];
-    var checkedRows = $('#moTree').jqxTreeGrid('getCheckedRows');
-    for (var i = 0; i < checkedRows.length; i++) {
-        // get a row.
-        ids.push(checkedRows[i].uid);
+let getselectednonmembers = function () {
+    let rowindexes = units.jqxGrid('getselectedrowindexes');
+    let indexes_length =  rowindexes.length;
+    let selectedunits = [];
+    for (i = 0; i < indexes_length; i++) {
+        selectedunits.push(units.jqxGrid('getrowid', rowindexes[i]));
     }
-    return ids;
+    return selectedunits;
+};
+
+let getselectedmembers = function () {
+    let rowindexes = memberlist.jqxGrid('getselectedrowindexes');
+    let indexes_length =  rowindexes.length;
+    let selectedunits = [];
+    for (i = 0; i < indexes_length; i++) {
+        selectedunits.push(memberlist.jqxGrid('getrowid', rowindexes[i]));
+    }
+    return selectedunits;
 };
 
 initmemberactions = function() {
     $("#insertmembers").click(function() {
-        var selectedunits = getcheckedunits();
-        var data = "&units=" + selectedunits;
+        let selectedunits = getselectednonmembers();
+        let data = "&units=" + selectedunits;
         $.ajax({
             dataType: 'json',
             url: addmembers_url + currentgroup,
@@ -200,8 +216,8 @@ initmemberactions = function() {
             success: function (data, status, xhr) {
                 if (data.count_of_inserted > 0) {
                     raiseInfo("Добавлено учреждений в группу " + data.count_of_inserted);
-                    $('#memberList').jqxGrid('clearselection');
-                    $('#memberList').jqxGrid('updatebounddata');
+                    memberlist.jqxGrid('clearselection');
+                    memberlist.jqxGrid('updatebounddata');
                 }
                 else {
                     raiseError("Учреждения не добавлены");
@@ -213,21 +229,27 @@ initmemberactions = function() {
         });
     });
     $("#removemember").click(function() {
-        var row = $('#memberList').jqxGrid('getselectedrowindex');
-        if (row == -1) {
-            raiseError("Выберите запись для удаления из списка МО, входящих в текущую группу");
+        let selectedunits = getselectedmembers();
+        if (currentgroup === 0) {
+            raiseError('Не выбран список МО для редактирования');
             return false;
         }
-        var rowid = $("#memberList").jqxGrid('getrowid', row);
+        let removed_units = getselectedmembers();
+        if (removed_units.length === 0) {
+            raiseError('Не выбраны МО для удаления из списка');
+            return false;
+        }
         $.ajax({
             dataType: 'json',
-            url: removemember_url + rowid,
+            url: removemembers_url + currentgroup + '/' + removed_units,
             method: "DELETE",
             success: function (data, status, xhr) {
-                if (data.member_deleted) {
-                    raiseInfo(data.message);
-                    $('#memberList').jqxGrid('clearselection');
-                    $('#memberList').jqxGrid('updatebounddata');
+                if (data.count_of_removed > 0) {
+                    raiseInfo("Удалено учреждений из группы " + data.count_of_removed);
+                    memberlist.jqxGrid('clearselection');
+                    memberlist.jqxGrid('updatebounddata');
+                    units.jqxGrid('clearselection');
+                    units.jqxGrid('updatebounddata');
                 }
                 else {
                     raiseError("Учреждения из группы не удалены");
@@ -240,7 +262,7 @@ initmemberactions = function() {
     });
 }
 
-initmotree = function() {
+/*initmotree = function() {
     var mo_source =
     {
         dataType: "json",
@@ -290,9 +312,56 @@ initmotree = function() {
             $('#moTree').jqxTreeGrid('expandAll');
         }
     );
+};*/
+
+let initUnitsNonmembers = function () {
+    unitsource =
+        {
+            datatype: "json",
+            datafields: [
+                { name: 'id', type: 'int' },
+                { name: 'parent_id', type: 'int' },
+                { name: 'parent', map: 'parent>unit_name', type: 'string' },
+                { name: 'unit_code', type: 'string' },
+                { name: 'territory_type', type: 'int' },
+                { name: 'inn', type: 'string' },
+                { name: 'unit_name', type: 'string' },
+                { name: 'node_type', type: 'int' },
+                { name: 'report', type: 'int' },
+                { name: 'aggregate', type: 'int' },
+                { name: 'blocked', type: 'int' },
+                { name: 'medinfo_id', type: 'int' }
+            ],
+            id: 'id',
+            url: units_url + currentgroup,
+            root: 'unit'
+        };
+    unitDataAdapter = new $.jqx.dataAdapter(unitsource);
+    units.jqxGrid(
+        {
+            width: '100%',
+            height: '100%',
+            theme: theme,
+            localization: localize(),
+            source: unitDataAdapter,
+            columnsresize: true,
+            showfilterrow: true,
+            filterable: true,
+            sortable: true,
+            selectionmode: 'multiplerowsextended',
+            columns: [
+                { text: 'Id', datafield: 'id', width: '30px' },
+                { text: 'Входит в', datafield: 'parent', width: '120px' },
+                { text: 'Код', datafield: 'unit_code', width: '50px'  },
+                { text: 'Имя', datafield: 'unit_name' , width: '420px'},
+                { text: 'Тип', datafield: 'node_type' , width: '40px'},
+                { text: 'Блок', datafield: 'blocked', width: '50px' }
+            ]
+        });
 };
+
 initdropdowns = function() {
-    var groupesource =
+    let groupesource =
     {
         datatype: "json",
         datafields: [
@@ -303,7 +372,7 @@ initdropdowns = function() {
         localdata: groups
     };
     groupeDataAdapter = new $.jqx.dataAdapter(groupesource);
-    $("#parent_id").jqxDropDownList({
+    parentid.jqxDropDownList({
         theme: theme,
         source: groupeDataAdapter,
         filterable: true,
@@ -322,13 +391,13 @@ performAction = function() {
         url: groupdelete_url + currentgroup,
         method: "DELETE",
         success: function (data, status, xhr) {
-            if (typeof data.error != 'undefined') {
+            if (typeof data.error !== 'undefined') {
                 raiseError(data.message);
             } else {
                 raiseInfo(data.message);
                 $("#form")[0].reset();
-                $("#unitGroupList").jqxGrid('updatebounddata', 'data');
-                $("#unitGroupList").jqxGrid('clearselection');
+                grouplist.jqxGrid('updatebounddata', 'data');
+                grouplist.jqxGrid('clearselection');
             }
         },
         error: function (xhr, status, errorThrown) {

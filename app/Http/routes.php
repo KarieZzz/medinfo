@@ -73,12 +73,13 @@ Route::group(['middleware' => ['medinfo']], function () {
     // Менеджер групп организационных единиц
     Route::get('admin/units/groups', 'Admin\UnitGroupAdminController@index');
     Route::get('admin/units/fetchgroups', 'Admin\UnitGroupAdminController@fetchGroups');
+    Route::get('admin/units/fetchgroupnonmembers/{group}', 'Admin\UnitGroupAdminController@fetchNonMembers');
     Route::get('admin/units/fetchmembers/{group}', 'Admin\UnitGroupAdminController@fetchMembers');
     Route::post('admin/units/groupcreate', 'Admin\UnitGroupAdminController@store');
     Route::patch('admin/units/groupupdate/{group}', 'Admin\UnitGroupAdminController@update');
     Route::delete('admin/units/groupdelete/{group}', 'Admin\UnitGroupAdminController@delete');
     Route::post('admin/units/addmembers/{group}', 'Admin\UnitGroupAdminController@addMembers');
-    Route::delete('admin/units/removemember/{member}', 'Admin\UnitGroupAdminController@removeMember');
+    Route::delete('admin/units/removemember/{group}/{members}', 'Admin\UnitGroupAdminController@removeMember');
 
     // Менеджер отчетных периодов
     Route::get('admin/periods', 'Admin\PeriodAdminController@index' );

@@ -91,7 +91,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
     {{--<script src="{{ asset('/medinfo/admin/tablepicker.js?v=008') }}"></script>--}}
-    <script src="{{ asset('/medinfo/admin/unitlistadmin.js?v=004') }}"></script>
+    <script src="{{ asset('/medinfo/admin/unitlistadmin.js?v=005') }}"></script>
 @endpush
 
 @section('inlinejs')

@@ -8,7 +8,7 @@
     <div>
         <div id="unitGroupList" style="margin: 10px"></div>
         <div class="panel panel-default">
-            <div class="panel-heading"><h4>МО, входящие в группу:</h4></div>
+            <div class="panel-heading"><h4>Состав группы</h4></div>
             <div class="panel-body">
                 <div id="memberList"></div>
             </div>
@@ -22,7 +22,7 @@
                     <div class="form-group">
                         <label class="control-label col-sm-3" for="group_name">Наименование группы:</label>
                         <div class="col-sm-8">
-                            <textarea rows="3" class="form-control" id="group_name"></textarea>
+                            <textarea rows="2" class="form-control" id="group_name"></textarea>
                         </div>
                     </div>
                     <div class="form-group">
@@ -45,8 +45,8 @@
                     </div>
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-7">
-                            <button type="button" id="save" class="btn btn-default">Сохранить изменения</button>
-                            <button type="button" id="insert" class="btn btn-default">Вставить новую запись</button>
+                            <button type="button" id="save" class="btn btn-primary">Сохранить изменения</button>
+                            <button type="button" id="insert" class="btn btn-success">Вставить новую запись</button>
                             <button type="button" id="delete" class="btn btn-danger">Удалить запись</button>
                         </div>
                     </div>
@@ -54,22 +54,17 @@
             </div>
         </div>
         <div id="insertMembersForm" class="panel panel-default" style="padding: 3px; width: 100%">
-            <div class="panel-heading"><h4>Добавление учреждений в выбранную группу</h4></div>
+            <div class="panel-heading"><h4>Перечень медицинских организаций, не включенных в список</h4></div>
             <div class="panel-body">
-                <div class="form-group">
-                    <div style="height: 200px" id="moTreeContainer">
-                        <div id="moTree"></div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-7">
-                        <button type="button" id="insertmembers" class="btn btn-default">Добавить учреждения в группу</button>
-                        <button type="button" id="removemember" class="btn btn-danger">Удалить учреждения из группы</button>
-                    </div>
+                <div style="height: 380px" id="moTreeContainer">
+                    <div id="Units"></div>
                 </div>
             </div>
         </div>
-    </div>
+        <div class="col-sm-offset-2 col-sm-7">
+            <button type="button" id="insertmembers" class="btn btn-success">Добавить учреждения в группу</button>
+            <button type="button" id="removemember" class="btn btn-danger">Удалить учреждения из группы</button>
+        </div>
 </div>
 @endsection
 
@@ -93,7 +88,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/unitgroupadmin.js?v=0003') }}"></script>
+    <script src="{{ asset('/medinfo/admin/unitgroupadmin.js?v=009') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -102,6 +97,7 @@
         let currentgroup = 0;
         let groups = {!! $groups !!};
         let membersource;
+        let units_url = '/admin/units/fetchgroupnonmembers/';
         let unitgroup_url ='/admin/units/fetchgroups';
         let motree_url ='/admin/fetch_mo_tree/';
         let member_url ='/admin/units/fetchmembers/';
@@ -109,13 +105,18 @@
         let groupupdate_url = '/admin/units/groupupdate/';
         let groupdelete_url = '/admin/units/groupdelete/';
         let addmembers_url = '/admin/units/addmembers/';
-        let removemember_url = '/admin/units/removemember/';
+        let removemembers_url = '/admin/units/removemember/';
         let unitGroupDataAdapter;
         let memberDataAdapter;
         let mo_dataAdapter;
+        let grouplist =  $('#unitGroupList');
+        let units = $("#Units");
+        let memberlist =  $('#memberList');
+        let parentid = $("#parent_id");
         initsplitter();
         initdatasources();
-        initmotree();
+        //initmotree();
+        initUnitsNonmembers();
         inittablelist();
         initdropdowns();
         initgroupactions();

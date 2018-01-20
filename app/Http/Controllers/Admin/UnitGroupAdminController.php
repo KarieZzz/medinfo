@@ -35,6 +35,12 @@ class UnitGroupAdminController extends Controller
         return UnitGroupMember::where('group_id', $group)->with('unit')->get();
     }
 
+    public function fetchNonMembers(int $group)
+    {
+        $groupmembers = UnitGroupMember::where('group_id', $group)->get()->pluck('ou_id');
+        return \App\Unit::Primary()->whereNotIn('id', $groupmembers)->orderBy('unit_code')->with('parent')->get();
+    }
+
     public function store(Request $request)
     {
         $this->validate($request, [
@@ -128,13 +134,16 @@ class UnitGroupAdminController extends Controller
         return [ 'count_of_inserted' => count($newmembers) ];
     }
 
-    public function removeMember(UnitGroupMember $member)
+    public function removeMember($group, $members)
     {
-        $member_deleted = $member->delete();
-        if ($member_deleted) {
-            $message = "Медицинская организация/Территория удалена из списка";
-        }
-        return compact('member_deleted', 'message');
+        $removed = explode(",", $members);
+        //dd($removed);
+        //$removed_members = UnitGroupMember::OfGroup($group)->get();
+        //dd($removed_members);
+        $removed_members = UnitGroupMember::OfGroup($group)->whereIn('ou_id', $removed)->delete();
+        return [ 'count_of_removed' => $removed_members ];
+
+
     }
 
 }

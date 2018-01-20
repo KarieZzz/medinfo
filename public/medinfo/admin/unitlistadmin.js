@@ -79,12 +79,8 @@ let initListMembers = function () {
             datatype: "json",
             datafields: [
                 { name: 'id', type: 'int' },
-                //{ name: 'list_id', type: 'int' },
-                //{ name: 'uname', map: 'unit>unit_name', type: 'string' },
                 { name: 'unit_name', type: 'string' },
-                //{ name: 'ucode', map: 'unit>unit_code', type: 'string' },
                 { name: 'unit_code', type: 'string' }
-                //{ name: 'ou_id', type: 'int' }
             ],
             id: 'id',
             url: member_url + currentlist
@@ -112,9 +108,7 @@ let initListMembers = function () {
                     }
                 },
                 { text: 'id', datafield: 'id' , width: '50px'},
-                //{ text: 'код', datafield: 'ucode' , width: '50px'},
                 { text: 'код', datafield: 'unit_code' , width: '50px'},
-                //{ text: 'МО', datafield: 'uname' , width: '580px'}
                 { text: 'МО', datafield: 'unit_name' , width: '580px'}
             ]
         });
@@ -409,20 +403,6 @@ let initActions = function() {
     });
 };
 
-
-updateRelated = function() {
-    updateRowList();
-    updateColumnList();
-    $("#rowSelected").html('');
-    $("#columnSelected").html('');
-};
-// Обновление списка строк при выборе таблицы
-updateRowList = function() {
-    rowsource.url = rowfetch_url + current_table;
-    rlist.jqxGrid('clearselection');
-    rlist.jqxGrid('updatebounddata');
-};
-
 setquery = function() {
     return "?period=" + current_period +
         "&form=" + current_form +
@@ -435,54 +415,3 @@ setquery = function() {
         "&output=" + output +
         "&mode=" + groupmode;
 };
-
-initButtons = function() {
-    modebutton.jqxSwitchButton({
-        height: 31,
-        width: 250,
-        onLabel: 'Строке',
-        offLabel: 'Графе',
-        checked: true });
-    modebutton.on( 'unchecked', function (event) {
-        $("#rowListContainer").jqxDropDownButton({ disabled: false });
-        $("#columnListContainer").jqxDropDownButton({ disabled: true });
-        groupmode = 1;
-        rlist.jqxGrid('clearselection');
-        clist.jqxGrid('clearselection');
-        rlist.jqxGrid('selectionmode', 'singlerow');
-        clist.jqxGrid('selectionmode', 'multiplerows');
-        $("#modeSelected").html('<div class="text-bold text-info" style="margin-left: -100px">Текущий режим группировки "по строке"</div>');
-        $("#rowSelected").html('');
-        $("#columnSelected").html('');
-    });
-    modebutton.on( 'checked', function (event) {
-        $("#rowListContainer").jqxDropDownButton({ disabled: true });
-        $("#columnListContainer").jqxDropDownButton({ disabled: false });
-        groupmode = 2;
-        rlist.jqxGrid('clearselection');
-        clist.jqxGrid('clearselection');
-        rlist.jqxGrid('selectionmode', 'multiplerows');
-        clist.jqxGrid('selectionmode', 'singlerow');
-        $("#modeSelected").html('<div class="text-bold text-info" style="margin-left: -100px">Текущий режим группировки "по графе"</div>');
-        $("#rowSelected").html('');
-        $("#columnSelected").html('');
-    });
-    $("#html").on('click', function() {
-        output = 1;
-    });
-    $("#excel").on('click', function() {
-        output = 2;
-    });
-    $("#primary").on('click', function() {
-        aggregate = 1;
-    });
-    $("#legacy").on('click', function() {
-        aggregate = 2;
-    });
-    $("#territory").on('click', function() {
-        aggregate = 3;
-    });
-};
-
-
-
