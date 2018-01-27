@@ -346,7 +346,7 @@ class RowColumnAdminController extends Controller
         // обрабатываем таблицы из Мединфо не исключенные из текущего альбома и имеющие код Медстат;
         $tables = Table::OfForm($form->id)->where('transposed', 0)->whereNotNull('medstat_code')->whereDoesntHave('excluded', function ($query) use($default_album) {
             $query->where('album_id', $default_album->id);
-        })->get();
+        })->orderBy('table_index')->get();
         foreach ($tables as $table) {
             $count_ms = 0;
             $errors[$table->id] = [];
@@ -354,7 +354,7 @@ class RowColumnAdminController extends Controller
 
             $columns = Column::OfTable($table->id)->OfDataType()->whereDoesntHave('excluded', function ($query) use($default_album) {
                 $query->where('album_id', $default_album->id);
-            })->get();
+            })->orderBy('column_index')->get();
             $i = 0;
             $count_mi = count($columns);
             foreach($columns as $column) {
