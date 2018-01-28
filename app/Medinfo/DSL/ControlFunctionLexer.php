@@ -43,6 +43,7 @@ class ControlFunctionLexer extends Lexer
         "PLUS",
         "MINUS",
         "MULTIPLY",
+        "DIVIDE",
         "DIVIDEMOD",
         "NUMBER",
         "COMMA",

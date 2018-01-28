@@ -11,6 +11,11 @@ namespace App\Medinfo\DSL;
 
 class UnitCountEvaluator extends CalculationFunctionEvaluator
 {
+    public function makeConsolidation()
+    {
+
+    }
+
     public function evaluate()
     {
         return count($this->properties['units']);

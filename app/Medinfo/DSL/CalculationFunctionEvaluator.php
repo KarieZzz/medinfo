@@ -19,6 +19,7 @@ class CalculationFunctionEvaluator
     public $iterations;
     public $caStack = [];
     public $arguments;
+    public $calculatedValue = 0;
 
     public function __construct(ParseTree $ptree, $properties, Document $document)
     {
@@ -70,7 +71,6 @@ class CalculationFunctionEvaluator
         }
     }
 
-
     public function prepareCAstack()
     {
         $this->getCAnode($this->pTree);
@@ -105,7 +105,6 @@ class CalculationFunctionEvaluator
             } elseif ($props['arg'] > 0 && $markOnlyFirstArg === false) {
                 $cells[] = ['row' => $props['ids']['r'], 'column' => $props['ids']['c']  ];
             }
-
         }
         return $cells;
     }
@@ -204,6 +203,7 @@ class CalculationFunctionEvaluator
                     if ($right === 0) {
                         return 0;
                     }
+
                     return fmod($left, $right);
             }
         }

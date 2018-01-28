@@ -32,28 +32,29 @@ class DocumentConsolidationController extends Controller
     public function consolidatePivotTable(Table $table, Document $document)
     {
         $rules = ConsolidationRuleHelper::getTableRules($table);
+        //dd($rules);
         $cell_affected = 0;
+        // очищаем таблицу перед заполнением
+        $affected = Cell::Where('doc_id', $document->id)->Where('table_id', $table->id)->delete();
         foreach ($rules as $rule) {
+            //dd($rule);
             $value = ConsolidationRuleHelper::evaluateRule($rule, $document, $table);
-            $cell = Cell::firstOrCreate(['doc_id' => $document->id, 'table_id' => $table->id, 'row_id' => $rule['row'], 'col_id' => $rule['column']]);
+
             if (is_numeric($value)) {
                 if ($value == 0) {
                     //echo "Полученное значение 0, в БД записано null";
-                    $cell->value = null;
+                    $value = null;
                 }
-                else {
-                    //echo "Получено значение отличное от нуля, в БД записано числовое значение";
-                    $cell->value = $value;
+                //dd($value);
+
+                $cell = Cell::firstOrCreate(['doc_id' => $document->id, 'table_id' => $table->id, 'row_id' => $rule->row_id,
+                    'col_id' => $rule->col_id, 'value' => $value]);
+                //dd($cell);
+                if ($cell) {
+                    $cell_affected++;
                 }
             }
-            else {
-                //echo "Получено нечисловое значение, в БД записано null";
-                $cell->value = null;
-            }
-            $result = $cell->save();
-            if ($result) {
-                $cell_affected++;
-            }
+
         }
 
         return $cell_affected;
