@@ -22,6 +22,11 @@ class Unit extends Model
         return $this->belongsTo('App\Unit', 'parent_id', 'id');
     }
 
+    public function groups()
+    {
+        return $this->hasMany('App\UnitGroupMember', 'ou_id', 'id');
+    }
+
     // Выбор Территорий
     public function scopeTerritory($query)
     {

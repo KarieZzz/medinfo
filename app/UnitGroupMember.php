@@ -24,4 +24,8 @@ class UnitGroupMember extends Model
         return $query->where('group_id', $group);
     }
 
+    public function scopeNotOfGroup($query, $group)
+    {
+        return $query->where('group_id','<>', $group);
+    }
 }

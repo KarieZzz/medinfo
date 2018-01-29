@@ -10,6 +10,7 @@ namespace App\Medinfo;
 
 use App\Period;
 use App\Unit;
+use App\UnitGroupMember;
 use App\Form;
 use App\Table;
 use App\Document;
@@ -21,15 +22,24 @@ class ReportMaker
     private $states;
     private $dtype;
     private $units;
+    private $included = [];
     private $population_form;
     private $population_rows;
     private $population_column;
 
-    public function __construct(int $level = 1, int $period_id = 4, int $sort_order = 1)
+    public function __construct(int $level = 1, int $period_id = 4, int $sort_order = 1, $group_id = null)
     {
         $this->period = Period::find($period_id);
         $this->states = [ 2, 4, 8, 16, 32 ]; // Документы со всеми статусами
         $this->dtype = 1; // Только первичные документв
+        if ($group_id === null) {
+            config('medinfo.report_group') === 0 ? $group_id = null : $group_id = config('medinfo.report_group');
+
+        }
+        if ($group_id !== null) {
+            $this->included = UnitGroupMember::OfGroup($group_id)->select('ou_id')->pluck('ou_id')->toArray();
+        }
+
         switch ($sort_order) {
             case 1:
                 $order = 'territory_type';
@@ -41,21 +51,24 @@ class ReportMaker
                 $order = 'unit_code';
                 break;
         }
+
         switch ($level) {
             case 0:
-                $this->units = Unit::primary()->active()->orderBy($order)->orderBy('unit_name')->get();
+                $this->units = Unit::primary()->active()->orderBy('unit_code')->get();
                 break;
             case 1:
-                $this->units = Unit::legal()->active()->orderBy($order)->orderBy('unit_name')->get();
+                $this->units = Unit::legal()->active()->orderBy('unit_code')->get();
                 break;
             case 2:
-                $this->units = Unit::territory()->active()->orderBy($order)->orderBy('unit_name')->get();
+                $this->units = Unit::territory()->active()->orderBy('unit_name')->get();
                 // Добавляем в коллекцию "Всего"
                 $all = Unit::find(0);
                 $this->units->push($all);
                 break;
         }
-        //dd($this->units);
+
+        //dd($included);
+        //dd(array_diff($this->units->toArray(), $included));
         $this->population_form = Form::OfCode('100')->first();
         $population_table = Table::OfFormTableCode($this->population_form->id, '1000')->with('rows')->with('columns')->first();
         $this->population_rows = $population_table->rows;
@@ -67,6 +80,9 @@ class ReportMaker
     {
         $report_units = [];
         foreach ($this->units as $unit) {
+            if (!in_array($unit->id, $this->included) && ($unit->node_type == 3 || $unit->node_type == 4)) {
+                continue;
+            }
             $report_units[$unit->id]['unit_name'] = $unit->unit_name;
             //$report_units[$unit->id]['inn'] = $unit->inn;
             $i = 0;
@@ -120,6 +136,13 @@ class ReportMaker
     {
         // Проверка, нужно ли сводить данные по текущему юниту.
         // Если вдруг сводить не нужно, в слюбом случае возвращаем значение для упрощения обработки сводного отчета
+        $wherein = '';
+        if (count($this->included) > 0 ) {
+            //dd($this->included);
+            $glued = implode(',', $this->included);
+            $wherein = " AND d.ou_id IN ( $glued )";
+        }
+        //dd($wherein);
         if ($unit->aggregate) {
             $scope = ['top_node' => (string)$unit->id ];
             $scope['forms'] = [ $form->id ];
@@ -133,8 +156,8 @@ class ReportMaker
             foreach ($doc_array as $doc) {
                 $documents[] = $doc->id;
             }
-            $strigified_documents = implode(',', $documents);
-            if (empty($strigified_documents)) {
+            $stringified_documents = implode(',', $documents);
+            if (empty($stringified_documents)) {
                 $v = 0;
             } else {
                 $val_q = "SELECT SUM(v.value) AS value FROM statdata v
@@ -142,7 +165,9 @@ class ReportMaker
                                 JOIN tables t ON v.table_id = t.id
                                 LEFT JOIN rows r ON v.row_id = r.id
                                 LEFT JOIN columns c ON v.col_id = c.id
-                              WHERE d.id in ({$strigified_documents}) AND t.table_code = '$table_code'
+                              WHERE d.id IN ({$stringified_documents}) 
+                                {$wherein}
+                                AND t.table_code = '$table_code'
                                 AND r.row_code = '$row_code' AND c.column_index = $col_index
                               GROUP BY v.table_id, v.row_id, v.col_id";
                 //dd($val_q);
@@ -156,7 +181,10 @@ class ReportMaker
                           JOIN tables t on v.table_id = t.id
                           LEFT JOIN rows r on v.row_id = r.id
                           LEFT JOIN columns c on v.col_id = c.id
-                        WHERE d.form_id = {$form->id} AND d.ou_id = {$unit->id} AND d.period_id = {$this->period->id}
+                        WHERE d.form_id = {$form->id} 
+                          AND d.ou_id = {$unit->id} 
+                           {$wherein}
+                          AND d.period_id = {$this->period->id}
                           AND t.table_code = '$table_code' AND r.row_code = '$row_code' AND c.column_index = $col_index";
             $val_res = \DB::selectOne($val_q);
             $v = $val_res ? $val_res->value :  0;
