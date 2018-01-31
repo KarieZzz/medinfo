@@ -60,7 +60,7 @@ let gridEventsInit = function () {
 };
 
 function setquerystring() {
-    return "&rule=" + $("#rule").val() +
+    return "&rule=" + encodeURIComponent($("#rule").val()) +
         "&comment=" + $("#comment").val() +
         "&row=" + selected.row_id +
         "&column=" + selected.column_id;

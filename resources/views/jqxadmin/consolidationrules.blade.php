@@ -48,7 +48,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
     {{--<script src="{{ asset('/medinfo/admin/tablepicker.js?v=008') }}"></script>--}}
-    <script src="{{ asset('/medinfo/admin/consolidationrules.js?v=006') }}"></script>
+    <script src="{{ asset('/medinfo/admin/consolidationrules.js?v=007') }}"></script>
 @endpush
 
 @section('inlinejs')
