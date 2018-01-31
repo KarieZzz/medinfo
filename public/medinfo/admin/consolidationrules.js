@@ -5,7 +5,7 @@ function updateRelated() {
 
     grid.jqxGrid({
         width: '98%',
-        height: 600,
+        height: 780,
         editable: true,
         editmode: 'selectedcell',
         selectionmode: 'singlecell',

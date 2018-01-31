@@ -24,7 +24,7 @@
         <div class="col-lg-3"><p><i id="column"></i></p></div>
     </div>
     <div class="row">
-        <div class="col-lg-8"><div id="Grid"></div></div>
+        <div class="col-lg-12"><div id="Grid"></div></div>
     </div>
 @endsection
 
