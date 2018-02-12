@@ -24,13 +24,15 @@ class DocumentConsolidationController extends Controller
         $tables = $document->form->tables->sortBy('table_index');
         $cell_affected = 0;
         foreach ($tables as $table) {
-            $cell_affected += $this->consolidatePivotTable($table, $document);
+            $result = $this->consolidatePivotTable($document, $table);
+            $cell_affected += $result['cell_affected'];
         }
         return ['consolidated' => true, 'cell_affected' => $cell_affected];
     }
 
-    public function consolidatePivotTable(Table $table, Document $document)
+    public function consolidatePivotTable(Document $document, Table $table)
     {
+        set_time_limit(0);
         $rules = ConsolidationRuleHelper::getTableRules($table);
         //dd($rules);
         $cell_affected = 0;
@@ -56,7 +58,6 @@ class DocumentConsolidationController extends Controller
             }
 
         }
-
-        return $cell_affected;
+        return ['consolidated' => true, 'cell_affected' => $cell_affected];
     }
 }

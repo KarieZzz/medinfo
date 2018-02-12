@@ -45,6 +45,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     // Шаблоны на основе jQWidgets для администрирования
     Route::get('admin', 'Admin\AdminController@index');
     Route::get('medstat_export/{document}', 'Admin\MedstatExportController@msExport');
+    Route::get('medstat_table_export/{document}/{table}', 'Admin\MedstatExportController@tableMedstatExport');
 
     // Менеджер пользователей - администраторов, экспертов
     Route::get('users', 'Admin\UserAdminController@index');
@@ -172,6 +173,7 @@ Route::group(['middleware' => ['medinfo']], function () {
 
     // Расчет консолидированных документов
     Route::get('admin/consolidate/{document}', 'Admin\DocumentConsolidationController@consolidateDocument' );
+    Route::get('admin/consolidate_table/{document}/{table}', 'Admin\DocumentConsolidationController@consolidatePivotTable' );
 
     // Менеджер списков МО для рассчета консолидированных таблиц
     Route::resource('admin/units/lists', 'Admin\ListMOAdminController');

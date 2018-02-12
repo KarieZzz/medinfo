@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Table;
 use Illuminate\Http\Request;
 
 //use App\Http\Requests;
@@ -9,37 +10,137 @@ use App\Http\Controllers\Controller;
 
 class MedstatExportController extends Controller
 {
+    const OFFSET = 4;
     //
     public function msExport(int $document)
     {
-        /*        $def = array(
-                    array("date",     "D"),
-                    array("name",     "C",  50),
-                    array("age",      "N",   3, 0),
-                    array("email",    "C", 128),
-                    array("ismember", "L")
-                );*/
         $document = \App\Document::find($document);
-        //$document = \App\Document::find(10658); // 30 форма
-        //$document = \App\Document::find(10634); // 32 форма
         $form = $document->form;
         $unit = $document->unit;
-
         if (is_null($unit)) {
             $unit = $document->unitgroup;
             $code = $unit->group_code;
         } else {
             $code = $unit->unit_code;
         }
-
         $tables = $form->tables->sortBy('table_index')->filter(function ($table) {
             return !is_null($table->medstat_code);
         });
-        //dd($tables);
 
+        $d = $this->initDBF($code, $form->medstat_code, $form->form_code);
+        //dbase_add_record($db, $test_array);
+        //dd(dbase_get_header_info($db));
+
+        foreach ($tables as $table) {
+            $rows = \App\Row::OfTable($table->id)->InMedstat()->get();
+            if (!$table->transposed ) {
+                foreach ($rows as $row) {
+                    $insert_data = $d['pattern'];
+                    if (\App\Cell::OfDTR($document->id, $table->id, $row->id)->sum('value')) {
+                        $cells = \App\Cell::OfDTR($document->id, $table->id, $row->id)->get();
+                        $insert_data[3] = '00' . $table->medstat_code;
+                        $insert_data[4] = $row->medstat_code;
+                        foreach ($cells as $cell) {
+                            if (!is_null($cell->column->medstat_code)) {
+                                $insert_data[(int)$cell->column->medstat_code + self::OFFSET] = (float)$cell->value;
+                            }
+                        }
+                        //dbase_add_record($db, $insert_data);
+                        try {
+                            dbase_add_record($d['db'], $insert_data);
+                        }
+                        catch ( \ErrorException $e) {
+                            dd($insert_data);
+                        }
+                    }
+                }
+            } elseif ($table->transposed == 1) {
+                $insert_data = $d['pattern'];
+                $insert_data[3] = '00' . $table->medstat_code;
+                $insert_data[4] = '001';
+                if (\App\Cell::OfDocumentTable($document->id, $table->id)->sum('value')) {
+                    $cells = \App\Cell::OfDocumentTable($document->id, $table->id)->get();
+                    foreach ($cells as $cell) {
+                        if (!is_null($cell->row->medstat_code)) {
+                            $insert_data[(int)$cell->row->medstat_code + self::OFFSET] = (float)$cell->value;
+                        }
+                    }
+                    try {
+                        dbase_add_record($d['db'], $insert_data);
+                    }
+                    catch ( \ErrorException $e) {
+                        dd($insert_data);
+                    }
+
+                }
+            }
+        }
+        return response()->download($d['file']);
+    }
+
+    public function tableMedstatExport(int $document, int $table)
+    {
+        $document = \App\Document::find($document);
+        $form = $document->form;
+        $unit = $document->unit;
+        if (is_null($unit)) {
+            $unit = $document->unitgroup;
+            $code = $unit->group_code;
+        } else {
+            $code = $unit->unit_code;
+        }
+        $table = \App\Table::find($table);
+        $d = $this->initDBF($code, $form->medstat_code, $form->form_code);
+        $rows = \App\Row::OfTable($table->id)->InMedstat()->get();
+        if (!$table->transposed ) {
+            foreach ($rows as $row) {
+                $insert_data = $d['pattern'];
+                if (\App\Cell::OfDTR($document->id, $table->id, $row->id)->sum('value')) {
+                    $cells = \App\Cell::OfDTR($document->id, $table->id, $row->id)->get();
+                    $insert_data[3] = '00' . $table->medstat_code;
+                    $insert_data[4] = $row->medstat_code;
+                    foreach ($cells as $cell) {
+                        if (!is_null($cell->column->medstat_code)) {
+                            $insert_data[(int)$cell->column->medstat_code + self::OFFSET] = (float)$cell->value;
+                        }
+                    }
+                    //dbase_add_record($db, $insert_data);
+                    try {
+                        dbase_add_record($d['db'], $insert_data);
+                    }
+                    catch ( \ErrorException $e) {
+                        dd($insert_data);
+                    }
+                }
+            }
+        } elseif ($table->transposed == 1) {
+            $insert_data = $d['pattern'];
+            $insert_data[3] = '00' . $table->medstat_code;
+            $insert_data[4] = '001';
+            if (\App\Cell::OfDocumentTable($document->id, $table->id)->sum('value')) {
+                $cells = \App\Cell::OfDocumentTable($document->id, $table->id)->get();
+                foreach ($cells as $cell) {
+                    if (!is_null($cell->row->medstat_code)) {
+                        $insert_data[(int)$cell->row->medstat_code + self::OFFSET] = (float)$cell->value;
+                    }
+                }
+                try {
+                    dbase_add_record($d['db'], $insert_data);
+                }
+                catch ( \ErrorException $e) {
+                    dd($insert_data);
+                }
+
+            }
+        }
+        return response()->download($d['file']);
+    }
+
+    public function initDBF($ucode, $mscode, $fcode)
+    {
         $a1_code = '17'; // код отчетного года
         $a2_code = '1125'; // код Иркутской области
-        $a4_code = $form->medstat_code . '00'; // код формы
+        $a4_code = $mscode . '00'; // код формы
         $offset = 4; // сдвиг до индекса массива, где начинаются данные ячеек
 
         $medstatsructure = [
@@ -206,59 +307,12 @@ class MedstatExportController extends Controller
         // создаем
         //$db = dbase_create('/home/vagrant/Code/m.dbf', $medstatsructure);
         //dd(storage_path('app/exports/medstat') . '/m.dbf');
-        $dbf_file = storage_path('app/exports/medstat') . '/' . $code . '_' . $form->form_code . '.dbf';
+        $dbf_file = storage_path('app/exports/medstat') . '/' . $ucode . '_' . $fcode . '.dbf';
         $db = dbase_create($dbf_file, $medstatsructure);
         if (!$db) {
-            echo "Ошибка, не получается создать базу данных m.dbf\n";
+            new \Exception("Ошибка, не получается создать базу данных m.dbf");
         }
-        //dbase_add_record($db, $test_array);
-        //dd(dbase_get_header_info($db));
-
-        foreach ($tables as $table) {
-            $rows = \App\Row::OfTable($table->id)->InMedstat()->get();
-            if (!$table->transposed ) {
-                foreach ($rows as $row) {
-                    $insert_data = $insert_pattern;
-                    if (\App\Cell::OfDTR($document->id, $table->id, $row->id)->sum('value')) {
-                        $cells = \App\Cell::OfDTR($document->id, $table->id, $row->id)->get();
-                        $insert_data[3] = '00' . $table->medstat_code;
-                        $insert_data[4] = $row->medstat_code;
-                        foreach ($cells as $cell) {
-                            if (!is_null($cell->column->medstat_code)) {
-                                $insert_data[(int)$cell->column->medstat_code + $offset] = (float)$cell->value;
-                            }
-                        }
-                        //dbase_add_record($db, $insert_data);
-                        try {
-                            dbase_add_record($db, $insert_data);
-                        }
-                        catch ( \ErrorException $e) {
-                            dd($insert_data);
-                        }
-                    }
-                }
-            } elseif ($table->transposed == 1) {
-                $insert_data = $insert_pattern;
-                $insert_data[3] = '00' . $table->medstat_code;
-                $insert_data[4] = '001';
-                if (\App\Cell::OfDocumentTable($document->id, $table->id)->sum('value')) {
-                    $cells = \App\Cell::OfDocumentTable($document->id, $table->id)->get();
-                    foreach ($cells as $cell) {
-                        if (!is_null($cell->row->medstat_code)) {
-                            $insert_data[(int)$cell->row->medstat_code + $offset] = (float)$cell->value;
-                        }
-                    }
-                    try {
-                        dbase_add_record($db, $insert_data);
-                    }
-                    catch ( \ErrorException $e) {
-                        dd($insert_data);
-                    }
-
-                }
-            }
-        }
-        return response()->download($dbf_file);
+        return ['pattern' => $insert_pattern, 'file' => $dbf_file, 'db' => $db ];
     }
 
 }
