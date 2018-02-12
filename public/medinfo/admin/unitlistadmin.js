@@ -1,28 +1,3 @@
-initdatasources = function() {
-
-    columnsource = {
-        datatype: "json",
-        datafields: [
-            { name: 'id', type: 'int' },
-            { name: 'table_id', type: 'int' },
-            { name: 'table_code', map: 'table>table_code', type: 'string' },
-            { name: 'excluded', map: 'excluded>0>album_id', type: 'bool' },
-            { name: 'column_index', type: 'int' },
-            { name: 'column_name', type: 'string' },
-            { name: 'content_type', type: 'int' },
-            { name: 'size', type: 'int' },
-            { name: 'decimal_count', type: 'int' },
-            { name: 'medstat_code', type: 'string' },
-            { name: 'medinfo_id', type: 'int' }
-        ],
-        id: 'id',
-        url: columnfetch_url + current_table,
-        root: 'column'
-    };
-    rowsDataAdapter = new $.jqx.dataAdapter(rowsource);
-    columnsDataAdapter = new $.jqx.dataAdapter(columnsource);
-};
-
 // Таблица списков
 let initList = function() {
     listbutton.jqxDropDownButton({ width: 250, height: 32, theme: theme });
@@ -37,14 +12,14 @@ let initList = function() {
         id: 'id',
         url: lists
     };
-    let dadapter =  new $.jqx.dataAdapter(listsource);
+    let dataadapter =  new $.jqx.dataAdapter(listsource);
     list.jqxGrid(
         {
             width: '500px',
             height: '500px',
             theme: theme,
             localization: localize(),
-            source: dadapter,
+            source: dataadapter,
             columnsresize: true,
             showfilterrow: true,
             filterable: true,
@@ -66,10 +41,15 @@ let initList = function() {
         $("#ListName").html('<strong>"' + r.name + '"</strong>');
         $("#name").val(r.name);
         $("#slug").val(r.slug);
-        membersource.url = member_url + currentlist;
         unitsource.url = units_url + currentlist;
-        listterms.jqxGrid('updatebounddata');
+        membersource.url = member_url + currentlist;
+
+
+        units.jqxGrid('clearselection');
+        listterms.jqxGrid('clearselection');
         units.jqxGrid('updatebounddata');
+        listterms.jqxGrid('updatebounddata');
+
     });
 };
 // Состав выбранного списка
@@ -85,7 +65,7 @@ let initListMembers = function () {
             id: 'id',
             url: member_url + currentlist
         };
-    let memberDataAdapter =  new $.jqx.dataAdapter(membersource);
+    memberDataAdapter =  new $.jqx.dataAdapter(membersource);
     listterms.jqxGrid(
         {
             width: '100%',
@@ -183,6 +163,7 @@ let getselectedmembers = function () {
 let initeditlistwindow = function () {
     let updbutton = $('#update');
     let createbutton = $('#create');
+    let createcopybutton = $('#createCopy');
     listeditform.jqxWindow({
         width: 700,
         height: 320,
@@ -223,6 +204,37 @@ let initeditlistwindow = function () {
         listeditform.jqxWindow('hide');
     });
 
+    createcopybutton.click(function() {
+        $.ajax({
+            dataType: 'json',
+            url: createcopy_url + currentlist,
+            method: "POST",
+            success: function (data, status, xhr) {
+                if (data.copystored) {
+                    //console.log(data.id);
+                    currentlist = data.id;
+                    raiseInfo("Копия списка учреждений создана");
+                    //list.jqxGrid('clearselection');
+                    list.jqxGrid('updatebounddata', 'data');
+                    list.on("bindingcomplete", function (event) {
+                        let newindex = list.jqxGrid('getrowboundindexbyid', data.id);
+                        //console.log(newindex);
+                        list.jqxGrid('selectrow', newindex);
+                    });
+                }
+                else {
+                    raiseError("Изменения не сохранены");
+                }
+            },
+            error: function (xhr, status, errorThrown) {
+                $.each(xhr.responseJSON, function(field, errorText) {
+                    raiseError(errorText);
+                });
+            }
+        });
+        listeditform.jqxWindow('hide');
+    });
+
     createbutton.click(function() {
         data = "&name=" + $("#name").val() + "&slug=" + $("#slug").val();
         $.ajax({
@@ -232,6 +244,7 @@ let initeditlistwindow = function () {
             data: data,
             success: function (data, status, xhr) {
                 if (data.stored) {
+                    //currentlist = data.id;
                     raiseInfo("Новый список учреждений создан");
                     //list.jqxGrid('clearselection');
                     list.jqxGrid('updatebounddata', 'data');

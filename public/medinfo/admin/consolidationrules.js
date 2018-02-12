@@ -110,7 +110,7 @@ let initactions = function() {
                     raiseError(data.message);
                 } else {
                     grid.jqxGrid('clearselection');
-                    grid.jqxGrid('updatebounddata')
+                    grid.jqxGrid('updatebounddata');
                     raiseInfo(data.message);
                 }
             },

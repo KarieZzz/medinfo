@@ -35,6 +35,20 @@ class ListMOAdminController extends Controller
 
     }
 
+    public function storeAs(UnitList $list)
+    {
+        $listmembers = UnitListMember::List($list->id)->get()->pluck('ou_id');
+        //dd($listmembers);
+        $copyname = $list->name . ' копия';
+        $copyslug = $list->slug . '_копия';
+        $new = UnitList::firstOrCreate([ 'name' => $copyname, 'slug' => $copyslug ]);
+        foreach ($listmembers as $listmember) {
+            UnitListMember::create([ 'list_id' => $new->id, 'ou_id' => $listmember ]);
+        }
+        return ['copystored' => true, 'id' => $new->id];
+
+    }
+
     public function update($id, Request $request)
     {
         $list = UnitList::find($id);

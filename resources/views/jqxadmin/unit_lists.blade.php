@@ -62,6 +62,7 @@
                 <div class="form-group">
                     <div class="col-sm-offset-3 col-sm-9">
                         <button type="button" class="btn btn-primary" id="update">Сохранить</button>
+                        <button type="button" class="btn btn-success" id="createCopy">Создать копию</button>
                         <button type="button" class="btn btn-success" id="create">Создать</button>
                         <button type="button" class="btn" id="cancel">Отменить</button>
                     </div>
@@ -91,7 +92,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
     {{--<script src="{{ asset('/medinfo/admin/tablepicker.js?v=008') }}"></script>--}}
-    <script src="{{ asset('/medinfo/admin/unitlistadmin.js?v=005') }}"></script>
+    <script src="{{ asset('/medinfo/admin/unitlistadmin.js?v=013') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -104,6 +105,7 @@
         let listbutton =$("#ListContainer");
         let currentlist = 0;
         let list_url = '/admin/units/lists';
+        let createcopy_url = '/admin/units/lists/createcopy/';
         let lists = '/admin/units/fetchlists';
         let member_url = '/admin/units/fetchlistmembers/';
         let addmembers_url = '/admin/units/addlistmembers/';
