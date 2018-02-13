@@ -8,7 +8,7 @@ function updateRelated() {
         height: 780,
         editable: true,
         editmode: 'selectedcell',
-        selectionmode: 'singlecell',
+        selectionmode: 'multiplecellsadvanced',
         localization: localize()
     });
     $.ajax({
@@ -40,6 +40,29 @@ function updateRelated() {
             raiseError("Ошибка загрузки структуры таблицы");
         }
     });
+    grid.on('cellvaluechanged', function (event) {
+        let rowBoundIndex = args.rowindex;
+        let rowid = grid.jqxGrid('getrowid', rowBoundIndex);
+        let colid = event.args.datafield;
+        let value = args.newvalue;
+        let data = "row=" + rowid + "&column=" + colid + "&rule=" + encodeURIComponent(value);
+        $.ajax({
+            dataType: 'json',
+            url: rule_url,
+            data: data,
+            method: 'POST',
+            success: function (data, status, xhr) {
+                if (typeof data.error !== 'undefined') {
+                    raiseError(data.message);
+                } else {
+                    raiseInfo(data.message);
+                }
+            },
+            error: function (xhr, status, errorThrown) {
+                raiseError("Ошибка сохранения данных на сервере. " + xhr.status + ' (' + xhr.statusText + ') - ' + status + ". Обратитесь к администратору.");
+            }
+        });
+    });
 }
 
 let gridEventsInit = function () {
@@ -69,7 +92,7 @@ function setquerystring() {
 let initactions = function() {
     $("#save").click(function () {
         if($("#rule").val() === '') {
-            console.log('Правило пустое');
+            //console.log('Правило пустое');
             return false;
         }
         $.ajax({

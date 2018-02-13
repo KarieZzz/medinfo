@@ -1063,6 +1063,7 @@ let initfilters = function() {
         dgrid.jqxGrid('applyfilters');
     }
 };
+
 let initdatagrid = function() {
     dgrid.jqxGrid(
         {
