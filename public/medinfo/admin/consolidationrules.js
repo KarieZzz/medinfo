@@ -44,24 +44,44 @@ function updateRelated() {
         let rowBoundIndex = args.rowindex;
         let rowid = grid.jqxGrid('getrowid', rowBoundIndex);
         let colid = event.args.datafield;
-        let value = args.newvalue;
-        let data = "row=" + rowid + "&column=" + colid + "&rule=" + encodeURIComponent(value);
-        $.ajax({
-            dataType: 'json',
-            url: rule_url,
-            data: data,
-            method: 'POST',
-            success: function (data, status, xhr) {
-                if (typeof data.error !== 'undefined') {
-                    raiseError(data.message);
-                } else {
-                    raiseInfo(data.message);
+        let rule = args.newvalue;
+        if (rule === "" || rule === null) {
+            $.ajax({
+                dataType: 'json',
+                url: rule_url + '/' + rowid + '/' + colid,
+                method: "DELETE",
+                success: function (data, status, xhr) {
+                    if (typeof data.error !== 'undefined') {
+                        raiseError(data.message);
+                    } else {
+                        grid.jqxGrid('clearselection');
+                        grid.jqxGrid('updatebounddata');
+                        raiseInfo(data.message);
+                    }
+                },
+                error: function (xhr, status, errorThrown) {
+                    raiseError('Ошибка сохранения данных на сервере', xhr);
                 }
-            },
-            error: function (xhr, status, errorThrown) {
-                raiseError("Ошибка сохранения данных на сервере. " + xhr.status + ' (' + xhr.statusText + ') - ' + status + ". Обратитесь к администратору.");
-            }
-        });
+            });
+        } else {
+            let data = "row=" + rowid + "&column=" + colid + "&rule=" + encodeURIComponent(rule);
+            $.ajax({
+                dataType: 'json',
+                url: rule_url,
+                data: data,
+                method: 'POST',
+                success: function (data, status, xhr) {
+                    if (typeof data.error !== 'undefined') {
+                        raiseError(data.message);
+                    } else {
+                        raiseInfo(data.message);
+                    }
+                },
+                error: function (xhr, status, errorThrown) {
+                    raiseError("Ошибка сохранения данных на сервере. " + xhr.status + ' (' + xhr.statusText + ') - ' + status + ". Обратитесь к администратору.");
+                }
+            });
+        }
     });
 }
 

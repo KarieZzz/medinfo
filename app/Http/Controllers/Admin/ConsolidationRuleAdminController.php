@@ -79,7 +79,7 @@ class ConsolidationRuleAdminController extends Controller
     protected function validateRules()
     {
         return [
-            'rule' => 'required|max:512',
+            'rule' => 'required|min:1|max:512',
             'comment' => 'max:128',
             'row' => 'required|integer|exists:rows,id',
             'column' => 'required|integer|exists:columns,id',
