@@ -12,6 +12,7 @@ let initSpplitterSize = function () {
 let initProtSize = function () {
     $("#tableprotocol").height(initialViewport - topOffset3);
     $("#formprotocol").height(initialViewport - topOffset3);
+    $("#CellAnalysisTable").height(initialViewport - topOffset4);
 };
 let initCellProtSize = function () {
     $("#cellprotocol").height(initialViewport - topOffset3);
@@ -23,6 +24,7 @@ let onResizeEventLitener = function () {
         $("#tableprotocol").height($(window).height()-topOffset3);
         $("#formprotocol").height($(window).height()-topOffset3);
         $("#cellprotocol").height($(window).height()-topOffset3);
+        $("#CellAnalysisTable").height(initialViewport - topOffset4);
     });
 };
 let initSplitter = function () {

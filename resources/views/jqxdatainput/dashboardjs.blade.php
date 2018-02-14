@@ -101,7 +101,8 @@ let formlabels =
 let initialViewport = $(window).height();
 let topOffset1 = 150;
 let topOffset2 = 10;
-let topOffset3 = 115;
+let topOffset3 = 125;
+let topOffset4 = 105;
 initDgridSize();
 initProtSize();
 initCellProtSize();

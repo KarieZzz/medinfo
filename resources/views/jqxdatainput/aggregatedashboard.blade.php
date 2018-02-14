@@ -22,7 +22,7 @@
 
 @section('additionalTabDiv')
     <div>
-        <div id="CellAnalysisTable"></div>
+        <div style="width: 100%; overflow-y: auto" id="CellAnalysisTable"></div>
     </div>
     <div>
         <div id="CellPeriodsTable"></div>
@@ -39,7 +39,7 @@
 
 @push('loadjsscripts')
 @include('jqxdatainput.jsstack')
-    <script src="{{ asset('/medinfo/editdashboard.js?v=102') }}"></script>
+    <script src="{{ asset('/medinfo/editdashboard.js?v=108') }}"></script>
 @endpush('loadjsscripts')
 
 @section('inlinejs')
