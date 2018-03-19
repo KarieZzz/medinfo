@@ -83,8 +83,11 @@ class ReportMaker
             if (!in_array($unit->id, $this->included) && ($unit->node_type == 3 || $unit->node_type == 4)) {
                 continue;
             }
+
+
             $report_units[$unit->id]['unit_name'] = $unit->unit_name;
             //$report_units[$unit->id]['inn'] = $unit->inn;
+
             $i = 0;
             $row_sum = 0;
             foreach ($indexes['content'] as $index => $rule) {
@@ -95,13 +98,18 @@ class ReportMaker
                 //$cellcount = preg_match_all('/(?:Ф(?P<f>[а-я0-9.-]*))?(?:Т(?P<t>[а-я0-9.-]*))?(?:С(?P<r>[0-9.-]*))?(?:Г(?P<c>\d{1,3}))/u', $formula, $matches, PREG_SET_ORDER);
                 //dd($matches);
                 $v = 0;
+
                 foreach ($matches as $c_addr) {
                     $form_code = $c_addr[1];
                     $table_code = $c_addr[2];
                     $row_code = $c_addr[3];
                     $col_index = $c_addr[4];
                     $form = Form::where('form_code', $form_code)->first();
+                    if ($unit->id === 115 && $c_addr[0] == 'Ф30Т1001С13Г4') {
+                        //dd($col_index);
+                    }
                     $v = $this->getAggregatedValue($unit, $form, $table_code, $row_code, $col_index);
+
                     $formula = str_replace($c_addr[0], $v, $formula);
                 }
                 $populationlinks = preg_match_all('/население\((\d{1,})\)/u', $formula, $populationmatches, PREG_SET_ORDER);
@@ -112,11 +120,12 @@ class ReportMaker
                 }
                 $m = new EvalMath;
                 $value = 0;
+
                 try {
                     $value = $m->e($formula);
                 }
                 catch (\Exception $e) {
-                    //dd($e);
+                    dd("Ошибка при вычислении формулы: " . $formula . " " . $e);
                 }
                 //$value = eval('return ' . $formula . ';' );
                 //echo $formula . PHP_EOL;
@@ -143,6 +152,7 @@ class ReportMaker
             $wherein = " AND d.ou_id IN ( $glued )";
         }
         //dd($wherein);
+
         if ($unit->aggregate) {
             $scope = ['top_node' => (string)$unit->id ];
             $scope['forms'] = [ $form->id ];
@@ -152,6 +162,7 @@ class ReportMaker
             $scope['dtypes'] = [ $this->dtype ];
             $doc_tree = new DocumentTree($scope);
             $doc_array = $doc_tree->get_documents();
+
             $documents = array();
             foreach ($doc_array as $doc) {
                 $documents[] = $doc->id;
@@ -168,12 +179,13 @@ class ReportMaker
                               WHERE d.id IN ({$stringified_documents}) 
                                 {$wherein}
                                 AND t.table_code = '$table_code'
-                                AND r.row_code = '$row_code' AND c.column_index = $col_index
+                                AND r.row_code = '$row_code' AND c.column_code = '$col_index'
                               GROUP BY v.table_id, v.row_id, v.col_id";
                 //dd($val_q);
+
                 $val_res = \DB::selectOne($val_q);
                 $v = $val_res ? $val_res->value :  0;
-            }
+             }
 
         } else {
             $val_q = "SELECT v.value AS value FROM statdata v
@@ -185,9 +197,13 @@ class ReportMaker
                           AND d.ou_id = {$unit->id} 
                            {$wherein}
                           AND d.period_id = {$this->period->id}
-                          AND t.table_code = '$table_code' AND r.row_code = '$row_code' AND c.column_index = $col_index";
+                          AND t.table_code = '$table_code' AND r.row_code = '$row_code' AND c.column_code = '$col_index'";
             $val_res = \DB::selectOne($val_q);
             $v = $val_res ? $val_res->value :  0;
+        }
+
+        if (is_null($v)) {
+            $v = 0;
         }
         return $v;
     }

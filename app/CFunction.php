@@ -60,4 +60,5 @@ class CFunction extends Model
     {
         return $this->belongsTo('App\DicCfunctionType', 'type', 'code');
     }
+
 }

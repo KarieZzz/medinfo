@@ -20,6 +20,7 @@ class CalculationFunctionEvaluator
     public $caStack = [];
     public $arguments;
     public $calculatedValue = 0;
+    public $calculationLog = [];
 
     public function __construct(ParseTree $ptree, $properties, Document $document)
     {
@@ -210,5 +211,9 @@ class CalculationFunctionEvaluator
         return null;
     }
 
+    public function logIteration($ou_id, $value)
+    {
+        $this->calculationLog[] = ['unit_id' => $ou_id, 'value' => $value];
+    }
 
 }

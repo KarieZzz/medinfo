@@ -79,7 +79,7 @@ class FunctionDispatcher
         "MultiplicityTranslator",
         15 => "UnitCountTranslator",
         17 => "CalculationTranslator",
-        18 => "CalculationTranslator",
+        18 => "ValueCountTranslator",
     ];
 
     public static $evaluators = [

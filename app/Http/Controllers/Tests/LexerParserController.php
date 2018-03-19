@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Tests;
 
 use App\Medinfo\DSL\ControlFunctionEvaluator;
 use App\Medinfo\DSL\EquationFunctionParser;
+use App\Unit;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -79,6 +80,7 @@ class LexerParserController extends Controller
         // функции рассчета
         //$i = "счетмо(список(u47_100_09, u47_100_10))";
         $i = "расчет(Ф30Т1100С1Г3, список(u47_100_01))";
+        //$i = "расчет(Ф30Т1001С3Г4+Ф30Т1001С13Г4+Ф30Т1001С19Г4+Ф30Т1001С28Г4+Ф30Т1001С86Г4+Ф30Т1001С88Г4+Ф30Т1001С131Г4+Ф30Т1001С132Г4, список(u47_100_19))";
 
         //$i = '(a2 - a1)/a2 * 100 > a3';
 
@@ -114,14 +116,13 @@ class LexerParserController extends Controller
         //$table = Table::find(115);    // Ф32 Т2120
         //$table = Table::find(151);    // Ф41 Т2100
         $table = Table::find(2);    // Ф47 Т0100
-
         //$document = Document::find(13134); // 12 ф ГКБ№8 за 2016 год
         //$document = Document::find(12269); // 12 ф Все организации 2016 год
         //$document = Document::find(13753); // 41 ф ДР1 за 2016 год
         //$document = Document::find(12657); // 30 ф РБ Слюдянка за 2016 год
         //$document = Document::find(12268); // 30 ф Свод за 2016 год
-        $document = Document::find(16218); // 47 ф за 2017 год
-
+        $document = Document::find(19251); // 47 ф за 2017 год
+        //dd($document);
          $translator = Translator::invoke($parser, $table);
         //dd($translator);
          //$translator = new ControlPtreeTranslator($parser, $table);
@@ -165,15 +166,38 @@ class LexerParserController extends Controller
         //dd($evaluator->arguments);
         //dd($evaluator->pTree);
         //dd($evaluator->caStack);
-        //dd($evaluator->iterations);
+        dd($evaluator->iterations);
 
-        //return $evaluator->makeControl();
         return $evaluator->evaluate();
 
         //$evaluator->makeControl();
         //dd($evaluator);
         //return ($evaluator->iterations);
         //dd($evaluator->pTree);
+    }
+
+    public function testCalculation()
+    {
+        $rule = "расчет(Ф30Т1001С3Г4+Ф30Т1001С13Г4+Ф30Т1001С19Г4+Ф30Т1001С28Г4+Ф30Т1001С86Г4+Ф30Т1001С88Г4+Ф30Т1001С131Г4+Ф30Т1001С132Г4, список(u47_100_19))";
+        $table = Table::find(2);
+        $document = Document::find(19251);
+        $lexer = new \App\Medinfo\DSL\ControlFunctionLexer($rule);
+        $tockenstack = $lexer->getTokenStack();
+        $parser = new \App\Medinfo\DSL\ControlFunctionParser($tockenstack);
+        $parser->func();
+        $translator = \App\Medinfo\DSL\Translator::invoke($parser, $table);
+        $translator->prepareIteration();
+        $evaluator = \App\Medinfo\DSL\Evaluator::invoke($translator->parser->root, $translator->getProperties(), $document);
+        $evaluator->makeConsolidation();
+        foreach ($evaluator->calculationLog as &$el) {
+            $unit = Unit::find($el['unit_id']);
+            $el['unit_name'] = $unit->unit_name;
+            $el['unit_code'] = $unit->unit_code;
+        }
+        $log = $evaluator->calculationLog;
+        //return $evaluator->evaluate();
+        //$evaluator->evaluate();
+        return view('reports.consolidationLog', compact('log'));
     }
 
     public function func_parser()

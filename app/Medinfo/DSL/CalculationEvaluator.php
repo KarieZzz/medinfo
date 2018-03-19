@@ -28,7 +28,9 @@ class CalculationEvaluator extends CalculationFunctionEvaluator
                 $cell_adress['value'] = $value;
             }
             $cells = $this->convertCANodes($this->iterations[0]);
-            $this->calculatedValue += $this->evaluateSubtree($this->arguments[1]);
+            $unitValue = $this->evaluateSubtree($this->arguments[1]);
+            $this->logIteration($ou_id, $unitValue);
+            $this->calculatedValue += $unitValue;
         }
 
         //dd($this);
