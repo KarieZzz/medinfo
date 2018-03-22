@@ -9,6 +9,8 @@
 namespace App\Medinfo\Consolidation;
 
 
+use Carbon\Carbon;
+
 class ConsolidationRuleHelper
 {
     public static function getTableRules(\App\Table $table) {
@@ -30,7 +32,20 @@ class ConsolidationRuleHelper
         $translator->prepareIteration();
         $evaluator = \App\Medinfo\DSL\Evaluator::invoke($translator->parser->root, $translator->getProperties(), $document);
         $evaluator->makeConsolidation();
+        self::logConsolidation($evaluator->calculationLog, $document->id, $rule->row_id, $rule->col_id);
         return $evaluator->evaluate();
+    }
+
+    public static function logConsolidation(array $calculationLog, int $doc_id, int $row_id, int $col_id)
+    {
+        foreach ($calculationLog as &$el) {
+            $unit = \App\Unit::find($el['unit_id']);
+            $el['unit_name'] = $unit->unit_name;
+            $el['unit_code'] = $unit->unit_code;
+        }
+        $log = \App\Consolidate::firstOrCreate( ['doc_id' => $doc_id, 'row_id' => $row_id, 'column_id' => $col_id,
+            'protocol' => json_encode($calculationLog), 'consolidated_at' => Carbon::create()] );
+        return $log;
     }
 
 }
