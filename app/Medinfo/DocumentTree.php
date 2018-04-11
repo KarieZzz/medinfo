@@ -233,4 +233,41 @@ class DocumentTree
             return null;
         }
     }
+
+    public function get_consolidates()
+    {
+        if (count($this->scopes) > 0 ) {
+            $scopes = implode(" ", $this->scopes);
+            $doc_query = "SELECT d.id, u.unit_code, u.unit_name,  m.name monitoring, f.form_code, f.form_name, p.name period, 
+                CASE WHEN (SELECT sum(v.value) FROM statdata v WHERE d.id = v.doc_id) > 0 THEN 1 ELSE 0 END filled
+              FROM documents d
+              LEFT JOIN forms f on d.form_id = f.id
+              JOIN mo_hierarchy u on d.ou_id = u.id
+              JOIN monitorings m ON d.monitoring_id = m.id
+              JOIN periods p on d.period_id = p.id
+              WHERE 1=1 $scopes ORDER BY u.unit_code, f.form_code, p.name";
+            //dd($doc_query);
+            $res = DB::select($doc_query);
+
+            if ($this->filter_mode == 2 ) {
+                $group_doc_query = "SELECT d.id, u.group_code AS unit_code, u.group_name AS unit_name,  m.name monitoring, f.form_code, f.form_name, p.name period,
+                    CASE WHEN (SELECT sum(v.value) FROM statdata v WHERE d.id = v.doc_id) > 0 THEN 1 ELSE 0 END filled
+                  FROM documents d
+                  LEFT JOIN forms f on d.form_id = f.id
+                  LEFT JOIN unit_groups u on d.ou_id = u.id
+                  JOIN monitorings m ON d.monitoring_id = m.id
+                  JOIN periods p on d.period_id = p.id
+                   WHERE d.ou_id = {$this->top_node} {$this->scopes['m']} {$this->scopes['f']} {$this->scopes['p']}
+                   ORDER BY f.form_code, p.name";
+                $aggregates_by_groups = DB::select($group_doc_query);
+                //dd($documents_by_groups );
+                $res = array_merge($res, $aggregates_by_groups);
+
+            }
+            return $res;
+        }
+        else {
+            return null;
+        }
+    }
 }

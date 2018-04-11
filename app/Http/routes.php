@@ -212,6 +212,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('datainput/fetchdocuments', 'StatDataInput\DocumentDashboardController@fetchdocuments');
     Route::get('datainput/fetchrecent', 'StatDataInput\DocumentDashboardController@fetchRecentDocuments');
     Route::get('datainput/fetchaggregates', 'StatDataInput\DocumentDashboardController@fetchaggregates');
+    Route::get('datainput/fetchconsolidates', 'StatDataInput\DocumentDashboardController@fetchconsolidates');
     Route::get('datainput/fetchmessages', 'StatDataInput\DocumentMessageController@fetchMessages');
     Route::get('datainput/fetchauditions', 'StatDataInput\DocumentAuditionController@fetchAuditions');
     Route::post('datainput/sendmessage', 'StatDataInput\DocumentMessageController@sendMessage');
@@ -225,6 +226,12 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::post('datainput/savevalue/{document}/{table}', 'StatDataInput\FormDashboardController@saveValue');
     Route::get('datainput/valuechangelog/{document}', 'StatDataInput\FormDashboardController@fullValueChangeLog');
     Route::get('datainput/calculate/{document}/{table}', 'StatDataInput\CalculateColumnController@calculate');
+
+    // Рабочий стол для сводных/консолидированных документов
+    Route::get('datainput/aggregatedashboard/{document}', 'StatDataInput\AggregatesDashboardController@index');
+    Route::get('datainput/fetchcelllayers/{document}/{row}/{column}', 'StatDataInput\AggregatesDashboardController@fetchAggregatedCellLayers');
+    Route::get('datainput/consolidatedashboard/{document}', 'StatDataInput\ConsolidatesDashboardController@index');
+    Route::get('datainput/fetchconsprotocol/{document}/{row}/{column}', 'StatDataInput\ConsolidatesDashboardController@fetchConsolidationProtocol');
 
     // Контроль данных
     Route::get('datainput/formcontrol/{document}', 'StatDataInput\FormDashboardController@formControl');
@@ -240,10 +247,6 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('datainput/wordexport/{document}', 'StatDataInput\WordExportController@formExport');
     Route::get('datainput/formexport/{document}', 'StatDataInput\ExcelExportController@dataFormExport');
     Route::get('datainput/tableexport/{document}/{table}', 'StatDataInput\ExcelExportController@dataTableExport');
-
-    // Рабочий стол для сводных документов
-    Route::get('datainput/aggregatedashboard/{document}', 'StatDataInput\AggregatesDashboardController@index');
-    Route::get('datainput/fetchcelllayers/{document}/{row}/{column}', 'StatDataInput\AggregatesDashboardController@fetchAggregatedCellLayers');
 
     // Аналитика: консолидированные отчеты, справки
     Route::get('reports/br/querycomposer', 'Admin\BriefReferenceController@index');

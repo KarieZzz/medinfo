@@ -900,6 +900,7 @@ let getreadablecelladress = function(row, column) {
     let column_index = dgrid.jqxGrid('getcolumnproperty', column, 'text');
     return { row: row_code, column: column_index};
 };
+// Возыращает данные для состава свода по медицинским организациям и движения по периодам
 let fetchcelllayer = function(row, column) {
     let layer_container = $("<table class='table table-condensed table-striped table-bordered'></table>");
     let period_container = $("<table class='table table-condensed table-striped table-bordered'></table>");
@@ -920,6 +921,23 @@ let fetchcelllayer = function(row, column) {
         });
     });
     return { layers: layer_container, periods: period_container} ;
+};
+
+let fetchconsolidationprotocol = function(row, column) {
+    let layer_container = $("<table class='table table-condensed table-striped table-bordered'></table>");
+    let fetch_url = cons_protocol_url + row + '/' + column;
+    $.getJSON( fetch_url, function( data ) {
+        //console.log(data);
+        $.each(data, function (i, layer) {
+
+            let row = $("<tr class='rowdocument' ><td>" + layer.unit_code + "</td>"
+                + "<td>" + layer.unit_name + "</a>"
+                + "</td><td style='min-width: 40px' class='text-primary text-right'>" + layer.value
+                + "</td></tr>");
+            layer_container.append(row);
+        });
+    });
+    return { layers: layer_container } ;
 };
 
 // Инициализация перечня таблиц текущей формы
@@ -1204,6 +1222,9 @@ let initdatagrid = function() {
             //$("#CellAnalysisTable").append(returned.layers);
             $("#CellPeriodsTable").html(analitic_header).append(returned.periods);
             //$("#CellPeriodsTable").append(returned.periods);
+        } else if (doc_type === '3') {
+            let returned = fetchconsolidationprotocol(row_id, column_id);
+            $("#CellAnalysisTable").html(analitic_header).append(returned.layers);
         }
     });
 };

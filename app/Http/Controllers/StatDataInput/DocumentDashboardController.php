@@ -93,14 +93,6 @@ class DocumentDashboardController extends Controller
         return $data;
     }
 
-    public function fetchRecentDocuments()
-    {
-        $worker = Auth::guard('datainput')->user();
-        return \App\RecentDocument::OfWorker($worker->id)
-            ->orderBy('occured_at','desc')
-            ->with('document.unitsview', 'document.monitoring', 'document.period' , 'document.form', 'document.state')->take(20)->get();
-    }
-
     public function fetchaggregates(Request $request)
     {
         $worker = Auth::guard('datainput')->user();
@@ -116,6 +108,31 @@ class DocumentDashboardController extends Controller
         $d = new DocumentTree($scopes);
         $data = $d->get_aggregates();
         return $data;
+    }
+
+    public function fetchconsolidates(Request $request)
+    {
+        $worker = Auth::guard('datainput')->user();
+        $worker_scope = WorkerScope::where('worker_id', $worker->id)->first()->ou_id;
+        $top_node = $request->ou;
+        $filter_mode = $request->filter_mode;
+        $dtypes[] = 3;
+        $states = array();
+        $monitorings = explode(",", $request->monitorings);
+        $forms = explode(",", $request->forms);
+        $periods = explode(",", $request->periods);
+        $scopes = compact('worker_scope', 'filter_mode', 'top_node', 'dtypes', 'states', 'monitorings', 'forms', 'periods');
+        $d = new DocumentTree($scopes);
+        $data = $d->get_consolidates();
+        return $data;
+    }
+
+    public function fetchRecentDocuments()
+    {
+        $worker = Auth::guard('datainput')->user();
+        return \App\RecentDocument::OfWorker($worker->id)
+            ->orderBy('occured_at','desc')
+            ->with('document.unitsview', 'document.monitoring', 'document.period' , 'document.form', 'document.state')->take(20)->get();
     }
 
     // Сохранение настроек отображения рабочего стола с документами

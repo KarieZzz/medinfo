@@ -14,17 +14,20 @@ let docauditions_url = 'datainput/fetchauditions?';
 let aggrsource_url = 'datainput/fetchaggregates?';
 let edit_form_url = 'datainput/formdashboard';
 let edit_aggregate_url = 'datainput/aggregatedashboard';
+let edit_consolidate_url = 'datainput/consolidatedashboard';
 let aggregatedata_url = "/datainput/aggregatedata/";
 let export_word_url = "/datainput/wordexport/";
 let export_form_url = "/datainput/formexport/";
+let consolsource_url = 'datainput/fetchconsolidates?';
 let montree = $("#monTree");
 let motree = $("#moTree");
 let grouptree = $("#groupTree");
 let periodTree = $("#periodTree");
 let stateList = $("#statesListbox");
 let dgrid = $("#Documents"); // сетка для первичных документов
-let rgrid = $("#Recent"); // сетка для первичных документов
 let agrid = $("#Aggregates"); // сетка для сводных документов
+let cgrid = $("#Consolidates"); // сетка для консолидированных документов
+let rgrid = $("#Recent"); // сетка для последних документов
 let mondropdown = $("#monitoringSelector");
 let terr = $("#moSelectorByTerritories");
 let groups = $('#moSelectorByGroups');
@@ -222,12 +225,14 @@ checkPeriodFilter = function() {
 updatedocumenttable = function() {
     let old_doc_url = docsource.url;
     let old_aggr_url = aggregate_source.url;
+    let old_cons_url = consolsource.url;
     //let states = checkedstates.join();
     //let forms = checkedforms.join();
     //let periods = checkedperiods.join();
     let new_filter =  filtersource();
     let new_doc_url = docsource_url + new_filter;
     let new_aggr_url = aggrsource_url + new_filter;
+    let new_cons_url = consolsource_url + new_filter;
     if (new_doc_url !== old_doc_url) {
         docsource.url = new_doc_url;
         dgrid.jqxGrid('updatebounddata');
@@ -238,6 +243,11 @@ updatedocumenttable = function() {
         aggregate_source.url = new_aggr_url;
         agrid.jqxGrid('updatebounddata');
     }
+    if (new_cons_url !== old_cons_url) {
+        consolsource.url = new_cons_url;
+        cgrid.jqxGrid('updatebounddata');
+    }
+
 };
 // выполнение сведения данных
 aggregatedata = function() {
@@ -1057,6 +1067,50 @@ initdocumentstabs = function() {
         let rowindex = args.rowindex;
         let document_id = agrid.jqxGrid('getrowid', rowindex);
         let editWindow = window.open(edit_aggregate_url + '/' + document_id);
+    });
+};
+// Инициализация вкладки консолидированных отчетов
+initConsolidates = function () {
+    consolsource =
+        {
+            datatype: "json",
+            datafields: [
+                { name: 'id', type: 'int' },
+                { name: 'unit_code', type: 'string' },
+                { name: 'unit_name', type: 'string' },
+                { name: 'form_code', type: 'string' },
+                { name: 'monitoring', type: 'string' },
+                { name: 'period', type: 'string' }
+            ],
+            id: 'id',
+            ///url: docsource_url + filtersource(),
+            url: consolsource_url + current_filter,
+            root: 'data'
+        };
+    consolTableDA = new $.jqx.dataAdapter(consolsource);
+    cgrid.jqxGrid(
+        {
+            width: '100%',
+            height: '93%',
+            theme: theme,
+            source: consolTableDA,
+            columnsresize: true,
+            localization: localize(),
+            columns: [
+                { text: '№', datafield: 'id', width: '5%' },
+                { text: 'Код Территории/МО', datafield: 'unit_code', width: 100 },
+                { text: 'Наименование МО', datafield: 'unit_name', width: '20%' },
+                { text: 'Мониторинг', datafield: 'monitoring', width: 320 },
+                { text: 'Код формы', datafield: 'form_code', width: 100 },
+                { text: 'Период', datafield: 'period', width: 150 }
+            ]
+        });
+    cgrid.on('rowdoubleclick', function (event)
+    {
+        let args = event.args;
+        let rowindex = args.rowindex;
+        let document_id = cgrid.jqxGrid('getrowid', rowindex);
+        let editWindow = window.open(edit_consolidate_url + '/' + document_id);
     });
 };
 // Инициализация вкладки последних документов

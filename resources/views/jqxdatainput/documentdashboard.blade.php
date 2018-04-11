@@ -60,6 +60,7 @@
                 <ul>
                     <li style="margin-left: 30px;">Отчеты субъектов</li>
                     <li>Сводные отчеты</li>
+                    <li>Консолидированные отчеты</li>
                     <li>Последние документы</li>
                 </ul>
                 <div>
@@ -91,6 +92,12 @@
                     <div class="jqx-hideborder jqx-hidescrollbars" style="width: 100%; height: 100%">
                         <h3 style="margin-left: 30px">Сводные отчеты</h3>
                         <div id="Aggregates"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="jqx-hideborder jqx-hidescrollbars" style="width: 100%; height: 100%">
+                        <h3 style="margin-left: 30px">Консолидированные отчеты</h3>
+                        <div id="Consolidates"></div>
                     </div>
                 </div>
                 <div>
@@ -133,7 +140,7 @@
 <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/documentdashboard.js?v=088') }}"></script>
+<script src="{{ asset('/medinfo/documentdashboard.js?v=094') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -169,6 +176,7 @@
         initDocumentSource();
         initdocumentstabs();
         initdocumentproperties();
+        initConsolidates();
         initRecentDocuments();
         initpopupwindows();
         initnotifications();
