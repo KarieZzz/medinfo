@@ -220,7 +220,7 @@ class DocumentTree
                   LEFT JOIN aggregates a ON d.id = a.doc_id
                   JOIN monitorings m ON d.monitoring_id = m.id
                   JOIN periods p on d.period_id = p.id
-                   WHERE d.ou_id = {$this->top_node} {$this->scopes['m']} {$this->scopes['f']} {$this->scopes['p']}
+                   WHERE d.ou_id = {$this->top_node} {$this->scopes['m']} {$this->scopes['f']} {$this->scopes['p']} {$this->scopes['t']}
                    ORDER BY f.form_code, p.name";
                 $aggregates_by_groups = DB::select($group_doc_query);
                 //dd($documents_by_groups );
@@ -257,8 +257,9 @@ class DocumentTree
                   LEFT JOIN unit_groups u on d.ou_id = u.id
                   JOIN monitorings m ON d.monitoring_id = m.id
                   JOIN periods p on d.period_id = p.id
-                   WHERE d.ou_id = {$this->top_node} {$this->scopes['m']} {$this->scopes['f']} {$this->scopes['p']}
+                   WHERE d.ou_id = {$this->top_node} {$this->scopes['m']} {$this->scopes['f']} {$this->scopes['p']} {$this->scopes['t']} 
                    ORDER BY f.form_code, p.name";
+                //dd($group_doc_query);
                 $aggregates_by_groups = DB::select($group_doc_query);
                 //dd($documents_by_groups );
                 $res = array_merge($res, $aggregates_by_groups);
