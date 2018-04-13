@@ -178,7 +178,7 @@ class LexerParserController extends Controller
 
     public function testCalculation()
     {
-        $rule = "счетмо(список(u47_100_06, u47_100_10))";
+        $rule = "счетмо(список(u47_100_03))";
         //$rule = "расчет(Ф30Т1001С3Г4+Ф30Т1001С13Г4+Ф30Т1001С19Г4+Ф30Т1001С28Г4+Ф30Т1001С86Г4+Ф30Т1001С88Г4+Ф30Т1001С131Г4+Ф30Т1001С132Г4, список(u47_100_19))";
         $table = Table::find(2);
         $document = Document::find(19251);
@@ -190,15 +190,29 @@ class LexerParserController extends Controller
         $translator->prepareIteration();
         $evaluator = \App\Medinfo\DSL\Evaluator::invoke($translator->parser->root, $translator->getProperties(), $document);
         $evaluator->makeConsolidation();
+        //dd($evaluator->calculationLog);
         foreach ($evaluator->calculationLog as &$el) {
             $unit = Unit::find($el['unit_id']);
             $el['unit_name'] = $unit->unit_name;
             $el['unit_code'] = $unit->unit_code;
         }
-        $log = $evaluator->calculationLog;
+
+        $log_initial = collect($evaluator->calculationLog);
+        //$log_sorted = $log_initial->sortBy('unit_code');
+        $log_c_sorted = $log_initial->sortBy('unit_code');
+        //dd($log);
+        $log_sorted = [];
+        foreach ($log_c_sorted as $el ) {
+            $log_sorted[] = $el;
+        }
+        //dd($log_sorted);
+
+        //echo(json_encode($log->toArray()));
+        $log = json_encode($log_sorted);
+        echo $log;
         //return $evaluator->evaluate();
         //$evaluator->evaluate();
-        return view('reports.consolidationLog', compact('log'));
+        //return view('reports.consolidationLog', compact('log'));
     }
 
     public function func_parser()

@@ -41,8 +41,18 @@ class ConsolidationRuleHelper
             $el['unit_name'] = $unit->unit_name;
             $el['unit_code'] = $unit->unit_code;
         }
+        $log_initial = collect($calculationLog);
+        $log_c_sorted = $log_initial->sortBy('unit_code');
+        $log_sorted = [];
+        // конверитирование в массив с сохранением сортировки
+        foreach ($log_c_sorted as $el ) {
+            $log_sorted[] = $el;
+        }
+        $log_json = json_encode($log_sorted);
+        //dd($collected);
         $log = \App\Consolidate::firstOrNew( ['doc_id' => $doc_id, 'row_id' => $row_id, 'column_id' => $col_id ]);
-        $log->protocol = json_encode($calculationLog);
+        //$log->protocol = json_encode($collected->toArray());
+        $log->protocol = $log_json;
         $log->consolidated_at = Carbon::create();
         $log->save();
         //dd($log);
