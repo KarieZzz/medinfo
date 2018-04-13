@@ -41,8 +41,10 @@ class ConsolidationRuleHelper
             $el['unit_name'] = $unit->unit_name;
             $el['unit_code'] = $unit->unit_code;
         }
-        $log = \App\Consolidate::firstOrCreate( ['doc_id' => $doc_id, 'row_id' => $row_id, 'column_id' => $col_id,
-            'protocol' => json_encode($calculationLog), 'consolidated_at' => Carbon::create()] );
+        $log = \App\Consolidate::firstOrNew( ['doc_id' => $doc_id, 'row_id' => $row_id, 'column_id' => $col_id ]);
+        $log->protocol = json_encode($calculationLog);
+        $log->consolidated_at = Carbon::create();
+        $log->save();
         //dd($log);
         return $log;
     }

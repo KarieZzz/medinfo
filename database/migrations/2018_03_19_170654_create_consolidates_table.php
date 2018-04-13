@@ -20,6 +20,7 @@ class CreateConsolidatesTable extends Migration
             $table->integer('column_id')->index();
             $table->jsonb('protocol');
             $table->timestamp('consolidated_at')->index();
+            $table->unique(['doc_id', 'row_id', 'column_id']);
         });
     }
 
