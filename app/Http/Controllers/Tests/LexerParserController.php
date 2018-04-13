@@ -178,7 +178,8 @@ class LexerParserController extends Controller
 
     public function testCalculation()
     {
-        $rule = "расчет(Ф30Т1001С3Г4+Ф30Т1001С13Г4+Ф30Т1001С19Г4+Ф30Т1001С28Г4+Ф30Т1001С86Г4+Ф30Т1001С88Г4+Ф30Т1001С131Г4+Ф30Т1001С132Г4, список(u47_100_19))";
+        $rule = "счетмо(список(u47_100_06, u47_100_10))";
+        //$rule = "расчет(Ф30Т1001С3Г4+Ф30Т1001С13Г4+Ф30Т1001С19Г4+Ф30Т1001С28Г4+Ф30Т1001С86Г4+Ф30Т1001С88Г4+Ф30Т1001С131Г4+Ф30Т1001С132Г4, список(u47_100_19))";
         $table = Table::find(2);
         $document = Document::find(19251);
         $lexer = new \App\Medinfo\DSL\ControlFunctionLexer($rule);

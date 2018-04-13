@@ -13,7 +13,9 @@ class UnitCountEvaluator extends CalculationFunctionEvaluator
 {
     public function makeConsolidation()
     {
-
+        foreach ($this->properties['units'] as $ou_id) {
+            $this->logIteration($ou_id, 1);
+        }
     }
 
     public function evaluate()

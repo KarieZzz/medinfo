@@ -80,8 +80,8 @@
                     </div>
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-7">
-                            <button type="button" id="save" class="btn btn-primary">Сохранить изменения</button>
-                            <button type="button" id="create" class="btn btn-success">Добавить таблицу</button>
+                            <button type="button" id="save" class="btn btn-primary">Сохранить/Создать</button>
+                            <button type="button" id="create" class="btn btn-success">Очистить форму</button>
                             <button type="button" id="delete" class="btn btn-danger">Удалить таблицу</button>
                         </div>
                     </div>

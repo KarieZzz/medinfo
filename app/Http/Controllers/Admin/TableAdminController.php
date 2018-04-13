@@ -77,7 +77,6 @@ class TableAdminController extends Controller
         $newtable->medstat_code = empty($request->medstat_code) ? null : $request->medstat_code;
         $newtable->medinfo_id = empty($request->medinfo_id) ? null : $request->medinfo_id;
         $newtable->transposed = $request->transposed;
-
 /*        $newtable->save();
         if ($request->placebefore !== '') {
             $this->placebefore($newtable, $request->placebefore);

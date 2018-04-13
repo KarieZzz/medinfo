@@ -15,8 +15,6 @@ class ConsolidationRuleHelper
 {
     public static function getTableRules(\App\Table $table) {
         $rows = $table->rows->sortBy('row_index')->pluck('id')->toArray();
-        //dd($rows);
-        //dd(in_array(5445, $rows));
         $cols = $table->columns->sortBy('column_index')->pluck('id')->toArray();
         $rules = \App\ConsolidationRule::WhereIn('row_id', $rows)->WhereIn('col_id', $cols)->get();
         return $rules;
@@ -45,6 +43,7 @@ class ConsolidationRuleHelper
         }
         $log = \App\Consolidate::firstOrCreate( ['doc_id' => $doc_id, 'row_id' => $row_id, 'column_id' => $col_id,
             'protocol' => json_encode($calculationLog), 'consolidated_at' => Carbon::create()] );
+        //dd($log);
         return $log;
     }
 
