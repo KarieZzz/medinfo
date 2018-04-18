@@ -9,6 +9,7 @@
 namespace App\Medinfo\DSL;
 
 use App\Form;
+use App\Period;
 use App\Table;
 use App\Row;
 use App\Column;
@@ -207,7 +208,7 @@ class ControlPtreeTranslator
             }*/
         }
     }
-
+// TODO: Добавить обработку статических групп по периодам
     public function parseStaticGroup($static_group) {
         $units = [];
         $dtype = null;
@@ -267,7 +268,7 @@ class ControlPtreeTranslator
         if (count($this->vector)=== 0) {
             $this->iterations[] = $lightweightCAStack;
         } elseif ($this->vector[0] === self::ROWS) {
-            // Если аргумент ограничивающий итерацию по строкам (строки(...)) не пустой, выбираем строки из дапазона
+            // Если аргумент ограничивающий итерацию по строкам (строки(...)) не пустой, выбираем строки из диапазона
             if (count($this->parser->rcStack) > 0) {
                 $rows = Row::OfTable($this->table->id)->whereIn('row_code', $this->parser->rcStack)->orderBy('row_index')->get();
             } else {
@@ -291,7 +292,7 @@ class ControlPtreeTranslator
                 $this->iterations[$row->row_code] = $lightweightCAStack;
             }
         }  elseif ($this->vector[0] === self::COLUMNS) {
-            // Если аргумент ограничивающий итерацию по графам (графы(...)) не пустой, выбираем графы из дапазона
+            // Если аргумент ограничивающий итерацию по графам (графы(...)) не пустой, выбираем графы из диапазона
             if (count($this->parser->rcStack) > 0) {
                 $columns = Column::OfTable($this->table->id)->OfDataType()->whereIn('column_index', $this->parser->rcStack)->orderBy('column_index')->get();
             } else {
@@ -497,7 +498,6 @@ class ControlPtreeTranslator
                         $range[$j]['ids']['r'] = $rowid;
                         $range[$j]['ids']['c'] = $columnid;
                         $range[$j]['rowindex'] = $rowindex;
-
                         $new_ptnode->parent = $fprops['node']->parent->parent;
                         //$range->parent->addCild();
                         $fprops['node']->parent->parent->addChild($range[$j]['node']);
@@ -533,7 +533,6 @@ class ControlPtreeTranslator
             }
             $c = (int)$fprops['codes']['c'];
             do {
-                // TODO: Добавить понятие (и поле в БД) "Код графы", что бы не было коллизий про пропуске граф или при изменении их последовательности
                 $column = Column::OfTableColumnIndex($fprops['ids']['t'], $c)->first();
                 if (is_null($column)) {
                     $c++;
@@ -603,12 +602,14 @@ class ControlPtreeTranslator
         if ($props['ids']['r'] == null || $props['ids']['c'] == null) {
             $props['incomplete'] = true;
         }
+/*        isset($props['codes']['p']) ?: $props['codes']['p'] = '';
+        $this->identifyPeriod($props['codes']['p']);*/
         return $props;
     }
 
     public static function parseCelladress($celladress)
     {
-        $correct = preg_match('/(?:Ф(?P<f>[а-я0-9.-]*))?(?:Т(?P<t>[а-я0-9.-]*))?(?:С(?P<r>[0-9.-]*))?(?:Г(?P<c>\d{1,3}))?(?:П(?P<p>[01]))?/u', $celladress, $matches);
+        $correct = preg_match('/(?:Ф(?P<f>[а-я0-9.\-]*))?(?:Т(?P<t>[а-я0-9.\-]*))?(?:С(?P<r>[0-9.\-]*))?(?:Г(?P<c>\d{1,3}))?(?:П(?P<p>[0-9.\-IV]*))?/u', $celladress, $matches);
         if (!$correct) {
             throw new \Exception("Указан недопустимый адрес ячейки " . $celladress);
         }
@@ -649,38 +650,45 @@ class ControlPtreeTranslator
         }
     }
 
-    public function identifyRow($code, $table)
+    public function identifyRow($code, $table_id)
     {
         //dump($code ==='');
         if ($code ==='') {
             $this->vector[] = self::ROWS;
             return null;
         }
-        $row = Row::OfTableRowCode($table, $code)->first();
+        $row = Row::OfTableRowCode($table_id, $code)->first();
         if (is_null($row)) {
-            throw new \Exception("В таблице id:{$table} не существует строки с кодом $code");
+            $table = $this->getTableInfo($table_id);
+            $form = $table->form()->first();
+            throw new \Exception("В таблице id:{$table_id} (($table->table_code) {$table->table_name} в форме {$form->form_code}) не существует строки с кодом $code");
         }
         return $row;
     }
 
-    public function identifyColumn($code, $table)
+    public function identifyColumn($code, $table_id)
     {
         //dump($code ==='');
         if ($code ==='') {
             $this->vector[] = self::COLUMNS;
             return null;
         }
-        $column = Column::OfDataType()->OfTableColumnIndex($table, $code)->first();
+        $column = Column::OfDataType()->OfTableColumnIndex($table_id, $code)->first();
         if (is_null($column)) {
-            throw new \Exception("В таблице id:{$table} не существует графы для ввода данных с индексом $code");
+            $table = $this->getTableInfo($table_id);
+            $form = $table->form()->first();
+            throw new \Exception("В таблице id:{$table_id} (($table->table_code) {$table->table_name} в форме {$form->form_code}) не существует графы для ввода данных с индексом $code");
         }
         return $column->id;
     }
 
-    public function identifyPeriod($code)
+/*    public function identifyPeriod($code)
     {
-
-    }
+        if ($code === '') {
+            return null;
+        }
+        // TODO: Динамическая обработка периода?
+    }*/
 
     public static function setParentNode(ParseTree $node)
     {
@@ -690,6 +698,16 @@ class ControlPtreeTranslator
                 $child->parent = $node;
                 self::setParentNode($child);
             }
+        }
+    }
+
+    public function getTableInfo($table_id)
+    {
+        if ($this->table->id === $table_id) {
+            return $this->table;
+        } else {
+            $table = Table::find($table_id);
+            return $table;
         }
     }
 }

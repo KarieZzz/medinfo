@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Tests;
 
+use App\Medinfo\DSL\CompareTranslator;
 use App\Medinfo\DSL\ControlFunctionEvaluator;
 use App\Medinfo\DSL\EquationFunctionParser;
 use App\Unit;
@@ -35,7 +36,8 @@ class LexerParserController extends Controller
         //$i = "сравнение(С1, С6, >=, группы(*), графы(*))";
         //$i = "сравнение(С1, С6, >=, группы(*))";
         //$i = "сравнение((сумма(С1, С2, С16Г3:С18Г5, С20)+С31+С41)/2, С6, >=)";
-        //$i = "сравнение((сумма(Г4, Г9:Г11, Г13)+Г16)/2, Г15, >=, группы(село, !сводные , !север, !юл), строки(1.0,5.4, 7.0-18.0))";
+        //$i = "сравнение((сумма(Г4, Г9:Г11, Г13)+Г16)/2, Г15, >=, группы(село, !сводные , !север, !юл), строки(1.0,5.4,7.0-18.0))";
+        $i = "сравнение((сумма(Ф201Т1000С1Г4ПIV, Ф201Т1000С1Г9:Ф201Т1000С1Г11, Ф201Т1000С10Г13)+Ф201Т1000С2Г15П-1)/2, Ф37Т2100С01Г15П-1, >=)";
         //$i = "сравнение(С1, С6, ==,группы(),строки())";
         //$i = "сравнение(С5.8Г16, С5.8Г15, =)";
         //$i = "сравнение(С4.2.1Г13, С4.2.1Г9, =, группы(*), строки())";
@@ -77,11 +79,6 @@ class LexerParserController extends Controller
         //$i = "кратность(диапазон(С1Г3:С221Г8), 0.25 )";
         //$i = "кратность(диапазон(С01Г3:С02Г6),  .25)";
 
-        // функции рассчета
-        //$i = "счетмо(список(u47_100_09, u47_100_10))";
-        $i = "расчет(Ф30Т1100С1Г3, список(u47_100_01))";
-        //$i = "расчет(Ф30Т1001С3Г4+Ф30Т1001С13Г4+Ф30Т1001С19Г4+Ф30Т1001С28Г4+Ф30Т1001С86Г4+Ф30Т1001С88Г4+Ф30Т1001С131Г4+Ф30Т1001С132Г4, список(u47_100_19))";
-
         //$i = '(a2 - a1)/a2 * 100 > a3';
 
 
@@ -111,28 +108,29 @@ class LexerParserController extends Controller
         //$table = Table::find(15);     // Ф30 Т2100
         //$table = Table::find(50);     // Ф30 Т5117
         //$table = Table::find(252);    // Ф30 Т5301
-        //$table = Table::find(112);    // Ф12 Т2000
+        $table = Table::find(112);    // Ф12 Т2000
         //$table = Table::find(441);      // Ф12 Т4000
         //$table = Table::find(115);    // Ф32 Т2120
         //$table = Table::find(151);    // Ф41 Т2100
-        $table = Table::find(2);    // Ф47 Т0100
-        //$document = Document::find(13134); // 12 ф ГКБ№8 за 2016 год
+        //$table = Table::find(2);    // Ф47 Т0100
+        $document = Document::find(13134); // 12 ф ГКБ№8 за 2016 год
         //$document = Document::find(12269); // 12 ф Все организации 2016 год
         //$document = Document::find(13753); // 41 ф ДР1 за 2016 год
         //$document = Document::find(12657); // 30 ф РБ Слюдянка за 2016 год
         //$document = Document::find(12268); // 30 ф Свод за 2016 год
-        $document = Document::find(19251); // 47 ф за 2017 год
+        //$document = Document::find(19251); // 47 ф за 2017 год
         //dd($document);
-         $translator = Translator::invoke($parser, $table);
+         //$translator = Translator::invoke($parser, $table);
         //dd($translator);
          //$translator = new ControlPtreeTranslator($parser, $table);
+         $translator = new CompareTranslator($parser, $table);
         //$translator->setParentNodesFromRoot();
         //$translator->parseCellAdresses();
         //$translator->parseCellRanges();
         //$translator->validateVector();
          $translator->prepareIteration();
         //dd($translator);
-        //dd($translator->getProperties());
+        dd($translator->getProperties());
         //dd($translator->parser->root);
         //echo (json_encode($translator->parser->root, JSON_PARTIAL_OUTPUT_ON_ERROR));
         //echo json_last_error();
@@ -166,13 +164,15 @@ class LexerParserController extends Controller
         //dd($evaluator->arguments);
         //dd($evaluator->pTree);
         //dd($evaluator->caStack);
-        dd($evaluator->iterations);
+        //dd($evaluator->iterations);
 
-        return $evaluator->evaluate();
+        //return $evaluator->evaluate();
 
-        //$evaluator->makeControl();
+        dd($evaluator->makeControl());
         //dd($evaluator);
         //return ($evaluator->iterations);
+        //return ($evaluator->properties);
+        //return $evaluator->makeControl();
         //dd($evaluator->pTree);
     }
 

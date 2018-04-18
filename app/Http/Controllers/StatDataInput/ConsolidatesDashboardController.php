@@ -26,5 +26,4 @@ class ConsolidatesDashboardController extends DashboardController
         }
         return null;
     }
-
 }

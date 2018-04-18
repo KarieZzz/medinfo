@@ -317,15 +317,14 @@ class ControlFunctionLexer extends Lexer
             throw new \Exception("В адресе ячейки $f$t$r$c$p заполнены не все необходимые коды элементов");
         }
         if ($this->c == 'П') {
-            $p .= $this->c;
-            $this->consume();
-            if ($this->c == '0') $p .= $this->c; $this->consume();
-/*
+            //$p .= $this->c;
+            //$this->consume();
+            //if ($this->c == '0') $p .= $this->c; $this->consume();
+
              do {
                 $p .= $this->c;
                 $this->consume();
             } while ($this->isPERIODCODE());
-*/
             mb_strlen($buf) > 1 && mb_strlen($p) > 1 ? $buf .= $p : true;
         }
         $this->celladressStack->push($buf);
@@ -386,8 +385,8 @@ class ControlFunctionLexer extends Lexer
             );
     }
 
-/*    public function isPERIODCODE()
+    public function isPERIODCODE()
     {
-        return $this->c == '0' || $this->c == '1';
-    }*/
+        return ($this->c >= '0' && $this->c <= '9') || $this->c == 'I' || $this->c == 'V' || $this->c == '-';
+    }
 }

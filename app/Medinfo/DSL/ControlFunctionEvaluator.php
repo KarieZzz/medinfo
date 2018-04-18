@@ -10,6 +10,7 @@ namespace App\Medinfo\DSL;
 
 use App\Document;
 use App\Cell;
+use App\Period;
 
 class ControlFunctionEvaluator
 {
@@ -104,9 +105,10 @@ class ControlFunctionEvaluator
         $form_id = $this->document->form_id;
         foreach ($this->iterations as &$cell_adresses) {
             foreach ($cell_adresses as &$cell_adress) {
-                if ($cell_adress['ids']['f'] === $form_id) {
+                if ($cell_adress['ids']['f'] === $form_id && !isset($cell_adress['codes']['p'])) {
                     $cell = Cell::OfDRC($this->document->id, $cell_adress['ids']['r'], $cell_adress['ids']['c'])->first(['value']);
                 } else {
+
                     $document = Document::OfTUPF($dtype, $ou_id, $period_id, $cell_adress['ids']['f'])->first();
                     $cell = $document ? Cell::OfDRC($document->id, $cell_adress['ids']['r'], $cell_adress['ids']['c'])->first(['value']) : null;
                 }
@@ -135,9 +137,21 @@ class ControlFunctionEvaluator
         }
     }
 
+    public function getDocumentPeriod($code)
+    {
+        $current_period = Period::find($this->document->period_id);
+
+        switch ($code) {
+            case '-1' :
+
+        }
+    }
+
     public function makeControl()
     {
         $this->not_in_scope = $this->validateDocumentScope();
+        $result = [];
+        //dd($this->not_in_scope);
         if ($this->not_in_scope) {
             $result[0]['valid'] = true;
             $this->valid = true;
@@ -145,9 +159,9 @@ class ControlFunctionEvaluator
         }
         $this->prepareCellValues();
         $this->prepareCAstack();
-        $result = [];
         $valid = true;
         $i = 0;
+        //dd($this->iterations);
         foreach ($this->iterations as $code => $iteration) {
             $cells = $this->convertCANodes($iteration);
             $result[$i]['cells'] = $cells;
