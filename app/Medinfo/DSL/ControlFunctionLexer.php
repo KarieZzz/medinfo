@@ -387,6 +387,6 @@ class ControlFunctionLexer extends Lexer
 
     public function isPERIODCODE()
     {
-        return ($this->c >= '0' && $this->c <= '9') || $this->c == 'I' || $this->c == 'V' || $this->c == '-';
+        return ($this->c >= '0' && $this->c <= '9') || $this->c == 'I' || $this->c == 'V' || $this->c == '-' || $this->c == '+';
     }
 }

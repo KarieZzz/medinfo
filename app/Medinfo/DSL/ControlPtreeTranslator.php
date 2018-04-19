@@ -22,7 +22,7 @@ class ControlPtreeTranslator
     public $table;
     public $form;
     public $currentForm;
-    public $type = 1;
+    public $type = [];
     public $findex;
     public $scriptReadable;
     public $vector = [];
@@ -329,7 +329,7 @@ class ControlPtreeTranslator
             $properties['boolean_sign'] = $this->boolean_sign;
         }
         $properties['iterations'] = $this->iterations;
-        $properties['type'] = $this->type;
+        $properties['type'] = max($this->type);
         $properties['iteration_mode'] = isset($this->vector[0]) ? $this->vector[0] : null ;
         $properties['formula'] = $this->scriptReadable;
         $properties['function_id'] = $this->findex;
@@ -609,7 +609,7 @@ class ControlPtreeTranslator
 
     public static function parseCelladress($celladress)
     {
-        $correct = preg_match('/(?:Ф(?P<f>[а-я0-9.\-]*))?(?:Т(?P<t>[а-я0-9.\-]*))?(?:С(?P<r>[0-9.\-]*))?(?:Г(?P<c>\d{1,3}))?(?:П(?P<p>[0-9.\-IV]*))?/u', $celladress, $matches);
+        $correct = preg_match('/(?:Ф(?P<f>[а-я0-9.\-]*))?(?:Т(?P<t>[а-я0-9.\-]*))?(?:С(?P<r>[0-9.\-]*))?(?:Г(?P<c>\d{1,3}))?(?:П(?P<p>[0-9.\-\+IV]*))?/u', $celladress, $matches);
         if (!$correct) {
             throw new \Exception("Указан недопустимый адрес ячейки " . $celladress);
         }
@@ -620,10 +620,10 @@ class ControlPtreeTranslator
     public function identifyControlType($code)
     {
         if ($this->findex == 3 || $this->findex == 4) {
-            $this->type = (int)\App\DicCfunctionType::InterPeriod()->first(['code'])->code;
+            $this->type[] = (int)\App\DicCfunctionType::InterPeriod()->first(['code'])->code;
             return $this->form->id;
         } elseif ($code == $this->form->form_code || empty($code) ) {
-            $this->type = (int)\App\DicCfunctionType::InForm()->first(['code'])->code;
+            $this->type[] = (int)\App\DicCfunctionType::InForm()->first(['code'])->code;
             return $this->form->id;
         } else {
             $form = Form::OfCode($code)->first();
@@ -631,7 +631,8 @@ class ControlPtreeTranslator
                 throw new \Exception("Формы с кодом $code не существует");
             }
             $this->currentForm = $form;
-            $this->type = (int)\App\DicCfunctionType::InterForm()->first(['code'])->code;
+            $this->type[] = (int)\App\DicCfunctionType::InterForm()->first(['code'])->code;
+
             return $form->id;
         }
     }
@@ -681,14 +682,6 @@ class ControlPtreeTranslator
         }
         return $column->id;
     }
-
-/*    public function identifyPeriod($code)
-    {
-        if ($code === '') {
-            return null;
-        }
-        // TODO: Динамическая обработка периода?
-    }*/
 
     public static function setParentNode(ParseTree $node)
     {

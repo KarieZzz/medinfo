@@ -29,15 +29,40 @@ class Period extends Model
     {
         $date = ((int)$current_year - 1 ) . '-01-01';
         return $query
-
             ->where('begin_date', $date)
             ->where('pattern_id', 1); // 1 - Паттерн годового отчетного периода
     }
 
-    public function scopePreviousQuarter($query, $current_qurter)
+    public function scopePreviousAnnual($query, $current_period)
     {
-
+        $previous_annual_pattern = self::$period_cycles[$current_period->pattern_id];
+        $previous_annual_enddate = $current_period->end_date->subYear(); // Функция Carbon, вычитающая квартал из текущей даты
+        return $query
+            ->where('end_date', $previous_annual_enddate)
+            ->where('pattern_id', $previous_annual_pattern);
     }
+
+    public function scopePreviousSemiannual($query, $current_period)
+    {
+        $previous_semiannual_pattern = self::$period_cycles[$current_period->pattern_id];
+        $previous_semiannual_enddate = $current_period->end_date->subYear(); // Функция Carbon, вычитающая квартал из текущей даты
+        return $query
+            ->where('end_date', $previous_semiannual_enddate)
+            ->where('pattern_id', $previous_semiannual_pattern);
+    }
+
+    public function scopePreviousQuarter($query, $current_period)
+    {
+        $previous_quarter_pattern = self::$period_cycles[$current_period->pattern_id];
+        //dd($previous_quarter_pattern);
+        $previous_quarter_enddate = $current_period->end_date->subQuarter(); // Функция Carbon, вычитающая квартал из текущей даты
+        //dd($previous_quarter_enddate);
+        return $query
+            ->where('end_date', $previous_quarter_enddate)
+            ->where('pattern_id', $previous_quarter_pattern);
+    }
+
+
 
     public function periodpattern()
     {
