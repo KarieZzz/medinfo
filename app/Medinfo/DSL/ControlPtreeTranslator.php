@@ -590,7 +590,7 @@ class ControlPtreeTranslator
         $props['incomplete'] = false;
 
         //dump($props);
-        $props['ids']['f'] = $this->identifyControlType($props['codes']['f']);
+        $props['ids']['f'] = $this->identifyControlType($props['codes']);
         $props['ids']['t'] = $this->identifyTable($props['codes']['t'], $props['ids']['f']);
         $row = $this->identifyRow($props['codes']['r'], $props['ids']['t']);
         if ($row) {
@@ -617,18 +617,22 @@ class ControlPtreeTranslator
         return $matches;
     }
 
-    public function identifyControlType($code)
+    public function identifyControlType($codes)
     {
         if ($this->findex == 3 || $this->findex == 4) {
             $this->type[] = (int)\App\DicCfunctionType::InterPeriod()->first(['code'])->code;
             return $this->form->id;
-        } elseif ($code == $this->form->form_code || empty($code) ) {
+        } elseif (($codes['f'] == $this->form->form_code || empty($codes['f'])) && !isset($codes['p'])) {
             $this->type[] = (int)\App\DicCfunctionType::InForm()->first(['code'])->code;
             return $this->form->id;
+        } elseif (($codes['f'] == $this->form->form_code || empty($codes['f'])) && isset($codes['p']))  {
+            $this->type[] = (int)\App\DicCfunctionType::InterForm()->first(['code'])->code;
+            return $this->form->id;
         } else {
-            $form = Form::OfCode($code)->first();
+            //dd($codes);
+            $form = Form::OfCode($codes['f'])->first();
             if (is_null($form)) {
-                throw new \Exception("Формы с кодом $code не существует");
+                throw new \Exception("Формы с кодом {$codes['f']} не существует");
             }
             $this->currentForm = $form;
             $this->type[] = (int)\App\DicCfunctionType::InterForm()->first(['code'])->code;

@@ -20,7 +20,6 @@ class Period extends Model
     {
         $date = ((int)date("Y") - 1 ) . '-01-01';
         return $query
-
             ->where('begin_date', $date)
             ->where('pattern_id', 1); // 1 - Паттерн годового отчетного периода
     }

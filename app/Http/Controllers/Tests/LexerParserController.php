@@ -39,7 +39,9 @@ class LexerParserController extends Controller
         //$i = "сравнение((сумма(Г4, Г9:Г11, Г13)+Г16)/2, Г15, >=, группы(село, !сводные , !север, !юл), строки(1.0,5.4,7.0-18.0))";
         //$i = "сравнение((Ф201Т1000С2Г4ПI + сумма(Ф201Т1000С1Г4ПI, Ф201Т1000С1Г9:Ф201Т1000С1Г11, Ф201Т1000С10Г13)+Ф201Т1000С2Г15П-1)/2, Ф37Т2100С01Г15П-1, >=)";
         // проверка смешанного контроля, со ссылками на ячейки из разных периодов
-        $i = "сравнение((Ф201Т1000С3Г3П-1 + Ф201Т1000С3Г3П-1, Ф201Т1000С3Г3, =)";
+        //$i = "сравнение(Ф201Т1000С3.1Г3П0 + Ф201Т1000С1.1Г3 - Ф201Т1000С2.1Г3, Ф201Т1000С3.1Г3, =)";
+        //$i = "сравнение(Ф12Т2000С1.0Г15ПII+ + Ф12Т2000С1.0Г8 - Ф12Т2000С1.0Г14, Ф12Т2000С1.0Г15 , =)";
+        $i = "сравнение(Г15П-1 + Г8 - Г14, Г15 , =, строки(1.0-3.0))";
         //$i = "сравнение(С1, С6, ==,группы(),строки())";
         //$i = "сравнение(С5.8Г16, С5.8Г15, =)";
         //$i = "сравнение(С4.2.1Г13, С4.2.1Г9, =, группы(*), строки())";
@@ -110,19 +112,20 @@ class LexerParserController extends Controller
         //$table = Table::find(15);     // Ф30 Т2100
         //$table = Table::find(50);     // Ф30 Т5117
         //$table = Table::find(252);    // Ф30 Т5301
-        //$table = Table::find(112);    // Ф12 Т2000
+        $table = Table::find(112);    // Ф12 Т2000
         //$table = Table::find(441);      // Ф12 Т4000
         //$table = Table::find(115);    // Ф32 Т2120
         //$table = Table::find(151);    // Ф41 Т2100
         //$table = Table::find(2);    // Ф47 Т0100
-        $table = Table::find(992);    // Ф201 Т1000
+        //$table = Table::find(992);    // Ф201 Т1000
         //$document = Document::find(13134); // 12 ф ГКБ№8 за 2016 год
+        $document = Document::find(16845); // 12 ф ГКБ№8 за 2017 год
         //$document = Document::find(12269); // 12 ф Все организации 2016 год
         //$document = Document::find(13753); // 41 ф ДР1 за 2016 год
         //$document = Document::find(12657); // 30 ф РБ Слюдянка за 2016 год
         //$document = Document::find(12268); // 30 ф Свод за 2016 год
         //$document = Document::find(19251); // 47 ф за 2017 год
-        $document = Document::find(19264); // 201 ф за 1 квартал 2018 года (наркология)
+        //$document = Document::find(19264); // 201 ф за 1 квартал 2018 года (наркология)
         //dd($document);
          //$translator = Translator::invoke($parser, $table);
         //dd($translator);
@@ -148,6 +151,7 @@ class LexerParserController extends Controller
         //dd($translator->scriptReadable);
         //dd($translator->iterations);
         //dd(json_decode(json_encode($translator->iterations), TRUE));
+        //dd($translator->type);
         //dd($translator->getProperties());
 
 
@@ -159,12 +163,12 @@ class LexerParserController extends Controller
         //$props = json_decode($cfunc->properties, true);
         //dd($props);
         //dd($iterations);
-        //$evaluator = Evaluator::invoke($translator->parser->root, $translator->getProperties(), $document);
-        $evaluator = new ControlFunctionEvaluator($translator->parser->root, $translator->getProperties(), $document);
+        $evaluator = Evaluator::invoke($translator->parser->root, $translator->getProperties(), $document);
+        //$evaluator = new ControlFunctionEvaluator($translator->parser->root, $translator->getProperties(), $document);
         //$evaluator = new ControlFunctionEvaluator($pTree, $props, $document);
 
         $evaluator->prepareCellValues();
-        //$evaluator->prepareCAstack();
+        $evaluator->prepareCAstack();
         //dd($evaluator->arguments);
         //dd($evaluator->pTree);
         //dd($evaluator->caStack);

@@ -111,11 +111,18 @@ class ControlFunctionEvaluator
                 } else {
                     if (isset($cell_adress['codes']['p'])) {
                         $period = $this->getDocumentPeriod($cell_adress['codes']['p']);
+                        //dd($period);
                         $period ? $document = Document::OfTUPF($dtype, $ou_id, $period->id, $cell_adress['ids']['f'])->first() : $document = null;
                     } else {
                         $document = Document::OfTUPF($dtype, $ou_id, $period_id, $cell_adress['ids']['f'])->first();
                     }
-                    $cell = $document ? Cell::OfDRC($document->id, $cell_adress['ids']['r'], $cell_adress['ids']['c'])->first(['value']) : null;
+                    if ($document) {
+                        $cell_adress['doc_exists'] = true;
+                        $cell = Cell::OfDRC($document->id, $cell_adress['ids']['r'], $cell_adress['ids']['c'])->first(['value']);
+                    } else {
+                        $cell_adress['doc_exists'] = false;
+                        $cell = null;
+                    }
                 }
                 !$cell ? $value = 0 : $value = (float)$cell->value;
                 $cell_adress['value'] = $value;
@@ -151,31 +158,51 @@ class ControlFunctionEvaluator
         $previous_period = null;
         switch ($code) {
             case '-1' :
-                $previous_period = $this->getPreviousPeriod($current_period, $period_pattern);
+                $previous_period = $this->getPreviousRelativePeriod($current_period, $period_pattern);
+                return $previous_period;
+            case '0' :
+                $periodicity = 1;
+                $previous_period_pattern = PeriodPattern::Year()->first();
                 break;
             case 'I' :
-                $previous_period = Period::whereHas('periodpattern', function ($query) {
-                    $query
-                        ->where('periodicity', 3)
-                        ->where('begin', '01-01')
-                        ->where('end', '03-31');
-                })->first();
-                //dd($previous_period);
+                $periodicity = 3;
+                $previous_period_pattern = PeriodPattern::I()->first();
+                break;
+            case 'II' :
+                $periodicity = 3;
+                $previous_period_pattern = PeriodPattern::II()->first();
+                break;
+            case 'III' :
+                $periodicity = 3;
+                $previous_period_pattern = PeriodPattern::III()->first();
+                break;
+            case 'IV' :
+                $periodicity = 3;
+                $previous_period_pattern = PeriodPattern::IV()->first();
                 break;
             case 'I+' :
-                $previous_period = Period::whereHas('periodpattern', function ($query) {
-                    $query
-                        ->where('periodicity', 4)
-                        ->where('begin', '01-01')
-                        ->where('end', '03-31');
-                })->get();
-                //dd($previous_period);
+                $periodicity = 4;
+                $previous_period_pattern = PeriodPattern::Iplus()->first();
+                break;
+            case 'II+' :
+                $periodicity = 4;
+                $previous_period_pattern = PeriodPattern::IIplus()->first();
+                break;
+            case 'III+' :
+                $periodicity = 4;
+                $previous_period_pattern = PeriodPattern::IIIplus()->first();
+                break;
+            case 'IV+' :
+                $periodicity = 4;
+                $previous_period_pattern = PeriodPattern::IVplus()->first();
                 break;
         }
+        $previous_period = $this->getPreviousPeriod($current_period, $period_pattern, $previous_period_pattern, $periodicity);
+        //dd($previous_period);
         return $previous_period;
     }
 
-    public function getPreviousPeriod(Period $current_period, PeriodPattern $period_pattern)
+    public function getPreviousRelativePeriod(Period $current_period, PeriodPattern $period_pattern)
     {
         switch ($period_pattern->periodicity) {
             case 1 : // годовые периоды
@@ -188,6 +215,25 @@ class ControlFunctionEvaluator
             case 4 :
                 $previous_period = Period::PreviousQuarter($current_period)->first();
         }
+        return $previous_period;
+    }
+
+    public function getPreviousPeriod(Period $current_period, PeriodPattern $period_pattern, PeriodPattern $previous_period_pattern, int $periodicity)
+    {
+        if ($period_pattern->periodicity !== $periodicity) {
+            $bool = '<=';
+        } else {
+            $bool = '<';
+        }
+        $previous_period = Period::whereHas('periodpattern', function ($query) use ($periodicity, $previous_period_pattern) {
+            $query
+                ->where('periodicity', $periodicity)
+                ->where('begin', $previous_period_pattern->begin)
+                ->where('end', $previous_period_pattern->end);
+        })
+            ->where('end_date', $bool , $current_period->end_date)
+            ->orderBy('end_date', 'desc')
+            ->first();
         return $previous_period;
     }
 
