@@ -15,6 +15,7 @@ class CreatePeriodPatternsTable extends Migration
         Schema::create('period_patterns', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name', 64)->index();
+            $table->char('name', 5)->index();
             $table->integer('periodicity')->index();
             $table->char('begin', 5)->index();
             $table->char('end', 5)->index();

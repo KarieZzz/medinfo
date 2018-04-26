@@ -31,6 +31,9 @@ class ControlPtreeTranslator
     public $units = [];
     public $scopeOfDocuments = false;
     public $documents = [];
+    public $scopeOfPeriods = false;
+    public $incl_periods = [];
+    public $excl_periods = [];
     public $iterations = [];
     const ROWS = 1;
     const COLUMNS = 2;
@@ -145,6 +148,8 @@ class ControlPtreeTranslator
     {
         $includes = [];
         $excludes = [];
+        $include_periods =[];
+        $exclude_periods = [];
         if (count($this->parser->includeGroupStack) > 0 ||  count($this->parser->excludeGroupStack) > 0) {
             $this->scopeOfUnits = true;
             foreach ($this->parser->includeGroupStack as $group_slug) {
@@ -161,7 +166,9 @@ class ControlPtreeTranslator
                         if(!is_null($static['dtype'])) {
                             $this->documents[] = $static['dtype'];
                         }
-
+                        if(!is_null($static['period'])) {
+                            $this->incl_periods[] = $static['period'];
+                        }
                     }
                 }
              }
@@ -178,7 +185,12 @@ class ControlPtreeTranslator
                     $static = $this->parseStaticGroup($group_slug);
                     if ($static) {
                         $excludes = array_merge($excludes, $static['units']);
-                        $this->documents[] = $static['dtype'] === 1 ? 2 : 1;
+                        if(!is_null($static['dtype'])) {
+                            $this->documents[] = $static['dtype'] === 1 ? 2 : 1;
+                        }
+                        if(!is_null($static['period'])) {
+                            $this->excl_periods[] = $static['period'];
+                        }
                     }
                 }
             }
@@ -195,7 +207,14 @@ class ControlPtreeTranslator
                 throw new \Exception("Не допускается дублирование включения или исключения документа в контроль в соответствии с типом (первичные, сводные)");
             }
             //dd($this->excldocuments);
+            $period_duplication = array_intersect($this->incl_periods, $this->excl_periods);
+            if (count($period_duplication) > 0) {
+                throw new \Exception("Не допускается дублирование включения или исключения в/из области видимости одних и тех же периодов");
+            }
+            $this->incl_periods = array_unique($this->incl_periods);
+            $this->excl_periods = array_unique($this->excl_periods);
 
+            //dd($this->incl_periods);
 /*            $i = 1;
             foreach ($this->units as $u) {
                 $unit = Unit::find($u);
@@ -211,6 +230,7 @@ class ControlPtreeTranslator
 // TODO: Добавить обработку статических групп по периодам
     public function parseStaticGroup($static_group) {
         $units = [];
+        $period = null;
         $dtype = null;
         switch ($static_group) {
             case UnitGroup::$reserved_slugs[1] :
@@ -233,11 +253,33 @@ class ControlPtreeTranslator
             case UnitGroup::$reserved_slugs[8] :
                 $units = Unit::Territory()->get()->pluck('id')->toArray();
                 break;
+                // Периоды месячные
+            case UnitGroup::$reserved_slugs[9]  :
+            case UnitGroup::$reserved_slugs[10] :
+            case UnitGroup::$reserved_slugs[11] :
+            case UnitGroup::$reserved_slugs[12] :
+            case UnitGroup::$reserved_slugs[13] :
+            case UnitGroup::$reserved_slugs[14] :
+            case UnitGroup::$reserved_slugs[15] :
+            case UnitGroup::$reserved_slugs[16] :
+            case UnitGroup::$reserved_slugs[17] :
+            case UnitGroup::$reserved_slugs[18] :
+            case UnitGroup::$reserved_slugs[19] :
+            case UnitGroup::$reserved_slugs[20] :
+            case UnitGroup::$reserved_slugs[21] :
+                // Периоды квартальные
+            case UnitGroup::$reserved_slugs[22] :
+            case UnitGroup::$reserved_slugs[23] :
+            case UnitGroup::$reserved_slugs[24] :
+            case UnitGroup::$reserved_slugs[25] :
+                $this->scopeOfPeriods = true;
+                $period = $static_group;
+                break;
             default:
                 throw new \Exception("Группа $static_group не определена");
         }
 
-        return compact('units', 'dtype');
+        return compact('units', 'period', 'dtype');
     }
 
     public function parseFunctionIndex()
@@ -338,6 +380,11 @@ class ControlPtreeTranslator
         $properties['units'] = $this->units;
         $properties['scope_documents'] = $this->scopeOfDocuments;
         $properties['documents'] = $this->documents;
+        $properties['scope_periods'] = $this->scopeOfPeriods;
+        $properties['incl_periods'] = $this->incl_periods;
+        $properties['excl_periods'] = $this->excl_periods;
+
+
         return $properties;
     }
 

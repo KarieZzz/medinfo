@@ -16,6 +16,8 @@ use App\PeriodPattern;
 class ControlFunctionEvaluator
 {
     public $document;
+    public $period;
+    public $pattern;
     public $pTree;
     public $properties;
     public $iterations;
@@ -29,29 +31,54 @@ class ControlFunctionEvaluator
         $this->pTree = $ptree;
         $this->properties = $properties;
         $this->document = $document;
+        $this->period = $this->document->period;
+        //dd($this->period);
+        $this->pattern = $this->period->periodpattern;
+        //dd($this->pattern);
         $this->setIterations();
         $this->setArguments();
     }
 
     public function validateDocumentScope()
     {
-        $exclude_by_type = false;
-        $exclude_by_ou_id = false;
+        $exclude = [];
+
         if ($this->properties['scope_documents']) {
             if ($this->document->dtype === $this->properties['documents'][0]) {
-                $exclude_by_type = false;
+                $exclude[] = 0;
             } else {
-                $exclude_by_type = true;
+                $exclude[] = 1;
             }
         }
         if ($this->properties['scope_units']) {
             if (in_array($this->document->ou_id, $this->properties['units'])) {
-                $exclude_by_ou_id = false;
+                $exclude[] = 0;
             } else {
-                $exclude_by_type = true;
+                $exclude[] = 1;
             }
         }
-        return $exclude_by_type xor $exclude_by_ou_id;
+        $slug = 'п' . trim($this->pattern->slug);
+        //dd($slug);
+        if ($this->properties['scope_periods']) {
+            if (count($this->properties['incl_periods']) > 0 && in_array($slug, $this->properties['incl_periods']) ) {
+                $exclude[] = 0;
+            } elseif (count($this->properties['incl_periods']) == 0) {
+                $exclude[] = 0;
+            } else {
+                $exclude[] = 1;
+            }
+            if (count($this->properties['excl_periods']) > 0 && in_array($slug, $this->properties['excl_periods']) ) {
+                $exclude[] = 1;
+            } else {
+                $exclude[] = 0;
+            }
+        }
+        //dd($exclude);
+        if (array_sum($exclude) > 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public function setIterations()
@@ -151,14 +178,10 @@ class ControlFunctionEvaluator
 
     public function getDocumentPeriod($code)
     {
-        $current_period = Period::find($this->document->period_id);
-        //dd($current_period );
-        $period_pattern = $current_period->periodpattern()->first();
-        //dd($period_pattern->periodicity);
         $previous_period = null;
         switch ($code) {
             case '-1' :
-                $previous_period = $this->getPreviousRelativePeriod($current_period, $period_pattern);
+                $previous_period = $this->getPreviousRelativePeriod();
                 return $previous_period;
             case '0' :
                 $periodicity = 1;
@@ -197,30 +220,30 @@ class ControlFunctionEvaluator
                 $previous_period_pattern = PeriodPattern::IVplus()->first();
                 break;
         }
-        $previous_period = $this->getPreviousPeriod($current_period, $period_pattern, $previous_period_pattern, $periodicity);
+        $previous_period = $this->getPreviousPeriod($previous_period_pattern, $periodicity);
         //dd($previous_period);
         return $previous_period;
     }
 
-    public function getPreviousRelativePeriod(Period $current_period, PeriodPattern $period_pattern)
+    public function getPreviousRelativePeriod()
     {
-        switch ($period_pattern->periodicity) {
+        switch ($this->pattern->periodicity) {
             case 1 : // годовые периоды
-                $previous_period = Period::PreviousAnnual($current_period)->first();
+                $previous_period = Period::PreviousAnnual($this->period)->first();
                 break;
             case 2 : // полугодовые периоды
-                $previous_period = Period::PreviousSemiannual($current_period)->first();
+                $previous_period = Period::PreviousSemiannual($this->period)->first();
                 break;
             case 3 : // квартальные периоды
             case 4 :
-                $previous_period = Period::PreviousQuarter($current_period)->first();
+                $previous_period = Period::PreviousQuarter($this->period)->first();
         }
         return $previous_period;
     }
 
-    public function getPreviousPeriod(Period $current_period, PeriodPattern $period_pattern, PeriodPattern $previous_period_pattern, int $periodicity)
+    public function getPreviousPeriod(PeriodPattern $previous_period_pattern, int $periodicity)
     {
-        if ($period_pattern->periodicity !== $periodicity) {
+        if ($this->pattern->periodicity !== $periodicity) {
             $bool = '<=';
         } else {
             $bool = '<';
@@ -231,7 +254,7 @@ class ControlFunctionEvaluator
                 ->where('begin', $previous_period_pattern->begin)
                 ->where('end', $previous_period_pattern->end);
         })
-            ->where('end_date', $bool , $current_period->end_date)
+            ->where('end_date', $bool , $this->period->end_date)
             ->orderBy('end_date', 'desc')
             ->first();
         return $previous_period;
