@@ -97,7 +97,8 @@ let formlabels =
         dependency: 2,
         interannual: 3,
         iadiapazon: 4,
-        multiplicity: 5
+        multiplicity: 5,
+        ipdiapazon: 19
     };
 let initialViewport = $(window).height();
 let topOffset1 = 150;

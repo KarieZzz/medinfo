@@ -363,6 +363,7 @@ let renderFunctionProtocol = function (container, table_id, rule) {
                     row = renderInterannualControl(result, rule.level);
                     break;
                 case formlabels.iadiapazon :
+                case formlabels.ipdiapazon :
                     row = renderInDiapazonControl(result, rule.level);
                     break;
                 case formlabels.multiplicity :

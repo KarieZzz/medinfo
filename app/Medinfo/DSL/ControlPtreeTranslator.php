@@ -666,7 +666,7 @@ class ControlPtreeTranslator
 
     public function identifyControlType($codes)
     {
-        if ($this->findex == 3 || $this->findex == 4) {
+        if ($this->findex == 3 || $this->findex == 4 || $this->findex == 19) {
             $this->type[] = (int)\App\DicCfunctionType::InterPeriod()->first(['code'])->code;
             return $this->form->id;
         } elseif (($codes['f'] == $this->form->form_code || empty($codes['f'])) && !isset($codes['p'])) {

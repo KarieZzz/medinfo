@@ -54,7 +54,7 @@ class Period extends Model
     {
         $previous_quarter_pattern = self::$period_cycles[$current_period->pattern_id];
         //dd($previous_quarter_pattern);
-        $previous_quarter_enddate = $current_period->end_date->subQuarter(); // Функция Carbon, вычитающая квартал из текущей даты
+        $previous_quarter_enddate = $current_period->end_date->subQuarter()->subDay()->endOfMonth(); // Функция Carbon, вычитающая квартал из текущей даты
         //dd($previous_quarter_enddate);
         return $query
             ->where('end_date', $previous_quarter_enddate)
