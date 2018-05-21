@@ -65,6 +65,7 @@ class BriefReferenceMaker extends Controller
         $columns = Column::whereIn('id', explode(',', $request->columns))->orderBy('column_index')->get();
         $level = (int)$request->level;
         $type = (int)$request->type;
+        //dd($type);
         $aggregate_level = (int)$request->aggregate;
         $output = $request->output;
         $group_title = '';
@@ -76,7 +77,8 @@ class BriefReferenceMaker extends Controller
             if ($type == 1 || $type == 2) {
                 $units = collect(Unit::getPrimaryDescendants($level));
                 //dd($units);
-                $top = $units->shift();
+                //$top = $units->shift();
+                $top = Unit::find($level);
             } elseif ($type == 5) {
                 $top = UnitGroup::find($level);
                 $members = UnitGroupMember::OfGroup($level)->get(['ou_id']);

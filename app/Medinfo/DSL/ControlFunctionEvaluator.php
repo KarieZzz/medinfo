@@ -157,7 +157,6 @@ class ControlFunctionEvaluator
         }
     }
 
-
     public function prepareCAstack()
     {
         $this->getCAnode($this->pTree);
