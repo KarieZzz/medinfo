@@ -36,7 +36,7 @@
         <tr>
             <td colspan="2"><strong>{{ $top->unit_name or $top->group_name }}</strong></td>
             @foreach($values[999999] as $aggregate)
-                <td><strong>{{ $aggregate }}</strong></td>
+                <td>{{ $aggregate }}</td>
             @endforeach
         </tr>
     </table>
