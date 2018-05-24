@@ -75,11 +75,11 @@ class FunctionDispatcher
 
     public static $translators = [
         null,
-        "CompareTranslator",
-        "DependencyTranslator",
-        "InterannualTranslator",
-        "IAdiapazonTranslator",
-        "MultiplicityTranslator",
+        1  => "CompareTranslator",
+        2  => "DependencyTranslator",
+        3  => "InterannualTranslator",
+        4  => "IAdiapazonTranslator",
+        5  => "MultiplicityTranslator",
         15 => "UnitCountTranslator",
         17 => "CalculationTranslator",
         18 => "ValueCountTranslator",
@@ -88,11 +88,11 @@ class FunctionDispatcher
 
     public static $evaluators = [
         null,
-        "CompareEvaluator",
-        "DependencyEvaluator",
-        "InterannualEvaluator",
-        "IAdiapazonEvaluator",
-        "MultiplicityEvaluator",
+        1  => "CompareEvaluator",
+        2  => "DependencyEvaluator",
+        3  => "InterannualEvaluator",
+        4  => "IAdiapazonEvaluator",
+        5  => "MultiplicityEvaluator",
         15 => "UnitCountEvaluator",
         17 => "CalculationEvaluator",
         18 => "ValueCountEvaluator",

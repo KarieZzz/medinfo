@@ -57,7 +57,7 @@
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
     <script src="{{ asset('/medinfo/admin/tablepicker.js?v=007') }}"></script>
-    <script src="{{ asset('/medinfo/admin/necellsadmin.js?v=004') }}"></script>
+    <script src="{{ asset('/medinfo/admin/necellsadmin.js?v=006') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -81,6 +81,7 @@
         let conditions = {!! $conditions !!};
         let current_form = 0;
         let current_table = 0;
+        let cellbeginedit = null;
         let datafields = [ { name: 'id' }, { name: '1' } ];
         let columns = [{ text: '1', columngroup: 'графа1', datafield: '1', width: 250 } ];
         let columngroups = [ { text: 'Графа 1', align: 'center', name: 'графа1' } ] ;

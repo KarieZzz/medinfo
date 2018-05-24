@@ -33,10 +33,10 @@ initdatasources = function() {
             }
         },*/
         loadError: function(jqXHR, status, error) {
-            if (jqXHR.status == 401) {
+            if (jqXHR.status === 401) {
                 raiseError('Пользователь не авторизован.', jqXHR );
             }
-            if (jqXHR.status == 404) {
+            if (jqXHR.status === 404) {
                 $("#tableProperties").html('<div>Выберите форму и таблицу для редактирования</div>');
             }
         }
@@ -85,13 +85,9 @@ initTableGrid = function() {
             columns: columns,
             columngroups: columngroups
         });
-    //$('#tableGrid').on('cellselect', function (event) {
-
-        //console.log(cells.length);
-    //});
 
     grid.on('cellselect',  function() {
-        let cells = $('#tableGrid').jqxGrid('getselectedcells');
+        //let cells = $('#tableGrid').jqxGrid('getselectedcells');
         if (cellbeginedit) {
             clearTimeout(cellbeginedit);
         }
@@ -101,12 +97,12 @@ initTableGrid = function() {
     });
 
     grid.on('cellvaluechanged', function (event) {
-        var rowBoundIndex = args.rowindex;
-        var rowid = $('#tableGrid').jqxGrid('getrowid', rowBoundIndex);
-        var condition = $("#condition").val() !== ''  ? $("#condition").val() : 0 ;
+        let rowBoundIndex = args.rowindex;
+        let rowid = $('#tableGrid').jqxGrid('getrowid', rowBoundIndex);
+        let condition = $("#condition").val() !== ''  ? $("#condition").val() : 0 ;
         //console.log(condition);
-        var colid = event.args.datafield;
-        var newstate = args.newvalue ? 1 : 0;
+        let colid = event.args.datafield;
+        let newstate = args.newvalue ? 1 : 0;
         //var oldvalue = args.oldvalue;
         $.ajax({
             dataType: 'json',
@@ -132,11 +128,11 @@ initTableGrid = function() {
 
 fetchcellcondition = function() {
     $("#conditionInfo").html('Выделено ячеек: 0');
-    var range = [];
-    var cells = grid.jqxGrid('getselectedcells');
-    var selected_count = cells.length;
-    var rowid;
-    var cell;
+    let range = [];
+    let cells = grid.jqxGrid('getselectedcells');
+    let selected_count = cells.length;
+    let rowid;
+    let cell;
     for (i = 0; i < selected_count; i++) {
         rowid = grid.jqxGrid('getrowid', cells[i].rowindex);
         cell = grid.jqxGrid('getcell', cells[i].rowindex, cells[i].datafield);
@@ -150,9 +146,9 @@ fetchcellcondition = function() {
             url: fetchcellcondition_url + range,
             method: "GET",
             success: function (data, status, xhr) {
-                var message;
+                let message;
                 //console.log(data.length);
-                if (data.length == 1) {
+                if (data.length === 1) {
                     message = data[0] == null ? "Для выделенного диапазона условия не определены (для всех учреждений)" : 'Для выделенного диапазона определено условие: <strong>"' + data[0] + '"</strong>';
                     $("#conditionInfo").html(message);
                 }
@@ -233,18 +229,18 @@ initCellActions = function() {
 };
 
 setcellrange = function(noedit) {
-    var newstate = noedit ? 1 : 0;
-    var condition = $("#condition").val() !== ''  ? $("#condition").val() : 0 ;
-    var range = [];
-    var cells = grid.jqxGrid('getselectedcells');
-    var selected_count = cells.length;
-    var rowid;
+    let newstate = noedit ? 1 : 0;
+    let condition = $("#condition").val() !== ''  ? $("#condition").val() : 0 ;
+    let range = [];
+    let cells = grid.jqxGrid('getselectedcells');
+    let selected_count = cells.length;
+    let rowid;
     for (i = 0; i < selected_count; i++) {
         //console.log(cells[i]);
         rowid = $('#tableGrid').jqxGrid('getrowid', cells[i].rowindex);
         range.push(rowid + '_' + cells[i].datafield);
     }
-    var data = range + '/' + newstate + '/' + condition;
+    let data = range + '/' + newstate + '/' + condition;
     $.ajax({
         dataType: 'json',
         url: changerangestate_url + data,

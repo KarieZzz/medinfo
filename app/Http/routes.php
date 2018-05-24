@@ -171,6 +171,10 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('admin/consolidation/getstruct/{table}', 'Admin\ConsolidationRuleAdminController@getTableStruct' );
     Route::get('admin/consolidation/getrules/{table}', 'Admin\ConsolidationRuleAdminController@getRules' );
 
+    Route::get('admin/cons', 'Admin\ConsRulesAndListsAdminController@index');
+    Route::patch('admin/consolidation/applyrule', 'Admin\ConsRulesAndListsAdminController@applyRule');
+    Route::patch('admin/consolidation/applylist', 'Admin\ConsRulesAndListsAdminController@applyList');
+
     // Расчет консолидированных документов
     Route::get('admin/consolidate/{document}', 'Admin\DocumentConsolidationController@consolidateDocument' );
     Route::get('admin/consolidate_table/{document}/{table}', 'Admin\DocumentConsolidationController@consolidatePivotTable' );
