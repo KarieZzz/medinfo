@@ -37,7 +37,7 @@ class DocumentConsolidationController extends Controller
         //dd($rules);
         $cell_affected = 0;
         // очищаем таблицу перед заполнением
-        $affected = Cell::Where('doc_id', $document->id)->Where('table_id', $table->id)->delete();
+        $cell_truncated = Cell::Where('doc_id', $document->id)->Where('table_id', $table->id)->delete();
         foreach ($rules as $rule) {
             //dd($rule);
             $value = ConsolidationRuleHelper::evaluateRule($rule, $document, $table);
@@ -55,6 +55,6 @@ class DocumentConsolidationController extends Controller
                 }
             }
         }
-        return ['consolidated' => true, 'cell_affected' => $cell_affected];
+        return ['consolidated' => true, 'cell_affected' => $cell_affected, 'cell_truncated' => $cell_truncated ];
     }
 }

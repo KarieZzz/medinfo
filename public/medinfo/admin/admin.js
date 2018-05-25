@@ -2,19 +2,21 @@
  * Created by shameev on 31.08.2016.
  */
 raiseError = function(comment, xhr) {
-    if (typeof comment == 'undefined') {
-        var comment = 'Ошибка получения данных ';
+    let add_inf;
+    if (typeof comment === 'undefined') {
+        comment = 'Ошибка получения данных ';
     }
-    if (typeof xhr != 'undefined') {
-        var add_inf = ' (Код ошибки ' + xhr.status + ')';
+    if (typeof xhr !== 'undefined') {
+        add_inf = ' (Код ошибки ' + xhr.status + ')';
     } else {
-        var add_inf = '';
+        add_inf = '';
     }
     $("#currentError").text(comment + add_inf);
     $("#serverErrorNotification").jqxNotification("open");
 };
+
 raiseInfo = function(comment) {
-    if (typeof comment == 'undefined') {
+    if (typeof comment === 'undefined') {
         comment = 'Текст информационного сообщения по умолчанию ';
     }
     $("#currentInfoMessage").text(comment);
@@ -31,10 +33,10 @@ hideConfirm = function() {
 };
 
 localize = function() {
-    var localizationobj = {};
+    let localizationobj = {};
     localizationobj.thousandsseparator = " ";
     localizationobj.emptydatastring = "Нет данных";
-    localizationobj.loadtext = "Загрузка..";
+    localizationobj.loadtext = "Загрузка";
     localizationobj.filtershowrowstring = "Показать строки где:";
     localizationobj.filtersearchstring = "Поиск:";
     return localizationobj;

@@ -68,8 +68,8 @@
         let current_row_number_datafield;
         let selected = [];
         let rule_url = '/admin/consolidation';
-        let applyrule_url = '/admin/consolidation/applyrule';
-        let applylist_url = '/admin/consolidation/applylist';
+        let applyrule_url = '/admin/cons/applyrule';
+        let applylist_url = '/admin/cons/applylist';
         gridEventsInit();
         initactions();
     </script>

@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ConsolidationRule extends Model
+class ConsolidationList extends Model
 {
     //
     protected $fillable = ['row_id', 'col_id', 'script', 'hash', 'comment'];
@@ -25,5 +25,4 @@ class ConsolidationRule extends Model
     {
         return $this->belongsTo('App\Column', 'col_id');
     }
-
 }

@@ -1,6 +1,7 @@
 
 function updateRelated() {
     ruleinput.val('');
+    listinput.val('');
     selectionlog.html('');
     grid.jqxGrid({
         width: '98%',
@@ -162,7 +163,30 @@ let initactions = function() {
         for (i = 0; i < selected_count; i++) {
             cell_diapazon.push(selected[i].rowid + '_' + selected[i].colid)
         }
-        console.log(setquerystring(cell_diapazon));
+        //console.log(setquerystring(cell_diapazon));
+        $.ajax({
+            dataType: 'json',
+            url: applylist_url,
+            method: "PATCH",
+            data: setquerystring(cell_diapazon),
+            success: function (data, status, xhr) {
+                if (typeof data.error !== 'undefined') {
+                    raiseError(data.message);
+                } else {
+                    raiseInfo(data.message);
+                }
+                grid.jqxGrid('updatebounddata', 'data');
+                grid.on("bindingcomplete", function (event) {
+                    //let newindex = grid.jqxGrid('getrowboundindexbyid', rowid);
+                    //grid.jqxGrid('selectrow', newindex);
+                });
+            },
+            error: function (xhr, status, errorThrown) {
+                $.each(xhr.responseJSON, function(field, errorText) {
+                    raiseError(errorText);
+                });
+            }
+        });
 
     });
     $("#clearrule").click(function () {

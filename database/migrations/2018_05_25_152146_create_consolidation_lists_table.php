@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class ConsolidationRulesTable extends Migration
+class CreateConsolidationListsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class ConsolidationRulesTable extends Migration
     public function up()
     {
         //
-        Schema::create('consolidation_rules', function (Blueprint $table) {
+        Schema::create('consolidation_lists', function (Blueprint $table) {
             $table->increments('id');
             $table->string('script', 512)->unique();
             $table->char('hash', 10)->unique();
@@ -30,6 +30,6 @@ class ConsolidationRulesTable extends Migration
     public function down()
     {
         //
-        Schema::drop('consolidation_rules');
+        Schema::drop('consolidation_lists');
     }
 }

@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\ConsolidationRule;
+use App\ConsUseRule;
+use App\ConsUseList;
 
 class ConsolidationRuleAdminController extends Controller
 {
@@ -25,7 +27,7 @@ class ConsolidationRuleAdminController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, $this->validateRules());
-        $rule = ConsolidationRule::firstOrNew([ 'row_id' => $request->row, 'col_id' => $request->column,  ]);
+        $rule = ConsolidationRule::firstOrNew([ 'row_id' => $request->row, 'col_id' => $request->column, ]);
         $rule->script = $request->rule;
         $rule->save();
         return ['message' => 'Новая запись создана/сохранена. Id:' . $rule->id, 'id' => $rule->id, ];
@@ -63,11 +65,16 @@ class ConsolidationRuleAdminController extends Controller
                         $row[$col->id] = $r->row_code;
                     }
                 } elseif ($col->content_type == \App\Column::DATA) {
-                    if(!is_null($rule = ConsolidationRule::OfRC($r->id, $col->id)->first())) {
+                    $rule_using = ConsUseRule::OfRC($r->id, $col->id)->first();
+                    $rule = is_null($rule_using) ? '' : $rule_using->rulescript->script;
+                    $list_using = ConsUseList::OfRC($r->id, $col->id)->first();
+                    $list = is_null($list_using) ? '' : ', ' .$list_using->listscript->script;
+                    $row[$col->id] = $rule . $list;
+                    /*if(!is_null($rule = ConsolidationRule::OfRC($r->id, $col->id)->first())) {
                         $row[$col->id] = $rule->script;
                     } else {
                         $row[$col->id] = '';
-                    }
+                    }*/
                 }
             }
             $data[$i] = $row;
@@ -81,8 +88,8 @@ class ConsolidationRuleAdminController extends Controller
         return [
             'rule' => 'required|min:1|max:512',
             'comment' => 'max:128',
-            'row' => 'required|integer|exists:rows,id',
-            'column' => 'required|integer|exists:columns,id',
+            //'row' => 'required|integer|exists:rows,id',
+            //'column' => 'required|integer|exists:columns,id',
         ];
     }
 }
