@@ -11,7 +11,7 @@ class ConsUseRule extends Model
 
     public function rulescript()
     {
-        return $this->belongsTo('App\ConsolidationRule', 'script');
+        return $this->belongsTo('App\ConsolidationCalcrule', 'script');
     }
 
     public function scopeOfRC($query, $row, $column)

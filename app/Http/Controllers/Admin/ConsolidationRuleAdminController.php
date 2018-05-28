@@ -66,9 +66,9 @@ class ConsolidationRuleAdminController extends Controller
                     }
                 } elseif ($col->content_type == \App\Column::DATA) {
                     $rule_using = ConsUseRule::OfRC($r->id, $col->id)->first();
-                    $rule = is_null($rule_using) ? '' : $rule_using->rulescript->script;
+                    $rule = is_null($rule_using) ? '' : '<span class="text text-primary" title="'. $rule_using->rulescript->script . '"><strong>П</strong></span>';
                     $list_using = ConsUseList::OfRC($r->id, $col->id)->first();
-                    $list = is_null($list_using) ? '' : ', ' .$list_using->listscript->script;
+                    $list = is_null($list_using) ? '' : ' ' . ' <span class="text text-success" title="' . $list_using->listscript->script . '"><strong>С</strong></span>';
                     $row[$col->id] = $rule . $list;
                     /*if(!is_null($rule = ConsolidationRule::OfRC($r->id, $col->id)->first())) {
                         $row[$col->id] = $rule->script;

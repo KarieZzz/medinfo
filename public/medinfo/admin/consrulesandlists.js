@@ -83,35 +83,49 @@ function updateRelated() {
 let gridEventsInit = function () {
     grid.on('cellselect', function (event)
     {
-        ruleinput.val('');
-        selectionlog.html('');
-        let cells = grid.jqxGrid('getselectedcells');
-        let selected_count = cells.length;
-        let rowid;
-        let cell;
-        let upper_left = { rowcode : null, colindex: null, value: null };
-        let down_right = { rowcode : null, colindex: null, value: null };
-        selected = [];
-        for (i = 0; i < selected_count; i++) {
-            rowid = grid.jqxGrid('getrowid', cells[i].rowindex);
-            cell = grid.jqxGrid('getcell', cells[i].rowindex, cells[i].datafield);
-            selected.push({ rowid: parseInt(rowid), colid: cells[i].datafield } );
+        if (cellbeginedit) {
+            clearTimeout(cellbeginedit);
         }
-        upper_left.value = grid.jqxGrid('getcellvaluebyid', selected[0].rowid, selected[0].colid);
-        upper_left.rowcode = grid.jqxGrid('getcellvaluebyid', selected[0].rowid, current_row_number_datafield);
-        upper_left.colindex = grid.jqxGrid('getcolumnproperty', selected[0].colid, 'text');
-        ruleinput.val(upper_left.value);
-        //console.log(selected);
-        if (selected_count === 1) {
-            selectionlog.html('Выделена ячейка: строка ' + upper_left.rowcode + '. графа ' + upper_left.colindex);
-        } else if (selected_count > 1) {
-            down_right.value = grid.jqxGrid('getcellvaluebyid', selected[selected_count - 1].rowid, selected[selected_count - 1].colid);
-            down_right.rowcode = grid.jqxGrid('getcellvaluebyid', selected[selected_count - 1].rowid, current_row_number_datafield);
-            down_right.colindex = grid.jqxGrid('getcolumnproperty', selected[selected_count - 1].colid, 'text');
-            selectionlog.html('Выделен диапазон: С' + upper_left.rowcode + 'Г' + upper_left.colindex + ':С' + down_right.rowcode + 'Г' + down_right.colindex );
-        }
+        cellbeginedit = setTimeout(function () {
+            fetchcells();
+        }, 500);
     });
 };
+
+function fetchcells() {
+    ruleinput.val('загрузка ...');
+    listinput.val('загрузка ...');
+    selectionlog.html('');
+    let cells = grid.jqxGrid('getselectedcells');
+    let selected_count = cells.length;
+    let rowid;
+    let cell;
+    let upper_left = { rowcode : null, colindex: null, value: null };
+    let down_right = { rowcode : null, colindex: null, value: null };
+    selected = [];
+    for (i = 0; i < selected_count; i++) {
+        rowid = grid.jqxGrid('getrowid', cells[i].rowindex);
+        cell = grid.jqxGrid('getcell', cells[i].rowindex, cells[i].datafield);
+        selected.push({ rowid: parseInt(rowid), colid: cells[i].datafield } );
+    }
+    upper_left.value = grid.jqxGrid('getcellvaluebyid', selected[0].rowid, selected[0].colid);
+    upper_left.rowcode = grid.jqxGrid('getcellvaluebyid', selected[0].rowid, current_row_number_datafield);
+    upper_left.colindex = grid.jqxGrid('getcolumnproperty', selected[0].colid, 'text');
+    //console.log(selected);
+    if (selected_count === 1) {
+        selectionlog.html('Выделена ячейка: строка ' + upper_left.rowcode + '. графа ' + upper_left.colindex);
+    } else if (selected_count > 1) {
+        down_right.value = grid.jqxGrid('getcellvaluebyid', selected[selected_count - 1].rowid, selected[selected_count - 1].colid);
+        down_right.rowcode = grid.jqxGrid('getcellvaluebyid', selected[selected_count - 1].rowid, current_row_number_datafield);
+        down_right.colindex = grid.jqxGrid('getcolumnproperty', selected[selected_count - 1].colid, 'text');
+        selectionlog.html('Выделен диапазон: С' + upper_left.rowcode + 'Г' + upper_left.colindex + ':С' + down_right.rowcode + 'Г' + down_right.colindex );
+    }
+
+    $.get(getscripts_url + '/' + selected[0].rowid + '/' + selected[0].colid, function (data) {
+        ruleinput.val(data.rule);
+        listinput.val(data.list);
+    });
+}
 
 function setquerystring(cell_diapazon) {
     return "&rule=" + encodeURIComponent(ruleinput.val()) +
@@ -121,15 +135,25 @@ function setquerystring(cell_diapazon) {
 
 let initactions = function() {
     $("#applyrule").click(function () {
+        let cell_diapazon = [];
+        let selected_count = selected.length;
         if(ruleinput.val() === '') {
-            raiseError('Правило пустое');
+            raiseError('Список МО пуст');
             return false;
         }
+        if(selected_count === 0) {
+            raiseError('Не выделены ячейки для применения правила/списка МО');
+            return false;
+        }
+        for (i = 0; i < selected_count; i++) {
+            cell_diapazon.push(selected[i].rowid + '_' + selected[i].colid)
+        }
+        //console.log(setquerystring(cell_diapazon));
         $.ajax({
             dataType: 'json',
-            url: rule_url,
-            method: "POST",
-            data: setquerystring(),
+            url: applyrule_url,
+            method: "PATCH",
+            data: setquerystring(cell_diapazon),
             success: function (data, status, xhr) {
                 if (typeof data.error !== 'undefined') {
                     raiseError(data.message);
@@ -137,10 +161,7 @@ let initactions = function() {
                     raiseInfo(data.message);
                 }
                 grid.jqxGrid('updatebounddata', 'data');
-                grid.on("bindingcomplete", function (event) {
-                    let newindex = grid.jqxGrid('getrowboundindexbyid', rowid);
-                    grid.jqxGrid('selectrow', newindex);
-                });
+                //grid.on("bindingcomplete", function (event) { });
             },
             error: function (xhr, status, errorThrown) {
                 $.each(xhr.responseJSON, function(field, errorText) {
@@ -176,10 +197,7 @@ let initactions = function() {
                     raiseInfo(data.message);
                 }
                 grid.jqxGrid('updatebounddata', 'data');
-                grid.on("bindingcomplete", function (event) {
-                    //let newindex = grid.jqxGrid('getrowboundindexbyid', rowid);
-                    //grid.jqxGrid('selectrow', newindex);
-                });
+                //grid.on("bindingcomplete", function (event) { });
             },
             error: function (xhr, status, errorThrown) {
                 $.each(xhr.responseJSON, function(field, errorText) {
@@ -187,7 +205,6 @@ let initactions = function() {
                 });
             }
         });
-
     });
     $("#clearrule").click(function () {
         let confirm_text = 'Подтвердите удаление правила ' +  ruleinput.val();
@@ -196,7 +213,7 @@ let initactions = function() {
         }
         $.ajax({
             dataType: 'json',
-            url: rule_url + '/' + selected.row_id + '/' + selected.column_id,
+            url: rules_url + '/' + selected.row_id + '/' + selected.column_id,
             method: "DELETE",
             success: function (data, status, xhr) {
                 if (typeof data.error !== 'undefined') {

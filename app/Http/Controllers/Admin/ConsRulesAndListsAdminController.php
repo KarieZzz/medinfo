@@ -21,9 +21,35 @@ class ConsRulesAndListsAdminController extends Controller
         return view('jqxadmin.set_consrules_and_lists', compact('forms'));
     }
 
+    public function getRule(\App\Row $row, \App\Column $column)
+    {
+        $scripts = ['rule' => '', 'list' => ''];
+        $rule_using = \App\ConsUseRule::OfRC($row->id, $column->id)->first();
+        $scripts['rule'] = is_null($rule_using) ? '' : $rule_using->rulescript->script;
+        $list_using = \App\ConsUseList::OfRC($row->id, $column->id)->first();
+        $scripts['list'] = is_null($list_using) ? '' : $list_using->listscript->script;
+
+        return $scripts;
+    }
+
     public function applyRule(Request $request)
     {
-
+        $this->validate($request, $this->validateRuleRequest());
+        $coordinates = explode(',', $request->cells);
+        $hashed  =  sprintf("%u", crc32(preg_replace('/\s+/u', '', $request->list)));
+        //dd($hashed);
+        $rule = \App\ConsolidationCalcrule::firstOrNew(['hash' => $hashed]);
+        $rule->script = $request->rule;
+        $rule->save();
+        $i = 0;
+        foreach ($coordinates as $coordinate) {
+            list($row, $column) = explode('_', $coordinate);
+            $apply_rule = \App\ConsUseRule::firstOrNew(['row_id' => $row, 'col_id' => $column]);
+            $apply_rule->script = $rule->id;
+            $apply_rule->save();
+            $i++;
+        }
+        return ['affected_cells' => $i ];
     }
 
     public function applyList(Request $request)
@@ -50,6 +76,15 @@ class ConsRulesAndListsAdminController extends Controller
     {
         return [
             'list' => 'required|min:1|max:512',
+            'comment' => 'max:128',
+            'cells' => 'required',
+        ];
+    }
+
+    protected function validateRuleRequest()
+    {
+        return [
+            'rule' => 'required|min:1|max:512',
             'comment' => 'max:128',
             'cells' => 'required',
         ];

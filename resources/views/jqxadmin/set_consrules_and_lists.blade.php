@@ -54,7 +54,7 @@
     <script src="{{ asset('/jqwidgets/jqxgrid.edit.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/consrulesandlists.js?v=004') }}"></script>
+    <script src="{{ asset('/medinfo/admin/consrulesandlists.js?v=006') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -67,9 +67,11 @@
         let current_row_name_datafield;
         let current_row_number_datafield;
         let selected = [];
-        let rule_url = '/admin/consolidation';
+        let rules_url = '/admin/consolidation';
+        let getscripts_url = '/admin/cons';
         let applyrule_url = '/admin/cons/applyrule';
         let applylist_url = '/admin/cons/applylist';
+        let cellbeginedit = null;
         gridEventsInit();
         initactions();
     </script>
