@@ -8,6 +8,7 @@ class ConsolidationCalcrule extends Model
 {
     //
     protected $fillable = ['row_id', 'col_id', 'script', 'hash', 'comment'];
+    protected $hidden = ['ptree', 'properties', ];
 
     public function scopeOfRC($query, $row, $column)
     {

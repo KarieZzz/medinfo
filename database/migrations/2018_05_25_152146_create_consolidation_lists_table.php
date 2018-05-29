@@ -18,6 +18,7 @@ class CreateConsolidationListsTable extends Migration
             $table->string('script', 512)->unique();
             $table->char('hash', 10)->unique();
             $table->string('comment', 128)->nullable();
+            $table->jsonb('properties')->nullable();
             $table->timestamps();
         });
     }
