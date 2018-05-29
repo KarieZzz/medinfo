@@ -36,7 +36,8 @@ class ConsRulesAndListsAdminController extends Controller
     {
         $this->validate($request, $this->validateRuleRequest());
         $coordinates = explode(',', $request->cells);
-        $hashed  =  sprintf("%u", crc32(preg_replace('/\s+/u', '', $request->list)));
+        $hashed  =  sprintf("%u", crc32(preg_replace('/\s+/u', '', $request->rule)));
+        //dd($request->rule);
         //dd($hashed);
         $rule = \App\ConsolidationCalcrule::firstOrNew(['hash' => $hashed]);
         $rule->script = $request->rule;
