@@ -170,6 +170,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::delete('admin/consolidation/{row}/{column}', 'Admin\ConsolidationRuleAdminController@destroy');
     Route::get('admin/consolidation/getstruct/{table}', 'Admin\ConsolidationRuleAdminController@getTableStruct' );
     Route::get('admin/consolidation/getrules/{table}', 'Admin\ConsolidationRuleAdminController@getRules' );
+    Route::get('admin/consolidation/getrules_old/{table}', 'Admin\ConsolidationRuleAdminController@getRules_old' );
 
     Route::get('admin/cons', 'Admin\ConsRulesAndListsAdminController@index');
     Route::patch('admin/cons/applyrule', 'Admin\ConsRulesAndListsAdminController@applyRule');

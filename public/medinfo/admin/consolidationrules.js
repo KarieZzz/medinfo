@@ -22,7 +22,7 @@ function updateRelated() {
                 datafields: data.datafields,
                 //autoBind: false,
                 id: 'id',
-                url: 'consolidation/getrules/' + picked_table,
+                url: 'consolidation/getrules_old/' + picked_table,
                 root: null
             };
             let adapter = new $.jqx.dataAdapter(gridsource);

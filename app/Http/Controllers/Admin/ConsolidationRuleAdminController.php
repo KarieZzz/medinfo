@@ -83,6 +83,35 @@ class ConsolidationRuleAdminController extends Controller
         return $data;
     }
 
+    public function getRules_old(\App\Table $table) {
+        $rows = $table->rows->sortBy('row_index');
+        $cols = $table->columns->sortBy('column_index');
+        $data = array();
+        $i=0;
+        foreach ($rows as $r) {
+            $row = array();
+            $row['id'] = $r->id;
+            foreach($cols as $col) {
+                if ($col->content_type == \App\Column::HEADER) {
+                    if ($col->column_index == 1) {
+                        $row[$col->id] = $r->row_name;
+                    } elseif ($col->column_index == 2) {
+                        $row[$col->id] = $r->row_code;
+                    }
+                } elseif ($col->content_type == \App\Column::DATA) {
+                    if(!is_null($rule = ConsolidationRule::OfRC($r->id, $col->id)->first())) {
+                        $row[$col->id] = $rule->script;
+                    } else {
+                        $row[$col->id] = '';
+                    }
+                }
+            }
+            $data[$i] = $row;
+            $i++;
+        }
+        return $data;
+    }
+
     protected function validateRules()
     {
         return [
