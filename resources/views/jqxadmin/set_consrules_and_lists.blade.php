@@ -17,9 +17,9 @@
             </div>
         </div>
         <div class="form-group row">
-            <label class="sr-only"  for="List">Правило расчета:</label>
+            <label class="sr-only"  for="List">Списки МО:</label>
             <div class="col-sm-8">
-                <input type="text" class="form-control mb-2 mr-sm-2 mb-sm-0" id="List" placeholder="Список медицинских организаций">
+                <input type="text" class="form-control mb-2 mr-sm-2 mb-sm-0" id="List" placeholder="Списки медицинских организаций">
             </div>
             <div class="col-sm-4">
                 <button id="applylist" type="button" class="btn btn-primary">Применить</button>
@@ -54,7 +54,7 @@
     <script src="{{ asset('/jqwidgets/jqxgrid.edit.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/consrulesandlists.js?v=006') }}"></script>
+    <script src="{{ asset('/medinfo/admin/consrulesandlists.js?v=010') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -71,6 +71,7 @@
         let getscripts_url = '/admin/cons';
         let applyrule_url = '/admin/cons/applyrule';
         let applylist_url = '/admin/cons/applylist';
+        let fetchlists_url = '/admin/units/fetchlists';
         let cellbeginedit = null;
         gridEventsInit();
         initactions();

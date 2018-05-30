@@ -133,22 +133,26 @@ function setquerystring(cell_diapazon) {
         "&cells=" + cell_diapazon;
 }
 
+function setcelldiapazon() {
+    let cell_diapazon = [];
+    let selected_count = selected.length;
+    for (i = 0; i < selected_count; i++) {
+        cell_diapazon.push(selected[i].rowid + '_' + selected[i].colid)
+    }
+    return cell_diapazon;
+}
+
 let initactions = function() {
     $("#applyrule").click(function () {
-        let cell_diapazon = [];
-        let selected_count = selected.length;
+        let cell_diapazon = setcelldiapazon();
         if(ruleinput.val() === '') {
-            raiseError('Список МО пуст');
+            raiseError('Правило не заполнено');
             return false;
         }
-        if(selected_count === 0) {
+        if(cell_diapazon.length === 0) {
             raiseError('Не выделены ячейки для применения правила/списка МО');
             return false;
         }
-        for (i = 0; i < selected_count; i++) {
-            cell_diapazon.push(selected[i].rowid + '_' + selected[i].colid)
-        }
-        //console.log(setquerystring(cell_diapazon));
         $.ajax({
             dataType: 'json',
             url: applyrule_url,
@@ -171,20 +175,15 @@ let initactions = function() {
         });
     });
     $("#applylist").click(function () {
-        let cell_diapazon = [];
-        let selected_count = selected.length;
+        let cell_diapazon = setcelldiapazon();
         if(listinput.val() === '') {
             raiseError('Список МО пуст');
             return false;
         }
-        if(selected_count === 0) {
+        if(cell_diapazon.length === 0) {
             raiseError('Не выделены ячейки для применения правила/списка МО');
             return false;
         }
-        for (i = 0; i < selected_count; i++) {
-            cell_diapazon.push(selected[i].rowid + '_' + selected[i].colid)
-        }
-        //console.log(setquerystring(cell_diapazon));
         $.ajax({
             dataType: 'json',
             url: applylist_url,
@@ -207,13 +206,19 @@ let initactions = function() {
         });
     });
     $("#clearrule").click(function () {
-        let confirm_text = 'Подтвердите удаление правила ' +  ruleinput.val();
+        let cell_diapazon = setcelldiapazon();
+        if(cell_diapazon.length === 0) {
+            raiseError('Не выделены ячейки для удаления правил/списков МО');
+            return false;
+        }
+        let confirm_text = 'Подтвердите удаление правил из выделенного диапазона';
         if (!confirm(confirm_text)) {
             return false;
         }
         $.ajax({
             dataType: 'json',
-            url: rules_url + '/' + selected.row_id + '/' + selected.column_id,
+            url: applyrule_url,
+            data: setquerystring(cell_diapazon),
             method: "DELETE",
             success: function (data, status, xhr) {
                 if (typeof data.error !== 'undefined') {
@@ -228,5 +233,66 @@ let initactions = function() {
                 raiseError('Ошибка сохранения данных на сервере', xhr);
             }
         });
+    });
+    $("#clearlist").click(function () {
+        let cell_diapazon = setcelldiapazon();
+        if(cell_diapazon.length === 0) {
+            raiseError('Не выделены ячейки для удаления правил/списков МО');
+            return false;
+        }
+        let confirm_text = 'Подтвердите удаление списков МО из выделенного диапазона';
+        if (!confirm(confirm_text)) {
+            return false;
+        }
+        $.ajax({
+            dataType: 'json',
+            url: applylist_url,
+            data: setquerystring(cell_diapazon),
+            method: "DELETE",
+            success: function (data, status, xhr) {
+                if (typeof data.error !== 'undefined') {
+                    raiseError(data.message);
+                } else {
+                    grid.jqxGrid('clearselection');
+                    grid.jqxGrid('updatebounddata');
+                    raiseInfo(data.message);
+                }
+            },
+            error: function (xhr, status, errorThrown) {
+                raiseError('Ошибка сохранения данных на сервере', xhr);
+            }
+        });
+    });
+
+    let unitlistsource =
+        {
+            datatype: "json",
+            datafields: [
+                { name: 'slug' },
+                { name: 'name' }
+            ],
+            url: fetchlists_url
+        };
+    let lists = [];
+    let unitlistsdataAdapter = new $.jqx.dataAdapter(unitlistsource, { autoBind: true, loadComplete: function (data) {
+            for (let i = 0; i < data.length; i++) {
+                lists.push(data[i].slug);
+            }
+        }
+    });
+    listinput.jqxInput({
+        source: function (query, response) {
+            let item = query.split(/,\s*/).pop();
+            listinput.jqxInput({ query: item });
+            response(lists);
+        },
+        renderer: function (itemValue, inputValue) {
+            let terms = inputValue.split(/,\s*/);
+            // remove the current input
+            terms.pop();
+            terms.push(itemValue);
+            terms.push("");
+            return terms.join(", ");
+        }
     });
 };

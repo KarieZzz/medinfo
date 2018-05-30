@@ -37,10 +37,15 @@ class ConsRulesAndListsAdminController extends Controller
         $this->validate($request, $this->validateRuleRequest());
         $coordinates = explode(',', $request->cells);
         $hashed  =  sprintf("%u", crc32(preg_replace('/\s+/u', '', $request->rule)));
+        $table = \App\Table::find(2);
+        $compiled = \App\Medinfo\DSL\FunctionCompiler::compile($request->rule, $table);
+        //dd($compiled['properties']);
         //dd($request->rule);
         //dd($hashed);
         $rule = \App\ConsolidationCalcrule::firstOrNew(['hash' => $hashed]);
         $rule->script = $request->rule;
+        $rule->ptree = $compiled['ptree'];
+        $rule->properties = json_encode($compiled['properties']);
         $rule->save();
         $i = 0;
         foreach ($coordinates as $coordinate) {
@@ -57,6 +62,8 @@ class ConsRulesAndListsAdminController extends Controller
     {
         $this->validate($request, $this->validateListRequest());
         $coordinates = explode(',', $request->cells);
+        $trimed = preg_replace('/,+\s+/u', '', $request->list);
+        dd($trimed);
         $hashed  =  sprintf("%u", crc32(preg_replace('/\s+/u', '', $request->list)));
         //dd($hashed);
         $list = \App\ConsolidationList::firstOrNew(['hash' => $hashed]);
@@ -69,6 +76,38 @@ class ConsRulesAndListsAdminController extends Controller
             $apply_list->list = $list->id;
             $apply_list->save();
             $i++;
+        }
+        return ['affected_cells' => $i ];
+    }
+
+    public function clearRule(Request $request)
+    {
+        $this->validate($request, [ 'cells' => 'required', ] );
+        $coordinates = explode(',', $request->cells);
+        $i = 0;
+        foreach ($coordinates as $coordinate) {
+            list($row, $column) = explode('_', $coordinate);
+            $ruleusing = \App\ConsUseRule::OfRC($row, $column)->first();
+            if (!is_null($ruleusing)) {
+                $ruleusing->delete();
+                $i++;
+            }
+        }
+        return ['affected_cells' => $i ];
+    }
+
+    public function clearList(Request $request)
+    {
+        $this->validate($request, [ 'cells' => 'required', ] );
+        $coordinates = explode(',', $request->cells);
+        $i = 0;
+        foreach ($coordinates as $coordinate) {
+            list($row, $column) = explode('_', $coordinate);
+            $listusing = \App\ConsUseList::OfRC($row, $column)->first();
+            if (!is_null($listusing)) {
+                $listusing->delete();
+                $i++;
+            }
         }
         return ['affected_cells' => $i ];
     }

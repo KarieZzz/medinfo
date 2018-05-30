@@ -290,7 +290,6 @@ class CFunctionAdminController extends Controller
             $compiled_cache['properties'] = $translator->getProperties();
             return $compiled_cache;
         } catch (\Exception $e) {
-
             $this->compile_error = "Ошибка при компилляции функции: " . $e->getMessage();
             return false;
         }

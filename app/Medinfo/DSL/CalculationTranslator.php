@@ -11,6 +11,7 @@ namespace App\Medinfo\DSL;
 
 class CalculationTranslator extends ControlPtreeTranslator
 {
+
     public function parseGroupScopes()
     {
         $includes = [];

@@ -17,7 +17,7 @@ class CreateUnitGroupsTable extends Migration
             $table->increments('id');
             $table->integer('parent_id')->index()->nullable();
             $table->string('group_code', 32)->unique();
-            $table->string('group_name', 128)->index();
+            $table->string('group_name', 128)->unique();
             $table->string('slug', 128)->index();
             $table->timestamps();
         });

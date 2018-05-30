@@ -371,7 +371,7 @@ class ControlPtreeTranslator
             $properties['boolean_sign'] = $this->boolean_sign;
         }
         $properties['iterations'] = $this->iterations;
-        $properties['type'] = max($this->type);
+        count($this->type) > 0 ? $properties['type'] = max($this->type) : $properties['type'] = 0;
         $properties['iteration_mode'] = isset($this->vector[0]) ? $this->vector[0] : null ;
         $properties['formula'] = $this->scriptReadable;
         $properties['function_id'] = $this->findex;
