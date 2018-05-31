@@ -54,7 +54,7 @@
     <script src="{{ asset('/jqwidgets/jqxgrid.edit.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/consrulesandlists.js?v=010') }}"></script>
+    <script src="{{ asset('/medinfo/admin/consrulesandlists.js?v=012') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -71,7 +71,7 @@
         let getscripts_url = '/admin/cons';
         let applyrule_url = '/admin/cons/applyrule';
         let applylist_url = '/admin/cons/applylist';
-        let fetchlists_url = '/admin/units/fetchlists';
+        let fetchlists_url = '/admin/units/fetchlists_w_reserved';
         let cellbeginedit = null;
         gridEventsInit();
         initactions();

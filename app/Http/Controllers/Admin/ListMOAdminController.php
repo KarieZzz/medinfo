@@ -80,7 +80,14 @@ class ListMOAdminController extends Controller
 
     public function fetchlits()
     {
+
         return UnitList::orderBy('slug')->get();
+    }
+
+    public function fetchlits_with_reserved()
+    {
+        $reserved = config('medinfo.reserved_unitlist_slugs');
+        return UnitList::orderBy('slug')->pluck('slug')->merge($reserved);
     }
 
     public function fetchListMembers(int $list)

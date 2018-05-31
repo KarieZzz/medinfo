@@ -25,8 +25,8 @@ class UnitGroup extends Model
     const PRIMARY   = 1;
     const AGGREGATE = 2;
     const DETACHED  = 3;
-    const LEGAL     = 4;
-    const TERRITORY = 5;
+    const LEGAL     = 5;
+    const TERRITORY = 7;
 
     public function members()
     {

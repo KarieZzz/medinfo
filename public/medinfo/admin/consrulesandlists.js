@@ -190,10 +190,12 @@ let initactions = function() {
             method: "PATCH",
             data: setquerystring(cell_diapazon),
             success: function (data, status, xhr) {
+                let m = '';
                 if (typeof data.error !== 'undefined') {
-                    raiseError(data.message);
+                    raiseError(data.error);
                 } else {
-                    raiseInfo(data.message);
+                    m = 'Список субъектов отчетности сохранен. Затронуто ячеек: ' + data.affected_cells;
+                    raiseInfo(m);
                 }
                 grid.jqxGrid('updatebounddata', 'data');
                 //grid.on("bindingcomplete", function (event) { });
@@ -264,21 +266,24 @@ let initactions = function() {
         });
     });
 
-    let unitlistsource =
-        {
-            datatype: "json",
-            datafields: [
-                { name: 'slug' },
-                { name: 'name' }
-            ],
-            url: fetchlists_url
-        };
+    let unitlistsource = {
+        datatype: "json",
+        //datafields: [
+        //    { name: 'slug' },
+        //    { name: 'name' }
+        //],
+        url: fetchlists_url
+    };
     let lists = [];
-    let unitlistsdataAdapter = new $.jqx.dataAdapter(unitlistsource, { autoBind: true, loadComplete: function (data) {
+    let unitlistsdataAdapter = new $.jqx.dataAdapter(unitlistsource, { autoBind: true, loadComplete: function (data)
+        {
+            lists = data;
+/*            console.log(data);
             for (let i = 0; i < data.length; i++) {
-                lists.push(data[i].slug);
-            }
+                lists.push(data[i]);
+            }*/
         }
+
     });
     listinput.jqxInput({
         source: function (query, response) {

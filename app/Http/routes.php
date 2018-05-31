@@ -187,6 +187,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::resource('admin/units/lists', 'Admin\ListMOAdminController');
     Route::post('admin/units/lists/createcopy/{list}', 'Admin\ListMOAdminController@storeAs');
     Route::get('admin/units/fetchlists', 'Admin\ListMOAdminController@fetchlits');
+    Route::get('admin/units/fetchlists_w_reserved', 'Admin\ListMOAdminController@fetchlits_with_reserved');
     Route::get('admin/units/fetchlistmembers/{list}', 'Admin\ListMOAdminController@fetchListMembers');
     Route::get('admin/units/nonmembers/{list}', 'Admin\ListMOAdminController@fetchNonMembers');
     Route::post('admin/units/addlistmembers/{list}', 'Admin\ListMOAdminController@addMembers');

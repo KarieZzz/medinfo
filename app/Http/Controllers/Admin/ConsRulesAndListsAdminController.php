@@ -62,12 +62,14 @@ class ConsRulesAndListsAdminController extends Controller
     {
         $this->validate($request, $this->validateListRequest());
         $coordinates = explode(',', $request->cells);
-        $trimed = preg_replace('/,+\s+/u', '', $request->list);
-        dd($trimed);
-        $hashed  =  sprintf("%u", crc32(preg_replace('/\s+/u', '', $request->list)));
+        $trimed = preg_replace('/,+\s+/u', ' ', $request->list);
+        $lists = array_unique(array_filter(explode(' ', $trimed)));
+        array_multisort($lists, SORT_NATURAL);
+        //dd($lists);
+        $hashed  =  sprintf("%u", crc32(implode('', $lists)));
         //dd($hashed);
         $list = \App\ConsolidationList::firstOrNew(['hash' => $hashed]);
-        $list->script = $request->list;
+        $list->script = implode(', ', $lists);
         $list->save();
         $i = 0;
         foreach ($coordinates as $coordinate) {
