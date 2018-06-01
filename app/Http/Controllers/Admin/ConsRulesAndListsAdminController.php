@@ -38,7 +38,7 @@ class ConsRulesAndListsAdminController extends Controller
         $coordinates = explode(',', $request->cells);
         $hashed  =  sprintf("%u", crc32(preg_replace('/\s+/u', '', $request->rule)));
         $table = \App\Table::find(2);
-        $compiled = \App\Medinfo\DSL\FunctionCompiler::compile($request->rule, $table);
+        $compiled = \App\Medinfo\DSL\FunctionCompiler::compileRule($request->rule, $table);
         //dd($compiled['properties']);
         //dd($request->rule);
         //dd($hashed);
@@ -65,12 +65,19 @@ class ConsRulesAndListsAdminController extends Controller
         $trimed = preg_replace('/,+\s+/u', ' ', $request->list);
         $lists = array_unique(array_filter(explode(' ', $trimed)));
         array_multisort($lists, SORT_NATURAL);
-        //dd($lists);
+        $glued = implode(', ', $lists);
+
         $hashed  =  sprintf("%u", crc32(implode('', $lists)));
+
         //dd($hashed);
         $list = \App\ConsolidationList::firstOrNew(['hash' => $hashed]);
-        $list->script = implode(', ', $lists);
-        $list->save();
+        //if ($list->script !== $glued) {
+            $list->script = implode(', ', $lists);
+        //dd($lists);
+            $list->hash = $hashed;
+            $units = \App\Medinfo\DSL\FunctionCompiler::compileUnitList($lists);
+            $list->save();
+        //}
         $i = 0;
         foreach ($coordinates as $coordinate) {
             list($row, $column) = explode('_', $coordinate);

@@ -9,10 +9,12 @@
 namespace App\Medinfo\DSL;
 
 
+use Illuminate\Support\Collection;
+
 class FunctionCompiler
 {
 
-    public static function compile($script, \App\Table $table)
+    public static function compileRule($script, \App\Table $table)
     {
         try {
             $lexer = new \App\Medinfo\DSL\ControlFunctionLexer($script);
@@ -28,5 +30,26 @@ class FunctionCompiler
             $compiled_cache['compile_error'] = "Ошибка при компилляции функции: " . $e->getMessage();
         }
         return $compiled_cache;
+    }
+
+    public static function compileUnitList(array $lists)
+    {
+        $units = Collection::make();
+        //dd($lists);
+        foreach ($lists as $list) {
+            $prefix = $list[0];
+            switch ($prefix) {
+                case '!' :
+                    $list = substr($list, 0, 1);
+                    break;
+                case '~' :
+                    $list = substr($list, 1);
+                    break;
+                default:
+
+            }
+
+        }
+        return $units;
     }
 }

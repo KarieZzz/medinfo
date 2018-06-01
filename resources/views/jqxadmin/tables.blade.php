@@ -40,7 +40,7 @@
 
                     <div class="form-group">
                         <label class="control-label col-sm-3" for="transposed">Таблица транспонирована:</label>
-                        <div class="col-sm-2">
+                        <div class="col-sm-8">
                             <div id="transposed"></div>
                         </div>
                     </div>
@@ -121,7 +121,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/tableadmin.js?v=013') }}"></script>
+    <script src="{{ asset('/medinfo/admin/tableadmin.js?v=015') }}"></script>
 @endpush
 
 @section('inlinejs')

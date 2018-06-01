@@ -60,7 +60,7 @@ initdropdowns = function() {
     });
 };
 initdatasources = function() {
-    var unitsource =
+    let unitsource =
     {
         datatype: "json",
         datafields: [
@@ -84,7 +84,7 @@ initdatasources = function() {
     unitDataAdapter = new $.jqx.dataAdapter(unitsource);
 };
 inittablelist = function() {
-    $("#unitList").jqxGrid(
+    unitlist.jqxGrid(
         {
             width: '98%',
             height: '90%',
@@ -97,10 +97,10 @@ inittablelist = function() {
             sortable: true,
             columns: [
                 { text: 'Id', datafield: 'id', width: '30px' },
-                { text: 'Входит в', datafield: 'parent', width: '90px' },
+                { text: 'Входит в', datafield: 'parent', width: '110px' },
                 { text: 'Код', datafield: 'unit_code', width: '50px'  },
                 { text: 'ИНН', datafield: 'inn', width: '90px'  },
-                { text: 'Имя', datafield: 'unit_name' , width: '380px'},
+                { text: 'Имя', datafield: 'unit_name' , width: '440px'},
                 { text: 'Тип', datafield: 'node_type' , width: '40px'},
                 { text: 'Перв', datafield: 'report' , width: '50px'},
                 { text: 'Свод', datafield: 'aggregate' , width: '50px'},
@@ -108,7 +108,7 @@ inittablelist = function() {
                 { text: 'Мединфо Id', datafield: 'medinfo_id', width: '60px' }
             ]
         });
-    $('#unitList').on('rowselect', function (event) {
+    unitlist.on('rowselect', function (event) {
         $("#parent_id").jqxDropDownList('clearFilter');
         let row = event.args.row;
         $("#unit_name").val(row.unit_name);
@@ -139,19 +139,19 @@ initunitactions = function() {
 
     $('#report').jqxSwitchButton({
         height: 31,
-        width: 81,
+        width: 110,
         onLabel: 'Да',
         offLabel: 'Нет',
         checked: false });
     $('#aggregate').jqxSwitchButton({
         height: 31,
-        width: 81,
+        width: 110,
         onLabel: 'Да',
         offLabel: 'Нет',
         checked: false });
     $('#blocked').jqxSwitchButton({
         height: 31,
-        width: 81,
+        width: 110,
         onLabel: 'Да',
         offLabel: 'Нет',
         checked: false });
@@ -163,7 +163,7 @@ initunitactions = function() {
             method: "POST",
             data: data,
             success: function (data, status, xhr) {
-                if (typeof data.error !=+ 'undefined') {
+                if (typeof data.error !== 'undefined') {
                     raiseError(data.message);
                 } else {
                     raiseInfo(data.message);
@@ -178,28 +178,28 @@ initunitactions = function() {
         });
     });
     $("#save").click(function () {
-        var row = $('#unitList').jqxGrid('getselectedrowindex');
-        if (row == -1) {
+        let row = unitlist.jqxGrid('getselectedrowindex');
+        if (row === -1) {
             raiseError("Выберите запись для изменения/сохранения данных");
             return false;
         }
-        var rowid = $("#unitList").jqxGrid('getrowid', row);
-        var data = setquerystring();
+        let rowid = unitlist.jqxGrid('getrowid', row);
+        let data = setquerystring();
         $.ajax({
             dataType: 'json',
             url: unitupdate_url + rowid,
             method: "PATCH",
             data: data,
             success: function (data, status, xhr) {
-                if (typeof data.error != 'undefined') {
+                if (typeof data.error !== 'undefined') {
                     raiseError(data.message);
                 } else {
                     raiseInfo(data.message);
                 }
-                $("#unitList").jqxGrid('updatebounddata', 'data');
-                $("#unitList").on("bindingcomplete", function (event) {
-                    var newindex = $('#unitList').jqxGrid('getrowboundindexbyid', rowid);
-                    $("#unitList").jqxGrid('selectrow', newindex);
+                unitlist.jqxGrid('updatebounddata', 'data');
+                unitlist.on("bindingcomplete", function (event) {
+                    let newindex = $('#unitList').jqxGrid('getrowboundindexbyid', rowid);
+                    unitlist.jqxGrid('selectrow', newindex);
 
                 });
             },
@@ -211,24 +211,24 @@ initunitactions = function() {
         });
     });
     $("#delete").click(function () {
-        var row = $('#unitList').jqxGrid('getselectedrowindex');
-        if (row == -1) {
+        let row = unitlist.jqxGrid('getselectedrowindex');
+        if (row === -1) {
             raiseError("Выберите запись для удаления");
             return false;
         }
-        var rowid = $("#unitList").jqxGrid('getrowid', row);
+        let rowid = $("#unitList").jqxGrid('getrowid', row);
         $.ajax({
             dataType: 'json',
             url: unitdelete_url + rowid,
             method: "DELETE",
             success: function (data, status, xhr) {
-                if (typeof data.error != 'undefined') {
+                if (typeof data.error !== 'undefined') {
                     raiseError(data.message);
                 } else {
                     raiseInfo(data.message);
                     $("#form")[0].reset();
-                    $("#unitList").jqxGrid('updatebounddata', 'data');
-                    $("#unitList").jqxGrid('clearselection');
+                    unitlist.jqxGrid('updatebounddata', 'data');
+                    unitlist.jqxGrid('clearselection');
                 }
             },
             error: function (xhr, status, errorThrown) {

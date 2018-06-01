@@ -103,13 +103,13 @@ let initformactions = function() {
     });
     $('#transposed').jqxSwitchButton({
         height: 31,
-        width: 81,
+        width: 120,
         onLabel: 'Да',
         offLabel: 'Нет',
         checked: false });
     $('#excluded').jqxSwitchButton({
         height: 31,
-        width: 81,
+        width: 120,
         onLabel: 'Да',
         offLabel: 'Нет',
         disabled : true,
@@ -122,7 +122,6 @@ let initformactions = function() {
         $("#table_name").focus();
         nextAction = 'POST';
     });
-
 /*    $("#insert").click(function () {
         let data = "&form_id=" + $("#form_id").val() +
             "&table_index=" + $("#table_index").val() +

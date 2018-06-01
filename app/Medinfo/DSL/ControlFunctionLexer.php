@@ -23,16 +23,17 @@ class ControlFunctionLexer extends Lexer
     const BOOLEAN       = 11;
     const COLON         = 12;
     const EXCLAMATION   = 13;
-    const NAME          = 14;
-    const CELLADRESS    = 15;
-    const ELCODE        = 16; // Код элемента (строки, графы)
+    const TILDE         = 14;
+    const NAME          = 15;
+    const CELLADRESS    = 16;
+    const ELCODE        = 17; // Код элемента (строки, графы)
     // Следующие типы для парсера
-    const ARG           = 17;
-    const INGROUP       = 18;
-    const OUTGROUP      = 19;
-    const UNIT          = 20;
-    const CELLRANGE     = 21;
-    const RCRANGE       = 22;
+    const ARG           = 18;
+    const INGROUP       = 19;
+    const OUTGROUP      = 20;
+    const UNIT          = 21;
+    const CELLRANGE     = 22;
+    const RCRANGE       = 23;
 
 
     public static $tokenNames = [
@@ -50,6 +51,7 @@ class ControlFunctionLexer extends Lexer
         "BOOLEAN",
         "COLON",
         "EXCLAMATION",
+        "TILDE",
         "NAME",
         "CELLADRESS",
         "ELCODE",
@@ -171,6 +173,11 @@ class ControlFunctionLexer extends Lexer
                 case '!' :
                     $this->consume();
                     $token = new Token(self::EXCLAMATION, '!');
+                    $this->tokenstack->push($token);
+                    return $token;
+                case '~' :
+                    $this->consume();
+                    $token = new Token(self::TILDE, '~');
                     $this->tokenstack->push($token);
                     return $token;
                 case '0' :

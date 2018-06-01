@@ -51,19 +51,19 @@
                     </div>
                     <div class="form-group">
                         <label class="control-label col-sm-3" for="report">Первичные отчеты:</label>
-                        <div class="col-sm-2">
+                        <div class="col-sm-8">
                             <div id="report"></div>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="control-label col-sm-3" for="aggregate">Сводные отчеты:</label>
-                        <div class="col-sm-2">
+                        <div class="col-sm-8">
                             <div id="aggregate"></div>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="control-label col-sm-3" for="blocked">Блокирована:</label>
-                        <div class="col-sm-2">
+                        <div class="col-sm-8">
                             <div id="blocked"></div>
                         </div>
                     </div>
@@ -107,7 +107,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/unitadmin.js?v=001') }}"></script>
+    <script src="{{ asset('/medinfo/admin/unitadmin.js?v=003') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -119,6 +119,7 @@
         let aggregatableDataAdapter;
         let unitTypes = {!! $unit_types !!};
         let aggregatables = {!! $aggregate_units !!};
+        let unitlist = $("#unitList");
         let unitfetch_url ='/admin/units/fetchunits';
         let unitcreate_url ='/admin/units/create';
         let unitupdate_url ='/admin/units/update/';
