@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use League\Flysystem\Exception;
 
 class ConsRulesAndListsAdminController extends Controller
 {
@@ -60,6 +61,7 @@ class ConsRulesAndListsAdminController extends Controller
 
     public function applyList(Request $request)
     {
+        $error = null;
         $this->validate($request, $this->validateListRequest());
         $coordinates = explode(',', $request->cells);
         $trimed = preg_replace('/,+\s+/u', ' ', $request->list);
@@ -72,21 +74,31 @@ class ConsRulesAndListsAdminController extends Controller
         //dd($hashed);
         $list = \App\ConsolidationList::firstOrNew(['hash' => $hashed]);
         //if ($list->script !== $glued) {
-            $list->script = implode(', ', $lists);
+
+
         //dd($lists);
-            $list->hash = $hashed;
-            $units = \App\Medinfo\DSL\FunctionCompiler::compileUnitList($lists);
-            $list->save();
+
+            try {
+                $units = \App\Medinfo\DSL\FunctionCompiler::compileUnitList($lists);
+                $list->script = implode(', ', $lists);
+                $list->hash = $hashed;
+                $list->properties = $units->toJson();
+                $list->save();
+                $i = 0;
+                foreach ($coordinates as $coordinate) {
+                    list($row, $column) = explode('_', $coordinate);
+                    $apply_list = \App\ConsUseList::firstOrNew(['row_id' => $row, 'col_id' => $column]);
+                    $apply_list->list = $list->id;
+                    $apply_list->save();
+                    $i++;
+                }
+                return ['affected_cells' => $i ];
+            } catch (\Exception $e) {
+                return ['affected_cells' => 0, 'error' => $e->getMessage() ];
+            }
+
         //}
-        $i = 0;
-        foreach ($coordinates as $coordinate) {
-            list($row, $column) = explode('_', $coordinate);
-            $apply_list = \App\ConsUseList::firstOrNew(['row_id' => $row, 'col_id' => $column]);
-            $apply_list->list = $list->id;
-            $apply_list->save();
-            $i++;
-        }
-        return ['affected_cells' => $i ];
+
     }
 
     public function clearRule(Request $request)
