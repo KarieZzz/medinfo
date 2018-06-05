@@ -80,9 +80,13 @@ class ConsRulesAndListsAdminController extends Controller
 
             try {
                 $units = \App\Medinfo\DSL\FunctionCompiler::compileUnitList($lists);
+                dd($units);
+
+                //dd($units);
                 $list->script = implode(', ', $lists);
                 $list->hash = $hashed;
                 $list->properties = $units->toJson();
+                //dd($list->properties);
                 $list->save();
                 $i = 0;
                 foreach ($coordinates as $coordinate) {
@@ -96,9 +100,6 @@ class ConsRulesAndListsAdminController extends Controller
             } catch (\Exception $e) {
                 return ['affected_cells' => 0, 'error' => $e->getMessage() ];
             }
-
-        //}
-
     }
 
     public function clearRule(Request $request)
