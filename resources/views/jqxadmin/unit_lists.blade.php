@@ -18,26 +18,53 @@
             </div>
         </div>
     </form>
-    <div class="row">
+    <div class="form-group row">
         <div class="col-lg-6">
-            <button id="RemoveSelected" type="button" class="btn btn-danger pull-right">Удалить</button>
-            <button id="RemoveAll" type="button" class="btn pull-right">Очистить список</button>
+            <button id="RemoveAll" type="button" class="btn">Очистить список</button>
+            <button id="RemoveSelected" type="button" class="btn btn-danger">Удалить</button>
         </div>
         <div class="col-lg-6">
             <button id="AddSelected" type="button" class="btn btn-info">Добавить</button>
+            <label class="checkbox-inline"><input id="includeSubLegals" type="checkbox" >Включить входящие подразделения при добавлении в список юрлиц</label>
         </div>
     </div>
     <div class="row">
         <div class="col-lg-6">
             <div class="panel panel-default">
-                <div class="panel-heading">Состав списка: <span id="ListName"></span></div>
-                <div class="panel-body" style="height: calc(100vh - 200px)"><div id="ListTerms"></div></div>
+                <div class="panel-heading">Состав списка: <span id="ListSlug" class="text text-info"></span> <span id="ListName"></span></div>
+                <div class="panel-body" style="height: calc(100vh - 200px)">
+                    <div class="col-lg-9">
+                        <div class="radio">
+                            <label class="radio-inline"><input type="radio" name="filterMember" value="1">Все</label>
+                            <label class="radio-inline"><input type="radio" name="filterMember" value="2">Юридические лица</label>
+                            <label class="radio-inline"><input type="radio" name="filterMember" value="3">Обособленные подразделения</label>
+                            <label class="radio-inline"><input type="radio" name="filterMember" value="4">Образование и соцзащита</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <button id="ApplyMemberFilter" type="button" class="btn btn-default btn-sm pull-right">Установить фильтр</button>
+                    </div>
+                    <div id="ListTerms"></div>
+                </div>
             </div>
         </div>
         <div class="col-lg-6">
             <div class="panel panel-default">
                 <div class="panel-heading">Перечень медицинских организаций, не включенных в список</div>
-                <div class="panel-body" style="height: calc(100vh - 200px)"><div id="Units"></div></div>
+                <div class="panel-body" style="height: calc(100vh - 200px)">
+                    <div class="col-lg-9">
+                        <div class="radio">
+                            <label class="radio-inline"><input type="radio" name="filterNonMember" value="1">Все</label>
+                            <label class="radio-inline"><input type="radio" name="filterNonMember" value="2" checked>Юридические лица</label>
+                            <label class="radio-inline"><input type="radio" name="filterNonMember" value="3">Обособленные подразделения</label>
+                            <label class="radio-inline"><input type="radio" name="filterNonMember" value="4">Образование и соцзащита</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <button id="ApplyFilter" type="button" class="btn btn-default btn-sm pull-right">Установить фильтр</button>
+                    </div>
+                    <div id="Units" style="height: calc(100vh - 200px)"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -92,7 +119,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
     {{--<script src="{{ asset('/medinfo/admin/tablepicker.js?v=008') }}"></script>--}}
-    <script src="{{ asset('/medinfo/admin/unitlistadmin.js?v=013') }}"></script>
+    <script src="{{ asset('/medinfo/admin/unitlistadmin.js?v=017') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -117,5 +144,6 @@
         initUnitsNonmembers();
         initActions();
         initeditlistwindow();
+
     </script>
 @endsection

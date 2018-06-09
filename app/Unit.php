@@ -44,10 +44,17 @@ class Unit extends Model
     {
         return $query->where('node_type', 4);
     }
+
+    // Выбор учреждений образования и социальной защиты
+    public function scopeSchoolAndSocial($query)
+    {
+        return $query->where('node_type', 6);
+    }
+
     // Все подразделения с первичными отчетами
     public function scopePrimary($query)
     {
-        return $query->where('node_type', 3)->orWhere('node_type', 4);
+        return $query->where('node_type', 3)->orWhere('node_type', 4)->orWhere('node_type', 6);
     }
 
     public function scopeUpperLevels($query)
@@ -84,7 +91,6 @@ class Unit extends Model
         $res = \DB::select($lev_query);
         if (count($res) > 0) {
             foreach ($res as $r) {
-                //if ($r['node_type'] == 3 || $r['node_type'] == 4) {
                 if ($r->node_type == 3 || $r->node_type == 4) {
                     $units[] = Unit::find($r->id);
                 }

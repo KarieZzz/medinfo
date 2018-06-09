@@ -82,7 +82,6 @@ class ConsRulesAndListsAdminController extends Controller
                 $units = \App\Medinfo\DSL\FunctionCompiler::compileUnitList($lists);
                 dd($units);
 
-                //dd($units);
                 $list->script = implode(', ', $lists);
                 $list->hash = $hashed;
                 $list->properties = $units->toJson();

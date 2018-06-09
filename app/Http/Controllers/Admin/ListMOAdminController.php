@@ -101,17 +101,33 @@ class ListMOAdminController extends Controller
     public function fetchNonMembers(int $list)
     {
         $listmembers = UnitListMember::List($list)->get()->pluck('ou_id');
-        return Unit::Legal()->whereNotIn('id', $listmembers)->orderBy('unit_code')->with('parent')->get();
+        //return Unit::Legal()->whereNotIn('id', $listmembers)->orderBy('unit_code')->with('parent')->get();
+        return Unit::Active()->Primary()->whereNotIn('id', $listmembers)->orderBy('unit_code')->with('parent')->get();
     }
 
     public function addMembers(UnitList $list, Request $request)
     {
         $units = explode(",", $request->units);
+
         $newmembers = [];
-        foreach($units as $unit) {
-            $member = UnitListMember::firstOrCreate([ 'list_id' => $list->id, 'ou_id' => $unit ]);
-            $newmembers[] = $member->id;
+        if ($request->inclusive === '0') {
+            foreach($units as $unit) {
+                $member = UnitListMember::firstOrCreate([ 'list_id' => $list->id, 'ou_id' => $unit ]);
+                $newmembers[] = $member->id;
+            }
+        } elseif ($request->inclusive === '1') {
+            $units_with_subs = [];
+            foreach($units as $unit) {
+                $list_with_subs = \App\Unit::getDescendants($unit);
+                $units_with_subs = array_merge($units_with_subs, $list_with_subs);
+            }
+            $units_with_subs = array_unique($units_with_subs);
+            foreach($units_with_subs as $unit_ws) {
+                $member = UnitListMember::firstOrCreate([ 'list_id' => $list->id, 'ou_id' => $unit_ws ]);
+                $newmembers[] = $member->id;
+            }
         }
+
         return [ 'count_of_inserted' => count($newmembers) ];
     }
 

@@ -38,6 +38,7 @@ let initList = function() {
         }
         let r = args.row;
         currentlist = r.id;
+        $("#ListSlug").html(r.slug);
         $("#ListName").html('<strong>"' + r.name + '"</strong>');
         $("#name").val(r.name);
         $("#slug").val(r.slug);
@@ -60,7 +61,9 @@ let initListMembers = function () {
             datafields: [
                 { name: 'id', type: 'int' },
                 { name: 'unit_name', type: 'string' },
-                { name: 'unit_code', type: 'string' }
+                { name: 'unit_code', type: 'string' },
+                { name: 'parent', map: 'parent>unit_name', type: 'string' },
+                { name: 'node_type', type: 'int' }
             ],
             id: 'id',
             url: member_url + currentlist
@@ -69,7 +72,7 @@ let initListMembers = function () {
     listterms.jqxGrid(
         {
             width: '100%',
-            height: '100%',
+            height: '95%',
             theme: theme,
             localization: localize(),
             source: memberDataAdapter,
@@ -87,9 +90,11 @@ let initListMembers = function () {
                         return "<div style='margin:4px;'>" + (value + 1) + "</div>";
                     }
                 },
-                { text: 'id', datafield: 'id' , width: '50px'},
+                //{ text: 'id', datafield: 'id' , width: '50px'},
                 { text: 'код', datafield: 'unit_code' , width: '50px'},
-                { text: 'МО', datafield: 'unit_name' , width: '580px'}
+                { text: 'МО', datafield: 'unit_name' , width: '600px'},
+                { text: 'Входит в', datafield: 'parent', width: '220px' },
+                { text: 'Тип', datafield: 'node_type' , width: '60px'}
             ]
         });
 };
@@ -120,7 +125,8 @@ let initUnitsNonmembers = function () {
     units.jqxGrid(
         {
             width: '100%',
-            height: '100%',
+            height: '95%',
+            autoheight: false,
             theme: theme,
             localization: localize(),
             source: unitDataAdapter,
@@ -130,14 +136,18 @@ let initUnitsNonmembers = function () {
             sortable: true,
             selectionmode: 'multiplerowsextended',
             columns: [
-                { text: 'Id', datafield: 'id', width: '30px' },
-                { text: 'Входит в', datafield: 'parent', width: '120px' },
+                //{ text: 'Id', datafield: 'id', width: '30px' },
                 { text: 'Код', datafield: 'unit_code', width: '50px'  },
-                { text: 'Имя', datafield: 'unit_name' , width: '420px'},
-                { text: 'Тип', datafield: 'node_type' , width: '40px'},
-                { text: 'Блок', datafield: 'blocked', width: '50px' }
+                { text: 'Имя', datafield: 'unit_name' , width: '600px'},
+                { text: 'Входит в', datafield: 'parent', width: '220px' },
+                { text: 'Тип', datafield: 'node_type' , width: '60px'}
+                //{ text: 'Блок', datafield: 'blocked', width: '50px' }
             ]
         });
+    units.on("bindingcomplete", function (event) {
+        let checkedvalue = $("input[name=filterNonMember]:checked")[0].value;
+        applyfilter(units, checkedvalue);
+    });
 };
 
 let getselectednonmembers = function () {
@@ -205,6 +215,9 @@ let initeditlistwindow = function () {
     });
 
     createcopybutton.click(function() {
+        if (currentlist === 0) {
+            return false;
+        }
         $.ajax({
             dataType: 'json',
             url: createcopy_url + currentlist,
@@ -315,6 +328,7 @@ let initActions = function() {
     });
 
     $("#AddSelected").click(function () {
+        let includesublegals = 0;
         if (currentlist === 0) {
             raiseError('Не выбран список МО для редактирования');
             return false;
@@ -324,7 +338,11 @@ let initActions = function() {
             raiseError('Не выбраны МО для добавления в список');
             return false;
         }
-        let data = "&units=" + added_units;
+        //console.log($("#includeSubLegals").prop("checked"));
+        if ($("#includeSubLegals").prop("checked") === true) {
+            includesublegals = 1;
+        }
+        let data = "&units=" + added_units + "&inclusive=" + includesublegals;
         $.ajax({
             dataType: 'json',
             url: addmembers_url + currentlist,
@@ -414,6 +432,41 @@ let initActions = function() {
             }
         });
     });
+    $("#ApplyFilter").click(function () {
+        let checkedvalue = $("input[name=filterNonMember]:checked")[0].value;
+        applyfilter(units, checkedvalue);
+    });
+    $("#ApplyMemberFilter").click(function () {
+        let checkedvalue = $("input[name=filterMember]:checked")[0].value;
+        applyfilter(listterms, checkedvalue);
+    });
+};
+
+applyfilter = function (u, option) {
+    u.jqxGrid('clearfilters');
+    let filtergroup = new $.jqx.filter();
+    let filter_or_operator = 1;
+    let filtervalue = 0;
+    switch (option) {
+        case '1' :
+            return;
+        case '2' :
+            filtervalue = 3;
+            break;
+        case '3' :
+            filtervalue = 4;
+            break;
+        case '4' :
+            filtervalue = 6;
+            break;
+    }
+    //let filtercondition = 'contains';
+    let filtercondition = 'equal';
+    //let filter = filtergroup.createfilter('stringfilter', filtervalue, filtercondition);
+    let filter = filtergroup.createfilter('numericfilter', filtervalue, filtercondition);
+    filtergroup.addfilter(filter_or_operator, filter);
+    u.jqxGrid('addfilter', 'node_type', filtergroup );
+    u.jqxGrid('applyfilters');
 };
 
 setquery = function() {
