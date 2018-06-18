@@ -129,9 +129,11 @@ datasources = function() {
         dataType: "json",
         dataFields: [
             { name: 'id', type: 'int' },
-            { name: 'parent_id', type: 'int' },
-            { name: 'group_code', type: 'string' },
-            { name: 'group_name', type: 'string' }
+            //{ name: 'parent_id', type: 'int' },
+            //{ name: 'group_code', type: 'string' },
+            { name: 'slug', type: 'string' },
+            //{ name: 'group_name', type: 'string' }
+            { name: 'name', type: 'string' }
         ],
         hierarchy:
         {
@@ -832,8 +834,9 @@ initgrouptree = function() {
                 grouptree.jqxTreeGrid('expandRow', 0);
             },
             columns: [
-                { text: 'Код', dataField: 'group_code', width: 120 },
-                { text: 'Наименование', dataField: 'group_name', width: 545 }
+                //{ text: 'Код', dataField: 'group_code', width: 120 },
+                { text: 'Сокр', dataField: 'slug', width: 120 },
+                { text: 'Наименование', dataField: 'name', width: 545 }
             ]
         });
     if (current_user_role === '1') {

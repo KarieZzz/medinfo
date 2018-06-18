@@ -54,7 +54,7 @@ class TableEditing
             }
             if ($col->content_type === Column::DATA) {
                 $columns_arr[] = array(
-                    'text'  => $col->column_index,
+                    'text'  => $col->column_code,
                     'dataField' => $col->id,
                     'width' => $width,
                     'cellsalign' => 'right',

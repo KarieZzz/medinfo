@@ -87,6 +87,12 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label class="control-label col-sm-3" for="onFrontend">Отображать список в перечне фильтров МО:</label>
+                    <div class="col-sm-9">
+                        <div id="onFrontend"></div>
+                    </div>
+                </div>
+                <div class="form-group">
                     <div class="col-sm-offset-3 col-sm-9">
                         <button type="button" class="btn btn-primary" id="update">Сохранить</button>
                         <button type="button" class="btn btn-success" id="createCopy">Создать копию</button>
@@ -119,7 +125,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
     {{--<script src="{{ asset('/medinfo/admin/tablepicker.js?v=008') }}"></script>--}}
-    <script src="{{ asset('/medinfo/admin/unitlistadmin.js?v=017') }}"></script>
+    <script src="{{ asset('/medinfo/admin/unitlistadmin.js?v=018') }}"></script>
 @endpush
 
 @section('inlinejs')

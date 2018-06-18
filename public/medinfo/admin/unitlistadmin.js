@@ -7,7 +7,8 @@ let initList = function() {
         datafields: [
             { name: 'id', type: 'int' },
             { name: 'slug', type: 'string' },
-            { name: 'name', type: 'string' }
+            { name: 'name', type: 'string' },
+            { name: 'on_frontend', type: 'bool' }
         ],
         id: 'id',
         url: lists
@@ -15,7 +16,7 @@ let initList = function() {
     let dataadapter =  new $.jqx.dataAdapter(listsource);
     list.jqxGrid(
         {
-            width: '500px',
+            width: '600px',
             height: '500px',
             theme: theme,
             localization: localize(),
@@ -26,7 +27,8 @@ let initList = function() {
             sortable: true,
             columns: [
                 { text: 'Пседоним', datafield: 'slug', width: '100px'  },
-                { text: 'Наименование', datafield: 'name' , width: '380px'}
+                { text: 'Наименование', datafield: 'name' , width: '380px'},
+                { text: 'Отображаемый', columntype: 'checkbox', datafield: 'on_frontend' , width: '100px'}
             ]
         });
 
@@ -42,10 +44,9 @@ let initList = function() {
         $("#ListName").html('<strong>"' + r.name + '"</strong>');
         $("#name").val(r.name);
         $("#slug").val(r.slug);
+        $("#onFrontend").val(r.on_frontend);
         unitsource.url = units_url + currentlist;
         membersource.url = member_url + currentlist;
-
-
         units.jqxGrid('clearselection');
         listterms.jqxGrid('clearselection');
         units.jqxGrid('updatebounddata');
@@ -92,8 +93,8 @@ let initListMembers = function () {
                 },
                 //{ text: 'id', datafield: 'id' , width: '50px'},
                 { text: 'код', datafield: 'unit_code' , width: '50px'},
-                { text: 'МО', datafield: 'unit_name' , width: '600px'},
-                { text: 'Входит в', datafield: 'parent', width: '220px' },
+                { text: 'МО', datafield: 'unit_name' , width: '550px'},
+                { text: 'Входит в', datafield: 'parent', width: '200px' },
                 { text: 'Тип', datafield: 'node_type' , width: '60px'}
             ]
         });
@@ -138,7 +139,7 @@ let initUnitsNonmembers = function () {
             columns: [
                 //{ text: 'Id', datafield: 'id', width: '30px' },
                 { text: 'Код', datafield: 'unit_code', width: '50px'  },
-                { text: 'Имя', datafield: 'unit_name' , width: '600px'},
+                { text: 'Имя', datafield: 'unit_name' , width: '550px'},
                 { text: 'Входит в', datafield: 'parent', width: '220px' },
                 { text: 'Тип', datafield: 'node_type' , width: '60px'}
                 //{ text: 'Блок', datafield: 'blocked', width: '50px' }
@@ -183,9 +184,14 @@ let initeditlistwindow = function () {
         cancelButton: $('#cancel'),
         position: { x: 310, y: 125 }
     });
-
+    $('#onFrontend').jqxSwitchButton({
+        height: 31,
+        width: 110,
+        onLabel: 'Да',
+        offLabel: 'Нет',
+        checked: false });
     updbutton.click(function() {
-        data = "&name=" + $("#name").val() + "&slug=" + $("#slug").val();
+        let data = setquerystring();
         $.ajax({
             dataType: 'json',
             url: list_url + '/' + currentlist,
@@ -249,7 +255,7 @@ let initeditlistwindow = function () {
     });
 
     createbutton.click(function() {
-        data = "&name=" + $("#name").val() + "&slug=" + $("#slug").val();
+        data = setquerystring();
         $.ajax({
             dataType: 'json',
             url: list_url,
@@ -279,6 +285,11 @@ let initeditlistwindow = function () {
         listeditform.jqxWindow('hide');
     });
 
+};
+
+let setquerystring = function () {
+    let onfront = $("#onFrontend").val() ? 1 : 0;
+    return "&name=" + $("#name").val() + "&slug=" + $("#slug").val() + "&onfrontend=" + onfront;
 };
 
 let initActions = function() {

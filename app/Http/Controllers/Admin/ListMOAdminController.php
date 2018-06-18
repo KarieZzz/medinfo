@@ -51,14 +51,15 @@ class ListMOAdminController extends Controller
 
     public function update($id, Request $request)
     {
+        $this->validate($request, ['onfrontend' => 'required|in:1,0']);
         $list = UnitList::find($id);
+        $list->on_frontend = $request->onfrontend;
         if ($list->name !== $request->name) {
             $this->validate($request, [
                     'name' => 'required|max:128|unique:unit_lists',
                 ]
             );
             $list->name = $request->name;
-            $list->save();
         }
         if ($list->slug !== $request->slug) {
             $this->validate($request, [
@@ -66,8 +67,8 @@ class ListMOAdminController extends Controller
                 ]
             );
             $list->slug = $request->slug;
-            $list->save();
         }
+        $list->save();
         return [ 'updated' => true ];
     }
 

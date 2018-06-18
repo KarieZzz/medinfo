@@ -17,6 +17,7 @@ class UnitListsTable extends Migration
             $table->increments('id');
             $table->string('name', 128)->unique();
             $table->string('slug', 64)->unique();
+            $table->smallInteger('on_frontend')->index();
             $table->timestamps();
         });
     }

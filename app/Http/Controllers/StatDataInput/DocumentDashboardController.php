@@ -72,7 +72,8 @@ class DocumentDashboardController extends Controller
     public function fetch_unitgroups()
     {
         //return UnitTree::getSimpleTree($parent);
-        return UnitGroup::all();
+        //return UnitGroup::all();
+        return \App\UnitList::OnFrontend()->get();
     }
 
     public function fetchdocuments(Request $request)
