@@ -656,7 +656,8 @@ class ControlPtreeTranslator
 
     public static function parseCelladress($celladress)
     {
-        $correct = preg_match('/(?:Ф(?P<f>[а-я0-9.\-]*))?(?:Т(?P<t>[а-я0-9.\-]*))?(?:С(?P<r>[0-9.\-]*))?(?:Г(?P<c>\d{1,3}))?(?:П(?P<p>[0-9.\-\+IV]*))?/u', $celladress, $matches);
+        //$correct = preg_match('/(?:Ф(?P<f>[а-я0-9.\-]*))?(?:Т(?P<t>[а-я0-9.\-]*))?(?:С(?P<r>[0-9.\-]*))?(?:Г(?P<c>\d{1,3}))?(?:П(?P<p>[0-9.\-\+IV]*))?/u', $celladress, $matches);
+        $correct = preg_match('/(?:Ф(?P<f>[а-я0-9.\-]*))?(?:Т(?P<t>[а-я0-9.\-]*))?(?:С(?P<r>[0-9.\-]*))?(?:Г(?P<c>[0-9.]*))?(?:П(?P<p>[0-9.\-\+IV]*))?/u', $celladress, $matches);
         if (!$correct) {
             throw new \Exception("Указан недопустимый адрес ячейки " . $celladress);
         }
@@ -721,11 +722,13 @@ class ControlPtreeTranslator
     public function identifyColumn($code, $table_id)
     {
         //dump($code ==='');
+        //dump($code);
         if ($code ==='') {
             $this->vector[] = self::COLUMNS;
             return null;
         }
-        $column = Column::OfDataType()->OfTableColumnIndex($table_id, $code)->first();
+        $column = Column::OfDataType()->OfTableColumnCode($table_id, $code)->first();
+        //dump($column);
         if (is_null($column)) {
             $table = $this->getTableInfo($table_id);
             $form = $table->form()->first();

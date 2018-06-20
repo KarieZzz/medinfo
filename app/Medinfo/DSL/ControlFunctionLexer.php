@@ -302,7 +302,7 @@ class ControlFunctionLexer extends Lexer
             do {
                 $c .= $this->c;
                 $this->consume();
-            } while ($this->isCODE());
+            } while ($this->isCOLUMNCODE());
 
         }
         // Если код графы пуст, то оставляем только ссылку на код строки таблицы. Подразумевается, что они должны быть указаны.
@@ -382,6 +382,14 @@ class ControlFunctionLexer extends Lexer
     public function isCODE()
     {
         return $this->c >= '0' && $this->c <= '9';
+    }
+
+    public function isCOLUMNCODE()
+    {
+        return
+            $this->c != 'П' && (
+                ($this->c >= '0' && $this->c <= '9') || $this->c == '.'
+            );
     }
 
     public function isROWCODE()
