@@ -295,7 +295,7 @@ class ExcelExport
                             $row[] = $r->row_name;
                         } elseif ($col->column_index == 2) {
                             $row[] = "$r->row_code;";
-                            //$row[] = $r->row_code;
+                            //$row[] = "=\t" . $r->row_code;
                         }
                         break;
                     case \App\Column::CALCULATED :

@@ -37,11 +37,15 @@ class ExcelExportController extends Controller
         $excel = Excel::create('Table' . $table->table_code);
         $excel->sheet("Таблица {$table->table_code}" , function($sheet) use ($table, $cols, $data) {
             $sheet->loadView('reports.datatable_excel', compact('table', 'cols', 'data'));
+/*            $sheet->setColumnFormat(array(
+                'A:B' => '@',
+            ));*/
             //$sheet->getColumnDimensionByColumn('C5:BZ5')->setAutoSize(false);
             //$sheet->getColumnDimensionByColumn('C5:BZ5')->setWidth('10');
             //$sheet->getColumnDimensionByColumn('B')->setAutoSize(false);
             //$sheet->getColumnDimensionByColumn('B')->setWidth('80');
             //$sheet->getRowDimension('6')->setRowHeight(-1);
+
             $sheet->getStyle(ExcelExport::getCellByRC(4, 1) . ':' . ExcelExport::getCellByRC(4, count($cols)))->getAlignment()->setWrapText(true);
             //$sheet->getStyle('B7:B430')->getAlignment()->setWrapText(true);
             $sheet->getStyle(ExcelExport::getCellByRC(4, 1) . ':' . ExcelExport::getCellByRC(count($data)+5, count($cols)))->getBorders()
@@ -49,11 +53,6 @@ class ExcelExportController extends Controller
             //$sheet->getStyle(ExcelExport::getCellByRC(3, 2) . ':' . ExcelExport::getCellByRC(count($data)+3, 2))->setQuotePrefix(true);
             $sheet->getStyle(ExcelExport::getCellByRC(4, 2) . ':' . ExcelExport::getCellByRC(count($data)+5, 2))->getNumberFormat()
                 ->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_TEXT);
-
-/*            $sheet->setColumnFormat(array(
-                'A1:A35' => '@',
-                'B1:B35' => '@',
-            ));*/
         });
         $excel->export('xlsx');
     }

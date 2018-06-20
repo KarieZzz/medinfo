@@ -17,7 +17,7 @@
         </tr>
         <tr>
             @foreach($cols as $col)
-                <th align="center">{{ $col->column_index }}</th>
+                <th align="center">{{ $col->column_code }};</th>
             @endforeach
         </tr>
         @foreach($data as $row)
