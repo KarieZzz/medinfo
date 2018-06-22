@@ -92,13 +92,13 @@ class ControlPtreeTranslator
             $this->parser->rcStack = [];
             return;
         }
-        foreach ($this->parser->rcStack as $rc ) {
+/*        foreach ($this->parser->rcStack as $rc ) {
             if ($this->vector[0] === self::ROWS) {
                 $r = $this->identifyRow($rc, $this->table->id);
             } elseif ($this->vector[0] === self::COLUMNS) {
                 $c = $this->identifyColumn($rc, $this->table->id);
             }
-        }
+        }*/
         foreach ($this->parser->rcRangeStack as &$range) {
             $rcfunc = $range['node']->parent;
             $topcode = $range['node']->children[0]->content;
@@ -111,33 +111,39 @@ class ControlPtreeTranslator
                 }
                 for($i = $toprow->row_index; $i <= $bottomrow->row_index; $i++) {
                     //dump($i);
-                    $intermediate = Row::OfTableRowIndex($this->table->id, $i)->first();
-                    if (is_null($intermediate)) {
+                    $intermediate_row = Row::OfTableRowIndex($this->table->id, $i)->first();
+                    if (is_null($intermediate_row)) {
                         throw new \Exception("В таблице id:{$this->table->id} не существует строка с индексом $i");
                         //continue;
                     }
-                    $new_ptnode = new ControlFunctionParseTree(ControlFunctionLexer::NUMBER, $intermediate->row_code);
+                    $new_ptnode = new ControlFunctionParseTree(ControlFunctionLexer::NUMBER, $intermediate_row->row_code);
                     $rcfunc->addChild($new_ptnode);
-                    $this->parser->rcStack[] = $intermediate->row_code;
+                    $this->parser->rcStack[] = $intermediate_row->row_code;
                 }
             } elseif ($this->vector[0] === self::COLUMNS) {
-                $topcolumn_index = (int)$topcode;
-                $bottomcolumn_index = (int)$bottomcode;
-                $topcolumn = Column::OfTableColumnIndex($this->table->id, $topcolumn_index)->first();
+                //$topcolumn_index = (int)$topcode;
+                //$bottomcolumn_index = (int)$bottomcode;
+                $topcolumn = Column::OfTableColumnCode($this->table->id, $topcode)->first();
                 if (is_null($topcolumn)) {
                     throw new \Exception("Ошибка в функции {$rcfunc->content}. В таблице id:{$this->table->id} не существует графа с кодом $topcode");
                 }
-                $bottomcolumn =Column::OfTableColumnIndex($this->table->id, $bottomcolumn_index)->first();
+                $bottomcolumn =Column::OfTableColumnCode($this->table->id, $bottomcode)->first();
                 if (is_null($bottomcolumn)) {
                     throw new \Exception("Ошибка в функции {$rcfunc->content}. В таблице id:{$this->table->id} не существует графа с кодом $bottomcode");
                 }
-                if ($topcolumn_index >= $bottomcolumn_index ) {
-                    throw new \Exception("Указан неверный диапазон граф {$topcolumn_index} - {$bottomcolumn_index}");
+                if ($topcolumn->column_index >= $bottomcolumn->column_index ) {
+                    throw new \Exception("Указан неверный диапазон граф {$topcolumn->column_index} - {$bottomcolumn->column_index}");
                 }
-                for($i = $topcolumn_index; $i <= $bottomcolumn_index; $i++) {
+                for($i = $topcolumn->column_index; $i <= $bottomcolumn->column_index; $i++) {
+                    $intermediate_column = Column::OfTableColumnIndex($this->table->id, $i)->first();
+                    if (is_null($intermediate_column)) {
+                        throw new \Exception("В таблице id:{$this->table->id} не существует графа с индексом $i");
+                        //continue;
+                    }
                     $new_ptnode = new ControlFunctionParseTree(ControlFunctionLexer::NUMBER, $i);
                     $rcfunc->addChild($new_ptnode);
-                    $this->parser->rcStack[] = $i;
+                    //$this->parser->rcStack[] = $i;
+                    $this->parser->rcStack[] = $intermediate_column->column_code;
                 }
             }
             sort($this->parser->rcStack, SORT_NATURAL);
@@ -441,14 +447,17 @@ class ControlPtreeTranslator
         $range = [];
         switch ($cellrange_vector) {
             case 1: // по строкам (контроль граф)
-                for ($j = 0, $first = (int)$fprops['codes']['c'], $last = (int)$lprops['codes']['c']; $j++, $first <= $last; $first++) {
+                //for ($j = 0, $first = (int)$fprops['codes']['c'], $last = (int)$lprops['codes']['c']; $j++, $first <= $last; $first++) {
+                for ($j = 0, $first = $fprops['columnindex'], $last = $lprops['columnindex']; $j++, $first <= $last; $first++) {
+                    //$column = Column::OfTableColumnIndex($fprops['ids']['t'], $first)->first();
                     $column = Column::OfTableColumnIndex($fprops['ids']['t'], $first)->first();
                     if (is_null($column)) {
                         continue;
                     }
                     $columnid = $column->id;
-                    $colindex = $column->column_index;
-                    $cadrr = 'Г' . $colindex;
+                    $columnindex = $column->column_index;
+                    $columncode = $column->column_code;
+                    $cadrr = 'Г' . $columncode;
                     $f = $fprops['codes']['f'];
                     $t = $fprops['codes']['t'];
                     $f === '' ? $faddr = '' : $faddr = 'Ф' . $f;
@@ -458,10 +467,11 @@ class ControlPtreeTranslator
                     $range[$j]['node'] = $new_ptnode;
                     $range[$j]['codes']['f'] = $f;
                     $range[$j]['codes']['t'] = $t;
-                    $range[$j]['codes']['c'] = $colindex;
+                    $range[$j]['codes']['c'] = $columncode;
                     $range[$j]['ids']['f'] = $fprops['ids']['f'];
                     $range[$j]['ids']['t'] = $fprops['ids']['t'];
                     $range[$j]['ids']['c'] = $columnid;
+                    $range[$j]['columnindex'] = $columnindex;
                     $new_ptnode->parent = $fprops['node']->parent->parent;
                     //$range->parent->addCild();
                     $fprops['node']->parent->parent->addChild($range[$j]['node']);
@@ -510,7 +520,7 @@ class ControlPtreeTranslator
                 break;
             case null:
                 $j = 0;
-                for ($cfirst = (int)$fprops['codes']['c'], $clast = (int)$lprops['codes']['c']; $cfirst <= $clast; $cfirst++) {
+                for ($cfirst = $fprops['columnindex'], $clast = $lprops['columnindex']; $cfirst <= $clast; $cfirst++) {
                     $column = Column::OfTableColumnIndex($fprops['ids']['t'], $cfirst)->first();
                     if (is_null($column)) {
                         continue;
@@ -633,7 +643,9 @@ class ControlPtreeTranslator
         //dump($ca);
         $props['codes'] = self::parseCelladress($ca);
         $props['ids']['r'] = null;
+        $props['ids']['c'] = null;
         $props['rowindex'] = null;
+        $props['columnindex'] = null;
         $props['incomplete'] = false;
 
         //dump($props);
@@ -645,7 +657,12 @@ class ControlPtreeTranslator
             $props['rowindex'] = $row->row_index;
         }
         isset($props['codes']['c']) ?: $props['codes']['c'] = '';
-        $props['ids']['c'] = $this->identifyColumn($props['codes']['c'], $props['ids']['t']);
+        $column = $this->identifyColumn($props['codes']['c'], $props['ids']['t']);
+        if ($column) {
+            $props['ids']['c'] = $column->id;
+            $props['columnindex'] = $column->column_index;
+        }
+
         if ($props['ids']['r'] == null || $props['ids']['c'] == null) {
             $props['incomplete'] = true;
         }
@@ -734,7 +751,7 @@ class ControlPtreeTranslator
             $form = $table->form()->first();
             throw new \Exception("В таблице id:{$table_id} (($table->table_code) {$table->table_name} в форме {$form->form_code}) не существует графы для ввода данных с индексом $code");
         }
-        return $column->id;
+        return $column;
     }
 
     public static function setParentNode(ParseTree $node)
