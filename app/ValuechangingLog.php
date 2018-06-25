@@ -12,6 +12,12 @@ class ValuechangingLog extends Model
     public $timestamps = false;
     protected $dates = ['occured_at'];
 
+    public function scopeOfDocument($query, $document)
+    {
+        return $query
+            ->where('d', $document);
+    }
+
     public function worker()
     {
         return $this->belongsTo('App\Worker');

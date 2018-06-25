@@ -66,6 +66,7 @@
                     <i style='height: 14px' class="fa fa-trash-o fa-lg" id='deleteDocuments' title="Удалить документы"></i>
                     <i style='height: 14px' class="fa fa-product-hunt fa-lg" id='protectAggregates' title="Защитить сводный документ"></i>
                     <i style='height: 14px' class="fa fa-calculator fa-lg" id='Сalculate' title="Расчет (консолидация) данных"></i>
+                    <i style='height: 14px' class="fa fa-leaf fa-lg" id='ValueEditingLog' title="Журнал изменения данных"></i>
                 </div>
             </div>
             <div class="row" id="documentList"></div>
@@ -146,7 +147,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=014') }}"></script>
+    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=016') }}"></script>
 @endpush
 
 @section('inlinejs')

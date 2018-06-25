@@ -211,6 +211,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::patch('admin/erasedocuments', 'Admin\DocumentAdminController@eraseStatData');
     Route::patch('admin/documentstatechange', 'Admin\DocumentAdminController@changeState');
     Route::patch('admin/protectaggregates', 'Admin\DocumentAdminController@protect_aggregated');
+    Route::get('admin/documents/valuechanginglog/{document}', 'Admin\ValueChangingAdminController@showFormEditingLog');
 
     // Ввод и корректировка статданных
     // Рабочий стол - Первичные и сводные отчеты, сообщения, проверки и экспорт в эксель

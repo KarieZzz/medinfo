@@ -10,6 +10,7 @@ let changestate_url = '/admin/documentstatechange';
 let group_tree_url = '/admin/fetchugroups';
 let protectaggregate_url = '/admin/protectaggregates';
 let calculate_url = '/admin/consolidate/';
+let log_form_url = '/admin/documents/valuechanginglog/';
 let current_top_level_node = 0;
 let filter_mode = 1; // 1 - по территориям; 2 - по группам
 let grouptree = $("#groupTree");
@@ -812,7 +813,15 @@ initdocumentactions = function() {
             }
         });
     });
-
+    $("#ValueEditingLog").jqxButton ({ theme: theme});
+    $("#ValueEditingLog").click(function () {
+        let row_ids = noselected_error("Не выбрано ни одного документа");
+        if (row_ids.length > 1) {
+            raiseError("Необходимо выбрать только один документ");
+            return false;
+        }
+        let editWindow = window.open(log_form_url + row_ids[0]);
+    });
 };
 linkrenderer = function (row, column, value) {
     let html = "<div class='jqx-grid-cell-left-align' style='margin-top: 6px'>";
