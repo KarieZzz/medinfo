@@ -23,7 +23,6 @@ class TableAdminController extends Controller
     public function index()
     {
         $default_album = $this->getDefaultAlbum();
-        dd($default_album);
         $forms = Form::whereHas('included', function ($query) use($default_album) {
             $query->where('album_id', $default_album->id);
         })->orderBy('form_index')->get(['id', 'form_code']);
