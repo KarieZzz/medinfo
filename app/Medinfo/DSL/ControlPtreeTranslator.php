@@ -127,7 +127,7 @@ class ControlPtreeTranslator
                 if (is_null($topcolumn)) {
                     throw new \Exception("Ошибка в функции {$rcfunc->content}. В таблице id:{$this->table->id} не существует графа с кодом $topcode");
                 }
-                $bottomcolumn =Column::OfTableColumnCode($this->table->id, $bottomcode)->first();
+                $bottomcolumn = Column::OfTableColumnCode($this->table->id, $bottomcode)->first();
                 if (is_null($bottomcolumn)) {
                     throw new \Exception("Ошибка в функции {$rcfunc->content}. В таблице id:{$this->table->id} не существует графа с кодом $bottomcode");
                 }
