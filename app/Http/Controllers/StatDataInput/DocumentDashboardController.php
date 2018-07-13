@@ -27,8 +27,11 @@ class DocumentDashboardController extends Controller
     public function index()
     {
         $worker = Auth::guard('datainput')->user();
-        $worker_scope = WorkerScope::where('worker_id', $worker->id)->first()->ou_id;
-        $last_scope = WorkerSetting::where('worker_id', $worker->id)->where('name','ou')->first(['value']);
+
+        $worker_scope_get = WorkerScope::where('worker_id', $worker->id)->first();
+        is_null($worker_scope_get) ? dd('Не указан перечень учрежденй, к которым имеет доступ пользователь') : $worker_scope = $worker_scope_get->ou_id;
+        $last_scope_get = WorkerSetting::where('worker_id', $worker->id)->where('name','ou')->first();
+        is_null($last_scope_get) ? $last_scope = $worker_scope : $last_scope = $last_scope_get->value;
         $filter_mode = WorkerSetting::where('worker_id', $worker->id)->where('name','filter_mode')->first(['value']);
         $permission = $worker->permission;
         $disabled_states = config('medinfo.disabled_states.' . $worker->role);
@@ -66,7 +69,7 @@ class DocumentDashboardController extends Controller
     public function fetch_mo_hierarchy($parent = 0)
     {
         //return UnitTree::getSimpleTree($parent);
-        return UnitTree::getMoTree($parent);
+        return UnitTree::getMoTree((int)$parent);
     }
 
     public function fetch_unitgroups()
@@ -80,7 +83,8 @@ class DocumentDashboardController extends Controller
     {
         $worker = Auth::guard('datainput')->user();
         $worker_scope = WorkerScope::where('worker_id', $worker->id)->first()->ou_id;
-        $top_node = $request->ou;
+        $top_node = $request->ou === 0 ? $worker_scope : $request->ou;
+
         $filter_mode = $request->filter_mode;
         $dtypes[] = 1;
         $states = explode(",", $request->states);

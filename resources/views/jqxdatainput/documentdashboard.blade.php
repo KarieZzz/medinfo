@@ -140,7 +140,7 @@
 <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/documentdashboard.js?v=101') }}"></script>
+<script src="{{ asset('/medinfo/documentdashboard.js?v=102') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -148,11 +148,12 @@
     <script type="text/javascript">
         let current_user_id = '{{ $worker->id }}';
         let current_user_role = '{{ $worker->role }}';
+        let current_user_scope = '{{ $worker_scope }}';
         let audit_permission = {{ $audit_permission ? 'true' : 'false' }};
         let periods = {!! $periods !!};
         let states = {!! $states !!};
         let checkedmf = [{!! $mf->value or '' !!}]; // Выбранные в последнем сеансе мониторинги и формы
-        let lasstscope = {!! $last_scope->value or $worker_scope !!};
+        let lasstscope = {{ is_null($last_scope) ? $worker_scope : $last_scope }};
         let checkedmonitorings = [{!! $mon_ids->value or '' !!}];
         let checkedforms = [{!! $form_ids->value or '' !!}];
         let checkedstates = [{!! $state_ids->value or '' !!}];
@@ -160,7 +161,8 @@
         let disabled_states = [{!! $disabled_states or '' !!}];
         let filter_mode = {!! $filter_mode->value or 1 !!}; // 1 - по территориям; 2 - по группам
         //let current_top_level_node = '{{ is_null($worker_scope) ? 'null' : $worker_scope }}';
-        let current_top_level_node = {{ is_null($worker_scope) ? 'null' : $worker_scope }};
+        //let current_top_level_node = {{ is_null($worker_scope) ? 0 : $worker_scope }};
+        let current_top_level_node = {{ is_null($last_scope) ? $worker_scope : $last_scope }};
         let current_filter = '&filter_mode=' + filter_mode + '&ou=' + lasstscope + '&states='
             + checkedstates.join() + '&mf=' + checkedmf.join() + '&monitorings=' + checkedmonitorings.join()
             + '&forms=' + checkedforms.join() + '&periods=' + checkedperiods.join();

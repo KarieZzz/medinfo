@@ -121,7 +121,7 @@ datasources = function() {
         },
         id: 'id',
         root: '',
-        url: mo_tree_url + current_top_level_node
+        url: mo_tree_url + current_user_scope
     };
 
     let ugroup_source =
