@@ -995,9 +995,13 @@ initdocumentstabs = function() {
             else {
                 let items = [];
                 $.each( data, function( key, val ) {
+                    let worker = 'н/д';
+                    if (val.worker !== null) {
+                        worker = val.worker.description;
+                    }
                     let m = "<tr>";
                     m += "<td style='width: 120px'>" + formatDate(val.created_at) + "</td>";
-                    m += "<td style='width: 20%'>" + val.worker.description + "</td>";
+                    m += "<td style='width: 20%'>" + worker + "</td>";
                     m += "<td>" + val.message + "</td>";
                     m +="</tr>";
                     items.push(m);

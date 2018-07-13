@@ -32,7 +32,6 @@ class TableAdminController extends Controller
     public function getDefaultAlbum()
     {
         $default_album = Album::Default()->first();
-
         if (is_null($default_album)) {
             $default_album = Album::find(config('medinfo.default_album'));
         }
