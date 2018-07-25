@@ -213,6 +213,11 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::patch('admin/protectaggregates', 'Admin\DocumentAdminController@protect_aggregated');
     Route::get('admin/documents/valuechanginglog/{document}', 'Admin\ValueChangingAdminController@showFormEditingLog');
 
+    // импорт данных из формата Медстат
+    Route::get('admin/documents/medstatimport', 'Admin\MedstatImportAdminController@index');
+    Route::post('admin/documents/medstatimport', 'Admin\MedstatImportAdminController@uploadNormalizedMedstatData');
+    Route::post('admin/documents/medstatimportmake', 'Admin\MedstatImportAdminController@makeMedstatImport');
+
     // Ввод и корректировка статданных
     // Рабочий стол - Первичные и сводные отчеты, сообщения, проверки и экспорт в эксель
     Route::get('datainput', 'StatDataInput\DocumentDashboardController@index' );

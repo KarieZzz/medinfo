@@ -702,12 +702,12 @@ initdocumentactions = function() {
     });
     $("#deleteDocuments").jqxButton({ theme: theme });
     $("#deleteDocuments").click(function () {
-        var row_ids = noselected_error("Не выбрано ни одного документа для удаления");
+        let row_ids = noselected_error("Не выбрано ни одного документа для удаления");
         if (!row_ids) {
             return false;
         }
-        var data = "documents=" + row_ids;
-        var confirm_text = 'Подтвердите удаление документов №№ ' + row_ids + '. \n';
+        let data = "documents=" + row_ids;
+        let confirm_text = 'Подтвердите удаление документов №№ ' + row_ids + '. \n';
         confirm_text += 'Документы будут удалены вместе со всеми введенными в них статданными без возможности восстановления!';
         if (!confirm(confirm_text)) {
             return false;
@@ -732,12 +732,12 @@ initdocumentactions = function() {
     });
     $("#eraseData").jqxButton ({ theme: theme});
     $("#eraseData").click(function () {
-        var row_ids = noselected_error("Не выбрано ни одного документа для удаления статданных");
+        let row_ids = noselected_error("Не выбрано ни одного документа для удаления статданных");
         if (!row_ids) {
             return false;
         }
-        var data = "documents=" + row_ids;
-        var confirm_text = 'Подтвердите удаление статданных из документов №№ ' + row_ids + '. \n';
+        let data = "documents=" + row_ids;
+        let confirm_text = 'Подтвердите удаление статданных из документов №№ ' + row_ids + '. \n';
         confirm_text += 'Данные будут потеряны без возможности дальнейшего восстановления!';
         if (!confirm(confirm_text)) {
             return false;
