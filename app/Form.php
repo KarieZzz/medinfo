@@ -20,15 +20,20 @@ class Form extends Model
         return $this->hasMany('App\Table');
     }
 
+    public function included()
+    {
+        return $this->hasMany('App\AlbumFormSet');
+    }
+
     public function scopeOfCode($query, $code)
     {
         return $query
             ->where('form_code', $code);
     }
 
-    public function included()
+    public function scopeNotOfMedstat($query)
     {
-        return $this->hasMany('App\AlbumFormSet');
+        return $query->whereNull('medstat_code');
     }
 
 }

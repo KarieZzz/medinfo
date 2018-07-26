@@ -16,7 +16,7 @@ initsplitter = function() {
     );
 };
 initdatasources = function() {
-    var albumsource =
+    let albumsource =
     {
         datatype: "json",
         datafields: [
@@ -43,7 +43,7 @@ initdatasources = function() {
         root: 'member'
     };
     AlbumDataAdapter = new $.jqx.dataAdapter(albumsource);
-    memberDataAdapter = new $.jqx.dataAdapter(membersource);
+    MemberDataAdapter = new $.jqx.dataAdapter(membersource);
 };
 inittablelist = function() {
     agrid.jqxGrid(
@@ -64,7 +64,7 @@ inittablelist = function() {
             ]
         });
     agrid.on('rowselect', function (event) {
-        var row = event.args.row;
+        let row = event.args.row;
         currentalbum = row.id;
         membersource.url = member_url + currentalbum;
         mlist.jqxGrid('updatebounddata');
@@ -74,10 +74,10 @@ inittablelist = function() {
     mlist.jqxGrid(
         {
             width: '98%',
-            height: '65%',
+            height: 430,
             theme: theme,
             localization: localize(),
-            source: memberDataAdapter,
+            source: MemberDataAdapter,
             columnsresize: true,
             showfilterrow: true,
             filterable: true,

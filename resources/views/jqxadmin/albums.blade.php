@@ -9,8 +9,8 @@
         <div id="AlbumList" style="margin: 10px"></div>
         <div class="panel panel-default">
             <div class="panel-heading"><h4>Формы, входящие в альбом:</h4></div>
-            <div class="panel-body">
-                <div id="memberList"></div>
+            <div class="panel-body" style="height: 100%">
+                <div id="MemberList"></div>
                 <div class="col-sm-7">
                     <button type="button" id="removemember" class="btn btn-danger">Удалить формы из альбома</button>
                 </div>
@@ -83,27 +83,27 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/albumadmin.js?v=0004') }}"></script>
+    <script src="{{ asset('/medinfo/admin/albumadmin.js?v=002') }}"></script>
 @endpush
 
 @section('inlinejs')
     @parent
     <script type="text/javascript">
-        var currentalbum = 0;
-        var membersource;
-        var album_url ='/admin/fetchalbums';
-        var form_url ='/admin/fetchforms/';
-        var member_url ='/admin/albums/fetchformset/';
-        var albumcreate_url = '/admin/albums/create';
-        var albumupdate_url = '/admin/albums/update/';
-        var albumdelete_url = '/admin/albums/delete/';
-        var addmembers_url = '/admin/albums/addmembers/';
-        var removemember_url = '/admin/albums/removemember/';
-        var AlbumDataAdapter;
-        var FormDataAdapter;
-        var memberDataAdapter;
-        var agrid = $("#AlbumList");
-        var mlist = $("#memberList");
+        let currentalbum = 0;
+        let membersource;
+        let album_url ='/admin/fetchalbums';
+        let form_url ='/admin/fetchforms/';
+        let member_url ='/admin/albums/fetchformset/';
+        let albumcreate_url = '/admin/albums/create';
+        let albumupdate_url = '/admin/albums/update/';
+        let albumdelete_url = '/admin/albums/delete/';
+        let addmembers_url = '/admin/albums/addmembers/';
+        let removemember_url = '/admin/albums/removemember/';
+        let AlbumDataAdapter;
+        let FormDataAdapter;
+        let memberDataAdapter;
+        let agrid = $("#AlbumList");
+        let mlist = $("#MemberList");
 
         //var mo_dataAdapter;
         initsplitter();

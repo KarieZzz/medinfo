@@ -47,7 +47,6 @@ class Row extends Model
             ->where('medstat_code', $medstatcode);
     }
 
-
     public function scopeInMedstat($query)
     {
         return $query

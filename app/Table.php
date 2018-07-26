@@ -53,6 +53,11 @@ class Table extends Model
             ->where('table_code', $table_code);
     }
 
+    public function scopeOfMedstat($query)
+    {
+        return $query->whereNotNull('medstat_code');
+    }
+
     public static function editedTables(int $document, int $album)
     {
         $editedtables = \DB::table('statdata')

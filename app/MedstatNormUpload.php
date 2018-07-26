@@ -14,4 +14,13 @@ class MedstatNormUpload extends Model
     {
         return $this->belongsTo('App\Form', 'form', 'medstat_code');
     }
+
+    public function scopeOfFTRC($query, $form, $table, $row, $column)
+    {
+        return $query
+            ->where('form', $form)
+            ->where('table', $table)
+            ->where('row', $row)
+            ->where('column', $column);
+    }
 }

@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Form;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\MedstatNormUpload;
 use App\Document;
+use App\Cell;
 
 class MedstatImportAdminController extends Controller
 {
@@ -97,30 +99,88 @@ class MedstatImportAdminController extends Controller
         $available_years = MedstatNormUpload::groupby(['id', 'year'])->distinct()->get(['year']);
         $available_units = MedstatNormUpload::groupby(['id', 'ucode'])->distinct()->get(['ucode']);
         $available_forms = MedstatNormUpload::groupby(['id', 'form'])->distinct()->with('medinfoform')->get(['form'])->sortBy('form');
+        $monitorings = \App\Monitoring::all();
+        $albums = \App\Album::all()->sortBy('album_name');
         $periods = \App\Period::all();
         $units = \App\Unit::primary()->get();
+        $states = \App\DicDocumentState::all();
         //dd($available_forms[0]->medinfoform->form_code);
         return view('jqxadmin.medstatimportintermediateresult', compact(
             'no_zero_uploaded',
             'available_years',
             'available_units',
             'available_forms',
+            'monitorings',
+            'albums',
             'periods',
+            'states',
             'units'));
     }
 
     public function makeMedstatImport(Request $request)
     {
         $this->validate($request, [
+                'monitoring' => 'required|integer',
+                'album' => 'required|integer',
                 'period' => 'required|integer',
                 'unit' => 'required|integer',
+                'state' => 'required|integer',
             ]
         );
+        set_time_limit(180);
+        //dd(Form::where('id', 37)->first(['medstat_code'])->medstat_code);
         $default_type = 1;
-
-        $forms = MedstatNormUpload::groupby(['id', 'form'])->distinct()->with('medinfoform')->get(['form'])->sortBy('form');
+        //$default_monitoring = 100001;
+        //$default_album = 1;
+        //$default_state = 4;
+        $uploaded_forms = MedstatNormUpload::groupby(['id', 'form'])->distinct()->pluck('form');
+        $forms = Form::all();
         foreach ($forms as $form) {
-            $document = Document::OfTUPF($default_type, $request->unit, $request->period );
+            if ($uploaded_forms->contains($form->medstat_code)) {
+                $document = Document::firstOrNew([
+                    'dtype' => $default_type,
+                    'ou_id' => $request->unit,
+                    'period_id' => $request->period,
+                    'form_id' => $form->id,
+                ]);
+                $document->monitoring_id = $request->monitoring;
+                $document->album_id = $request->album;
+                $document->state = $request->state;
+                $document->save();
+                Cell::OfDocument($document->id)->delete();
+                $affected = 0;
+                $tables = \App\Table::OfForm($form->id)->OfMedstat()->get();
+                foreach ($tables as $table) {
+                    $rows = \App\Row::OfTable($table->id)->InMedstat()->get();
+                    //$columns = \App\Column::OfTable($table->id)->InMedstat()->get();
+                    $columns = \App\Column::OfTable($table->id)->get();
+
+                        foreach ($rows as $row) {
+                            foreach ($columns as $column) {
+                                if (!$table->transposed) {
+                                    $uploaded = MedstatNormUpload::OfFTRC($form->medstat_code, $table->medstat_code, $row->medstat_code, $column->medstat_code)->first();
+                                } elseif ($table->transposed = 1) {
+                                    $uploaded = MedstatNormUpload::OfFTRC($form->medstat_code, $table->medstat_code, '001', substr($row->medstat_code, -2))->first();
+                                }
+                                if (!is_null($uploaded)) {
+                                    $cell = Cell::firstOrCreate(['doc_id' => $document->id, 'table_id' => $table->id, 'row_id' => $row->id, 'col_id' => $column->id]);
+                                    $cell->value = $uploaded->value;
+                                    $cell->save();
+                                    $affected++;
+                                }
+                            }
+                        }
+
+
+                }
+
+            }
         }
+        return ['affected' => $affected];
+    }
+
+    public function loadMedstatData($docs)
+    {
+
     }
 }

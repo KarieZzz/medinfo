@@ -96,4 +96,9 @@ class Column extends Model
         return $query->where('content_type', self::CALCULATED);
     }
 
+    public function scopeInMedstat($query)
+    {
+        return $query
+            ->whereNotNull('medstat_code');
+    }
 }
