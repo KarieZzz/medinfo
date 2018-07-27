@@ -20,12 +20,6 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="group_id">Группа:</label>
-                        <div class="col-sm-2">
-                            <input type="text" class="form-control" id="group_id">
-                        </div>
-                    </div>
-                    <div class="form-group">
                         <label class="control-label col-sm-3" for="form_index">Порядковый номер:</label>
                         <div class="col-sm-2">
                             <input type="text" class="form-control" id="form_index">
@@ -38,21 +32,9 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="file_name">Имя файла для экспорта:</label>
-                        <div class="col-sm-2">
-                            <input type="text" class="form-control" id="file_name">
-                        </div>
-                    </div>
-                    <div class="form-group">
                         <label class="control-label col-sm-3" for="medstat_code">Медстат Id:</label>
                         <div class="col-sm-2">
                             <input type="text" class="form-control" id="medstat_code">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-sm-3" for="medinfo_id">Мединфо Id:</label>
-                        <div class="col-sm-2">
-                            <input type="text" class="form-control" id="medinfo_id">
                         </div>
                     </div>
                     <div class="form-group">
@@ -88,7 +70,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/formadmin.js') }}"></script>
+    <script src="{{ asset('/medinfo/admin/formadmin.js?v=001') }}"></script>
 @endpush
 
 @section('inlinejs')

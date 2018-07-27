@@ -16,18 +16,15 @@ initsplitter = function() {
     );
 };
 initdatasources = function() {
-    var formsource =
+    let formsource =
     {
         datatype: "json",
         datafields: [
             { name: 'id', type: 'int' },
-            { name: 'group_id', type: 'int' },
             { name: 'form_index', type: 'int' },
             { name: 'form_name', type: 'string' },
             { name: 'form_code', type: 'string' },
-            { name: 'file_name', type: 'string' },
-            { name: 'medstat_code', type: 'string' },
-            { name: 'medinfo_id', type: 'int' }
+            { name: 'medstat_code', type: 'string' }
         ],
         id: 'id',
         url: 'fetchforms',
@@ -52,35 +49,28 @@ initperiodlist = function() {
                 { text: '№ п/п', datafield: 'form_index', width: '70px' },
                 { text: 'Код формы', datafield: 'form_code', width: '100px'  },
                 { text: 'Имя', datafield: 'form_name' , width: '400px'},
-                { text: 'Группа', datafield: 'group_id', width: '70px' },
-                { text: 'Файл', datafield: 'file_name', width: '70px'  },
                 { text: 'Медстат Id', datafield: 'medstat_code', width: '100px' },
-                { text: 'Мединфо Id', datafield: 'medinfo_id', width: '70px' }
             ]
         });
     $('#formList').on('rowselect', function (event) {
-        var row = event.args.row;
+        let row = event.args.row;
         $("#form_name").val(row.form_name);
-        $("#group_id").val(row.group_id);
         $("#form_index").val(row.form_index);
         $("#form_code").val(row.form_code);
-        $("#file_name").val(row.file_name);
         $("#medstat_code").val(row.medstat_code);
-        $("#medinfo_id").val(row.medinfo_id);
     });
 };
 initformactions = function() {
     $("#insert").click(function () {
-        var data = "&form_name=" + $("#form_name").val() + "&group_id=" + $("#group_id").val() + "&form_index=" + $("#form_index").val() +
-            "&form_code=" + $("#form_code").val() + "&file_name=" + $("#file_name").val() +  "&medstat_code=" + $("#medstat_code").val() +
-            "&medinfo_id=" + $("#medinfo_id").val();
+        let data = "&form_name=" + $("#form_name").val() + "&form_index=" + $("#form_index").val() +
+            "&form_code=" + $("#form_code").val()  +  "&medstat_code=" + $("#medstat_code").val();
         $.ajax({
             dataType: 'json',
             url: '/admin/forms/create',
             method: "POST",
             data: data,
             success: function (data, status, xhr) {
-                if (typeof data.error != 'undefined') {
+                if (typeof data.error !== 'undefined') {
                     raiseError(data.message);
                 }
                 $("#formList").jqxGrid('updatebounddata');
@@ -99,9 +89,8 @@ initformactions = function() {
             return false;
         }
         var rowid = $("#formList").jqxGrid('getrowid', row);
-        var data = "id=" + rowid + "&form_name=" + $("#form_name").val() + "&group_id=" + $("#group_id").val() + "&form_index=" + $("#form_index").val() +
-            "&form_code=" + $("#form_code").val() + "&file_name=" + $("#file_name").val() +  "&medstat_code=" + $("#medstat_code").val() +
-            "&medinfo_id=" + $("#medinfo_id").val();
+        var data = "id=" + rowid + "&form_name=" + $("#form_name").val() + "&form_index=" + $("#form_index").val() +
+            "&form_code=" + $("#form_code").val() +  "&medstat_code=" + $("#medstat_code").val();
         $.ajax({
             dataType: 'json',
             url: '/admin/forms/update',

@@ -32,12 +32,10 @@ class FormAdminController extends Controller
     {
         // TODO: Добавить проверку для кода формы -  допустимые символы: цифры, строчные кириллические буквы, точка, дефис
         $this->validate($request, [
-                'group_id' => 'integer',
                 'form_index' => 'integer',
                 'form_name' => 'required|unique:forms|max:256',
                 'form_code' => 'required|unique:forms|max:7',
                 'medstat_code' => 'digits:5',
-                'medinfo_id' => 'integer',
             ]
         );
         try {
@@ -55,7 +53,6 @@ class FormAdminController extends Controller
     public function update(Request $request)
     {
         $this->validate($request, [
-                'group_id' => 'integer',
                 'form_index' => 'integer',
                 'form_name' => 'required|max:256',
                 'form_code' => 'required|max:7',
@@ -64,13 +61,10 @@ class FormAdminController extends Controller
             ]
         );
         $form = Form::find($request->id);
-        $form->group_id = $request->group_id;
         $form->form_index = $request->form_index;
         $form->form_code = $request->form_code;
         $form->form_name = $request->form_name;
-        $form->file_name = $request->file_name;
         $form->medstat_code = empty($request->medstat_code) ? null : $request->medstat_code;
-        $form->medinfo_id = empty($request->medinfo_id) ? null : $request->medinfo_id;
         $result = [];
         try {
             $form->save();
