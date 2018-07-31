@@ -70,7 +70,10 @@ class Unit extends Model
     // Единицы по которым может производится сведение данных
     public function scopeMayBeAggregate($query)
     {
-        return $query->where('aggregate', 1);
+        return $query
+            ->where('aggregate', 1)
+            ->orWhere('node_type', 1)
+            ->orWhere('node_type', 2);
     }
 
     public function scopeOfCountry($query)

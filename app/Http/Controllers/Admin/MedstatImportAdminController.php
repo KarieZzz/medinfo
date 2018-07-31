@@ -57,7 +57,7 @@ class MedstatImportAdminController extends Controller
 
     public function uploadNormalizedMedstatData(Request $request)
     {
-/*        \Storage::put(
+        \Storage::put(
             'medstat_uploads/medctat.dbf',
             file_get_contents($request->file('medstat')->getRealPath())
         );
@@ -68,7 +68,7 @@ class MedstatImportAdminController extends Controller
         }
         dbase_pack($db);
         $numrecordes = dbase_numrecords($db);
-        echo "В загруженной базе данных ". $numrecordes . " строк (по 60 полей в каждой строке) <br>";
+        //echo "В загруженной базе данных ". $numrecordes . " строк (по 60 полей в каждой строке) <br>";
 
         for ($i = 1; $i <= $numrecordes; $i++) {
             $ar = dbase_get_record_with_names($db, $i);
@@ -94,7 +94,7 @@ class MedstatImportAdminController extends Controller
                     //dd($upl);
                 }
             }
-        }*/
+        }
         $no_zero_uploaded = MedstatNormUpload::count();
         $available_years = MedstatNormUpload::groupby(['id', 'year'])->distinct()->get(['year']);
         $available_units = MedstatNormUpload::groupby(['id', 'ucode'])->distinct()->get(['ucode']);
@@ -178,9 +178,53 @@ class MedstatImportAdminController extends Controller
         }
         return ['affected' => $affected];
     }
-
-    public function loadMedstatData($docs)
+    // Импорт усреждений из Медстата (Новосибирск)
+    public function selectFileNSMedstatUnits(Request $request)
     {
+        return view('jqxadmin.medstatNSimportMO');
+    }
 
+    public function uploadFileNSMedstatUnits(Request $request)
+    {
+        \Storage::put(
+            'medstat_uploads/medstat_ns_units.dbf',
+            file_get_contents($request->file('medstat_ns_units')->getRealPath())
+        );
+        $dbf_file = storage_path('app/medstat_uploads/medstat_ns_units.dbf');
+        $db = dbase_open($dbf_file, 2);
+        if (!$db) {
+            new \Exception("Ошибка, не получается открыть базу данных medstat_ns_units.dbf");
+        }
+        dbase_pack($db);
+        $numrecords = dbase_numrecords($db);
+        //echo "В загруженной базе данных ". $numrecordes . " строк. <br>";
+
+        \App\Unit::where('id', '<>', 0 )->delete();
+
+        for ($i = 1; $i <= $numrecords; $i++) {
+            $ar = dbase_get_record_with_names($db, $i);
+            $id = $ar['ID'];
+            //$unit_code = (int)$ar['IND'];
+            $unit_name = iconv('cp866', 'utf-8', $ar['UNIT']);
+            $parent = (int)$ar['DEPENDENCE'];
+            $country = (bool)$ar['COUNTRY'] ? 'true' : 'false';
+            /*            $upl = \App\Unit::create([
+                            'id' => $id,
+                            'unit_code' => $id,
+                            'unit_name' => $unit_name,
+                            'parent_id' => $parent,
+                            'countryside' => $country,
+                        ]);*/
+            $insert = "INSERT INTO public.mo_hierarchy ( id, parent_id, unit_code, unit_name, report , countryside ) 
+              VALUES ( $id, $parent, '$id', '$unit_name', 1, $country )";
+            $res = \DB::insert($insert);
+            //dd($upl);
+        }
+        // Убираем лишний корневой элемент
+        $first_el = \App\Unit::find(1)->delete();
+        $first_childs = \App\Unit::where('parent_id', 1)->update(['parent_id' => 0]);
+        $seq = "ALTER SEQUENCE unit_id_seq RESTART WITH $i;";
+        \DB::update($seq);
+        return view('jqxadmin.medstatNSimportMOresult', compact( 'numrecords'));
     }
 }

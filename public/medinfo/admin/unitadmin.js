@@ -9,8 +9,8 @@ initsplitter = function() {
             theme: theme,
             panels:
                 [
-                    { size: '50%', min: '10%'},
-                    { size: '50%', min: '10%'}
+                    { size: '55%', min: '10%'},
+                    { size: '45%', min: '10%'}
                 ]
         }
     );
@@ -110,6 +110,7 @@ inittablelist = function() {
         });
     unitlist.on('rowselect', function (event) {
         $("#parent_id").jqxDropDownList('clearFilter');
+        $("#parent_id").jqxDropDownList('clearSelection');
         let row = event.args.row;
         $("#unit_name").val(row.unit_name);
         $("#parent_id").val(row.parent_id);
@@ -120,7 +121,7 @@ inittablelist = function() {
         $("#report").val( row.report === 1 );
         $("#aggregate").val(row.aggregate === 1);
         $("#blocked").val(row.blocked === 1);
-        $("#countryside").val(row.countryside !== null);
+        $("#countryside").val(row.countryside === true);
     });
 };
 setquerystring = function() {
