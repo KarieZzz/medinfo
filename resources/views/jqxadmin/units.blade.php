@@ -68,9 +68,9 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="medinfo_id">Мединфо Id:</label>
-                        <div class="col-sm-2">
-                            <input type="text" class="form-control" id="medinfo_id">
+                        <label class="control-label col-sm-3" for="countryside">Сельская местность:</label>
+                        <div class="col-sm-8">
+                            <div id="countryside"></div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -107,7 +107,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/unitadmin.js?v=003') }}"></script>
+    <script src="{{ asset('/medinfo/admin/unitadmin.js?v=004') }}"></script>
 @endpush
 
 @section('inlinejs')

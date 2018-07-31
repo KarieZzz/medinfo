@@ -9,7 +9,7 @@ class Unit extends Model
     //
     protected $table = 'mo_hierarchy';
     protected $fillable = [
-        'parent_id', 'unit_code','territory_type' ,'inn', 'node_type', 'report', 'aggregate', 'unit_name', 'blocked',
+        'parent_id', 'unit_code','territory_type' ,'inn', 'node_type', 'report', 'aggregate', 'unit_name', 'blocked', 'countryside',
     ];
 
     public function workerScope()
@@ -71,6 +71,12 @@ class Unit extends Model
     public function scopeMayBeAggregate($query)
     {
         return $query->where('aggregate', 1);
+    }
+
+    public function scopeOfCountry($query)
+    {
+        return $query
+            ->where('countryside', true);
     }
 
     public static function getDescendants($parent) {

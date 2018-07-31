@@ -108,7 +108,7 @@ initalbumactions = function() {
             method: "POST",
             data: setquerystring(),
             success: function (data, status, xhr) {
-                if (typeof data.error != 'undefined') {
+                if (typeof data.error !== 'undefined') {
                     raiseError(data.message);
                 } else {
                     raiseInfo(data.message);
@@ -135,7 +135,7 @@ initalbumactions = function() {
             method: "PATCH",
             data: setquerystring(),
             success: function (data, status, xhr) {
-                if (typeof data.error != 'undefined') {
+                if (typeof data.error !== 'undefined') {
                     raiseError(data.message);
                 } else {
                     raiseInfo(data.message);

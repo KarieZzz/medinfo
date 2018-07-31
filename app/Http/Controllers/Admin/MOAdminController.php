@@ -44,7 +44,6 @@ class MOAdminController extends Controller
                 'report' => 'required|in:1,0',
                 'aggregate' => 'required|in:1,0',
                 'blocked' => 'required|in:1,0',
-                'medinfo_id' => 'integer',
             ]
         );
         $newunit = new Unit();
@@ -57,7 +56,8 @@ class MOAdminController extends Controller
         $newunit->report = $request->report;
         $newunit->aggregate = $request->aggregate;
         $newunit->blocked = $request->blocked;
-        $newunit->medinfo_id = empty($request->medinfo_id) ? null : $request->medinfo_id;
+        $newunit->countryside = ($request->countryside == 0 ? null : true);
+        //$newunit->medinfo_id = empty($request->medinfo_id) ? null : $request->medinfo_id;
         $newunit->save();
         try {
             $newunit->save();
@@ -89,7 +89,6 @@ class MOAdminController extends Controller
                 'report' => 'required|in:1,0',
                 'aggregate' => 'required|in:1,0',
                 'blocked' => 'required|in:1,0',
-                'medinfo_id' => 'integer',
             ]
         );
         $unit->parent_id = $request->parent_id;
@@ -101,7 +100,8 @@ class MOAdminController extends Controller
         $unit->report = $request->report;
         $unit->aggregate = $request->aggregate;
         $unit->blocked = $request->blocked;
-        $unit->medinfo_id = empty($request->medinfo_id) ? null : $request->medinfo_id;
+        $unit->countryside = ($request->countryside == 0 ? null : true);
+        //$unit->medinfo_id = empty($request->medinfo_id) ? null : $request->medinfo_id;
         $result = [];
         try {
             $unit->save();

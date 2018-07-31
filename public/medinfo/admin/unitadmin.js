@@ -75,7 +75,7 @@ initdatasources = function() {
             { name: 'report', type: 'int' },
             { name: 'aggregate', type: 'int' },
             { name: 'blocked', type: 'int' },
-            { name: 'medinfo_id', type: 'int' }
+            { name: 'countryside', type: 'bool' }
         ],
         id: 'id',
         url: unitfetch_url,
@@ -105,7 +105,7 @@ inittablelist = function() {
                 { text: 'Перв', datafield: 'report' , width: '50px'},
                 { text: 'Свод', datafield: 'aggregate' , width: '50px'},
                 { text: 'Блок', datafield: 'blocked', width: '50px' },
-                { text: 'Мединфо Id', datafield: 'medinfo_id', width: '60px' }
+                { text: 'Село', datafield: 'countryside', columntype: 'checkbox', width: '60px' }
             ]
         });
     unitlist.on('rowselect', function (event) {
@@ -120,7 +120,7 @@ inittablelist = function() {
         $("#report").val( row.report === 1 );
         $("#aggregate").val(row.aggregate === 1);
         $("#blocked").val(row.blocked === 1);
-        $("#medinfo_id").val(row.medinfo_id);
+        $("#countryside").val(row.countryside !== null);
     });
 };
 setquerystring = function() {
@@ -133,7 +133,7 @@ setquerystring = function() {
         "&report=" + ($("#report").val() ? 1 : 0) +
         "&aggregate=" + ($("#aggregate").val() ? 1 : 0) +
         "&blocked=" + ($("#blocked").val() ? 1 : 0) +
-        "&medinfo_id=" + $("#medinfo_id").val();
+        "&countryside=" + ($("#countryside").val() ? 1 : 0);
 };
 initunitactions = function() {
 
@@ -150,6 +150,12 @@ initunitactions = function() {
         offLabel: 'Нет',
         checked: false });
     $('#blocked').jqxSwitchButton({
+        height: 31,
+        width: 110,
+        onLabel: 'Да',
+        offLabel: 'Нет',
+        checked: false });
+    $('#countryside').jqxSwitchButton({
         height: 31,
         width: 110,
         onLabel: 'Да',
