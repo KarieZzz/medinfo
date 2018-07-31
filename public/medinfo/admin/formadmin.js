@@ -24,7 +24,8 @@ initdatasources = function() {
             { name: 'form_index', type: 'int' },
             { name: 'form_name', type: 'string' },
             { name: 'form_code', type: 'string' },
-            { name: 'medstat_code', type: 'string' }
+            { name: 'medstat_code', type: 'string' },
+            { name: 'short_ms_code', type: 'string' },
         ],
         id: 'id',
         url: 'fetchforms',
@@ -33,7 +34,7 @@ initdatasources = function() {
     formDataAdapter = new $.jqx.dataAdapter(formsource);
 };
 initperiodlist = function() {
-    $("#formList").jqxGrid(
+    fl.jqxGrid(
         {
             width: '98%',
             height: '90%',
@@ -49,21 +50,23 @@ initperiodlist = function() {
                 { text: '№ п/п', datafield: 'form_index', width: '70px' },
                 { text: 'Код формы', datafield: 'form_code', width: '100px'  },
                 { text: 'Имя', datafield: 'form_name' , width: '400px'},
-                { text: 'Медстат Id', datafield: 'medstat_code', width: '100px' },
+                { text: 'Код Медстат', datafield: 'medstat_code', width: '100px' },
+                { text: 'Сокр. код Медстат', datafield: 'short_ms_code', width: '100px' },
             ]
         });
-    $('#formList').on('rowselect', function (event) {
+    fl.on('rowselect', function (event) {
         let row = event.args.row;
         $("#form_name").val(row.form_name);
         $("#form_index").val(row.form_index);
         $("#form_code").val(row.form_code);
         $("#medstat_code").val(row.medstat_code);
+        $("#short_ms_code").val(row.short_ms_code);
     });
 };
 initformactions = function() {
     $("#insert").click(function () {
         let data = "&form_name=" + $("#form_name").val() + "&form_index=" + $("#form_index").val() +
-            "&form_code=" + $("#form_code").val()  +  "&medstat_code=" + $("#medstat_code").val();
+            "&form_code=" + $("#form_code").val()  +  "&medstat_code=" + $("#medstat_code").val() + "&short_ms_code=" + $("#short_ms_code").val();
         $.ajax({
             dataType: 'json',
             url: '/admin/forms/create',
@@ -73,7 +76,7 @@ initformactions = function() {
                 if (typeof data.error !== 'undefined') {
                     raiseError(data.message);
                 }
-                $("#formList").jqxGrid('updatebounddata');
+                fl.jqxGrid('updatebounddata');
             },
             error: function (xhr, status, errorThrown) {
                 $.each(xhr.responseJSON, function(field, errorText) {
@@ -83,21 +86,21 @@ initformactions = function() {
         });
     });
     $("#save").click(function () {
-        var row = $('#formList').jqxGrid('getselectedrowindex');
-        if (row == -1) {
+        let row = fl.jqxGrid('getselectedrowindex');
+        if (row === -1) {
             raiseError("Выберите запись для изменения/сохранения данных");
             return false;
         }
-        var rowid = $("#formList").jqxGrid('getrowid', row);
-        var data = "id=" + rowid + "&form_name=" + $("#form_name").val() + "&form_index=" + $("#form_index").val() +
-            "&form_code=" + $("#form_code").val() +  "&medstat_code=" + $("#medstat_code").val();
+        let rowid = fl.jqxGrid('getrowid', row);
+        let data = "id=" + rowid + "&form_name=" + $("#form_name").val() + "&form_index=" + $("#form_index").val() +
+            "&form_code=" + $("#form_code").val() +  "&medstat_code=" + $("#medstat_code").val() + "&short_ms_code=" + $("#short_ms_code").val();
         $.ajax({
             dataType: 'json',
             url: '/admin/forms/update',
             method: "PATCH",
             data: data,
             success: function (data, status, xhr) {
-                if (typeof data.error != 'undefined') {
+                if (typeof data.error !== 'undefined') {
                     raiseError(data.message);
                 } else {
                     raiseInfo(data.message);
@@ -112,25 +115,25 @@ initformactions = function() {
         });
     });
     $("#delete").click(function () {
-        var row = $('#formList').jqxGrid('getselectedrowindex');
-        if (row == -1) {
+        let row = fl.jqxGrid('getselectedrowindex');
+        if (row === -1) {
             raiseError("Выберите запись для удаления");
             return false;
         }
-        var rowid = $("#formList").jqxGrid('getrowid', row);
+        let rowid = fl.jqxGrid('getrowid', row);
         $.ajax({
             dataType: 'json',
             url: '/admin/forms/delete/' + rowid,
             method: "DELETE",
             success: function (data, status, xhr) {
-                if (typeof data.error != 'undefined') {
+                if (typeof data.error !== 'undefined') {
                     raiseError(data.message);
                 } else {
                     raiseInfo(data.message);
                     $("#form")[0].reset();
                 }
-                $("#formList").jqxGrid('updatebounddata');
-                $("#formList").jqxGrid('clearselection');
+                fl.jqxGrid('updatebounddata');
+                fl.jqxGrid('clearselection');
             },
             error: function (xhr, status, errorThrown) {
                 raiseError('Ошибка удаления отчетного периода', xhr);

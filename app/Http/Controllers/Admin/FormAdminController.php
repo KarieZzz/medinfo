@@ -36,6 +36,7 @@ class FormAdminController extends Controller
                 'form_name' => 'required|unique:forms|max:256',
                 'form_code' => 'required|unique:forms|max:7',
                 'medstat_code' => 'digits:5',
+                'short_ms_code' => 'required_with:medstat_code|max:5',
             ]
         );
         try {
@@ -57,7 +58,7 @@ class FormAdminController extends Controller
                 'form_name' => 'required|max:256',
                 'form_code' => 'required|max:7',
                 'medstat_code' => 'digits:5',
-                'medinfo_id' => 'integer',
+                'short_ms_code' => 'required_with:medstat_code|max:5',
             ]
         );
         $form = Form::find($request->id);

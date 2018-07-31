@@ -9,7 +9,8 @@
         "laravel/framework": "5.2.*",
         "barryvdh/laravel-ide-helper": "^2.1",
         "maatwebsite/excel": "~2.1.23",
-        "phpoffice/phpword": "v0.13.*"
+        "phpoffice/phpword": "v0.13.*",
+        "php-ds/php-ds": "^1.2"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

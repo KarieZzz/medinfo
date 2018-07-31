@@ -285,6 +285,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('tests/parser', 'Tests\LexerParserController@func_parser');
     Route::get('tests/batchRename', 'Tests\LexerParserController@batchRename');
     Route::get('tests/calculation', 'Tests\LexerParserController@testCalculation');
+    Route::get('tests/vector', 'Test\VectorTestController@index');
 
     // mail test
     Route::get('mailtest', 'StatDataInput\DocumentMessageController@testmail');
