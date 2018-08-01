@@ -127,7 +127,7 @@ class MedstatImportAdminController extends Controller
                 'state' => 'required|integer',
             ]
         );
-        set_time_limit(180);
+        set_time_limit(360);
         //dd(Form::where('id', 37)->first(['medstat_code'])->medstat_code);
         $default_type = 1;
         //$default_monitoring = 100001;
