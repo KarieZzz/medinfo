@@ -166,13 +166,13 @@
         let current_filter = '&filter_mode=' + filter_mode + '&ou=' + lasstscope + '&states='
             + checkedstates.join() + '&mf=' + checkedmf.join() + '&monitorings=' + checkedmonitorings.join()
             + '&forms=' + checkedforms.join() + '&periods=' + checkedperiods.join();
-        datasources();
+ /*       datasources();
         initSplitters();
         initMonitoringTree();
         initStatusList();
         initDropdowns();
         initFilterIcons();
-        //initmotree();
+        initmotree();
         initgrouptree();
         initPeriodTree();
         initDocumentSource();
@@ -181,6 +181,6 @@
         initConsolidates();
         initRecentDocuments();
         initpopupwindows();
-        initnotifications();
+        initnotifications();*/
     </script>
 @endsection
