@@ -1,6 +1,3 @@
-/**
- * Created by shameev on 28.06.2016.
- */
 let mon_tree_url = 'datainput/fetch_mon_tree/';
 let mo_tree_url = 'datainput/fetch_mo_tree/';
 let group_tree_url = 'datainput/fetch_ugroups';
