@@ -178,8 +178,8 @@
         initDocumentSource();
         initdocumentstabs();
         initdocumentproperties();
-        initConsolidates();
-        initRecentDocuments();
+        //initConsolidates();
+        //initRecentDocuments();
         initpopupwindows();
         initnotifications();
     </script>
