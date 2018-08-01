@@ -172,14 +172,14 @@
         initStatusList();
         initDropdowns();
         initFilterIcons();
-        initmotree();
+        //initmotree();
         initgrouptree();
         initPeriodTree();
         initDocumentSource();
         initdocumentstabs();
         initdocumentproperties();
-        //initConsolidates();
-        //initRecentDocuments();
+        initConsolidates();
+        initRecentDocuments();
         initpopupwindows();
         initnotifications();
     </script>
