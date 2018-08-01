@@ -1198,13 +1198,17 @@ initdocumentproperties = function() {
 };
 // инициализация всплывающих окон с формами ввода сообщения и т.д.
 initpopupwindows = function() {
+    let clState = $("#CancelStateChanging");
+    let svState = $("#SaveState");
+    let clAudit = $("#CancelAuditStateChanging");
+    let svAudit = $("#SaveAuditState");
     stateWindow.jqxWindow({
         width: 530,
         height: 480,
         resizable: false,
         isModal: true,
         autoOpen: false,
-        cancelButton: $("#CancelStateChanging"),
+        cancelButton: clState,
         theme: theme
     });
     stateWindow.on('close', function (event) { $('#changeStateAlertMessage').html('').hide(); });
@@ -1215,8 +1219,8 @@ initpopupwindows = function() {
     $("#declined").jqxRadioButton({ width: 450, height: 25, theme: theme });
     $("#approved").jqxRadioButton({ width: 450, height: 25, theme: theme });
     $('#statusChangeMessage').jqxTextArea({ placeHolder: 'Оставьте свой комментарий к смене статуса документа', height: 90, width: 450, minLength: 1 });
-    $("#CancelStateChanging").jqxButton({ theme: theme });
-    $("#SaveState").jqxButton({ theme: theme });
+    clState.jqxButton({ theme: theme });
+    svState.jqxButton({ theme: theme });
     $(".stateradio").on('checked', function (event) {
         let alert_message = '';
         if (current_user_role === '1') {
@@ -1234,7 +1238,7 @@ initpopupwindows = function() {
         }
 
     });
-    $("#SaveState").click(function () {
+    svState.click(function () {
         let rowindex = dgrid.jqxGrid('getselectedrowindex');
         let rowdata = dgrid.jqxGrid('getrowdata', rowindex);
         let oldstate = rowdata.state;
@@ -1264,23 +1268,23 @@ initpopupwindows = function() {
             },
             data: data,
             success: function (data, status, xhr) {
-                if (data.status_changed == 1) {
-                    raiseInfo("Статус документа изменен. Новый статус: \"" + statelabels[data.new_status] + '\""');
+                if (data.status_changed === 1) {
+                    raiseInfo("Статус документа изменен. Новый статус: < " + statelabels[data.new_status] + " >");
                     rowdata.state = statelabels[data.new_status];
                     dgrid.jqxGrid('updaterow', row_id, rowdata);
                     dgrid.jqxGrid('selectrow', rowindex);
                 }
-                else if(data.status_changed == 0) {
+                else if(data.status_changed === 0) {
                     raiseError("Статус не изменен! " + data.comment);
                 }
-                $("#changeStateAlertMessage").html('')
+                $("#changeStateAlertMessage").html('');
                 $("#SaveState").jqxButton({disabled: false });
                 $("#CancelStateChanging").jqxButton({disabled: false });
                 stateWindow.jqxWindow('hide');
             },
             error: function (xhr, status, errorThrown) {
                 raiseError('Ошибка сохранения данных на сервере', xhr);
-                $("#changeStateAlertMessage").html('')
+                $("#changeStateAlertMessage").html('');
                 $("#SaveState").jqxButton({disabled: false });
                 $("#CancelStateChanging").jqxButton({disabled: false });
                 stateWindow.jqxWindow('hide');
@@ -1294,7 +1298,7 @@ initpopupwindows = function() {
         resizable: false,
         isModal: true,
         autoOpen: false,
-        cancelButton: $("#CancelAuditStateChanging"),
+        cancelButton: clAudit,
         theme: theme
     });
     $("#noaudit").jqxRadioButton({ width: 250, height: 25, theme: theme });
@@ -1306,34 +1310,34 @@ initpopupwindows = function() {
         width: 400,
         minLength: 1
     });
-    $("#SaveAuditState").jqxButton({ theme: theme });
-    $("#CancelAuditStateChanging").jqxButton({ theme: theme });
-    $("#SaveAuditState").click(function () {
-        var rowindex = dgrid.jqxGrid('getselectedrowindex');
-        var row_id = dgrid.jqxGrid('getrowid', rowindex);
-        var radiostates = $('.auditstateradio');
-        var message = $("#auditChangeMessage").val();
-        var old_state;
+    svAudit.jqxButton({ theme: theme });
+    clAudit.jqxButton({ theme: theme });
+    svAudit.click(function () {
+        let rowindex = dgrid.jqxGrid('getselectedrowindex');
+        let row_id = dgrid.jqxGrid('getrowid', rowindex);
+        let radiostates = $('.auditstateradio');
+        let message = $("#auditChangeMessage").val();
+        let old_state;
         $.each(current_document_audits, function(key, value) {
-            if (value.auditor_id == current_user_id) {
+            if (value.auditor_id === current_user_id) {
                 old_state = value.state_id;
             }
         });
-        var selected_state;
+        let selected_state;
         radiostates.each(function() {
             if ($(this).jqxRadioButton('checked')) {
                 selected_state = $(this).attr('id');
             }
         });
-        var data = "&document=" + row_id + "&auditstate=" + selected_state + "&message=" + message;
-        if (audit_state_ids[selected_state] != old_state) {
+        let data = "&document=" + row_id + "&auditstate=" + selected_state + "&message=" + message;
+        if (audit_state_ids[selected_state] !== old_state) {
             $.ajax({
                 dataType: 'json',
                 url: changeaudition_url,
                 method: 'POST',
                 data: data,
                 success: function (data, status, xhr) {
-                    if (data.audit_status_changed == 1) {
+                    if (data.audit_status_changed === 1) {
                         $("#currentInfoMessage").text("Статус проверки документа изменен");
                         $("#infoNotification").jqxNotification("open");
                         dgrid.jqxGrid('selectrow', rowindex);
@@ -1369,33 +1373,33 @@ initpopupwindows = function() {
     $("#SaveBatchAuditState").jqxButton({ theme: theme });
     $("#CancelBatchAuditStateChanging").jqxButton({ theme: theme });
     $("#SaveBatchAuditState").click(function () {
-        var rowindex = agrid.jqxGrid('getselectedrowindex');
-        var row_id = agrid.jqxGrid('getrowid', rowindex);
-        var radiostates = $('.batchauditstateradio');
-        var message = $("#AuditBatchChangeMessage").val();
-        var selected_state;
+        let rowindex = agrid.jqxGrid('getselectedrowindex');
+        let row_id = agrid.jqxGrid('getrowid', rowindex);
+        let radiostates = $('.batchauditstateradio');
+        let message = $("#AuditBatchChangeMessage").val();
+        let selected_state;
         radiostates.each(function() {
             if ($(this).jqxRadioButton('checked')) {
                 selected_state = $(this).attr('id');
             }
         });
-        var data = "aggregate=" + row_id + "&batchauditstate=" + selected_state + "&message=" + message;
+        let data = "aggregate=" + row_id + "&batchauditstate=" + selected_state + "&message=" + message;
         $.ajax({
             dataType: 'json',
             url: 'change_batch_audit_state.php',
             data: data,
             success: function (data, status, xhr) {
-                var comment = data.responce.comment;
+                let comment = data.responce.comment;
                 if (data.responce.audit_status_changed > 0) {
-                    var m = "Статус проверки для всех входящих в сводный отчет документов ("+ data.responce.audit_status_changed + ") изменен"
+                    let m = "Статус проверки для всех входящих в сводный отчет документов (" + data.responce.audit_status_changed + ") изменен"
                     $("#currentInfoMessage").text(m);
                     $("#infoNotification").jqxNotification("open");
                     dgrid.jqxGrid('selectrow', rowindex);
                 }
-                else if (data.responce.audit_status_changed == 0) {
+                else if (data.responce.audit_status_changed === 0) {
                     $("#currentError").text("Статус проверки документов не изменен! " + comment);
                     $("#serverErrorNotification").jqxNotification("open");
-                } else if (data.responce.audit_status_changed == -1) {
+                } else if (data.responce.audit_status_changed === -1) {
                     $("#currentError").text("Ошибка при сохранении данных на сервере. Обратитесь к администратору");
                     $("#serverErrorNotification").jqxNotification("open");
                 }
@@ -1413,23 +1417,23 @@ initpopupwindows = function() {
     $("#CancelMessage").jqxButton({ theme: theme });
     $("#SendMessage").jqxButton({ theme: theme });
     $("#SendMessage").click(function () {
-        var rowindex = dgrid.jqxGrid('getselectedrowindex');
-        var rowdata = dgrid.jqxGrid('getrowdata', rowindex);
-        var row_id = dgrid.jqxGrid('getrowid', rowindex);
-        var message = $("#message").val();
+        let rowindex = dgrid.jqxGrid('getselectedrowindex');
+        let rowdata = dgrid.jqxGrid('getrowdata', rowindex);
+        let row_id = dgrid.jqxGrid('getrowid', rowindex);
+        let message = $("#message").val();
         message = message.trim();
-        if (message.length == 0) {
+        if (message.length === 0) {
             return false;
         }
-        var data = "&document=" + row_id + "&message=" + message;
+        let data = "&document=" + row_id + "&message=" + message;
         $.ajax({
             dataType: 'json',
             url: docmessagesend_url,
             method: "POST",
             data: data,
             success: function (data, status, xhr) {
-                var m = '';
-                if (data.message_sent == 1) {
+                let m = '';
+                if (data.message_sent === 1) {
                     $("#currentInfoMessage").text("Сообщение сохранено");
                     $("#infoNotification").jqxNotification("open");
                     dgrid.jqxGrid('selectrow', rowindex);

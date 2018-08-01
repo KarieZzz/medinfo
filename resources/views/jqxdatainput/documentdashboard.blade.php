@@ -140,7 +140,7 @@
 <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/documentdashboard.js?v=103') }}"></script>
+<script src="{{ asset('/medinfo/documentdashboard.js?v=104') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -168,19 +168,19 @@
             + '&forms=' + checkedforms.join() + '&periods=' + checkedperiods.join();
         datasources();
         initSplitters();
-        //initMonitoringTree();
-        //initStatusList();
-        //initDropdowns();
-        //initFilterIcons();
-        //initmotree();
-        //initgrouptree();
-        //initPeriodTree();
-        //initDocumentSource();
-        //initdocumentstabs();
-        //initdocumentproperties();
-        //initConsolidates();
-        //initRecentDocuments();
-        //initpopupwindows();
-        //initnotifications();
+        initMonitoringTree();
+        initStatusList();
+        initDropdowns();
+        initFilterIcons();
+        initmotree();
+        initgrouptree();
+        initPeriodTree();
+        initDocumentSource();
+        initdocumentstabs();
+        initdocumentproperties();
+        initConsolidates();
+        initRecentDocuments();
+        initpopupwindows();
+        initnotifications();
     </script>
 @endsection
