@@ -170,10 +170,7 @@ class MedstatImportAdminController extends Controller
                                 }
                             }
                         }
-
-
                 }
-
             }
         }
         return ['affected' => $affected];

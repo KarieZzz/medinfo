@@ -67,61 +67,106 @@
                     <i style='height: 14px' class="fa fa-product-hunt fa-lg" id='protectAggregates' title="Защитить сводный документ"></i>
                     <i style='height: 14px' class="fa fa-calculator fa-lg" id='Сalculate' title="Расчет (консолидация) данных"></i>
                     <i style='height: 14px' class="fa fa-leaf fa-lg" id='ValueEditingLog' title="Журнал изменения данных"></i>
+                    <i style='height: 14px' class="fa fa-clone fa-lg" id='CloneDocuments' title="Клонирование документов в новый отчетный период"></i>
                 </div>
             </div>
             <div class="row" id="documentList"></div>
         </div>
     </div>
-    <div id="newForm">
-        <div id="newFormHeader">
-            <span id="headerContainer" style="float: left">Новые документы для отмеченных территорий/учреждений</span>
+</div>
+<div id="newForm">
+    <div id="newFormHeader">
+        <span id="headerContainer" style="float: left">Новые документы для отмеченных территорий/учреждений</span>
+    </div>
+    <div>
+        <div style="padding: 15px" class="form-horizontal">
+            <div class="form-group">
+                <label class="control-label col-sm-3" for="selectMonitoring">Мониторинг</label>
+                <div class="col-sm-6">
+                    <div id="selectMonitoring"></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-3" for="selectAlbum">Альбом форм</label>
+                <div class="col-sm-6">
+                    <div id="selectAlbum"></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-3" for="selectForm">Формы</label>
+                <div class="col-sm-6">
+                    <div id="selectForm"></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-3" for="period">Период</label>
+                <div class="col-sm-6">
+                    <div id="selectPeriod"></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-3" for="period">Исходный статус</label>
+                <div class="col-sm-6">
+                    <div id="selectState"></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-8">
+                    <div class="checkbox">
+                        <label><input type="checkbox" id="selectPrimary"> Первичные</label>
+                        <label><input type="checkbox" id="selectAggregate"> Сводные</label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-3 col-sm-6">
+                    <button type="button" id="saveButton" class="btn btn-default">Создать</button>
+                    <button type="button" id="cancelButton" class="btn btn-default">Отменить</button>
+                </div>
+            </div>
         </div>
-        <div>
-            <div style="padding: 15px" class="form-horizontal">
-                <div class="form-group">
-                    <label class="control-label col-sm-3" for="selectMonitoring">Мониторинг</label>
-                    <div class="col-sm-6">
-                        <div id="selectMonitoring"></div>
-                    </div>
+    </div>
+</div>
+<div id="cloneDocuments">
+    <div id="cloneDocumentsHeader">
+        <span id="headerContainer" style="float: left">Клонирование документов в новый отчетный период</span>
+    </div>
+    <div>
+        <div style="padding: 15px" class="form-horizontal">
+            <div class="form-group">
+                <label class="control-label col-sm-3" for="selectClonePeriod">Выберите период:</label>
+                <div class="col-sm-6">
+                    <div id="selectClonePeriod"></div>
                 </div>
-                <div class="form-group">
-                    <label class="control-label col-sm-3" for="selectAlbum">Альбом форм</label>
-                    <div class="col-sm-6">
-                        <div id="selectAlbum"></div>
-                    </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-3" for="selectCloneMonitoring">Выберите мониторинг:</label>
+                <div class="col-sm-6">
+                    <div id="selectCloneMonitoring"></div>
                 </div>
-                <div class="form-group">
-                    <label class="control-label col-sm-3" for="selectForm">Формы</label>
-                    <div class="col-sm-6">
-                        <div id="selectForm"></div>
-                    </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-3" for="selectCloneAlbum">Выберите альбом форм:</label>
+                <div class="col-sm-6">
+                    <div id="selectCloneAlbum"></div>
                 </div>
-                <div class="form-group">
-                    <label class="control-label col-sm-3" for="period">Период</label>
-                    <div class="col-sm-6">
-                        <div id="selectPeriod"></div>
-                    </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-3" for="selectCloneState">Исходный статус:</label>
+                <div class="col-sm-6">
+                    <div id="selectCloneState"></div>
                 </div>
-                <div class="form-group">
-                    <label class="control-label col-sm-3" for="period">Исходный статус</label>
-                    <div class="col-sm-6">
-                        <div id="selectState"></div>
-                    </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-3 col-sm-6">
+                    <button type="button" id="doClone" class="btn btn-primary">Клонировать</button>
+                    <button type="button" id="cancelClone" class="btn btn-default">Отменить</button>
                 </div>
-                <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-8">
-                        <div class="checkbox">
-                            <label><input type="checkbox" id="selectPrimary"> Первичные</label>
-                            <label><input type="checkbox" id="selectAggregate"> Сводные</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-sm-offset-3 col-sm-6">
-                        <button type="button" id="saveButton" class="btn btn-default">Создать</button>
-                        <button type="button" id="cancelButton" class="btn btn-default">Отменить</button>
-                    </div>
-                </div>
+            </div>
+            <div class="row">
+                <p class="text-info">В новом периоде будет созданы документы в соответствии с выбранными в текущем периоде с теми же основными параметрами:
+                    учреждение, тип документа, мониторинг
+                </p>
             </div>
         </div>
     </div>
@@ -147,7 +192,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=016') }}"></script>
+    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=020') }}"></script>
 @endpush
 
 @section('inlinejs')

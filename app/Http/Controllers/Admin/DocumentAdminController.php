@@ -114,9 +114,9 @@ class DocumentAdminController extends Controller
                         Document::create($newdoc);
                         $i++;
                     } catch (\Illuminate\Database\QueryException $e) {
-                        $errorCode = $e->errorInfo[0];
+                        $errorCode = $e->errorInfo[1];
                         // duplicate key value - код ошибки при использовании PostgreSQL
-                        if($errorCode == '23505'){
+                        if($errorCode == 7){
                             $duplicate++;
                         }
                     }
@@ -127,8 +127,8 @@ class DocumentAdminController extends Controller
                         Document::create($newdoc);
                         $i++;
                     } catch (\Illuminate\Database\QueryException $e) {
-                        $errorCode = $e->errorInfo[0];
-                        if($errorCode == '23505'){
+                        $errorCode = $e->errorInfo[1];
+                        if($errorCode == 7){
                             $duplicate++;
                         }
                     }
@@ -196,5 +196,34 @@ class DocumentAdminController extends Controller
         foreach ($documents as $d) {
             DocumentMessage::create(['doc_id' => $d, 'user_id' => $worker, 'message' => $message]);
         }
+    }
+
+    public function cloneDocumentsToNewPeriod(Request $request)
+    {
+        $d = explode(",", $request->documents );
+        $period = (int)$request->period;
+        $state = (int)$request->state;
+        $monitoring = (int)$request->monitoring;
+        $album = (int)$request->album;
+        $documents = Document::WhereIn('id', $d)->get();
+        $i = 0;
+        $duplicate = 0;
+        foreach ($documents as $document) {
+            $newdoc = ['dtype' => $document->dtype, 'ou_id' => $document->ou_id, 'monitoring_id' => $monitoring,
+                'album_id' => $album, 'form_id' => $document->form_id , 'period_id' => $period, 'state' => $state ];
+            try {
+                Document::create($newdoc);
+                $i++;
+            } catch (\Illuminate\Database\QueryException $e) {
+                $errorCode = $e->errorInfo[1];
+                // duplicate key value - код ошибки при использовании PostgreSQL
+                if($errorCode == 7){
+                    $duplicate++;
+                }
+            }
+        }
+        $data['count_of_created'] = $i;
+        $data['count_of_duplicated'] = $duplicate;
+        return $data;
     }
 }

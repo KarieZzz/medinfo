@@ -6,6 +6,7 @@ let docsource_url = '/admin/fetchdocuments?';
 let createdocuments_url = '/admin/createdocuments';
 let deletedocuments_url = '/admin/deletedocuments';
 let erasedocuments_url = '/admin/erasedocuments';
+let clonedocuments_url = '/admin/clonedocuments';
 let changestate_url = '/admin/documentstatechange';
 let group_tree_url = '/admin/fetchugroups';
 let protectaggregate_url = '/admin/protectaggregates';
@@ -655,7 +656,10 @@ initdocumentslist = function() {
 };
 // рендеринг панели инструментов для выделенных документов
 initdocumentactions = function() {
-    $("#statesDropdownList").jqxDropDownList({
+    let clone = $("#CloneDocuments");
+    let state = $("#statesDropdownList");
+    let del = $("#deleteDocuments");
+    state.jqxDropDownList({
         theme: theme,
         source: changestateDA,
         displayMember: "name",
@@ -665,17 +669,17 @@ initdocumentactions = function() {
         width: 150,
         height: 23
     });
-    $('#statesDropdownList').on('select', function (event)
+    state.on('select', function (event)
     {
-        var args = event.args;
-        var selectedstate = args.item.value;
-        var row_ids = noselected_error("Не выбрано ни одного документа для смены статуса");
+        let args = event.args;
+        let selectedstate = args.item.value;
+        let row_ids = noselected_error("Не выбрано ни одного документа для смены статуса");
         if (!row_ids) {
             $(this).jqxDropDownList('clearSelection');
             return false;
         }
-        var data = "documents=" + row_ids + '&state=' + selectedstate;
-        var confirm_text = 'Подтвердите смену статуса у документов №№ ' + row_ids + '. \n';
+        let data = "documents=" + row_ids + '&state=' + selectedstate;
+        let confirm_text = 'Подтвердите смену статуса у документов №№ ' + row_ids + '. \n';
         confirm_text += 'Выбранный статус "' + selectedstate.label + '". \n';
         if (!confirm(confirm_text)) {
             $(this).jqxDropDownList('clearSelection');
@@ -687,21 +691,21 @@ initdocumentactions = function() {
             method: "PATCH",
             data: data,
             success: function (data, status, xhr) {
-                if (data.state_changed == 1) {
+                if (data.state_changed === 1) {
                     raiseInfo(data.comment + ' Количество измененных документов ' + data.affected_documents + '.');
                 }
                 dlist.jqxGrid('clearselection');
                 dlist.jqxGrid('updatebounddata');
             },
             error: function (xhr, status, errorThrown) {
-                var error_text = "Ошибка сохранения данных на сервере. Обратитесь к администратору";
+                let error_text = "Ошибка сохранения данных на сервере. Обратитесь к администратору";
                 raiseError(error_text, xhr);
             }
         });
         $(this).jqxDropDownList('clearSelection');
     });
-    $("#deleteDocuments").jqxButton({ theme: theme });
-    $("#deleteDocuments").click(function () {
+    del.jqxButton({ theme: theme });
+    del.click(function () {
         let row_ids = noselected_error("Не выбрано ни одного документа для удаления");
         if (!row_ids) {
             return false;
@@ -718,14 +722,14 @@ initdocumentactions = function() {
             method: "DELETE",
             data: data,
             success: function (data, status, xhr) {
-                if (data.documents_deleted == 1) {
+                if (data.documents_deleted === 1) {
                     raiseInfo(data.comment);
                 }
                 dlist.jqxGrid('clearselection');
                 dlist.jqxGrid('updatebounddata');
             },
             error: function (xhr, status, errorThrown) {
-                var error_text = "Ошибка сохранения данных на сервере. " + xhr.status + ' (' + xhr.statusText + ') - ' + status + ". Обратитесь к администратору.";
+                let error_text = "Ошибка сохранения данных на сервере. " + xhr.status + ' (' + xhr.statusText + ') - ' + status + ". Обратитесь к администратору.";
                 raiseError(error_text);
             }
         });
@@ -821,6 +825,89 @@ initdocumentactions = function() {
             return false;
         }
         let editWindow = window.open(log_form_url + row_ids[0]);
+    });
+
+
+    let newdoc_form = $('#cloneDocuments').jqxWindow({
+        width: 600,
+        height: 520,
+        resizable: false,
+        autoOpen: false,
+        isModal: true,
+        cancelButton: $('#cancelClone'),
+        position: { x: 410, y: 225 },
+    });
+    $("#selectClonePeriod").jqxDropDownList({
+        theme: theme,
+        source: periodsDataAdapter,
+        displayMember: "name",
+        valueMember: "id",
+        placeHolder: "Выберите период:",
+        selectedIndex: 0,
+        width: 250,
+        height: 25
+    });
+    $("#selectCloneMonitoring").jqxDropDownList({
+        theme: theme,
+        source: monitoringssDataAdapter,
+        displayMember: "name",
+        valueMember: "id",
+        placeHolder: "Выберите мониторинг:",
+        width: 350,
+        height: 25
+    });
+    $("#selectCloneAlbum").jqxDropDownList({
+        theme: theme,
+        source: albumsDataAdapter,
+        displayMember: "album_name",
+        valueMember: "id",
+        placeHolder: "Выберите альбом форм:",
+        width: 350,
+        height: 25
+    });
+    $("#selectCloneState").jqxDropDownList({
+        theme: theme,
+        source: statesDataAdapter,
+        displayMember: "name",
+        valueMember: "code",
+        placeHolder: "Выберите статус:",
+        selectedIndex: 0,
+        width: 250,
+        height: 25
+    });
+    $("#doClone").click(function () {
+        let row_ids = noselected_error("Не выбрано ни одного документа");
+        let selectedperiod = $("#selectClonePeriod").jqxDropDownList('getSelectedItem').value;
+        let selectedmon = $("#selectCloneMonitoring").jqxDropDownList('getSelectedItem').value;
+        let selectedalbum = $("#selectCloneAlbum").jqxDropDownList('getSelectedItem').value;
+        let selectedstate = $("#selectCloneState").jqxDropDownList('getSelectedItem').value;
+        let data = "&documents=" + row_ids + "&period=" + selectedperiod + "&monitoring=" + selectedmon + "&album=" + selectedalbum + "&state=" + selectedstate;
+        $.ajax({
+            dataType: 'json',
+            url: clonedocuments_url,
+            method: "POST",
+            data: data,
+            success: function (data, status, xhr) {
+                if (data.documents_deleted === 1) {
+                    raiseInfo(data.comment);
+                }
+                dlist.jqxGrid('clearselection');
+                dlist.jqxGrid('updatebounddata');
+            },
+            error: function (xhr, status, errorThrown) {
+                let error_text = "Ошибка сохранения данных на сервере. " + xhr.status + ' (' + xhr.statusText + ') - ' + status + ". Обратитесь к администратору.";
+                raiseError(error_text);
+            }
+        });
+    });
+
+    clone.jqxButton({ theme: theme });
+    clone.click(function () {
+        let row_ids = noselected_error("Не выбрано ни одного документа для удаления");
+        if (!row_ids) {
+            return false;
+        }
+        newdoc_form.jqxWindow('open');
     });
 };
 linkrenderer = function (row, column, value) {

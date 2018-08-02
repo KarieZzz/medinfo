@@ -207,6 +207,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('admin/fetch_mon_tree', 'Admin\DocumentAdminController@fetch_monitorings');
     Route::get('admin/fetchdocuments', 'Admin\DocumentAdminController@fetchDocuments');
     Route::post('admin/createdocuments', 'Admin\DocumentAdminController@createDocuments');
+    Route::post('admin/clonedocuments', 'Admin\DocumentAdminController@cloneDocumentsToNewPeriod');
     Route::delete('admin/deletedocuments', 'Admin\DocumentAdminController@deleteDocuments');
     Route::patch('admin/erasedocuments', 'Admin\DocumentAdminController@eraseStatData');
     Route::patch('admin/documentstatechange', 'Admin\DocumentAdminController@changeState');
