@@ -34,6 +34,8 @@
                     <li type="separator"></li>
                     <li><a href="/admin/necells/list">Нередактируемые ячейки, перечень</a></li>
                     <li><a href="/admin/necells/conditions">Нередактируемые ячейки, условия</a></li>
+                    <li type="separator"></li>
+                    <li><a href="/admin/sctruct/medstatimport">Импорт структуры из формата Медстат (Новосибирск)</a></li>
                 </ul>
             </li>
             <li class="dropdown">

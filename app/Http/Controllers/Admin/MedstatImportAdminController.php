@@ -224,4 +224,106 @@ class MedstatImportAdminController extends Controller
         \DB::update($seq);
         return view('jqxadmin.medstatNSimportMOresult', compact( 'numrecords'));
     }
+
+    public function selectFileNSMedstatLinks(Request $request)
+    {
+        return view('jqxadmin.medstatNSimportLinks');
+    }
+
+    public function uploadFileNSMedstatLinks(Request $request)
+    {
+        \Storage::put(
+            'medstat_uploads/medstat_ns_links.zip',
+            file_get_contents($request->file('medstat_ns_links')->getRealPath())
+        );
+        $zip_file = storage_path('app/medstat_uploads/medstat_ns_links.zip');
+        $this->zip = new \ZipArchive();
+        if ($this->zip->open($zip_file) === TRUE) {
+            $forms =  $this->zip->getFromName('Forms.DBF');
+            $tables = $this->zip->getFromName('Tables.DBF');
+            $rows = $this->zip->getFromName('Rows.DBF');
+            $columns = $this->zip->getFromName('Columns.DBF');
+            //$zip->close();
+        } else {
+            throw  new \Exception("Не удалось открыть файл архива $zip_file");
+        }
+        //dd($this->zip);
+        \Storage::put('medstat_uploads/forms.dbf', $forms);
+        \Storage::put('medstat_uploads/tables.dbf', $tables);
+        \Storage::put('medstat_uploads/rows.dbf', $rows);
+        \Storage::put('medstat_uploads/columns.dbf', $columns);
+
+        $forms_file = storage_path('app/medstat_uploads/forms.dbf');
+        $tables_file = storage_path('app/medstat_uploads/tables.dbf');
+        $rows_file = storage_path('app/medstat_uploads/rows.dbf');
+        $columns_file = storage_path('app/medstat_uploads/rows.dbf');
+
+        $form_count = $this->importNSForms($forms_file);
+        $table_count = $this->importNSTables($tables_file);
+        return view('jqxadmin.medstatNSimportLinksresult', compact( 'form_count', 'table_count'));
+    }
+
+    public function importNSForms($dbf)
+    {
+        $db = dbase_open($dbf, 2);
+        if (!$db) {
+            new \Exception("Ошибка, не получается открыть базу данных $dbf");
+        }
+        dbase_pack($db);
+        $numrecords = dbase_numrecords($db);
+        //echo "В загруженной базе данных ". $numrecordes . " строк. <br>";
+
+        \App\MedstatNskFormLink::truncate();
+        $v = [];
+        for ($i = 1; $i <= $numrecords; $i++) {
+            $ar = dbase_get_record_with_names($db, $i);
+            $id = $ar['ID'];
+            $form_name = iconv('cp866', 'utf-8', $ar['FORMNAME']);
+            $decipher = iconv('cp866', 'utf-8', $ar['DECIPHER']);
+            $ind = $ar['IND'];
+            $insert = "INSERT INTO public.medstat_nsk_form_links ( id, form_name, decipher, ind ) VALUES ";
+            $v[] = " ( $id, '$form_name', '$decipher', $ind ) ";
+
+            //dd($upl);
+        }
+        $values = implode(', ', $v );
+        $res = \DB::insert($insert . $values);
+
+        return $numrecords;
+    }
+
+    public function importNSTables($dbf)
+    {
+        $db = dbase_open($dbf, 2);
+        if (!$db) {
+            new \Exception("Ошибка, не получается открыть базу данных $dbf");
+        }
+        dbase_pack($db);
+        $numrecords = dbase_numrecords($db);
+        //echo "В загруженной базе данных ". $numrecordes . " строк. <br>";
+
+        \App\MedstatNskTableLink::truncate();
+        $v = [];
+        for ($i = 1; $i <= $numrecords; $i++) {
+            $ar = dbase_get_record_with_names($db, $i);
+            $id = $ar['IDENT'];
+            $form = $ar['FORM'];
+            $tablen = iconv('cp866', 'utf-8', $ar['TABLEN']);
+            $name = iconv('cp866', 'utf-8', $ar['NAME']);
+            $colcount = $ar['COLCOUNT'];
+            $rowcount = $ar['ROWCOUNT'];
+            $fixcols = $ar['FIXCOLS'];
+            $fixrows = $ar['FIXROWS'];
+            $floattype = (bool)$ar['FLOATTYPE'] ? 'true' : 'false';
+            $scan = $ar['SCAN'];
+            $insert = "INSERT INTO public.medstat_nsk_table_links ( id, form_id, tablen, name, colcount, rowcount, fixcol, fixrows, floattype, scan ) VALUES ";
+            $v[] = " ( $id, $form, '$tablen' , '$name', $colcount, $rowcount, $fixcols, $fixrows, $floattype, $scan ) ";
+
+            //dd($upl);
+        }
+        $values = implode(', ', $v );
+        $res = \DB::insert($insert . $values);
+
+        return $numrecords;
+    }
 }
