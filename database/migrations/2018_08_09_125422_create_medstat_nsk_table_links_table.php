@@ -24,7 +24,7 @@ class CreateMedstatNskTableLinksTable extends Migration
             $table->integer('fixrows');
             $table->boolean('floattype');
             $table->integer('scan');
-            $table->char('medstat_code', 9)->nullable();
+            $table->char('medstat_code', 4)->nullable();
             $table->timestamps();
         });
     }

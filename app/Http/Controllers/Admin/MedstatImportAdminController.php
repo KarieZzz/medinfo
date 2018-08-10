@@ -237,30 +237,56 @@ class MedstatImportAdminController extends Controller
             file_get_contents($request->file('medstat_ns_links')->getRealPath())
         );
         $zip_file = storage_path('app/medstat_uploads/medstat_ns_links.zip');
-        $this->zip = new \ZipArchive();
-        if ($this->zip->open($zip_file) === TRUE) {
-            $forms =  $this->zip->getFromName('Forms.DBF');
-            $tables = $this->zip->getFromName('Tables.DBF');
-            $rows = $this->zip->getFromName('Rows.DBF');
-            $columns = $this->zip->getFromName('Columns.DBF');
-            //$zip->close();
+        $zip = new \ZipArchive();
+        if ($zip->open($zip_file) === TRUE) {
+            $forms =  $zip->getFromName('Forms.DBF');
+            $tables = $zip->getFromName('Tables.DBF');
+            $rows = $zip->getFromName('Rows.DBF');
+            $columns = $zip->getFromName('Columns.DBF');
+            $fl = $zip->getFromName('FL.DBF');
+            $tl = $zip->getFromName('TL.DBF');
+            $rl = $zip->getFromName('RL.DBF');
+            $cl = $zip->getFromName('CL.DBF');
+            $zip->close();
         } else {
             throw  new \Exception("Не удалось открыть файл архива $zip_file");
         }
-        //dd($this->zip);
         \Storage::put('medstat_uploads/forms.dbf', $forms);
         \Storage::put('medstat_uploads/tables.dbf', $tables);
         \Storage::put('medstat_uploads/rows.dbf', $rows);
         \Storage::put('medstat_uploads/columns.dbf', $columns);
-
+        \Storage::put('medstat_uploads/fl.dbf', $fl);
+        \Storage::put('medstat_uploads/tl.dbf', $tl);
+        \Storage::put('medstat_uploads/rl.dbf', $rl);
+        \Storage::put('medstat_uploads/cl.dbf', $cl);
         $forms_file = storage_path('app/medstat_uploads/forms.dbf');
         $tables_file = storage_path('app/medstat_uploads/tables.dbf');
         $rows_file = storage_path('app/medstat_uploads/rows.dbf');
-        $columns_file = storage_path('app/medstat_uploads/rows.dbf');
+        $columns_file = storage_path('app/medstat_uploads/columns.dbf');
+        $fl_file = storage_path('app/medstat_uploads/fl.dbf');
+        $tl_file = storage_path('app/medstat_uploads/tl.dbf');
+        $rl_file = storage_path('app/medstat_uploads/rl.dbf');
+        $cl_file = storage_path('app/medstat_uploads/cl.dbf');
 
         $form_count = $this->importNSForms($forms_file);
         $table_count = $this->importNSTables($tables_file);
-        return view('jqxadmin.medstatNSimportLinksresult', compact( 'form_count', 'table_count'));
+        $row_count = $this->importNSRows($rows_file);
+        $column_count = $this->importNSColumns($columns_file);
+        $matched_forms = $this->matchingFormMSCode($fl_file);
+        $matched_tables = $this->matchingTableMSCode($tl_file);
+        $matched_rows = $this->matchingRowMSCode($rl_file);
+        $matched_columns = $this->matchingColumnMSCode($cl_file);
+
+        return view('jqxadmin.medstatNSimportLinksresult',
+            compact(
+            'form_count',
+                'table_count',
+                'row_count',
+                'column_count',
+                'matched_forms',
+                'matched_tables',
+                'matched_rows',
+                'matched_columns'));
     }
 
     public function importNSForms($dbf)
@@ -271,24 +297,19 @@ class MedstatImportAdminController extends Controller
         }
         dbase_pack($db);
         $numrecords = dbase_numrecords($db);
-        //echo "В загруженной базе данных ". $numrecordes . " строк. <br>";
-
         \App\MedstatNskFormLink::truncate();
         $v = [];
         for ($i = 1; $i <= $numrecords; $i++) {
             $ar = dbase_get_record_with_names($db, $i);
             $id = $ar['ID'];
-            $form_name = iconv('cp866', 'utf-8', $ar['FORMNAME']);
-            $decipher = iconv('cp866', 'utf-8', $ar['DECIPHER']);
+            $form_name = iconv('cp866', 'utf-8', trim($ar['FORMNAME']));
+            $decipher = iconv('cp866', 'utf-8', trim($ar['DECIPHER']));
             $ind = $ar['IND'];
             $insert = "INSERT INTO public.medstat_nsk_form_links ( id, form_name, decipher, ind ) VALUES ";
             $v[] = " ( $id, '$form_name', '$decipher', $ind ) ";
-
-            //dd($upl);
         }
         $values = implode(', ', $v );
         $res = \DB::insert($insert . $values);
-
         return $numrecords;
     }
 
@@ -300,16 +321,14 @@ class MedstatImportAdminController extends Controller
         }
         dbase_pack($db);
         $numrecords = dbase_numrecords($db);
-        //echo "В загруженной базе данных ". $numrecordes . " строк. <br>";
-
         \App\MedstatNskTableLink::truncate();
         $v = [];
         for ($i = 1; $i <= $numrecords; $i++) {
             $ar = dbase_get_record_with_names($db, $i);
             $id = $ar['IDENT'];
             $form = $ar['FORM'];
-            $tablen = iconv('cp866', 'utf-8', $ar['TABLEN']);
-            $name = iconv('cp866', 'utf-8', $ar['NAME']);
+            $tablen = iconv('cp866', 'utf-8', trim($ar['TABLEN']));
+            $name = iconv('cp866', 'utf-8', trim($ar['NAME']));
             $colcount = $ar['COLCOUNT'];
             $rowcount = $ar['ROWCOUNT'];
             $fixcols = $ar['FIXCOLS'];
@@ -318,6 +337,30 @@ class MedstatImportAdminController extends Controller
             $scan = $ar['SCAN'];
             $insert = "INSERT INTO public.medstat_nsk_table_links ( id, form_id, tablen, name, colcount, rowcount, fixcol, fixrows, floattype, scan ) VALUES ";
             $v[] = " ( $id, $form, '$tablen' , '$name', $colcount, $rowcount, $fixcols, $fixrows, $floattype, $scan ) ";
+        }
+        $values = implode(', ', $v );
+        $res = \DB::insert($insert . $values);
+        return $numrecords;
+    }
+
+    public function importNSRows($dbf)
+    {
+        $db = dbase_open($dbf, 2);
+        if (!$db) {
+            new \Exception("Ошибка, не получается открыть базу данных $dbf");
+        }
+        dbase_pack($db);
+        $numrecords = dbase_numrecords($db);
+        //echo "В загруженной базе данных ". $numrecordes . " строк. <br>";
+
+        \App\MedstatNskRowLink::truncate();
+        $v = [];
+        for ($i = 1; $i <= $numrecords; $i++) {
+            $ar = dbase_get_record_with_names($db, $i);
+            $table = $ar['TABLE'];
+            $row = $ar['ROW'];
+            $insert = 'INSERT INTO public.medstat_nsk_row_links ( "table", "row" ) VALUES ';
+            $v[] = " ( $table , $row ) ";
 
             //dd($upl);
         }
@@ -326,4 +369,176 @@ class MedstatImportAdminController extends Controller
 
         return $numrecords;
     }
+
+    public function importNSColumns($dbf)
+    {
+        $db = dbase_open($dbf, 2);
+        if (!$db) {
+            new \Exception("Ошибка, не получается открыть базу данных $dbf");
+        }
+        dbase_pack($db);
+        $numrecords = dbase_numrecords($db);
+        //echo "В загруженной базе данных ". $numrecordes . " строк. <br>";
+
+        \App\MedstatNskColumnLink::truncate();
+        $v = [];
+        for ($i = 1; $i <= $numrecords; $i++) {
+            $ar = dbase_get_record_with_names($db, $i);
+            $table = $ar['TABLE'];
+            $column = $ar['COLUMN'];
+            $insert = 'INSERT INTO public.medstat_nsk_column_links ( "table", "column" ) VALUES ';
+            $v[] = " ( $table , $column ) ";
+
+            //dd($upl);
+        }
+        $values = implode(', ', $v );
+        $res = \DB::insert($insert . $values);
+
+        return $numrecords;
+    }
+
+    public function matchingFormMSCode($dbf)
+    {
+        $db = dbase_open($dbf, 2);
+        if (!$db) {
+            new \Exception("Ошибка, не получается открыть базу данных $dbf");
+        }
+        dbase_pack($db);
+        $numrecords = dbase_numrecords($db);
+        for ($i = 1; $i <= $numrecords; $i++) {
+            $ar = dbase_get_record_with_names($db, $i);
+            $form_code =  iconv('cp866', 'utf-8', trim($ar['NF']));
+            $medstat_code = trim($ar['MF']);
+            $matched = \App\MedstatNskFormLink::OfCode($form_code)->first();
+            if ($matched) {
+                $matched->medstat_code = $medstat_code;
+                $matched->save();
+            }
+        }
+        return $numrecords;
+    }
+
+    public function matchingTableMSCode($dbf)
+    {
+        $db = dbase_open($dbf, 2);
+        if (!$db) {
+            new \Exception("Ошибка, не получается открыть базу данных $dbf");
+        }
+        dbase_pack($db);
+        $numrecords = dbase_numrecords($db);
+        \App\MedstatNskMskTableMatching::truncate();
+        $v = [];
+        for ($i = 1; $i <= $numrecords; $i++) {
+            $ar = dbase_get_record_with_names($db, $i);
+            $mds = iconv('cp866', 'utf-8', trim($ar['MDS']));
+            $msk = substr(trim($ar['MSK']), -4);
+            $insert = 'INSERT INTO public.medstat_nsk_msk_table_matchings ( mds, msk ) VALUES ';
+            $v[] = " ( '$mds' , '$msk' ) ";
+        }
+        $values = implode(', ', $v );
+        $res = \DB::insert($insert . $values);
+        $nskforms = \App\MedstatNskFormLink::all();
+        $i = 0;
+        foreach ($nskforms as $nskform) {
+            $nsktables = \App\MedstatNskTableLink::OfForm($nskform->id)->get();
+            foreach ($nsktables as $nsktable) {
+                $ft = $nskform->form_name . $nsktable->tablen;
+                //dd($ft);
+                $matched = \App\MedstatNskMskTableMatching::OfMds($ft)->first();
+                if ($matched) {
+                    $nsktable->medstat_code = $matched->msk;
+                    $nsktable->save();
+                    $i++;
+                }
+            }
+        }
+        return $i;
+    }
+
+    public function matchingRowMSCode($dbf)
+    {
+        $db = dbase_open($dbf, 2);
+        if (!$db) {
+            new \Exception("Ошибка, не получается открыть базу данных $dbf");
+        }
+        dbase_pack($db);
+        $numrecords = dbase_numrecords($db);
+        \App\MedstatNskMskRowMatching::truncate();
+        $v = [];
+        for ($i = 1; $i <= $numrecords; $i++) {
+            $ar = dbase_get_record_with_names($db, $i);
+            $mdstable = iconv('cp866', 'utf-8', trim($ar['MDSTABLE']));
+            $mdsrow = $ar['MDSROW'];
+            $mskrow = substr(trim($ar['MSKROW']), -3);
+            $insert = 'INSERT INTO public.medstat_nsk_msk_row_matchings ( mdstable, mdsrow, mskrow ) VALUES ';
+            $v[] = " ( '$mdstable', $mdsrow , '$mskrow' ) ";
+        }
+        $values = implode(', ', $v );
+        $res = \DB::insert($insert . $values);
+        $nskforms = \App\MedstatNskFormLink::all();
+        $i = 0;
+        foreach ($nskforms as $nskform) {
+            $nsktables = \App\MedstatNskTableLink::OfForm($nskform->id)->get();
+            foreach ($nsktables as $nsktable) {
+                $nskrows = \App\MedstatNskRowLink::OfTable($nsktable->id)->get();
+                $ft = $nskform->form_name . $nsktable->tablen;
+                foreach ($nskrows as $nskrow) {
+                    if ($nskrow) {
+                        $matched = \App\MedstatNskMskRowMatching::OfMds($ft, $nskrow->row)->first();
+                        if ($matched) {
+                            $nskrow->medstat_code = $matched->mskrow;
+                            $nskrow->save();
+                            $i++;
+                        }
+                    }
+                }
+
+            }
+        }
+        return $i;
+    }
+
+    public function matchingColumnMSCode($dbf)
+    {
+        $db = dbase_open($dbf, 2);
+        if (!$db) {
+            new \Exception("Ошибка, не получается открыть базу данных $dbf");
+        }
+        dbase_pack($db);
+        $numrecords = dbase_numrecords($db);
+        \App\MedstatNskMskColumnMatching::truncate();
+        $v = [];
+        for ($i = 1; $i <= $numrecords; $i++) {
+            $ar = dbase_get_record_with_names($db, $i);
+            $mdstable = iconv('cp866', 'utf-8', trim($ar['MDSTABLE']));
+            $mdscol = $ar['MDSCOL'];
+            $mskcol = substr(trim($ar['MSKCOL']), -2);
+            $insert = 'INSERT INTO public.medstat_nsk_msk_column_matchings ( mdstable, mdscol, mskcol ) VALUES ';
+            $v[] = " ( '$mdstable', $mdscol , '$mskcol' ) ";
+        }
+        $values = implode(', ', $v );
+        $res = \DB::insert($insert . $values);
+        $nskforms = \App\MedstatNskFormLink::all();
+        $i = 0;
+        foreach ($nskforms as $nskform) {
+            $nsktables = \App\MedstatNskTableLink::OfForm($nskform->id)->get();
+            foreach ($nsktables as $nsktable) {
+                $nskcols = \App\MedstatNskColumnLink::OfTable($nsktable->id)->get();
+                $ft = $nskform->form_name . $nsktable->tablen;
+                foreach ($nskcols as $nskcol) {
+                    if ($nskcol) {
+                        $matched = \App\MedstatNskMskColumnMatching::OfMds($ft, $nskcol->column)->first();
+                        if ($matched) {
+                            $nskcol->medstat_code = $matched->mskcol;
+                            $nskcol->save();
+                            $i++;
+                        }
+                    }
+                }
+
+            }
+        }
+        return $i;
+    }
+
 }

@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateMedstatNskRowLinksTable extends Migration
+class CreateMedstatNskMskColumnMatchingsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,11 @@ class CreateMedstatNskRowLinksTable extends Migration
     public function up()
     {
         //
-        Schema::create('medstat_nsk_row_links', function (Blueprint $table) {
+        Schema::create('medstat_nsk_msk_column_matchings', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('table')->index();
-            $table->integer('row')->index();
-            $table->char('medstat_code', 3)->nullable();
+            $table->string('mdstable', 50)->index();
+            $table->integer('mdscol')->index();
+            $table->char('mskcol', 2)->index();
             $table->timestamps();
         });
     }
@@ -30,6 +30,6 @@ class CreateMedstatNskRowLinksTable extends Migration
     public function down()
     {
         //
-        Schema::drop('medstat_nsk_row_links');
+        Schema::drop('medstat_nsk_msk_column_matchings');
     }
 }
