@@ -63,7 +63,7 @@ class MedstatNskDataImportController extends Controller
         $albums = \App\Album::all()->sortBy('album_name');
         $periods = \App\Period::all();
         $states = \App\DicDocumentState::all();
-        return view('jqxadmin.medstatNSimportData', compact( 'numrecords',
+        return view('jqxadmin.medstatNSimportIntermediateResult', compact( 'numrecords',
             'monitorings',
             'albums',
             'periods',
