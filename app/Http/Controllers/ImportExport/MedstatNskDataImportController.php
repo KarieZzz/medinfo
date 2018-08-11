@@ -22,7 +22,7 @@ class MedstatNskDataImportController extends Controller
 
     public function uploadFileNSMedstatData(Request $request)
     {
-        set_time_limit(360);
+        set_time_limit(600);
         \Storage::put(
             'medstat_uploads/medstat_nsk_data.zip',
             file_get_contents($request->file('medstat_nsk_data')->getRealPath())
@@ -45,6 +45,7 @@ class MedstatNskDataImportController extends Controller
         $numrecords = dbase_numrecords($db);
         \App\MedstatNskData::truncate();
         $insert = 'INSERT INTO public.medstat_nsk_data ( hospital, data, year, "table", "column" , "row" ) VALUES ';
+        $chunk = 1000;
         $v = [];
         for ($i = 1; $i <= $numrecords; $i++) {
             $ar = dbase_get_record_with_names($db, $i);
@@ -55,15 +56,20 @@ class MedstatNskDataImportController extends Controller
             $column = $ar['COLUMN'];
             $row = $ar['ROW'];
             $v[] = "( $unit, $value, $period, $table, $column, $row ) ";
-            //dd($upl);
+            if ( fmod($i, $chunk) == 0  xor $i == $numrecords ) {
+                //dump($i);
+                $values = implode(', ', $v );
+                $res = \DB::insert($insert . $values);
+                $v = [];
+            }
         }
-        $values = implode(', ', $v );
-        $res = \DB::insert($insert . $values);
+
+
         $monitorings = \App\Monitoring::all();
         $albums = \App\Album::all()->sortBy('album_name');
         $periods = \App\Period::all();
         $states = \App\DicDocumentState::all();
-        return view('jqxadmin.medstatNSimportIntermediateResult', compact( 'numrecords',
+        return view('jqxadmin.medstatNSimportIntermediateResult', compact( 'i',
             'monitorings',
             'albums',
             'periods',

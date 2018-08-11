@@ -6,7 +6,7 @@
 @section('content')
     <div class="col-sm-offset-1 col-sm-7">
         <h4>Данные из предоставленного файла получены успешно</h4>
-        <p>В систему загружено {{$numrecords}} значений</p>
+        <p>В систему загружено {{ $i }} значений</p>
         <h4>Для последующей загрузки необходимо сопосставить отчетные периоды и учреждения/территории куда будут перенесены данные</h4>
         <form style="margin-top: 3px" action="/admin/documents/medstatimportmake" method="post" enctype="multipart/form-data">
             <div class="form-group">
