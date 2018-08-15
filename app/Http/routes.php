@@ -229,6 +229,10 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::post('admin/documents/medstatnskimport', 'ImportExport\MedstatNskDataImportController@uploadFileNSMedstatData');
     Route::post('admin/documents/medstatnskimportmake', 'ImportExport\MedstatNskDataImportController@makeNSMedstatDataImport');
 
+    // Утилиты для обслуживания системы
+    Route::get('admin/system/fixrowindex', 'System\FixRowColumnIndexes@fixRowIndexes');
+    Route::get('admin/system/fixcolumnindex', 'System\FixRowColumnIndexes@fixColumnIndexes');
+
     // Ввод и корректировка статданных
     // Рабочий стол - Первичные и сводные отчеты, сообщения, проверки и экспорт в эксель
     Route::get('datainput', 'StatDataInput\DocumentDashboardController@index' );

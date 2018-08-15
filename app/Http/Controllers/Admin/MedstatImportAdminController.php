@@ -405,7 +405,8 @@ class MedstatImportAdminController extends Controller
             $nsktable = \App\MedstatNskTableLink::where('id', $table->medstatnsk_id)->first();
             $offset = $nsktable->fixrows + 1;
             $nskrow_count = $nsktable->rowcount - $nsktable->fixrows;
-            for ($i = 1; $i <= $nsktable->rowcount; $i++) {
+            //for ($i = 1; $i <= $nsktable->rowcount; $i++) {
+            for ($i = 1; $i <= $nskrow_count; $i++) {
                 $all_rows++;
                 $mfrow = Row::OfTableRowIndex($table->id, $i)->first();
                 if ($mfrow) {

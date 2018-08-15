@@ -26,7 +26,8 @@ class CreateColumnsTable extends Migration
             $table->smallInteger('deleted')->default(0);
             $table->integer('deleted_at')->nullable();
             $table->timestamps();
-            $table->unique(['table_id', 'column_index', 'column_name']);
+            $table->unique(['table_id', 'column_code', 'column_name']);
+            $table->unique(['table_id', 'column_index']);
         });
     }
 
