@@ -61,7 +61,7 @@ class FixRowColumnIndexes extends Controller
             $tcount = $tables->count();
             for ($i = 0; $i < $tcount; $i++) {
                 if ($tables[$i]->table_index !== ($i + 1)) {
-                    $changes[] = ['form_id' => $form->id, 'table_code' => $form->table_code ,'table_name' => $form->table_code, 'column_code' => $tables[$i]->table_code];
+                    $changes[] = ['form_id' => $form->id, 'form_code' => $form->form_code , 'table_code' => $tables[$i]->table_code];
                 }
                 $tables[$i]->table_index = $i + 1;
                 $tables[$i]->save();
