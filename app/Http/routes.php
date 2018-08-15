@@ -227,6 +227,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     // Импорт данных из формата Медстат(Новосибирск)
     Route::get('admin/documents/medstatnskimport', 'ImportExport\MedstatNskDataImportController@selectFileNSMedstatData');
     Route::post('admin/documents/medstatnskimport', 'ImportExport\MedstatNskDataImportController@uploadFileNSMedstatData');
+    Route::post('admin/documents/medstatnskimportmake', 'ImportExport\MedstatNskDataImportController@makeNSMedstatDataImport');
 
     // Ввод и корректировка статданных
     // Рабочий стол - Первичные и сводные отчеты, сообщения, проверки и экспорт в эксель

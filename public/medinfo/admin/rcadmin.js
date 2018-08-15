@@ -39,7 +39,7 @@ initdatasources = function() {
             { name: 'row_code', type: 'string' },
             { name: 'row_name', type: 'string' },
             { name: 'medstat_code', type: 'string' },
-            { name: 'medinfo_id', type: 'int' }
+            { name: 'medstatnsk_id', type: 'int' }
         ],
         id: 'id',
         url: rowfetch_url + current_table,
@@ -59,7 +59,7 @@ initdatasources = function() {
             { name: 'size', type: 'int' },
             { name: 'decimal_count', type: 'int' },
             { name: 'medstat_code', type: 'string' },
-            { name: 'medinfo_id', type: 'int' }
+            { name: 'medstatnsk_id', type: 'int' }
         ],
         id: 'id',
         url: columnfetch_url + current_table,
@@ -90,8 +90,8 @@ initRowList = function() {
                 //{ text: 'Код таблицы', datafield: 'table_code', width: '70px'  },
                 { text: 'Код', datafield: 'row_code', width: '70px'  },
                 { text: 'Имя', datafield: 'row_name' , width: '480px'},
-                { text: 'Код Медстат', datafield: 'medstat_code', width: '80px' },
-                { text: 'Мединфо Id', datafield: 'medinfo_id', width: '70px' }
+                { text: 'Код МС(мск)', datafield: 'medstat_code', width: '80px' },
+                { text: 'Код МС(нск)', datafield: 'medstatnsk_id', width: '70px' }
             ]
         });
     rlist.on('rowselect', function (event) {
@@ -127,8 +127,8 @@ initColumnList = function() {
                 { text: 'Тип', datafield: 'content_type', width: '50px' },
                 { text: 'Размер', datafield: 'size', width: '70px' },
                 { text: 'Десятичные', datafield: 'decimal_count', width: '90px' },
-                { text: 'Код Медстат', datafield: 'medstat_code', width: '70px' },
-                { text: 'Мединфо Id', datafield: 'medinfo_id', width: '70px' }
+                { text: 'Код МС(мск)', datafield: 'medstat_code', width: '70px' },
+                { text: 'Код МС(нск)', datafield: 'medstatnsk_id', width: '70px' }
             ]
         });
     clist.on('rowselect', function (event) {

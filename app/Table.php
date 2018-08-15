@@ -8,7 +8,8 @@ class Table extends Model
 {
     //
 
-    protected $fillable = ['form_id',
+    protected $fillable = [
+        'form_id',
         'table_index' ,
         'table_code',
         'table_name',
@@ -17,6 +18,7 @@ class Table extends Model
         'transposed',
         'aggregated_column_id',
         'deleted',
+        'medstatnsk_id',
     ];
 
     public function columns()
@@ -56,6 +58,11 @@ class Table extends Model
     public function scopeOfMedstat($query)
     {
         return $query->whereNotNull('medstat_code');
+    }
+
+    public function scopeOfMedstatCode($query, $code)
+    {
+        return $query->where('medstat_code', $code);
     }
 
     public static function editedTables(int $document, int $album)

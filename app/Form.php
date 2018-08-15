@@ -12,7 +12,7 @@ class Form extends Model
      * @var array
      */
     protected $fillable = [
-        'form_code', 'form_name', 'form_index', 'file_name', 'medstat_code', 'short_ms_code',
+        'form_code', 'form_name', 'form_index', 'file_name', 'medstat_code', 'short_ms_code', 'medstatnsk_id',
     ];
 
     public function tables()
@@ -31,9 +31,19 @@ class Form extends Model
             ->where('form_code', $code);
     }
 
+    public function scopeOfMedstatCode($query, $code)
+    {
+        return $query->where('medstat_code', $code);
+    }
+
     public function scopeNotOfMedstat($query)
     {
         return $query->whereNull('medstat_code');
+    }
+
+    public function scopeNSK($query, $id)
+    {
+        return $query->where('medstatnsk_id', $id);
     }
 
 }

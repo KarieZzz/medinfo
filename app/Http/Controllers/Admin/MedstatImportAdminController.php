@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Form;
+
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\MedstatNormUpload;
 use App\Document;
+use App\Form;
+use App\Table;
+use App\Row;
+use App\Column;
 use App\Cell;
+use PhpOffice\PhpWord\Style\Tab;
 
 class MedstatImportAdminController extends Controller
 {
@@ -119,6 +124,7 @@ class MedstatImportAdminController extends Controller
 
     public function makeMedstatImport(Request $request)
     {
+        set_time_limit(360);
         $this->validate($request, [
                 'monitoring' => 'required|integer',
                 'album' => 'required|integer',
@@ -127,7 +133,6 @@ class MedstatImportAdminController extends Controller
                 'state' => 'required|integer',
             ]
         );
-        set_time_limit(360);
         //dd(Form::where('id', 37)->first(['medstat_code'])->medstat_code);
         $default_type = 1;
         //$default_monitoring = 100001;
@@ -269,13 +274,22 @@ class MedstatImportAdminController extends Controller
         $cl_file = storage_path('app/medstat_uploads/cl.dbf');
 
         $form_count = $this->importNSForms($forms_file);
-        $table_count = $this->importNSTables($tables_file);
-        $row_count = $this->importNSRows($rows_file);
-        $column_count = $this->importNSColumns($columns_file);
         $matched_forms = $this->matchingFormMSCode($fl_file);
-        $matched_tables = $this->matchingTableMSCode($tl_file);
-        $matched_rows = $this->matchingRowMSCode($rl_file);
-        $matched_columns = $this->matchingColumnMSCode($cl_file);
+
+        $tables = $this->importNSTables($tables_file);
+        $table_count = $tables[0];
+        $matched_tables = $tables[1];
+
+        $rows = $this->importNSRows($rows_file);
+        $row_count = $rows[0];
+        $matched_rows = $rows[1];
+
+        $columns = $this->importNSColumns($columns_file);
+        $column_count = $columns[0];
+        $matched_columns = $columns{1};
+        //$matched_tables = $this->matchingTableMSCode($tl_file);
+        //$matched_rows = $this->matchingRowMSCode($rl_file);
+        //$matched_columns = $this->matchingColumnMSCode($cl_file);
 
         return view('jqxadmin.medstatNSimportLinksresult',
             compact(
@@ -340,12 +354,28 @@ class MedstatImportAdminController extends Controller
         }
         $values = implode(', ', $v );
         $res = \DB::insert($insert . $values);
-        return $numrecords;
+        $forms = Form::whereNotNull('medstatnsk_id')->get();
+        $cleaned_table_ids = Table::whereNotNull('medstatnsk_id')->update(['medstatnsk_id' => null ]);
+        $t = 0;
+        foreach ($forms as $form) {
+            $linked_tables = \App\MedstatNskTableLink::where('form_id', $form->medstatnsk_id)->get();
+            foreach ($linked_tables as $linked_table) {
+                $fullcode = $linked_table->tablen;
+                $trimedcode = preg_match('/\((?:[0-9.]*)(\d{4})\)/u', $fullcode, $match);
+                $mftable = Table::OfFormTableCode($form->id, $match[1])->first();
+                if ($mftable) {
+                    $mftable->medstatnsk_id = $linked_table->id;
+                    $mftable->save();
+                    $t++;
+                }
+            }
+        }
+        return [ $numrecords , $t, $cleaned_table_ids ];
     }
 
     public function importNSRows($dbf)
     {
-        $db = dbase_open($dbf, 2);
+/*        $db = dbase_open($dbf, 2);
         if (!$db) {
             new \Exception("Ошибка, не получается открыть базу данных $dbf");
         }
@@ -357,22 +387,41 @@ class MedstatImportAdminController extends Controller
         $v = [];
         for ($i = 1; $i <= $numrecords; $i++) {
             $ar = dbase_get_record_with_names($db, $i);
-            $table = $ar['TABLE'];
+            $t = $ar['TABLE'];
             $row = $ar['ROW'];
             $insert = 'INSERT INTO public.medstat_nsk_row_links ( "table", "row" ) VALUES ';
-            $v[] = " ( $table , $row ) ";
+            $v[] = " ( $t , $row ) ";
 
             //dd($upl);
         }
         $values = implode(', ', $v );
-        $res = \DB::insert($insert . $values);
+        $res = \DB::insert($insert . $values);*/
 
-        return $numrecords;
+        $tables = Table::whereNotNull('medstatnsk_id')->get();
+        $cleaned_row_ids = Row::whereNotNull('medstatnsk_id')->update(['medstatnsk_id' => null ]);
+        $all_rows = 0;
+        $matched_rows = 0;
+        foreach ($tables as $table) {
+            $nsktable = \App\MedstatNskTableLink::where('id', $table->medstatnsk_id)->first();
+            $offset = $nsktable->fixrows + 1;
+            $nskrow_count = $nsktable->rowcount - $nsktable->fixrows;
+            for ($i = 1; $i <= $nsktable->rowcount; $i++) {
+                $all_rows++;
+                $mfrow = Row::OfTableRowIndex($table->id, $i)->first();
+                if ($mfrow) {
+                    $mfrow->medstatnsk_id = $i + $offset;
+                    $mfrow->save();
+                    $matched_rows++;
+                }
+            }
+        }
+
+        return [ $all_rows, $matched_rows, $cleaned_row_ids ];
     }
 
     public function importNSColumns($dbf)
     {
-        $db = dbase_open($dbf, 2);
+/*        $db = dbase_open($dbf, 2);
         if (!$db) {
             new \Exception("Ошибка, не получается открыть базу данных $dbf");
         }
@@ -392,9 +441,28 @@ class MedstatImportAdminController extends Controller
             //dd($upl);
         }
         $values = implode(', ', $v );
-        $res = \DB::insert($insert . $values);
+        $res = \DB::insert($insert . $values);*/
+        // в транспонированных таблицах коды Медстат НСК не прописываем, нет необходимости
+        $tables = Table::whereNotNull('medstatnsk_id')->where('transposed', 0)->get();
+        $cleaned_column_ids = Column::whereNotNull('medstatnsk_id')->update(['medstatnsk_id' => null ]);
+        $all_columns = 0;
+        $matched_columns = 0;
+        foreach ($tables as $table) {
+            $nsktable = \App\MedstatNskTableLink::where('id', $table->medstatnsk_id)->first();
+            $offset = $nsktable->fixcol + 1;
+            $nskcol_count = $nsktable->colcount - $nsktable->fixcol;
+            for ($i = $offset; $i <= $nsktable->colcount; $i++) {
+                $all_columns++;
+                $mfcolumn = Column::OfTableColumnIndex($table->id, $i)->first();
+                if ($mfcolumn) {
+                    $mfcolumn->medstatnsk_id = $i + 1;
+                    $mfcolumn->save();
+                    $matched_columns++;
+                }
+            }
+        }
 
-        return $numrecords;
+        return [ $all_columns, $matched_columns, $cleaned_column_ids ];
     }
 
     public function matchingFormMSCode($dbf)
@@ -415,10 +483,22 @@ class MedstatImportAdminController extends Controller
                 $matched->save();
             }
         }
-        return $numrecords;
+        $formlinks = \App\MedstatNskFormLink::whereNotNull('medstat_code')->get();
+        $cleaned_forms_ids = Form::whereNotNull('medstatnsk_id')->update(['medstatnsk_id' => null ]);
+        //dd($formlinks);
+        $matched_forms = 0;
+        foreach ($formlinks as $formlink) {
+            $form = Form::OfMedstatCode($formlink->medstat_code)->first();
+            if ($form) {
+                $form->medstatnsk_id = $formlink->id;
+                $form->save();
+                $matched_forms++;
+            }
+        }
+        return $matched_forms;
     }
 
-    public function matchingTableMSCode($dbf)
+/*    public function matchingTableMSCode($dbf)
     {
         $db = dbase_open($dbf, 2);
         if (!$db) {
@@ -453,9 +533,9 @@ class MedstatImportAdminController extends Controller
             }
         }
         return $i;
-    }
+    }*/
 
-    public function matchingRowMSCode($dbf)
+/*    public function matchingRowMSCode($dbf)
     {
         $db = dbase_open($dbf, 2);
         if (!$db) {
@@ -496,9 +576,9 @@ class MedstatImportAdminController extends Controller
             }
         }
         return $i;
-    }
+    }*/
 
-    public function matchingColumnMSCode($dbf)
+/*    public function matchingColumnMSCode($dbf)
     {
         $db = dbase_open($dbf, 2);
         if (!$db) {
@@ -539,6 +619,6 @@ class MedstatImportAdminController extends Controller
             }
         }
         return $i;
-    }
+    }*/
 
 }

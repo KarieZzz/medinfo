@@ -26,6 +26,7 @@ class CreateRowsTable extends Migration
             //$table->softDeletes();
             $table->timestamps();
             $table->unique(['table_id', 'row_code', 'row_name']);
+            $table->unique(['table_id', 'row_index']);
         });
     }
 
