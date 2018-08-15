@@ -34,7 +34,8 @@ initdatasources = function() {
             { name: 'id', type: 'int' },
             { name: 'table_id', type: 'int' },
             { name: 'table_code', map: 'table>table_code', type: 'string' },
-            { name: 'excluded', map: 'excluded>0>album_id', type: 'bool' },
+            //{ name: 'excluded', map: 'excluded>0>album_id', type: 'bool' },
+            { name: 'excluded', map: 'excluded>0>album_id', type: 'int' },
             { name: 'row_index', type: 'int' },
             { name: 'row_code', type: 'string' },
             { name: 'row_name', type: 'string' },
@@ -51,7 +52,7 @@ initdatasources = function() {
             { name: 'id', type: 'int' },
             { name: 'table_id', type: 'int' },
             { name: 'table_code', map: 'table>table_code', type: 'string' },
-            { name: 'excluded', map: 'excluded>0>album_id', type: 'bool' },
+            { name: 'excluded', map: 'excluded>0>album_id', type: 'int' },
             { name: 'column_index', type: 'int' },
             { name: 'column_name', type: 'string' },
             { name: 'column_code', type: 'string' },
@@ -86,7 +87,8 @@ initRowList = function() {
             columns: [
                 { text: 'Id', datafield: 'id', width: '50px' },
                 { text: '№ п/п', datafield: 'row_index', width: '50px' },
-                { text: 'Исключена из альбома', datafield: 'excluded', columntype: 'checkbox', width: '90px'  },
+                //{ text: 'Исключена из альбома', datafield: 'excluded', columntype: 'checkbox', width: '90px'  },
+                { text: 'Исключена из альбома', datafield: 'excluded', width: '90px'  },
                 //{ text: 'Код таблицы', datafield: 'table_code', width: '70px'  },
                 { text: 'Код', datafield: 'row_code', width: '70px'  },
                 { text: 'Имя', datafield: 'row_name' , width: '480px'},
@@ -101,7 +103,8 @@ initRowList = function() {
         $("#row_code").val(row.row_code);
         $("#row_medstat_code").val(row.medstat_code);
         $("#row_medinfo_id").val(row.medinfo_id);
-        $("#excludedRow").val(row.excluded);
+        //$("#excludedRow").val(row.excluded);
+        row.excluded > 0 ? $("#excludedRow").val(true) : $("#excludedRow").val(false);
     });
 };
 //Таблица граф
@@ -120,7 +123,8 @@ initColumnList = function() {
             columns: [
                 { text: 'Id', datafield: 'id', width: '50px' },
                 { text: '№ п/п', datafield: 'column_index', width: '50px' },
-                { text: 'Исключена из альбома', datafield: 'excluded', columntype: 'checkbox', width: '90px'  },
+                //{ text: 'Исключена из альбома', datafield: 'excluded', columntype: 'checkbox', width: '90px'  },
+                { text: 'Исключена из альбома', datafield: 'excluded', width: '90px'  },
                 //{ text: 'Код таблицы', datafield: 'table_code', width: '70px'  },
                 { text: 'Имя', datafield: 'column_name' , width: '300px'},
                 { text: 'Код', datafield: 'column_code' , width: '50px'},
@@ -141,7 +145,8 @@ initColumnList = function() {
         $("#decimal_count").val(row.decimal_count);
         $("#column_medstat_code").val(row.medstat_code);
         //$("#column_medinfo_id").val(row.medinfo_id);
-        $("#excludedColumn").val(row.excluded);
+        row.excluded > 0 ? $("#excludedColumn").val(true) : $("#excludedColumn").val(false);
+
     });
 };
 // функция для обновления связанных объектов после выбора таблицы
