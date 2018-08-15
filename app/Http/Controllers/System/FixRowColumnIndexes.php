@@ -52,5 +52,22 @@ class FixRowColumnIndexes extends Controller
         dd($changes);
     }
 
+    public function fixTableIndexes()
+    {
+        $forms = \App\Form::all();
+        $changes = [];
+        foreach ($forms as $form) {
+            $tables = \App\Table::OfForm($form->id)->orderBy('table_code')->get();
+            $tcount = $tables->count();
+            for ($i = 0; $i < $tcount; $i++) {
+                if ($tables[$i]->table_index !== ($i + 1)) {
+                    $changes[] = ['form_id' => $form->id, 'table_code' => $form->table_code ,'table_name' => $form->table_code, 'column_code' => $tables[$i]->table_code];
+                }
+                $tables[$i]->table_index = $i + 1;
+                $tables[$i]->save();
+            }
 
+        }
+        dd($changes);
+    }
 }

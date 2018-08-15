@@ -232,6 +232,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     // Утилиты для обслуживания системы
     Route::get('admin/system/fixrowindex', 'System\FixRowColumnIndexes@fixRowIndexes');
     Route::get('admin/system/fixcolumnindex', 'System\FixRowColumnIndexes@fixColumnIndexes');
+    Route::get('admin/system/fixtableindex', 'System\FixRowColumnIndexes@fixTableIndexes');
 
     // Ввод и корректировка статданных
     // Рабочий стол - Первичные и сводные отчеты, сообщения, проверки и экспорт в эксель
