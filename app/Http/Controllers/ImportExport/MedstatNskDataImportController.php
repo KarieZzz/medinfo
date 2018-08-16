@@ -123,8 +123,6 @@ class MedstatNskDataImportController extends Controller
                 $d++;
         }
 
-
-
         return view('jqxadmin.medstatNSimportDataresult', compact( 'd'
 
         ));

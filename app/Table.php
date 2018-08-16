@@ -65,6 +65,11 @@ class Table extends Model
         return $query->where('medstat_code', $code);
     }
 
+    public function scopeOfMedstatNsk($query, $id)
+    {
+        return $query->where('medstatnsk_id', $id);
+    }
+
     public static function editedTables(int $document, int $album)
     {
         $editedtables = \DB::table('statdata')

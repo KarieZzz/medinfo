@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class MedstatNskMskColumnMatching extends Model
 {
     //
-    protected $fillable = ['mdstable', 'mdscol', 'mskcol'];
+    protected $fillable = ['mdstable', 'mdscol', 'mskcol', 'transposed'];
 
     public function scopeOfMds($query, $formtable, $column)
     {

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Column;
+use App\Row;
 use Illuminate\Http\Request;
 
 //use App\Http\Requests;
@@ -85,8 +87,16 @@ class FormAdminController extends Controller
         $form_code = $form->form_code;
         $doc_count = Document::countInForm($form->id);
         if ($doc_count == 0) {
+            $tdeleted = 0;
+            $rdeleted = 0;
+            $cdeleted = 0;
+            foreach ($form->tables()->get() as $table) {
+                $rdeleted += Row::OfTable($table->id)->delete();
+                $cdeleted += Column::OfTable($table->id)->delete();
+                $tdeleted += $table->delete();
+            }
             $form->delete();
-            return ['message' => 'Удалена форма ' . $form_code ];
+            return ['message' => "Удалена форма $form_code, включая таблицы: $tdeleted, строки $rdeleted, графы $cdeleted"];
         } else {
             return ['error' => 422, 'message' => 'Форма ' . $form_code . ' содержит документы. Удаление невозможно.' ];
         }

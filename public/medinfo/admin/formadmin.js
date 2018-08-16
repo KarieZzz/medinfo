@@ -120,6 +120,9 @@ initformactions = function() {
             raiseError("Выберите запись для удаления");
             return false;
         }
+        if (!confirm('Если форма не содержит отчетных документов и данных, то она будет удалена вместе с входящими в нее таблицами, строками, графами')) {
+            return false;
+        }
         let rowid = fl.jqxGrid('getrowid', row);
         $.ajax({
             dataType: 'json',

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class MedstatNskTableLink extends Model
 {
     //
-    protected $fillable = ['form_id', 'tablen', 'name', 'colcount', 'rowcount', 'fixcols', 'fixrows', 'floattype', 'scan', 'medstat_code'];
+    protected $fillable = ['form_id', 'tablen', 'name', 'colcount', 'rowcount', 'fixcols', 'fixrows', 'floattype', 'scan', 'medstat_code', 'transposed'];
 
     public function scopeOfForm($query, $id)
     {

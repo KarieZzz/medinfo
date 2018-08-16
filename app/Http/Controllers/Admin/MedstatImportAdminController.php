@@ -289,7 +289,8 @@ class MedstatImportAdminController extends Controller
         $matched_columns = $columns{1};
         //$matched_tables = $this->matchingTableMSCode($tl_file);
         //$matched_rows = $this->matchingRowMSCode($rl_file);
-        //$matched_columns = $this->matchingColumnMSCode($cl_file);
+        $matched_columns_props = $this->matchingColumnMSCode($cl_file);
+        $transposed_disparity = $this->findTransposedTablesDisparity();
 
         return view('jqxadmin.medstatNSimportLinksresult',
             compact(
@@ -300,7 +301,9 @@ class MedstatImportAdminController extends Controller
                 'matched_forms',
                 'matched_tables',
                 'matched_rows',
-                'matched_columns'));
+                'matched_columns',
+                'transposed_disparity'
+                ));
     }
 
     public function importNSForms($dbf)
@@ -451,7 +454,7 @@ class MedstatImportAdminController extends Controller
         foreach ($tables as $table) {
             $nsktable = \App\MedstatNskTableLink::where('id', $table->medstatnsk_id)->first();
             $offset = $nsktable->fixcol + 1;
-            $nskcol_count = $nsktable->colcount - $nsktable->fixcol;
+            //$nskcol_count = $nsktable->colcount - $nsktable->fixcol;
             for ($i = $offset; $i <= $nsktable->colcount; $i++) {
                 $all_columns++;
                 $mfcolumn = Column::OfTableColumnIndex($table->id, $i)->first();
@@ -536,7 +539,7 @@ class MedstatImportAdminController extends Controller
         return $i;
     }*/
 
-/*    public function matchingRowMSCode($dbf)
+ /*   public function matchingRowMSCode($dbf)
     {
         $db = dbase_open($dbf, 2);
         if (!$db) {
@@ -579,7 +582,7 @@ class MedstatImportAdminController extends Controller
         return $i;
     }*/
 
-/*    public function matchingColumnMSCode($dbf)
+    public function matchingColumnMSCode($dbf)
     {
         $db = dbase_open($dbf, 2);
         if (!$db) {
@@ -594,8 +597,9 @@ class MedstatImportAdminController extends Controller
             $mdstable = iconv('cp866', 'utf-8', trim($ar['MDSTABLE']));
             $mdscol = $ar['MDSCOL'];
             $mskcol = substr(trim($ar['MSKCOL']), -2);
-            $insert = 'INSERT INTO public.medstat_nsk_msk_column_matchings ( mdstable, mdscol, mskcol ) VALUES ';
-            $v[] = " ( '$mdstable', $mdscol , '$mskcol' ) ";
+            $transposed = $ar['INV'] ? 'TRUE' : 'FALSE';
+            $insert = 'INSERT INTO public.medstat_nsk_msk_column_matchings ( mdstable, mdscol, mskcol, transposed ) VALUES ';
+            $v[] = " ( '$mdstable', $mdscol , '$mskcol', $transposed ) ";
         }
         $values = implode(', ', $v );
         $res = \DB::insert($insert . $values);
@@ -611,6 +615,7 @@ class MedstatImportAdminController extends Controller
                         $matched = \App\MedstatNskMskColumnMatching::OfMds($ft, $nskcol->column)->first();
                         if ($matched) {
                             $nskcol->medstat_code = $matched->mskcol;
+                            $nskcol->transposed = $matched->transposed;
                             $nskcol->save();
                             $i++;
                         }
@@ -618,8 +623,30 @@ class MedstatImportAdminController extends Controller
                 }
 
             }
+            $transposed_tables = \App\MedstatNskColumnLink::Transposed()->groupBy('table')->get(['table']);
+            foreach ($transposed_tables as $transposed_table) {
+                $tl = \App\MedstatNskTableLink::find($transposed_table->table);
+                $tl->transposed = true;
+                $tl->save();
+            }
         }
         return $i;
-    }*/
+    }
+
+    public function findTransposedTablesDisparity()
+    {
+        $tables = Table::with('form')->get();
+        $disparity = [];
+        foreach ($tables as $table) {
+            $nsk_table = \App\MedstatNskTableLink::find($table->medstatnsk_id);
+            if ($nsk_table) {
+                if ((int)$nsk_table->transposed !== $table->transposed) {
+                    $comment = $table->transposed ? 'В МФ таблица транспонирована' : 'В МС(НСК) таблица транспонирована';
+                    $disparity[] = [ 'form_code' => $table->form->form_code, 'table_code' => $table->table_code, 'comment' => $comment ];
+                }
+            }
+        }
+        return $disparity;
+    }
 
 }

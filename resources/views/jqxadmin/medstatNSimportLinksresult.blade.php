@@ -21,6 +21,13 @@
             <li>Строки: {{ $matched_rows }}</li>
             <li>Графы: {{ $matched_columns }}</li>
         </ul>
+        <p>Выявлены следующие несоотствия структуры:</p>
+        <p>Транспонированные таблицы</p>
+        <ol>
+            @foreach ($transposed_disparity as $td)
+            <li>({{ $td['form_code']  }}){{ $td['table_code'] }} <span class="text text-danger">{{ $td['comment'] }}</span></li>
+            @endforeach
+        </ol>
     </div>
 @endsection
 

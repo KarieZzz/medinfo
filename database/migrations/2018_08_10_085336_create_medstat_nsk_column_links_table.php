@@ -17,6 +17,7 @@ class CreateMedstatNskColumnLinksTable extends Migration
             $table->increments('id');
             $table->integer('table')->index();
             $table->integer('column')->index();
+            $table->boolean('transposed')->nullable();
             $table->char('medstat_code', 2)->nullable();
             $table->timestamps();
         });

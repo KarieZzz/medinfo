@@ -18,6 +18,7 @@ class CreateMedstatNskMskColumnMatchingsTable extends Migration
             $table->string('mdstable', 50)->index();
             $table->integer('mdscol')->index();
             $table->char('mskcol', 2)->index();
+            $table->boolean('transposed')->nullable();
             $table->timestamps();
         });
     }
