@@ -21,7 +21,7 @@ class PeriodAdminController extends Controller
     public function index()
     {
         $period_patterns = PeriodPattern::orderBy('id')->get();
-        dd($period_patterns);
+        //dd($period_patterns);
         $years = $this->getYearsArray();
         return view('jqxadmin.periods', compact('period_patterns', 'years'));
     }

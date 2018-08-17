@@ -107,16 +107,16 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/periodadmin.js?v=005') }}"></script>
+    <script src="{{ asset('/medinfo/admin/periodadmin.js?v=006') }}"></script>
 @endpush
 
 @section('inlinejs')
     @parent
     <script type="text/javascript">
-        var patterns = {!! $period_patterns !!};
-        var periodDataAdapter;
-        var patternDataAdapter;
-        var plist = $('#periodList');
+        let patterns = {!! $period_patterns !!};
+        let periodDataAdapter;
+        let patternDataAdapter;
+        let plist = $('#periodList');
         initsplitter();
         initdatasources();
         initperiodlist();
