@@ -9,8 +9,8 @@ let initsplitter = function() {
             theme: theme,
             panels:
                 [
-                    { size: '50%', min: '10%'},
-                    { size: '50%', min: '10%'}
+                    { size: '55%', min: '10%'},
+                    { size: '45%', min: '10%'}
                 ]
         }
     );
@@ -42,7 +42,7 @@ let initdatasources = function() {
             { name: 'table_code', type: 'string' },
             { name: 'transposed', type: 'int' },
             { name: 'medstat_code', type: 'string' },
-            { name: 'medinfo_id', type: 'int' }
+            { name: 'medstatnsk_id', type: 'int' }
         ],
         id: 'id',
         url: 'fetchtables',
@@ -65,13 +65,13 @@ let inittablelist = function() {
             columns: [
                 { text: 'Id', datafield: 'id', width: '30px' },
                 { text: '№ п/п', datafield: 'table_index', width: '50px' },
-                { text: 'Код формы', datafield: 'form_code', width: '100px'  },
+                { text: 'Код формы', datafield: 'form_code', width: '70px'  },
                 { text: 'Исключена из альбома', datafield: 'excluded' , columntype: 'checkbox', width: '90px' },
                 { text: 'Код таблицы', datafield: 'table_code', width: '100px'  },
-                { text: 'Имя', datafield: 'table_name' , width: '400px'},
+                { text: 'Имя', datafield: 'table_name' , width: '390px'},
                 { text: 'Транспонирование', datafield: 'transposed', columntype: 'checkbox', width: '70px' },
-                { text: 'Код Медстат', datafield: 'medstat_code', width: '100px' },
-                { text: 'Мединфо Id', datafield: 'medinfo_id', width: '70px' }
+                { text: 'Код МС (МСК)', datafield: 'medstat_code', width: '100px' },
+                { text: 'Код МС (НСК)', datafield: 'medstatnsk_id', width: '100px' }
             ]
         });
     tlist.on('rowselect', function (event) {
@@ -86,7 +86,7 @@ let inittablelist = function() {
         $("#table_code").val(row.table_code);
         $("#transposed").val( row.transposed === 1 );
         $("#medstat_code").val(row.medstat_code);
-        $("#medinfo_id").val(row.medinfo_id);
+        $("#medstatnsk_id").val(row.medstatnsk_id);
         $("#excluded").val(typeof row.excluded !== 'undefined');
     });
 };
@@ -276,7 +276,7 @@ function setQueryString() {
     "&table_code=" + $("#table_code").val() +
     "&table_name=" + $("#table_name").val() +
     "&medstat_code=" + $("#medstat_code").val() +
-    "&medinfo_id=" + $("#medinfo_id").val() +
+    "&medstatnsk_id=" + $("#medstatnsk_id").val() +
     "&transposed=" + ($("#transposed").val() ? 1 :0) +
     "&excluded=" + ($("#excluded").val() ? 1 :0) +
     "&placebefore=" + $("#placebefore").val() ;

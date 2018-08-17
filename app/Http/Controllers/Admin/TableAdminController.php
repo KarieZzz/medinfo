@@ -58,7 +58,7 @@ class TableAdminController extends Controller
                 'table_name' => 'required',
                 'table_code' => 'required',
                 'medstat_code' => 'digits:4',
-                'medinfo_id' => 'integer',
+                'medstatnsk_id' => 'integer',
                 'placebefore' => 'integer',
             ]
         );
@@ -75,7 +75,7 @@ class TableAdminController extends Controller
         $newtable->table_code = $request->table_code;
         $newtable->table_name = $request->table_name;
         $newtable->medstat_code = empty($request->medstat_code) ? null : $request->medstat_code;
-        $newtable->medinfo_id = empty($request->medinfo_id) ? null : $request->medinfo_id;
+        $newtable->medstatnsk_id = empty($request->medstatnsk_id) ? null : $request->medstatnsk_id;
         $newtable->transposed = $request->transposed;
 /*        $newtable->save();
         if ($request->placebefore !== '') {
@@ -113,7 +113,7 @@ class TableAdminController extends Controller
                 'table_index' => 'integer',
                 'transposed' => 'boolean',
                 'medstat_code' => 'digits:4',
-                'medinfo_id' => 'integer',
+                'medstatnsk_id' => 'integer',
                 'excluded' => 'required|in:1,0',
             ]
         );
@@ -123,7 +123,7 @@ class TableAdminController extends Controller
         $table->table_code = $request->table_code;
         $table->table_name = $request->table_name;
         $table->medstat_code = empty($request->medstat_code) ? null : $request->medstat_code;
-        $table->medinfo_id = empty($request->medinfo_id) ? null : $request->medinfo_id;
+        $table->medstatnsk_id = empty($request->medstatnsk_id) ? null : $request->medstatnsk_id;
         $table->transposed = $request->transposed;
         $result = [];
         try {
