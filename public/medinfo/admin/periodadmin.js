@@ -51,6 +51,8 @@ initFormElements = function () {
     $("#pattern_id").jqxDropDownList({
         theme: theme,
         source: patternsDataAdapter,
+        filterable:true,
+        filterPlaceHolder: "Поиск периода",
         displayMember: "name",
         valueMember: "id",
         placeHolder: "Выберите шаблон периода:",
