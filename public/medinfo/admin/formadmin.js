@@ -26,6 +26,7 @@ initdatasources = function() {
             { name: 'form_code', type: 'string' },
             { name: 'medstat_code', type: 'string' },
             { name: 'short_ms_code', type: 'string' },
+            { name: 'medstatnsk_id', type: 'string' },
         ],
         id: 'id',
         url: 'fetchforms',
@@ -50,8 +51,9 @@ initperiodlist = function() {
                 { text: '№ п/п', datafield: 'form_index', width: '70px' },
                 { text: 'Код формы', datafield: 'form_code', width: '100px'  },
                 { text: 'Имя', datafield: 'form_name' , width: '400px'},
-                { text: 'Код Медстат', datafield: 'medstat_code', width: '100px' },
-                { text: 'Сокр. код Медстат', datafield: 'short_ms_code', width: '100px' },
+                { text: 'Код МС МСК', datafield: 'medstat_code', width: '100px' },
+                { text: 'Сокр. код МС МСК', datafield: 'short_ms_code', width: '100px' },
+                { text: 'Код МС НСК', datafield: 'medstatnsk_id', width: '100px' },
             ]
         });
     fl.on('rowselect', function (event) {
@@ -61,12 +63,14 @@ initperiodlist = function() {
         $("#form_code").val(row.form_code);
         $("#medstat_code").val(row.medstat_code);
         $("#short_ms_code").val(row.short_ms_code);
+        $("#medstatnsk_id").val(row.medstatnsk_id);
     });
 };
 initformactions = function() {
     $("#insert").click(function () {
         let data = "&form_name=" + $("#form_name").val() + "&form_index=" + $("#form_index").val() +
-            "&form_code=" + $("#form_code").val()  +  "&medstat_code=" + $("#medstat_code").val() + "&short_ms_code=" + $("#short_ms_code").val();
+            "&form_code=" + $("#form_code").val()  +  "&medstat_code=" + $("#medstat_code").val() +
+            "&short_ms_code=" + $("#short_ms_code").val() + "&medstatnsk_id=" + $("#medstatnsk_id").val();
         $.ajax({
             dataType: 'json',
             url: '/admin/forms/create',
@@ -93,7 +97,8 @@ initformactions = function() {
         }
         let rowid = fl.jqxGrid('getrowid', row);
         let data = "id=" + rowid + "&form_name=" + $("#form_name").val() + "&form_index=" + $("#form_index").val() +
-            "&form_code=" + $("#form_code").val() +  "&medstat_code=" + $("#medstat_code").val() + "&short_ms_code=" + $("#short_ms_code").val();
+            "&form_code=" + $("#form_code").val() +  "&medstat_code=" + $("#medstat_code").val() +
+            "&short_ms_code=" + $("#short_ms_code").val() + "&medstatnsk_id=" + $("#medstatnsk_id").val();
         $.ajax({
             dataType: 'json',
             url: '/admin/forms/update',

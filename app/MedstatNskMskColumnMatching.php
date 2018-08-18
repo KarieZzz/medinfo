@@ -15,4 +15,10 @@ class MedstatNskMskColumnMatching extends Model
             ->where('mdstable', $formtable)
             ->where('mdscol', $column);
     }
+
+    public function scopeFT($query, $formtable)
+    {
+        return $query
+            ->where('mdstable', $formtable);
+    }
 }

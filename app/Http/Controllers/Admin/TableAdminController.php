@@ -147,8 +147,11 @@ class TableAdminController extends Controller
     {
         $cell_count = Cell::countOfCellsByTable($table->id);
         if ($cell_count == 0) {
+            $rdeleted = \App\Row::OfTable($table->id)->delete();
+            $cdeleted = \App\Column::OfTable($table->id)->delete();
             $table->delete();
-            return ['message' => 'Удалена таблица Id' . $table->id ];
+            return ['message' => "Удалена таблица Id {$table->id}, удалено строк: $rdeleted, граф: $cdeleted " ];
+
         } else {
             return ['error' => 422, 'message' => 'Таблица Id' . $table->id . ' содержит данные. Удаление невозможно.' ];
         }

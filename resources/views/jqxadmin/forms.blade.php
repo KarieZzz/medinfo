@@ -32,7 +32,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="medstat_code">Код Медстат:</label>
+                        <label class="control-label col-sm-3" for="medstat_code">Код Медстат МСК:</label>
                         <div class="col-sm-2">
                             <input type="text" class="form-control" id="medstat_code">
                         </div>
@@ -41,6 +41,12 @@
                         <label class="control-label col-sm-3" for="short_ms_code">Сокр. код Медстат:</label>
                         <div class="col-sm-2">
                             <input type="text" class="form-control" id="short_ms_code">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-3" for="medstatnsk_id">Код Медстат НСК:</label>
+                        <div class="col-sm-2">
+                            <input type="text" class="form-control" id="medstatnsk_id">
                         </div>
                     </div>
                     <div class="form-group">
@@ -76,7 +82,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/formadmin.js?v=005') }}"></script>
+    <script src="{{ asset('/medinfo/admin/formadmin.js?v=006') }}"></script>
 @endpush
 
 @section('inlinejs')

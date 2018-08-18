@@ -195,6 +195,9 @@ let initformactions = function() {
             raiseError("Выберите запись для удаления");
             return false;
         }
+        if (!confirm('Если таблица не включена в отчетные документы и не содержит данных, то она будет удалена вместе с входящими в нее строками, графами')) {
+            return false;
+        }
         let rowid = tlist.jqxGrid('getrowid', row);
         $.ajax({
             dataType: 'json',

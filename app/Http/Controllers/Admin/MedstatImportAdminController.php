@@ -232,11 +232,18 @@ class MedstatImportAdminController extends Controller
 
     public function selectFileNSMedstatLinks(Request $request)
     {
-        return view('jqxadmin.medstatNSimportLinks');
+        $albums = \App\Album::all()->sortBy('album_name');
+        return view('jqxadmin.medstatNSimportLinks', compact('albums'));
     }
 
     public function uploadFileNSMedstatLinks(Request $request)
     {
+        $this->validate($request, [
+                'medstat_ns_links' => 'required|file',
+                'album' => 'required|integer',
+            ]
+        );
+        $album = $request->album;
         \Storage::put(
             'medstat_uploads/medstat_ns_links.zip',
             file_get_contents($request->file('medstat_ns_links')->getRealPath())
@@ -289,19 +296,25 @@ class MedstatImportAdminController extends Controller
         $matched_columns = $columns{1};
         //$matched_tables = $this->matchingTableMSCode($tl_file);
         //$matched_rows = $this->matchingRowMSCode($rl_file);
-        $matched_columns_props = $this->matchingColumnMSCode($cl_file);
+        $tansposed_nsktables = $this->matchingColumnMSCode($cl_file);
+        $form_disparity = Form::whereNull('medstatnsk_id')->get();
+        $table_disparity = Table::whereNull('medstatnsk_id')->with('form')->orderBy('form_id')->get();
+
         $transposed_disparity = $this->findTransposedTablesDisparity();
 
         return view('jqxadmin.medstatNSimportLinksresult',
             compact(
             'form_count',
                 'table_count',
+                'tansposed_nsktables',
                 'row_count',
                 'column_count',
                 'matched_forms',
                 'matched_tables',
                 'matched_rows',
                 'matched_columns',
+                'form_disparity',
+                'table_disparity',
                 'transposed_disparity'
                 ));
     }
@@ -608,26 +621,15 @@ class MedstatImportAdminController extends Controller
         foreach ($nskforms as $nskform) {
             $nsktables = \App\MedstatNskTableLink::OfForm($nskform->id)->get();
             foreach ($nsktables as $nsktable) {
-                $nskcols = \App\MedstatNskColumnLink::OfTable($nsktable->id)->get();
+                //$nskcols = \App\MedstatNskColumnLink::OfTable($nsktable->id)->get();
                 $ft = $nskform->form_name . $nsktable->tablen;
-                foreach ($nskcols as $nskcol) {
-                    if ($nskcol) {
-                        $matched = \App\MedstatNskMskColumnMatching::OfMds($ft, $nskcol->column)->first();
-                        if ($matched) {
-                            $nskcol->medstat_code = $matched->mskcol;
-                            $nskcol->transposed = $matched->transposed;
-                            $nskcol->save();
-                            $i++;
-                        }
-                    }
+                $matched = \App\MedstatNskMskColumnMatching::FT($ft)->where('transposed', true)->groupBy(['mdstable', 'transposed'])->first(['mdstable', 'transposed']);
+                //dd($matched);
+                if ($matched) {
+                    $nsktable->transposed = true;
+                    $nsktable->save();
+                    $i++;
                 }
-
-            }
-            $transposed_tables = \App\MedstatNskColumnLink::Transposed()->groupBy('table')->get(['table']);
-            foreach ($transposed_tables as $transposed_table) {
-                $tl = \App\MedstatNskTableLink::find($transposed_table->table);
-                $tl->transposed = true;
-                $tl->save();
             }
         }
         return $i;
