@@ -22,7 +22,7 @@
             <li>Графы: {{ $matched_columns }}</li>
         </ul>
         <p>Выявлены следующие несоотствия структуры:</p>
-        <p>Транспонированные таблицы</p>
+        <p>По транспонированным таблицам</p>
         <ol>
             @foreach ($transposed_disparity as $td)
             <li>({{ $td['form_code']  }}){{ $td['table_code'] }} <span class="text text-danger">{{ $td['comment'] }}</span></li>
