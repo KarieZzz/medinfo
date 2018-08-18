@@ -4,7 +4,7 @@
 @section('headertitle', 'Менеджер загрузки данных из формата Медстат (ЦНИИОИЗ)')
 
 @section('content')
-    <div class="col-sm-offset-1 col-sm-7">
+    <div class="col-sm-offset-1 col-sm-9">
         <div class="panel panel-default" style="max-height:850px; overflow: auto; padding: 20px">
             <div class="page-header">
                 <h3>Результат загрузки структуры отчетных форм из формата Медстат (Новосибирск)</h3>
