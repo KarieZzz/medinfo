@@ -11,14 +11,14 @@
             </div>
             <div class="panel-body">
                 <p class="text text-info">Загрузка завершена.</p>
-                <p class="text text-info">Загружено записей: .</p>
+                <p class="text text-info">Загружено записей:</p>
                 <ul>
                     <li>Формы: {{ $form_count }}</li>
                     <li>Таблицы: {{ $table_count }} (транспонированные: {{ $tansposed_nsktables }})</li>
                     <li>Строки: {{ $row_count }}</li>
                     <li>Графы: {{ $column_count }}</li>
                 </ul>
-                <p class="text text-info">Сопоставлено кодов: .</p>
+                <p class="text text-info">Сопоставлено кодов:</p>
                 <ul>
                     <li>Формы: {{ $matched_forms }}</li>
                     <li>Таблицы: {{ $matched_tables }}</li>

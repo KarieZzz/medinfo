@@ -28,7 +28,7 @@ class MedstatNskDataImportController extends Controller
             file_get_contents($request->file('medstat_nsk_data')->getRealPath())
         );
         $zip_file = storage_path('app/medstat_uploads/medstat_nsk_data.zip');
-        /*$zip = new \ZipArchive();
+        $zip = new \ZipArchive();
         if ($zip->open($zip_file) === TRUE) {
             $data =  $zip->getFromName('Data.DBF');
             $zip->close();
@@ -63,8 +63,8 @@ class MedstatNskDataImportController extends Controller
                 $v = [];
             }
         }
-        $i--;*/
-        $i = 1;
+        $i--;
+        //$i = 1;
         $monitorings = \App\Monitoring::all();
         $albums = \App\Album::all()->sortBy('album_name');
         $periods = \App\Period::all();
@@ -123,7 +123,29 @@ class MedstatNskDataImportController extends Controller
                 $d++;
         }
 
-        return view('jqxadmin.medstatNSimportDataresult', compact( 'd'
+        $insert_transposed = "INSERT INTO statdata (doc_id, table_id, row_id, col_id, \"value\")
+          (SELECT d.id doc_id, t.id table_id, r.id row_id, c.id column_id, v.data \"value\" FROM medstat_nsk_data v
+            LEFT JOIN tables t ON t.medstatnsk_id = v.\"table\" AND t.transposed = 1
+            LEFT JOIN mo_hierarchy u ON u.id = v.hospital
+            LEFT JOIN rows r ON r.medstatnsk_id = v.row AND r.table_id = t.id
+            LEFT JOIN columns c ON c.table_id = t.id AND c.column_index = 3
+            LEFT JOIN forms f ON f.id = t.form_id
+            LEFT JOIN documents d ON d.ou_id = u.id AND d.dtype = $t AND monitoring_id = $m AND d.album_id = $a AND d.period_id = $p AND d.form_id = f.id 
+            WHERE d.id IS NOT NULL AND r.id IS NOT NULL);";
+        $transposed_values = \DB::insert($insert_transposed);
+
+        $insert_flat = "INSERT INTO statdata (doc_id, table_id, row_id, col_id, \"value\")
+          (SELECT d.id doc_id, t.id table_id, r.id row_id, c.id column_id, v.data \"value\" FROM medstat_nsk_data v
+            LEFT JOIN mo_hierarchy u ON u.id = v.hospital
+            LEFT JOIN tables t ON t.medstatnsk_id = v.\"table\" AND t.transposed = 0
+            LEFT JOIN rows r ON r.medstatnsk_id = v.row AND r.table_id = t.id
+            LEFT JOIN columns c ON c.medstatnsk_id = v.\"column\" AND c.table_id = t.id
+            LEFT JOIN forms f ON f.id = t.form_id
+            LEFT JOIN documents d ON d.ou_id = u.id AND d.dtype = $t AND monitoring_id = $m AND d.album_id = $a AND d.period_id = 6 AND d.form_id = f.id
+            WHERE d.id IS NOT NULL AND r.id IS NOT NULL AND c.id IS NOT NULL);";
+        $flat_values = \DB::insert($insert_flat);
+
+        return view('jqxadmin.medstatNSimportDataresult', compact( 'd', 'transposed_values'
 
         ));
     }

@@ -25,7 +25,7 @@
                 <li>{{ $available_form->form }} ({!!  $available_form->medinfoform->form_code or '<span class="text text-danger">отсутствует в Мединфо</span>' !!})</li>
             @endforeach
         </ul>
-        <h4>Для последующей загрузки необходимо сопосставить отчетные периоды и учреждения/территории куда будут перенесены данные</h4>
+        <h4>Для последующей загрузки необходимо сопоставить отчетные периоды и учреждения/территории куда будут перенесены данные</h4>
         <form style="margin-top: 3px" action="/admin/documents/medstatimportmake" method="post" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="unit">Медицинская организция:</label>

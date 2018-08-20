@@ -240,6 +240,9 @@ class MedstatImportAdminController extends Controller
 
     public function uploadFileNSMedstatLinks(Request $request)
     {
+        //$mfcolumns = Column::OfTable(980)->OfDataType()->orderBy('column_index')->get();
+        //dd($mfcolumns->count());
+
         $this->validate($request, [
                 'medstat_ns_links' => 'required|file',
                 'album' => 'required|integer',
@@ -482,16 +485,28 @@ class MedstatImportAdminController extends Controller
         $unmatched_columns = [];
         foreach ($tables as $table) {
             $nsktable = \App\MedstatNskTableLink::where('id', $table->medstatnsk_id)->first();
-            $nskcol_count = $nsktable->colcount;
-            $mfcol_count = Column::OfTable($table->id)->whereDoesntHave('excluded', function ($query) use($album) {
+            $nskdatacolumns_count = $nsktable->colcount - $nsktable->fixcol;
+            $mfcolumns = Column::OfTable($table->id)->OfDataType()->whereDoesntHave('excluded', function ($query) use($album) {
                 $query->where('album_id', $album);
-            })->count();
-            if ($mfcol_count !== $nsktable->colcount) {
-                $unmatched_columns[] = ['form_code' => $table->form->form_code ,'table_code' => $table->table_code, 'mf_count' => $mfcol_count, 'nsk_count' => $nskcol_count ];
+            })->orderBy('column_index')->get();
+            $mfcol_count = $mfcolumns->count();
+            if ($mfcol_count !== $nskdatacolumns_count){
+                $unmatched_columns[] = ['form_code' => $table->form->form_code ,'table_code' => $table->table_code, 'mf_count' => $mfcol_count, 'nsk_count' => $nskdatacolumns_count ];
             }
             $offset = $nsktable->fixcol + 1;
             //$nskcol_count = $nsktable->colcount - $nsktable->fixcol;
-            for ($i = $offset; $i <= $nskcol_count; $i++) {
+            $i = 1;
+            foreach ($mfcolumns as $mfcolumn) {
+                $all_columns++;
+                if (ctype_digit($mfcolumn->column_code)) {
+                    $mfcolumn->medstatnsk_id = $i + $offset;
+                    $mfcolumn->save();
+                    $matched_columns++;
+                    $i++;
+                }
+            }
+
+/*            for ($i = $offset; $i <= $nskcol_count; $i++) {
                 $all_columns++;
                 $mfcolumn = Column::OfTableColumnIndex($table->id, $i)->first();
                 if ($mfcolumn) {
@@ -499,7 +514,7 @@ class MedstatImportAdminController extends Controller
                     $mfcolumn->save();
                     $matched_columns++;
                 }
-            }
+            }*/
         }
 
         return [ $all_columns, $matched_columns, $unmatched_columns, $cleaned_column_ids ];
