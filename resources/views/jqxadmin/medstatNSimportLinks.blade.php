@@ -20,6 +20,12 @@
                     @endforeach
                 </select>
             </div>
+            <p class="text-info">Файл для импорта структуры из формата Медстат (НСК) должен быть архивом ZIP, в который помещены файлы
+                <code>Columns</code>, <code>Rows</code>, <code>Tables</code>, <code>Forms</code> из базы данных <code>mdsmain</code>. Из базы данных <code>links</code>
+                в архив помещаются файлы <code>Cols</code> под именем <code>CL</code>, <code>Rows</code> под именем <code>RL</code>,
+                <code>Tables</code> под именем <code>TL</code>, <code>Forms</code> под именем <code>FL</code>.
+            </p>
+            <p class="text-info">Все таблицы должны быть предварительно экспортированы в формат DBASE IV (dbf)</p>
             <button type="submit" class="btn btn-primary">Загрузить</button>
         </form>
     </div>

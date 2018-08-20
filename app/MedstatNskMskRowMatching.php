@@ -9,6 +9,7 @@ class MedstatNskMskRowMatching extends Model
     //
     protected $fillable = ['mdstable', 'mdsrow', 'mskrow'];
 
+
     public function scopeOfMds($query, $formtable, $row)
     {
         return $query

@@ -25,26 +25,61 @@
                     <li>Строки: {{ $matched_rows }}</li>
                     <li>Графы: {{ $matched_columns }}</li>
                 </ul>
-                <h4>Выявлены следующие несоотствия структуры:</h4>
+                <h4>Выявлены следующие несоответствия структуры:</h4>
                 <p>Не сопоставлены формы (отсутствуют в Медстат (НСК)):</p>
                 <ol>
-                    @foreach ($form_disparity as $fd)
-                        <li>({{ $fd['form_code'] }}) {{ $fd['form_name'] }}</li>
+                    @foreach ($form_exists_only_mf as $mff)
+                        <li>({{ $mff->form_code }}) {{ $mff->form_name }}</li>
+                    @endforeach
+                </ol>
+                <p>Не сопоставлены формы (отсутствуют в Мединфо):</p>
+                <ol>
+                    @foreach ($form_exists_only_nsk as $nskf)
+                        <li>({{ $nskf->form_name }}) {{ $nskf->decipher }}</li>
                     @endforeach
                 </ol>
                 <p>Не сопоставлены таблицы (отсутствуют в Медстат (НСК)):</p>
                 <ol>
-                    @foreach ($table_disparity as $td)
-                        <li>({{ $td['form']['form_code'] }}) {{ $td['table_code'] }} {{ $td['table_name'] }}</li>
+                    @foreach ($table_exists_only_mf as $mft)
+                        <li>({{ $mft->form->form_code }}) {{ $mft->table_code }} {{ $mft->table_name }}</li>
                     @endforeach
                 </ol>
-                <p>Несопоставлено транспонирование таблиц:</p>
+                <p>Не сопоставлены таблицы (отсутствуют в Мединфо):</p>
+
+                <ol>
+                    @foreach ($table_exists_only_nsk as $nskt)
+                        <li> ({{ $nskt->formnsk->form_name }}) {{ $nskt->tablen }} {{ $nskt->name }}</li>
+                    @endforeach
+                </ol>
+                <p>Не сопоставлено транспонирование таблиц:</p>
+                @if (count($transposed_disparity) === 0 )
+                    <p class="text-success">Не выявлено</p>
+                @endif
                 <ol>
                     @foreach ($transposed_disparity as $td)
                         <li>({{ $td['form_code']  }}){{ $td['table_code'] }} <span class="text text-danger">{{ $td['comment'] }}</span></li>
                     @endforeach
                 </ol>
-                <p>Несоотвествие по составу строк:</p>
+                <p>Несоответствие по составу строк:</p>
+                <ol>
+                    @foreach ($rows_disparity as $rd)
+                        <li>
+                            ({{ $rd['form_code']  }}){{ $rd['table_code'] }}
+                            <span class="text text-danger">Число строк в Мединфо: <strong>{{ $rd['mf_count'] }}</strong></span>
+                            <span class="text text-danger">Число строк в Медстат (НСК): <strong>{{ $rd['nsk_count'] }}</strong></span>
+                        </li>
+                    @endforeach
+                </ol>
+                <p>Несоответствие по составу граф:</p>
+                <ol>
+                    @foreach ($columns_disparity as $cd)
+                        <li>
+                            ({{ $cd['form_code']  }}){{ $cd['table_code'] }}
+                            <span class="text text-danger">Число граф в Мединфо: <strong>{{ $cd['mf_count'] }}</strong></span>
+                            <span class="text text-danger">Число граф в Медстат (НСК): <strong>{{ $cd['nsk_count'] }}</strong></span>
+                        </li>
+                    @endforeach
+                </ol>
             </div>
         </div>
     </div>
