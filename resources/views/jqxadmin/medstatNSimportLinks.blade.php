@@ -25,7 +25,8 @@
                 в архив помещаются файлы <code>Cols</code> под именем <code>CL</code>, <code>Rows</code> под именем <code>RL</code>,
                 <code>Tables</code> под именем <code>TL</code>, <code>Forms</code> под именем <code>FL</code>.
             </p>
-            <p class="text-info">Все таблицы должны быть предварительно экспортированы в формат DBASE IV (dbf)</p>
+            <p class="text-info">Все таблицы должны быть предварительно экспортированы в формат DBASE IV (dbf).</p>
+            <p class="text-info">Внимание! Данные по ранее импортированной структуре будут перезаписаны! Если вносились изменения вручную, они будут потеряны!</p>
             <button type="submit" class="btn btn-primary">Загрузить</button>
         </form>
     </div>

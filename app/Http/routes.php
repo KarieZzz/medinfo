@@ -215,15 +215,15 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('admin/documents/valuechanginglog/{document}', 'Admin\ValueChangingAdminController@showFormEditingLog');
 
     // импорт данных из формата Медстат
-    Route::get('admin/documents/medstatimport', 'Admin\MedstatImportAdminController@index');
-    Route::post('admin/documents/medstatimport', 'Admin\MedstatImportAdminController@uploadNormalizedMedstatData');
-    Route::post('admin/documents/medstatimportmake', 'Admin\MedstatImportAdminController@makeMedstatImport');
+    Route::get('admin/documents/medstatimport', 'ImportExport\MedstatImportAdminController@index');
+    Route::post('admin/documents/medstatimport', 'ImportExport\MedstatImportAdminController@uploadNormalizedMedstatData');
+    Route::post('admin/documents/medstatimportmake', 'ImportExport\MedstatImportAdminController@makeMedstatImport');
     // импорт территорий и медициских организаций из формата Медстат (Новосибирск)
-    Route::get('admin/units/medstatimport', 'Admin\MedstatImportAdminController@selectFileNSMedstatUnits');
-    Route::post('admin/units/medstatimport', 'Admin\MedstatImportAdminController@uploadFileNSMedstatUnits');
+    Route::get('admin/units/medstatimport', 'ImportExport\MedstatImportAdminController@selectFileNSMedstatUnits');
+    Route::post('admin/units/medstatimport', 'ImportExport\MedstatImportAdminController@uploadFileNSMedstatUnits');
     // импорт данных по соответствию структуры формата Медстат (Новосибирск) и формата Медстат (ЦНИИОИЗ)
-    Route::get('admin/sctruct/medstatimport', 'Admin\MedstatImportAdminController@selectFileNSMedstatLinks');
-    Route::post('admin/sctruct/medstatimport', 'Admin\MedstatImportAdminController@uploadFileNSMedstatLinks');
+    Route::get('admin/sctruct/medstatimport', 'ImportExport\MedstatImportAdminController@selectFileNSMedstatLinks');
+    Route::post('admin/sctruct/medstatimport', 'ImportExport\MedstatImportAdminController@uploadFileNSMedstatLinks');
     // Импорт данных из формата Медстат(Новосибирск)
     Route::get('admin/documents/medstatnskimport', 'ImportExport\MedstatNskDataImportController@selectFileNSMedstatData');
     Route::post('admin/documents/medstatnskimport', 'ImportExport\MedstatNskDataImportController@uploadFileNSMedstatData');
