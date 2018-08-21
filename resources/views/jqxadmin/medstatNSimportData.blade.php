@@ -10,6 +10,9 @@
             <div class="form-group">
                 <input type="file"  name="medstat_nsk_data" class="form-control input-lg" id="medstat_nsk_data">
             </div>
+            <p class="text-info">Файл для импорта данных из формата Медстат (НСК) должен быть архивом ZIP, в который помещен файл
+                <code>Data</code> экспортированный в формат <code>Dbase IV (dbf)</code> из базы данных <code>data0</code>.
+            </p>
             <button type="submit" class="btn btn-primary">Загрузить</button>
         </form>
     </div>
