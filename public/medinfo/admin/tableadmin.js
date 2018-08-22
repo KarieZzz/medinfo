@@ -279,6 +279,7 @@ let disableOrderButtons = function () {
     $("#up").prop('disabled', true);
     $("#down").prop('disabled', true);
     $("#bottom").prop('disabled', true);
+    //$("#placebefore").prop('disabled', true);
 };
 
 let enableOrderButtons = function () {
@@ -287,4 +288,5 @@ let enableOrderButtons = function () {
     $("#up").prop('disabled', false);
     $("#down").prop('disabled', false);
     $("#bottom").prop('disabled', false);
+    //$("#placebefore").prop('disabled', false);
 };

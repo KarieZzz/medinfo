@@ -63,12 +63,12 @@
                             <div id="excluded"></div>
                         </div>
                     </div>
-                    <div class="form-group">
+{{--                    <div class="form-group">
                         <label class="control-label col-sm-3" for="placebefore">Переместить/вставить перед:</label>
                         <div class="col-sm-3">
                             <input type="number" class="form-control" id="placebefore" placeholder="порядковый номер">
                         </div>
-                    </div>
+                    </div>--}}
                     <div class="form-group">
                         <label class="control-label col-sm-3"></label>
                         <div class="col-sm-8">
@@ -122,7 +122,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/tableadmin.js?v=022') }}"></script>
+    <script src="{{ asset('/medinfo/admin/tableadmin.js?v=023') }}"></script>
 @endpush
 
 @section('inlinejs')

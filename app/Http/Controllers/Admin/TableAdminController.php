@@ -60,7 +60,6 @@ class TableAdminController extends Controller
                 'table_index' => 'integer',
                 'medstat_code' => 'digits:4',
                 'medstatnsk_id' => 'integer',
-                'placebefore' => 'integer',
             ]
         );
         $table_index = (Table::OfForm($request->form_id)->count() + 1);
@@ -74,11 +73,6 @@ class TableAdminController extends Controller
         $newtable->transposed = $request->transposed;
         try {
             $newtable->save();
-            if ($request->placebefore !== '') {
-                $this->placebefore($newtable, $request->placebefore);
-                $newtable->table_index = $request->placebefore;
-                $newtable->save();
-            }
             return ['message' => 'Новая запись создана. Id:' . $newtable->id];
         } catch (\Illuminate\Database\QueryException $e) {
             $errorCode = $e->errorInfo[1];
@@ -107,12 +101,16 @@ class TableAdminController extends Controller
         );
         //$table = Table::find($request->id);
         $table->form_id = $request->form_id;
-        $table->table_index = $request->table_index;
+        //$table->table_index = $request->table_index;
         $table->table_code = $request->table_code;
         $table->table_name = $request->table_name;
         $table->medstat_code = empty($request->medstat_code) ? null : $request->medstat_code;
         $table->medstatnsk_id = empty($request->medstatnsk_id) ? null : $request->medstatnsk_id;
         $table->transposed = $request->transposed;
+/*        if ($request->placebefore !== '') {
+            $this->placebefore($table, $request->placebefore);
+            $table->table_index = $request->placebefore;
+        }*/
         $result = [];
         try {
             $table->save();
