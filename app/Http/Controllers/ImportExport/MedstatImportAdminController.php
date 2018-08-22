@@ -16,7 +16,6 @@ use App\Table;
 use App\Row;
 use App\Column;
 use App\Cell;
-use PhpOffice\PhpWord\Style\Tab;
 
 class MedstatImportAdminController extends Controller
 {
@@ -235,19 +234,24 @@ class MedstatImportAdminController extends Controller
     public function selectFileNSMedstatLinks(Request $request)
     {
         $albums = \App\Album::all()->sortBy('album_name');
-        return view('jqxadmin.medstatNSimportLinks', compact('albums'));
+        $forms = Form::orderBy('form_code')->get(['id', 'form_code', 'form_name']);
+        return view('jqxadmin.medstatNSimportLinks', compact('albums', 'forms'));
     }
 
     public function uploadFileNSMedstatLinks(Request $request)
     {
         //$mfcolumns = Column::OfTable(980)->OfDataType()->orderBy('column_index')->get();
         //dd($mfcolumns->count());
-
         $this->validate($request, [
                 'medstat_ns_links' => 'required|file',
                 'album' => 'required|integer',
+                'formids' => 'required',
+                'selectedallforms' => 'required|in:1,0',
             ]
         );
+        $import_all_forms = $request->selectedallforms;
+        dd($import_all_forms);
+        $selected_forms = explode(",", $request->formids);
         $album = $request->album;
         \Storage::put(
             'medstat_uploads/medstat_ns_links.zip',

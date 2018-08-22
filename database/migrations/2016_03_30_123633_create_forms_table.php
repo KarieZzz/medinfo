@@ -15,7 +15,7 @@ class CreateFormsTable extends Migration
         Schema::create('forms', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('group_id')->index();
-            $table->integer('form_index')->index();
+            $table->integer('form_index')->unique();
             $table->string('form_code', 7)->unique();
             $table->string('form_name', 256)->unique();
             $table->string('file_name', 16)->nullable();

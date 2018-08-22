@@ -1,6 +1,3 @@
-/**
- * Created by shameev on 28.06.2016.
- */
 let mon_tree_url = '/admin/fetch_mon_tree/';
 let docsource_url = '/admin/fetchdocuments?';
 let createdocuments_url = '/admin/createdocuments';
@@ -903,7 +900,7 @@ initdocumentactions = function() {
 
     clone.jqxButton({ theme: theme });
     clone.click(function () {
-        let row_ids = noselected_error("Не выбрано ни одного документа для удаления");
+        let row_ids = noselected_error("Не выбрано ни одного документа для клонирования");
         if (!row_ids) {
             return false;
         }
