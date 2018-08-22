@@ -14,6 +14,7 @@ use App\Document;
 use App\DocumentMessage;
 use App\Form;
 use Mail;
+use PhpParser\Node\Stmt\TryCatch;
 
 class DocumentStateController extends Controller
 {
@@ -127,11 +128,16 @@ class DocumentStateController extends Controller
                 $newmessage->message = "Статус документа изменен на \"". $newlabel . "\". " .  $remark;
                 $newmessage->save();
                 $for_mail_body = compact('document', 'remark', 'worker','form', 'current_unit', 'newlabel');
-                Mail::send('emails.changestatemessage', $for_mail_body, function ($m) use ($emails) {
-                    $m->from('medinfo@miac-io.ru', 'Email оповещение Мединфо');
-                    $m->to($emails)->subject('Изменен статус отчетного документа Мединфо');
-                });
-                $data['sent_to'] = implode(",", $emails);
+                try {
+                    Mail::send('emails.changestatemessage', $for_mail_body, function ($m) use ($emails) {
+                        $m->from('medinfo@miac-io.ru', 'Email оповещение Мединфо');
+                        $m->to($emails)->subject('Изменен статус отчетного документа Мединфо');
+                    });
+                    $data['sent_to'] = implode(",", $emails);
+                } catch (\Exception $e) {
+                    $data['sent_to'] = 'Почтовое сообщение о смене статуса документа не доставлено адресатам ' . implode(",", $emails);
+                    $data['sent_error'] = $e->getMessage();
+                }
             }
         }
         return $data;

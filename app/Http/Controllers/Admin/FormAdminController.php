@@ -42,23 +42,19 @@ class FormAdminController extends Controller
                 'medstatnsk_id' => 'integer',
             ]
         );
-        $newform = Form::create(['form_index' => $request->form_index, 'form_name' => $request->form_name, 'form_code' => $request->form_code] );
-        $newform->medstat_code = empty($request->medstat_code) ? null : $request->medstat_code;
-        $newform->short_ms_code = empty($request->short_ms_code) ? null : $request->short_ms_code;
-        $newform->medstatnsk_id = empty($request->medstatnsk_id) ? null : (int)$request->medstatnsk_id;
-/*        try {
-            $newform = Form::create(['form_name' => $request->form_name, 'form_code' => $request->form_code] );
+        try {
+            $newform = Form::create(['form_index' => $request->form_index, 'form_name' => $request->form_name, 'form_code' => $request->form_code] );
             $newform->medstat_code = empty($request->medstat_code) ? null : $request->medstat_code;
             $newform->short_ms_code = empty($request->short_ms_code) ? null : $request->short_ms_code;
             $newform->medstatnsk_id = empty($request->medstatnsk_id) ? null : (int)$request->medstatnsk_id;
-            return ['message' => 'Новая запись создана. Id:' . $newform->id];
+            return [ 'message' => 'Новая запись создана. Id:' . $newform->id ];
         } catch (\Illuminate\Database\QueryException $e) {
             $errorCode = $e->errorInfo[1];
             // duplicate key value - код ошибки 7 при использовании PostgreSQL
             if($errorCode == 7){
                 return ['error' => 422, 'message' => 'Новая запись не создана. Существует форма с таким же именем/кодом.'];
             }
-        }*/
+        }
     }
 
     public function update(Request $request)

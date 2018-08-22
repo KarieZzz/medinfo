@@ -80,8 +80,9 @@
                     </div>
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-7">
-                            <button type="button" id="save" class="btn btn-primary">Сохранить/Создать</button>
-                            <button type="button" id="create" class="btn btn-success">Очистить форму</button>
+                            <button type="button" id="create" class="btn btn-success">Создать</button>
+                            <button type="button" id="save" class="btn btn-primary">Сохранить</button>
+                            <button type="button" id="resetform" class="btn btn-default">Очистить форму</button>
                             <button type="button" id="delete" class="btn btn-danger">Удалить таблицу</button>
                         </div>
                     </div>
@@ -121,7 +122,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/tableadmin.js?v=019') }}"></script>
+    <script src="{{ asset('/medinfo/admin/tableadmin.js?v=022') }}"></script>
 @endpush
 
 @section('inlinejs')

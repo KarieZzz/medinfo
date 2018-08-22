@@ -1,6 +1,3 @@
-/**
- * Created by shameev on 13.09.2016.
- */
 let initsplitter = function() {
     $("#mainSplitter").jqxSplitter(
         {
@@ -114,26 +111,19 @@ let initformactions = function() {
         offLabel: 'Нет',
         disabled : true,
         checked: false });
-    $("#create").click(function () {
+    $("#resetform").click(function () {
         tlist.jqxGrid('clearselection');
-        $("#form")[0].reset();
         $("#form_id").jqxDropDownList('clearSelection');
         disableOrderButtons();
         $("#table_name").focus();
         nextAction = 'POST';
+        $("#form")[0].reset();
     });
-/*    $("#insert").click(function () {
-        let data = "&form_id=" + $("#form_id").val() +
-            "&table_index=" + $("#table_index").val() +
-            "&table_code=" + $("#table_code").val() +
-            "&table_name=" + $("#table_name").val() +
-            "&medstat_code=" + $("#medstat_code").val() +
-            "&medinfo_id=" + $("#medinfo_id").val() +
-            "&transposed=" + ($("#transposed").val() ? 1 :0);
-
+    $("#create").click(function () {
+        let data = setQueryString();
         $.ajax({
             dataType: 'json',
-            url: '/admin/tables/create',
+            url: store_url,
             method: "POST",
             data: data,
             success: function (data, status, xhr) {
@@ -150,10 +140,9 @@ let initformactions = function() {
                 });
             }
         });
-    });*/
+    });
     $("#save").click(function () {
         let url;
-        console.log(nextAction);
         if (nextAction === 'PATCH') {
             if (rowid === null) {
                 raiseError("Выберите запись для изменения/сохранения данных");
@@ -179,7 +168,6 @@ let initformactions = function() {
                 tlist.on("bindingcomplete", function (event) {
                     let newindex = tlist.jqxGrid('getrowboundindexbyid', rowid);
                     tlist.jqxGrid('selectrow', newindex);
-
                 });
             },
             error: function (xhr, status, errorThrown) {

@@ -55,35 +55,23 @@ class TableAdminController extends Controller
     {
         $this->validate($request, [
                 'form_id' => 'required|integer|exists:forms,id',
-                'table_name' => 'required',
-                'table_code' => 'required',
+                'table_name' => 'required|max:256',
+                'table_code' => 'required|max:4',
+                'table_index' => 'integer',
                 'medstat_code' => 'digits:4',
                 'medstatnsk_id' => 'integer',
                 'placebefore' => 'integer',
             ]
         );
-        if ($request->table_index === '' ) {
-            //dd($request->table_index);
-            $new_table_index = Table::OfForm($request->form_id)->count();
-        } else {
-            $new_table_index = $request->table_index;
-        }
-
+        $table_index = (Table::OfForm($request->form_id)->count() + 1);
         $newtable = new Table;
         $newtable->form_id = $request->form_id;
-        $newtable->table_index = $new_table_index;
+        $newtable->table_index = $table_index;
         $newtable->table_code = $request->table_code;
         $newtable->table_name = $request->table_name;
         $newtable->medstat_code = empty($request->medstat_code) ? null : $request->medstat_code;
         $newtable->medstatnsk_id = empty($request->medstatnsk_id) ? null : $request->medstatnsk_id;
         $newtable->transposed = $request->transposed;
-/*        $newtable->save();
-        if ($request->placebefore !== '') {
-            $this->placebefore($newtable, $request->placebefore);
-            $newtable->table_index = $request->placebefore;
-            $newtable->save();
-        }*/
-
         try {
             $newtable->save();
             if ($request->placebefore !== '') {
@@ -93,9 +81,9 @@ class TableAdminController extends Controller
             }
             return ['message' => 'Новая запись создана. Id:' . $newtable->id];
         } catch (\Illuminate\Database\QueryException $e) {
-            $errorCode = $e->errorInfo[0];
+            $errorCode = $e->errorInfo[1];
             switch ($errorCode) {
-                case '23505':
+                case '7':
                     $message = 'Запись не сохранена. Дублирование данных.';
                     break;
                 default:
@@ -135,8 +123,8 @@ class TableAdminController extends Controller
             }
             $result = ['message' => 'Запись id ' . $table->id . ' сохранена. ' . $add];
         } catch (\Illuminate\Database\QueryException $e) {
-            $errorCode = $e->errorInfo[0];
-            if($errorCode == '23505'){
+            $errorCode = $e->errorInfo[1];
+            if($errorCode == '7'){
                 $result = ['error' => 422, 'message' => 'Запись не сохранена. Дублирование данных.'];
             }
         }

@@ -16,6 +16,11 @@ class Period extends Model
     protected $fillable = ['name', 'begin_date', 'end_date', 'pattern_id', 'medinfo_id'];
     protected $dates = ['begin_date', 'end_date',];
 
+    public function periodpattern()
+    {
+        return $this->belongsTo('App\PeriodPattern', 'pattern_id');
+    }
+
     public function scopeLastYear($query)
     {
         $date = ((int)date("Y") - 1 ) . '-01-01';
@@ -61,11 +66,5 @@ class Period extends Model
             ->where('pattern_id', $previous_quarter_pattern);
     }
 
-
-
-    public function periodpattern()
-    {
-        return $this->belongsTo('App\PeriodPattern', 'pattern_id');
-    }
 }
 
