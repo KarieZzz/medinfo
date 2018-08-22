@@ -37,9 +37,9 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-md-3" for="row_medinfo_id">Мединфо Id:</label>
+                        <label class="control-label col-md-3" for="row_medstatnsk_id">Медстат (НСК) Id:</label>
                         <div class="col-md-2">
-                            <input type="text" class="form-control input-sm" id="row_medinfo_id">
+                            <input type="text" class="form-control input-sm" id="row_medstatnsk_id">
                         </div>
                     </div>
                     <div class="form-group">
@@ -100,8 +100,6 @@
                         <div class="col-md-2">
                             <input type="text" class="form-control input-sm" id="size">
                         </div>
-                    </div>
-                    <div class="form-group">
                         <label class="control-label col-md-3" for="decimal_count">Знаков после запятой (десятичных):</label>
                         <div class="col-md-2">
                             <input type="text" class="form-control input-sm" id="decimal_count">
@@ -112,18 +110,19 @@
                         <div class="col-md-2">
                             <input type="text" class="form-control input-sm" id="column_medstat_code">
                         </div>
-                    </div>
-{{--                    <div class="form-group">
-                        <label class="control-label col-md-3" for="column_medinfo_id">Мединфо Id:</label>
+                        <label class="control-label col-md-3" for="column_medstatnsk_id">Медстат (НСК) Id:</label>
                         <div class="col-md-2">
-                            <input type="text" class="form-control input-sm" id="column_medinfo_id">
+                            <input type="text" class="form-control input-sm" id="column_medstatnsk_id">
                         </div>
-                        <div class="col-md-7">
-                            <button type="button" id="top" class="btn btn-sm btn-default">В начало </button>
-                            <button type="button" id="up" class="btn btn-sm btn-default">Вверх</button>
-                            <button type="button" id="down" class="btn btn-sm btn-default">Вниз</button>
-                            <button type="button" id="bottom" class="btn btn-sm btn-default">В конец</button>
-                        </div>
+                    </div>
+                {{--<div class="form-group">
+
+                                            <div class="col-md-7">
+                                                <button type="button" id="top" class="btn btn-sm btn-default">В начало </button>
+                                                <button type="button" id="up" class="btn btn-sm btn-default">Вверх</button>
+                                                <button type="button" id="down" class="btn btn-sm btn-default">Вниз</button>
+                                                <button type="button" id="bottom" class="btn btn-sm btn-default">В конец</button>
+                                            </div>
                     </div>--}}
                     <div class="form-group">
                         <label class="control-label col-md-3" for="excludedColumn">
@@ -195,7 +194,7 @@
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
     <script src="{{ asset('/medinfo/admin/tablepicker.js?v=007') }}"></script>
-    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=031') }}"></script>
+    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=033') }}"></script>
 @endpush
 
 @section('inlinejs')

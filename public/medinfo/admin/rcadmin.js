@@ -102,7 +102,7 @@ initRowList = function() {
         $("#row_name").val(row.row_name);
         $("#row_code").val(row.row_code);
         $("#row_medstat_code").val(row.medstat_code);
-        $("#row_medinfo_id").val(row.medinfo_id);
+        $("#row_medstatnsk_id").val(row.medstatnsk_id);
         //$("#excludedRow").val(row.excluded);
         row.excluded > 0 ? $("#excludedRow").val(true) : $("#excludedRow").val(false);
     });
@@ -144,7 +144,7 @@ initColumnList = function() {
         $("#size").val(row.size);
         $("#decimal_count").val(row.decimal_count);
         $("#column_medstat_code").val(row.medstat_code);
-        //$("#column_medinfo_id").val(row.medinfo_id);
+        $("#column_medstatnsk_id").val(row.medstatnsk_id);
         row.excluded > 0 ? $("#excludedColumn").val(true) : $("#excludedColumn").val(false);
 
     });
@@ -176,7 +176,7 @@ setrowquery = function() {
         "&row_code=" + $("#row_code").val() +
         "&row_name=" + $("#row_name").val() +
         "&medstat_code=" + $("#row_medstat_code").val() +
-        "&medinfo_id=" + $("#row_medinfo_id").val() +
+        "&medstatnsk_id=" + $("#row_medstatnsk_id").val() +
         "&excluded=" + ($("#excludedRow").val() ? 1 : 0);
 };
 
@@ -189,7 +189,7 @@ setcolumnquery = function() {
         "&size=" + $("#size").val() +
         "&decimal_count=" + $("#decimal_count").val() +
         "&medstat_code=" + $("#column_medstat_code").val() +
-        //"&medinfo_id=" + $("#column_medinfo_id").val() +
+        "&medstatnsk_id=" + $("#column_medstatnsk_id").val() +
         "&excluded=" + ($("#excludedColumn").val() ? 1 : 0);
 };
 

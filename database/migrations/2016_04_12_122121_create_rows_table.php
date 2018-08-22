@@ -20,7 +20,7 @@ class CreateRowsTable extends Migration
             $table->string('row_code', 16)->index();
             $table->string('row_name', 256)->index();
             $table->char('medstat_code', 3)->nullable()->index();
-            $table->integer('medinfo_id')->nullable()->index();
+            $table->integer('medstatnsk_id')->nullable()->index();
             $table->integer('deleted');
             $table->integer('deleted_at')->nullable();
             //$table->softDeletes();

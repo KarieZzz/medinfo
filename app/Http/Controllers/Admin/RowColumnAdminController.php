@@ -65,11 +65,11 @@ class RowColumnAdminController extends Controller
     public function rowUpdate(Row $row, Request $request)
     {
         $this->validate($request, [
-                'row_index' => 'integer',
+                'row_index' => 'required|integer',
                 'row_name' => 'required|max:256',
                 'row_code' => 'required|max:16',
                 'medstat_code' => 'digits:3',
-                'medinfo_id' => 'integer',
+                'medstatnsk_id' => 'integer',
                 'excluded' => 'required|in:1,0',
             ]
         );
@@ -77,7 +77,7 @@ class RowColumnAdminController extends Controller
         $row->row_code = $request->row_code;
         $row->row_name = $request->row_name;
         $row->medstat_code = empty($request->medstat_code) ? null : $request->medstat_code;
-        $row->medinfo_id = empty($request->medinfo_id) ? null : $request->medinfo_id;
+        $row->medstatnsk_id = empty($request->medstatnsk_id) ? null : $request->medstatnsk_id;
         $result = [];
         try {
             $row->save();
@@ -101,11 +101,11 @@ class RowColumnAdminController extends Controller
     {
         $this->validate($request, [
                 'table_id' => 'required|exists:tables,id',
-                'row_index' => 'integer',
+                'row_index' => 'required|integer',
                 'row_name' => 'required|max:256',
                 'row_code' => 'required|max:16',
                 'medstat_code' => 'digits:3',
-                'medinfo_id' => 'integer',
+                'medstatnsk_id' => 'integer',
                 'excluded' => 'required|in:1,0',
             ]
         );
@@ -115,7 +115,7 @@ class RowColumnAdminController extends Controller
         $newrow->row_code = $request->row_code;
         $newrow->row_name = $request->row_name;
         $newrow->medstat_code = empty($request->medstat_code) ? null : $request->medstat_code;
-        $newrow->medinfo_id = empty($request->medinfo_id) ? null : $request->medinfo_id;
+        $newrow->medstatnsk_id = empty($request->medstatnsk_id) ? null : $request->medstatnsk_id;
         try {
             $newrow->save();
             return ['message' => 'Новая запись создана. Id:' . $newrow->id];
@@ -147,14 +147,14 @@ class RowColumnAdminController extends Controller
     public function columnUpdate(Column $column, Request $request)
     {
         $this->validate($request, [
-                'column_index' => 'digits_between:1,99',
+                'column_index' => 'required|digits_between:1,51',
                 'column_name' => 'required|max:128',
                 'column_code' => 'required|max:8',
                 'content_type' => 'integer',
                 'size' => 'integer',
                 'decimal_count' => 'integer',
                 'medstat_code' => 'digits:2',
-                'medinfo_id' => 'integer',
+                'medstatnsk_id' => 'integer',
                 'excluded' => 'required|in:1,0',
             ]
         );
@@ -165,7 +165,7 @@ class RowColumnAdminController extends Controller
         $column->size = $request->size;
         $column->decimal_count = $request->decimal_count;
         $column->medstat_code = empty($request->medstat_code) ? null : $request->medstat_code;
-        $column->medinfo_id = empty($request->medinfo_id) ? null : $request->medinfo_id;
+        $column->medstatnsk_id = empty($request->medstatnsk_id) ? null : $request->medstatnsk_id;
         $result = [];
         try {
             $column->save();
@@ -189,14 +189,14 @@ class RowColumnAdminController extends Controller
     {
         $this->validate($request, [
                 'table_id' => 'required|exists:tables,id',
-                'column_index' => 'digits_between:1,99',
+                'column_index' => 'required|digits_between:1,51',
                 'column_name' => 'required|max:128',
                 'column_code' => 'required|max:8',
                 'content_type' => 'integer',
                 'size' => 'integer',
                 'decimal_count' => 'integer',
                 'medstat_code' => 'digits:2',
-                //'medinfo_id' => 'integer',
+                'medstatnsk_id' => 'integer',
                 'excluded' => 'required|in:1,0',
             ]
         );
@@ -209,7 +209,7 @@ class RowColumnAdminController extends Controller
         $newcolumn->size = $request->size;
         $newcolumn->decimal_count = $request->decimal_count;
         $newcolumn->medstat_code = empty($request->medstat_code) ? null : $request->medstat_code;
-        $newcolumn->medinfo_id = empty($request->medinfo_id) ? null : $request->medinfo_id;
+        $newcolumn->medstatnsk_id = empty($request->medstatnsk_id) ? null : $request->medstatnsk_id;
         try {
             $newcolumn->save();
             return ['message' => 'Новая запись создана. Id:' . $newcolumn->id];
