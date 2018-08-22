@@ -62,7 +62,13 @@ class TableAdminController extends Controller
                 'medstatnsk_id' => 'integer',
             ]
         );
-        $table_index = (Table::OfForm($request->form_id)->count() + 1);
+        $tcount = Table::OfForm($request->form_id)->count();
+        if (empty($request->table_index)) {
+            $table_index = ($tcount + 1);
+        } else {
+            $table_index = (int)$request->table_index;
+            $this->reorderTables($request->form_id, $table_index);
+        }
         $newtable = new Table;
         $newtable->form_id = $request->form_id;
         $newtable->table_index = $table_index;
@@ -213,12 +219,12 @@ class TableAdminController extends Controller
         return [$current_index, $table->table_index];
     }
 
-    public function placebefore(Table $table, $index)
+    public function reorderTables($form_id, $index)
     {
         if (!$index) {
             return null;
         }
-        $belowtables = Table::OfForm($table->form_id)->where('table_index', '>=', $index)->get();
+        $belowtables = Table::OfForm($form_id)->where('table_index', '>', $index)->get();
         if ($belowtables->count() === 0) {
             throw new \Exception("Заданный порядковый номер не существует");
         }
