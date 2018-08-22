@@ -229,7 +229,7 @@ class RowColumnAdminController extends Controller
 
     public function columnDelete(Column $column)
     {
-        $cell_count = Cell::countOfCellsByRow($column->id);
+        $cell_count = Cell::countOfCellsByColumn($column->id);
         if ($cell_count === 0) {
             $column->delete();
             return ['message' => 'Удалена графа Id' . $column->id ];

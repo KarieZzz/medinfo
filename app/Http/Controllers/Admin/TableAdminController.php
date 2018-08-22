@@ -146,7 +146,7 @@ class TableAdminController extends Controller
     public function delete(Table $table)
     {
         $cell_count = Cell::countOfCellsByTable($table->id);
-        if ($cell_count == 0) {
+        if ($cell_count === 0) {
             $rdeleted = \App\Row::OfTable($table->id)->delete();
             $cdeleted = \App\Column::OfTable($table->id)->delete();
             $table->delete();
