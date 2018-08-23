@@ -22,6 +22,7 @@ class CreateMoHierarchyTable extends Migration
             $table->smallInteger('report')->default(0);
             $table->smallInteger('aggregate')->default(0);
             $table->string('unit_name', 256)->index();
+            $table->string('adress', 256)->nullable();
             $table->smallInteger('blocked')->default(0);
             $table->integer('medinfo_id')->nullable()->unique();
             $table->softDeletes();

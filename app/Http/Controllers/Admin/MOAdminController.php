@@ -41,6 +41,7 @@ class MOAdminController extends Controller
                 'inn' => 'digits:10|unique:mo_hierarchy',
                 'unit_name' => 'required|max:256|unique:mo_hierarchy',
                 'node_type' => 'required|integer',
+                'adress' => 'max:256',
                 'report' => 'required|in:1,0',
                 'aggregate' => 'required|in:1,0',
                 'blocked' => 'required|in:1,0',
@@ -53,6 +54,7 @@ class MOAdminController extends Controller
         $newunit->territory_type =  empty($request->territory_type) ? null : $request->territory_type;
         $newunit->inn =  empty($request->inn) ? null : $request->inn;
         $newunit->node_type = $request->node_type;
+        $newunit->adress = $request->adress;
         $newunit->report = $request->report;
         $newunit->aggregate = $request->aggregate;
         $newunit->blocked = $request->blocked;
@@ -86,6 +88,7 @@ class MOAdminController extends Controller
                 'inn' => 'digits:10',
                 'unit_name' => 'required|max:256',
                 'node_type' => 'required|integer',
+                'adress' => 'max:256',
                 'report' => 'required|in:1,0',
                 'aggregate' => 'required|in:1,0',
                 'blocked' => 'required|in:1,0',
@@ -97,6 +100,7 @@ class MOAdminController extends Controller
         $unit->territory_type =  empty($request->territory_type) ? null : $request->territory_type;
         $unit->inn =  empty($request->inn) ? null : $request->inn;
         $unit->node_type = $request->node_type;
+        $unit->adress = $request->adress;
         $unit->report = $request->report;
         $unit->aggregate = $request->aggregate;
         $unit->blocked = $request->blocked;

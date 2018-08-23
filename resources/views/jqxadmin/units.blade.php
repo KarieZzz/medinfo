@@ -50,6 +50,12 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label class="control-label col-sm-3" for="adress">Адрес:</label>
+                        <div class="col-sm-8">
+                            <textarea rows="3" class="form-control" id="adress"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label class="control-label col-sm-3" for="report">Первичные отчеты:</label>
                         <div class="col-sm-8">
                             <div id="report"></div>
@@ -107,7 +113,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/unitadmin.js?v=006') }}"></script>
+    <script src="{{ asset('/medinfo/admin/unitadmin.js?v=007') }}"></script>
 @endpush
 
 @section('inlinejs')

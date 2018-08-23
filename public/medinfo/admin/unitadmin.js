@@ -1,6 +1,3 @@
-/**
- * Created by shameev on 13.09.2016.
- */
 initsplitter = function() {
     $("#mainSplitter").jqxSplitter(
         {
@@ -71,6 +68,7 @@ initdatasources = function() {
             { name: 'territory_type', type: 'int' },
             { name: 'inn', type: 'string' },
             { name: 'unit_name', type: 'string' },
+            { name: 'adress', type: 'string' },
             { name: 'node_type', type: 'int' },
             { name: 'report', type: 'int' },
             { name: 'aggregate', type: 'int' },
@@ -102,6 +100,7 @@ inittablelist = function() {
                 { text: 'ИНН', datafield: 'inn', width: '90px'  },
                 { text: 'Имя', datafield: 'unit_name' , width: '440px'},
                 { text: 'Тип', datafield: 'node_type' , width: '40px'},
+                { text: 'Адрес', datafield: 'adress' , width: '40px'},
                 { text: 'Перв', datafield: 'report' , width: '50px'},
                 { text: 'Свод', datafield: 'aggregate' , width: '50px'},
                 { text: 'Блок', datafield: 'blocked', width: '50px' },
@@ -118,6 +117,7 @@ inittablelist = function() {
         $("#territory_type").val(row.territory_type);
         $("#inn").val(row.inn);
         $("#node_type").val(row.node_type);
+        $("#adress").val(row.adress);
         $("#report").val( row.report === 1 );
         $("#aggregate").val(row.aggregate === 1);
         $("#blocked").val(row.blocked === 1);
@@ -131,6 +131,7 @@ setquerystring = function() {
         "&territory_type=" + $("#territory_type").val() +
         "&inn=" + $("#inn").val() +
         "&node_type=" + $("#node_type").val() +
+        "&adress=" + $("#adress").val() +
         "&report=" + ($("#report").val() ? 1 : 0) +
         "&aggregate=" + ($("#aggregate").val() ? 1 : 0) +
         "&blocked=" + ($("#blocked").val() ? 1 : 0) +
