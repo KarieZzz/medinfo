@@ -109,7 +109,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('admin/forms', 'Admin\FormAdminController@index');
     Route::get('admin/fetchforms', 'Admin\FormAdminController@fetchForms' );
     Route::post('admin/forms/create', 'Admin\FormAdminController@store');
-    Route::patch('admin/forms/update', 'Admin\FormAdminController@update');
+    Route::patch('admin/forms/update/{form}', 'Admin\FormAdminController@update');
     Route::delete('admin/forms/delete/{form}', 'Admin\FormAdminController@delete');
     Route::get('admin/tables', 'Admin\TableAdminController@index');
     Route::get('admin/fetchtables', 'Admin\TableAdminController@fetchTables' );

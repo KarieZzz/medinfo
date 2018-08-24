@@ -21,7 +21,8 @@ class FormAdminController extends Controller
 
     public function index()
     {
-        return view('jqxadmin.forms');
+        $realforms = Form::Real()->get();
+        return view('jqxadmin.forms', compact('realforms'));
     }
 
     public function fetchForms()
@@ -33,19 +34,12 @@ class FormAdminController extends Controller
     public function store(Request $request)
     {
         // TODO: Добавить проверку для кода формы -  допустимые символы: цифры, строчные кириллические буквы, точка, дефис
-        $this->validate($request, [
-                'form_index' => 'required|integer|unique:forms',
-                'form_name' => 'required|unique:forms|max:256',
-                'form_code' => 'required|unique:forms|max:7',
-                'medstat_code' => 'digits:5',
-                'short_ms_code' => 'required_with:medstat_code|max:5',
-                'medstatnsk_id' => 'integer',
-            ]
-        );
+        $this->validate($request, $this->validateRules());
         try {
             $newform = Form::create(['form_index' => $request->form_index, 'form_name' => $request->form_name, 'form_code' => $request->form_code] );
             $newform->medstat_code = empty($request->medstat_code) ? null : $request->medstat_code;
             $newform->short_ms_code = empty($request->short_ms_code) ? null : $request->short_ms_code;
+            $newform->relation = empty($request->relation) ? null : (int)$request->relation;
             $newform->medstatnsk_id = empty($request->medstatnsk_id) ? null : (int)$request->medstatnsk_id;
             return [ 'message' => 'Новая запись создана. Id:' . $newform->id ];
         } catch (\Illuminate\Database\QueryException $e) {
@@ -57,25 +51,17 @@ class FormAdminController extends Controller
         }
     }
 
-    public function update(Request $request)
+    public function update(Request $request, Form $form)
     {
-        $this->validate($request, [
-                'form_index' => 'required|integer',
-                'form_name' => 'required|max:256',
-                'form_code' => 'required|max:7',
-                'medstat_code' => 'digits:5',
-                'short_ms_code' => 'required_with:medstat_code|max:5',
-                'medstatnsk_id' => 'integer',
-            ]
-        );
-        $form = Form::find($request->id);
+        $this->validate($request, $this->validateRules());
+        //$form = Form::find($request->id);
         $form->form_index = $request->form_index;
         $form->form_code = $request->form_code;
         $form->form_name = $request->form_name;
         $form->medstat_code = empty($request->medstat_code) ? null : $request->medstat_code;
         $form->short_ms_code = empty($request->short_ms_code) ? null : $request->short_ms_code;
+        $form->relation = empty($request->relation) ? null : (int)$request->relation;
         $form->medstatnsk_id = empty($request->medstatnsk_id) ? null : (int)$request->medstatnsk_id;
-
         $result = [];
         try {
             $form->save();
@@ -108,5 +94,18 @@ class FormAdminController extends Controller
         } else {
             return ['error' => 422, 'message' => 'Форма ' . $form_code . ' содержит документы. Удаление невозможно.' ];
         }
+    }
+
+    protected function validateRules()
+    {
+        return [
+            'form_index' => 'required|integer',
+            'form_name' => 'required|max:256',
+            'form_code' => 'required|max:7',
+            'medstat_code' => 'digits:5',
+            'relation' => 'integer',
+            'short_ms_code' => 'required_with:medstat_code|max:5',
+            'medstatnsk_id' => 'integer',
+        ];
     }
 }

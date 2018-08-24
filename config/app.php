@@ -53,7 +53,8 @@ return [
     */
 
     //'timezone' => 'UTC',
-    'timezone' => 'Asia/Irkutsk',
+    //'timezone' => 'Asia/Irkutsk',
+    'timezone' => env('APP_TIMEZONE',  'UTC'),
 
     /*
     |--------------------------------------------------------------------------

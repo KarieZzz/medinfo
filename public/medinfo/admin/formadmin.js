@@ -25,6 +25,7 @@ initdatasources = function() {
             { name: 'form_name', type: 'string' },
             { name: 'form_code', type: 'string' },
             { name: 'medstat_code', type: 'string' },
+            { name: 'relation', type: 'int' },
             { name: 'short_ms_code', type: 'string' },
             { name: 'medstatnsk_id', type: 'string' },
         ],
@@ -33,8 +34,19 @@ initdatasources = function() {
         root: null
     };
     formDataAdapter = new $.jqx.dataAdapter(formsource);
+    let realforms_source =
+        {
+            datatype: "json",
+            datafields: [
+                { name: 'id' },
+                { name: 'form_code' }
+            ],
+            id: 'id',
+            localdata: realforms
+        };
+    realformsDataAdapter = new $.jqx.dataAdapter(realforms_source);
 };
-initperiodlist = function() {
+initformlist = function() {
     fl.jqxGrid(
         {
             width: '98%',
@@ -51,6 +63,7 @@ initperiodlist = function() {
                 { text: '№ п/п', datafield: 'form_index', width: '70px' },
                 { text: 'Код формы', datafield: 'form_code', width: '100px'  },
                 { text: 'Имя', datafield: 'form_name' , width: '400px'},
+                { text: 'Разрез', datafield: 'кфдфешщт', width: '100px'  },
                 { text: 'Код МС МСК', datafield: 'medstat_code', width: '100px' },
                 { text: 'Сокр. код МС МСК', datafield: 'short_ms_code', width: '100px' },
                 { text: 'Код МС НСК', datafield: 'medstatnsk_id', width: '100px' },
@@ -66,11 +79,28 @@ initperiodlist = function() {
         $("#medstatnsk_id").val(row.medstatnsk_id);
     });
 };
+initbuttons = function () {
+    let sel = $("#relation");
+    sel.jqxDropDownList({
+        theme: theme,
+        filterable: true,
+        filterPlaceHolder: '',
+        source: realformsDataAdapter,
+        displayMember: "form_code",
+        valueMember: "id",
+        placeHolder: "",
+        width: '100%',
+        height: 35,
+        renderer: function (index, label, value) {
+            let rec = realforms[index];
+            return "(" + rec.form_code + ") " + rec.form_name;
+        }
+    });
+};
+
 initformactions = function() {
     $("#insert").click(function () {
-        let data = "&form_name=" + $("#form_name").val() + "&form_index=" + $("#form_index").val() +
-            "&form_code=" + $("#form_code").val()  +  "&medstat_code=" + $("#medstat_code").val() +
-            "&short_ms_code=" + $("#short_ms_code").val() + "&medstatnsk_id=" + $("#medstatnsk_id").val();
+        let data = setQueryString();
         $.ajax({
             dataType: 'json',
             url: '/admin/forms/create',
@@ -96,12 +126,10 @@ initformactions = function() {
             return false;
         }
         let rowid = fl.jqxGrid('getrowid', row);
-        let data = "id=" + rowid + "&form_name=" + $("#form_name").val() + "&form_index=" + $("#form_index").val() +
-            "&form_code=" + $("#form_code").val() +  "&medstat_code=" + $("#medstat_code").val() +
-            "&short_ms_code=" + $("#short_ms_code").val() + "&medstatnsk_id=" + $("#medstatnsk_id").val();
+        let data = setQueryString();
         $.ajax({
             dataType: 'json',
-            url: '/admin/forms/update',
+            url: '/admin/forms/update/' + rowid,
             method: "PATCH",
             data: data,
             success: function (data, status, xhr) {
@@ -149,3 +177,13 @@ initformactions = function() {
         });
     });
 };
+
+function setQueryString() {
+    return "&form_name=" + $("#form_name").val() +
+        "&form_index=" + $("#form_index").val() +
+        "&form_code=" + $("#form_code").val()  +
+        "&relation=" + $("#relation").val()  +
+        "&medstat_code=" + $("#medstat_code").val() +
+        "&short_ms_code=" + $("#short_ms_code").val() +
+        "&medstatnsk_id=" + $("#medstatnsk_id").val();
+}

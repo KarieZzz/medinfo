@@ -31,7 +31,7 @@ class MonitoringController extends Controller
 
     public function store(Request $request)
     {
-        $this->validate($request, $this->validateRules() );
+        $this->validate($request, $this->validateRules());
         try {
             $newmon = new Monitoring;
             $newmon->name = $request->name;

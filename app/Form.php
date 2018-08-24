@@ -12,7 +12,7 @@ class Form extends Model
      * @var array
      */
     protected $fillable = [
-        'form_code', 'form_name', 'form_index', 'file_name', 'medstat_code', 'short_ms_code', 'medstatnsk_id',
+        'form_code', 'form_name', 'form_index', 'file_name', 'medstat_code', 'short_ms_code', 'relation', 'medstatnsk_id',
     ];
 
     public function tables()
@@ -25,10 +25,24 @@ class Form extends Model
         return $this->hasMany('App\AlbumFormSet');
     }
 
+    public function inheritFrom()
+    {
+        return $this->belongsTo('App\Form', 'id' , 'relation');
+    }
+
     public function scopeOfCode($query, $code)
     {
-        return $query
-            ->where('form_code', $code);
+        return $query->where('form_code', $code);
+    }
+
+    public function scopeReal($query)
+    {
+        return $query->whereNull('relation');
+    }
+
+    public function scopeRelated($query)
+    {
+        return $query->whereNotNull('relation');
     }
 
     public function scopeOfMedstatCode($query, $code)
@@ -45,5 +59,7 @@ class Form extends Model
     {
         return $query->where('medstatnsk_id', $id);
     }
+
+
 
 }

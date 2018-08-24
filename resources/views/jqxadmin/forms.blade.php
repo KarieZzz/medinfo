@@ -32,6 +32,12 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label class="control-label col-sm-3" for="relation">Наследуется от (разрез формы):</label>
+                        <div class="col-sm-8">
+                            <div id="relation"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label class="control-label col-sm-3" for="medstat_code">Код Медстат МСК:</label>
                         <div class="col-sm-2">
                             <input type="text" class="form-control" id="medstat_code">
@@ -82,17 +88,20 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/formadmin.js?v=006') }}"></script>
+    <script src="{{ asset('/medinfo/admin/formadmin.js?v=007') }}"></script>
 @endpush
 
 @section('inlinejs')
     @parent
     <script type="text/javascript">
         let formDataAdapter;
+        let realformsDataAdapter;
         let fl = $("#formList");
+        let realforms = {!! $realforms  !!};
         initsplitter();
         initdatasources();
-        initperiodlist();
+        initformlist();
+        initbuttons();
         initformactions();
     </script>
 @endsection
