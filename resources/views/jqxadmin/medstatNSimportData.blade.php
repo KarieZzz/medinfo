@@ -11,6 +11,11 @@
             <div class="form-group">
                 <input type="file"  name="medstat_nsk_data" class="form-control input-lg" id="medstat_nsk_data">
             </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label><input type="checkbox" name="skip_upload" id="skip_upload" value="1">Использовать ранее загруженные данные</label>
+                </div>
+            </div>
             <p class="text-info">Файл для импорта данных из формата Медстат (НСК) должен быть архивом ZIP, в который помещен файл
                 <code>Data.csv</code> экспортированный из базы данных <code>data0</code>. Разделитель полей БД <code>,</code>. Десятичный разделитель <code>.</code> .
             </p>

@@ -111,34 +111,39 @@ class MedstatNskDataImportController extends Controller
                 'medstat_nsk_data' => 'required|file',
             ]
         );
-        set_time_limit(600);
-        \Storage::put(
-            'medstat_uploads/medstat_nsk_data.zip',
-            file_get_contents($request->file('medstat_nsk_data')->getRealPath())
-        );
-        $zip_file = storage_path('app/medstat_uploads/medstat_nsk_data.zip');
-        $zip = new \ZipArchive();
-        if ($zip->open($zip_file) === TRUE) {
-            $data =  $zip->getFromName('Data.csv');
-            $zip->close();
-        } else {
-            throw  new \Exception("Не удалось открыть файл архива $zip_file");
-        }
-        \Storage::put('medstat_uploads/data.csv', $data);
+        if (!$request->skip_upload) {
+            set_time_limit(600);
+            \Storage::put(
+                'medstat_uploads/medstat_nsk_data.zip',
+                file_get_contents($request->file('medstat_nsk_data')->getRealPath())
+            );
+            $zip_file = storage_path('app/medstat_uploads/medstat_nsk_data.zip');
+            $zip = new \ZipArchive();
+            if ($zip->open($zip_file) === TRUE) {
+                $data =  $zip->getFromName('Data.csv');
+                $zip->close();
+            } else {
+                throw  new \Exception("Не удалось открыть файл архива $zip_file");
+            }
+            \Storage::put('medstat_uploads/data.csv', $data);
 
-        $file = storage_path('app/medstat_uploads/data.csv');
-        \App\MedstatNskData::truncate();
-        $insert = "COPY medstat_nsk_data FROM '$file' CSV;";
-        $res = \DB::insert($insert);
-        $res ? $rec_count = MedstatNskData::count() : abort(500, "Данные из файла $file не загружены");
-        $find_duplicates = "SELECT hospital, \"table\", \"column\", \"row\", count(*) FROM medstat_nsk_data 
+            $file = storage_path('app/medstat_uploads/data.csv');
+            \App\MedstatNskData::truncate();
+            $insert = "COPY medstat_nsk_data FROM '$file' CSV;";
+            $res = \DB::insert($insert);
+            if (!$res) {
+                abort(500, "Данные из файла $file не загружены");
+            }
+            $find_duplicates = "SELECT hospital, \"table\", \"column\", \"row\", count(*) FROM medstat_nsk_data 
           group by hospital, \"table\", \"column\", \"row\" 
           having count(*) > 1;";
-        $duplicates = \DB::select($find_duplicates);
-        $dubs = count($duplicates);
-        if ($dubs > 0) {
-            abort(500, "В импортирумых данных нарушена целостность, имются повторяющиеся данные ($dubs)");
+            $duplicates = \DB::select($find_duplicates);
+            $dubs = count($duplicates);
+            if ($dubs > 0) {
+                abort(500, "В импортирумых данных нарушена целостность, имются повторяющиеся данные ($dubs)");
+            }
         }
+        $rec_count = MedstatNskData::count();
         $monitorings = \App\Monitoring::all();
         $albums = \App\Album::all()->sortBy('album_name');
         $periods = \App\Period::all();
