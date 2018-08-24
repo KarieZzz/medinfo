@@ -113,7 +113,15 @@ class DashboardController extends Controller
     protected function composeDataForTablesRendering(Form $form, array $editedtables, Album $album)
     {
         //$tables = Table::where('form_id', $form->id)->where('deleted', 0)->orderBy('table_code')->get();
-        $tables = Table::OfForm($form->id)->whereDoesntHave('excluded', function ($query) use($album) {
+        $realform = null;
+        if ($form->relation) {
+            $realform = Form::find($form->relation);
+            $form_id = $realform->id;
+        } else {
+            $form_id = $form->id;
+        }
+
+        $tables = Table::OfForm($form_id)->whereDoesntHave('excluded', function ($query) use($album) {
             $query->where('album_id', $album->id);
         })->orderBy('table_index')->get();
         //dd($tables);
@@ -331,12 +339,19 @@ class DashboardController extends Controller
     // TODO: Доработать сохранение настроек редактирования отчета (таблица, фильтры, ширина колонок и т.д.)
     protected function getLastState(GenericUser $worker, Document $document, Form $form, $album)
     {
+        $realform = null;
+        if ($form->relation) {
+            $realform = Form::find($form->relation);
+            $form_id = $realform->id;
+        } else {
+            $form_id = $form->id;
+        }
         $laststate = array();
 /*        $current_table = Table::OfForm($form->id)->whereDoesntHave('excluded', function ($query) use($default_album) {
             $query->where('album_id', $default_album->id)->orderBy('table_code');
         })->first();*/
 
-        $current_table = Table::OfForm($form->id)->whereDoesntHave('excluded', function ($query) use($album) {
+        $current_table = Table::OfForm($form_id)->whereDoesntHave('excluded', function ($query) use($album) {
             $query->where('album_id', $album->id);
         })->orderBy('table_index')->first();
 

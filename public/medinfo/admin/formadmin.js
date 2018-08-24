@@ -26,6 +26,7 @@ initdatasources = function() {
             { name: 'form_code', type: 'string' },
             { name: 'medstat_code', type: 'string' },
             { name: 'relation', type: 'int' },
+            { name: 'inherit_from',  map: 'inherit_from>form_code', type: 'string' },
             { name: 'short_ms_code', type: 'string' },
             { name: 'medstatnsk_id', type: 'string' },
         ],
@@ -61,9 +62,9 @@ initformlist = function() {
             columns: [
                 { text: 'Id', datafield: 'id', width: '30px' },
                 { text: '№ п/п', datafield: 'form_index', width: '70px' },
-                { text: 'Код формы', datafield: 'form_code', width: '100px'  },
+                { text: 'Код формы', datafield: 'form_code', width: '70px'  },
                 { text: 'Имя', datafield: 'form_name' , width: '400px'},
-                { text: 'Разрез', datafield: 'кфдфешщт', width: '100px'  },
+                { text: 'Разрез', datafield: 'inherit_from', width: '70px'  },
                 { text: 'Код МС МСК', datafield: 'medstat_code', width: '100px' },
                 { text: 'Сокр. код МС МСК', datafield: 'short_ms_code', width: '100px' },
                 { text: 'Код МС НСК', datafield: 'medstatnsk_id', width: '100px' },
@@ -71,9 +72,12 @@ initformlist = function() {
         });
     fl.on('rowselect', function (event) {
         let row = event.args.row;
+        $("#relation").jqxDropDownList('clearSelection');
         $("#form_name").val(row.form_name);
         $("#form_index").val(row.form_index);
         $("#form_code").val(row.form_code);
+        //row.relation === null ? $("#relation").jqxDropDownList('val', '') : $("#relation").jqxDropDownList('val', row.relation); //val(row.relation);
+        $("#relation").val(row.relation);
         $("#medstat_code").val(row.medstat_code);
         $("#short_ms_code").val(row.short_ms_code);
         $("#medstatnsk_id").val(row.medstatnsk_id);
@@ -96,6 +100,8 @@ initbuttons = function () {
             return "(" + rec.form_code + ") " + rec.form_name;
         }
     });
+    //sel.jqxDropDownList('addItem', { label: 'Форма не наследуется', value: 0} );
+
 };
 
 initformactions = function() {
@@ -109,6 +115,8 @@ initformactions = function() {
             success: function (data, status, xhr) {
                 if (typeof data.error !== 'undefined') {
                     raiseError(data.message);
+                } else {
+                    raiseInfo(data.message);
                 }
                 fl.jqxGrid('updatebounddata');
             },

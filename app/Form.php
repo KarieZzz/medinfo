@@ -27,7 +27,7 @@ class Form extends Model
 
     public function inheritFrom()
     {
-        return $this->belongsTo('App\Form', 'id' , 'relation');
+        return $this->belongsTo('App\Form', 'relation' , 'id');
     }
 
     public function scopeOfCode($query, $code)

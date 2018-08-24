@@ -21,13 +21,13 @@ class FormAdminController extends Controller
 
     public function index()
     {
-        $realforms = Form::Real()->get();
+        $realforms = Form::Real()->get(['id', 'form_code', 'form_name']);
         return view('jqxadmin.forms', compact('realforms'));
     }
 
     public function fetchForms()
     {
-        return Form::orderBy('form_index')->get();
+        return Form::orderBy('form_index')->with('inheritFrom')->get();
         //return Form::all();
     }
 
@@ -41,6 +41,7 @@ class FormAdminController extends Controller
             $newform->short_ms_code = empty($request->short_ms_code) ? null : $request->short_ms_code;
             $newform->relation = empty($request->relation) ? null : (int)$request->relation;
             $newform->medstatnsk_id = empty($request->medstatnsk_id) ? null : (int)$request->medstatnsk_id;
+            $newform->save();
             return [ 'message' => 'Новая запись создана. Id:' . $newform->id ];
         } catch (\Illuminate\Database\QueryException $e) {
             $errorCode = $e->errorInfo[1];
