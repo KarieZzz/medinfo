@@ -10,4 +10,13 @@ class MedstatNskData extends Model
     protected $table = 'medstat_nsk_data';
     protected $fillable = ['hospital', 'data', 'year', 'table', 'column', 'row'];
 
+    public function tablensk()
+    {
+        return $this->belongsTo('App\MedstatNskTableLink', 'table', 'id');
+    }
+    public function table()
+    {
+        return $this->belongsTo('App\Table', 'table', 'medstatnsk_id');
+    }
+
 }

@@ -20,7 +20,6 @@ class CreateMedstatNskDataTable extends Migration
             $table->integer('table')->index();
             $table->integer('column')->index();
             $table->integer('row')->index();
-            $table->timestamps();
         });
     }
 

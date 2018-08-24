@@ -37,7 +37,6 @@
             <p class="text-info">Внимание! Данные по ранее импортированной структуре будут перезаписаны! Если вносились изменения вручную, они будут потеряны!</p>
             <input id="formids" name="formids" type="hidden" value="">
             <input id="selectedallforms" name="selectedallforms" type="hidden" value="">
-
             <button type="submit" class="btn btn-primary">Загрузить</button>
         </form>
     </div>

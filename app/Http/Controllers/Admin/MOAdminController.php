@@ -123,7 +123,7 @@ class MOAdminController extends Controller
     public function unitDelete(Unit $unit)
     {
         $doc_count = Document::countInUnit($unit->id);
-        if ($doc_count == 0) {
+        if ($doc_count === 0) {
             $unit->delete();
             return ['message' => 'Удалена организационная единица Id' . $unit->id ];
         } else {

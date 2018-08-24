@@ -249,9 +249,12 @@ class MedstatImportAdminController extends Controller
                 'selectedallforms' => 'required|in:1,0',
             ]
         );
-        $import_all_forms = $request->selectedallforms;
-        dd($import_all_forms);
-        $selected_forms = explode(",", $request->formids);
+        $selected_forms = null;
+        $import_all_forms = (int)$request->selectedallforms;
+        if ($import_all_forms === 0) {
+            $selected_forms = explode(",", $request->formids);
+        }
+        //dd($import_all_forms);
         $album = $request->album;
         \Storage::put(
             'medstat_uploads/medstat_ns_links.zip',
@@ -290,29 +293,39 @@ class MedstatImportAdminController extends Controller
         $cl_file = storage_path('app/medstat_uploads/cl.dbf');
 
         $form_count = $this->importNSForms($forms_file);
-        $matched_forms = $this->matchingFormMSCode($fl_file);
+        $mforms = $this->matchingFormMSCode($fl_file, $selected_forms);
+        $matched_forms = $mforms[0];
+        $unmatchednsk_forms = $mforms[1];
 
-        $tables = $this->importNSTables($tables_file);
+        $tables = $this->importNSTables($tables_file, $selected_forms);
         $table_count = $tables[0];
         $matched_tables = $tables[1];
+        $unmatchednsk_tables = $tables[2];
 
-        $rows = $this->importNSRows($rows_file, $album);
+        $rows = $this->importNSRows($rows_file, $album, $selected_forms);
         $row_count = $rows[0];
         $matched_rows = $rows[1];
         $rows_disparity = $rows[2];
 
-        $columns = $this->importNSColumns($columns_file, $album);
+        $columns = $this->importNSColumns($columns_file, $album, $selected_forms);
         $column_count = $columns[0];
         $matched_columns = $columns{1};
         $columns_disparity = $columns[2];
         //$matched_tables = $this->matchingTableMSCode($tl_file);
         //$matched_rows = $this->matchingRowMSCode($rl_file);
-        $tansposed_nsktables = $this->matchingColumnMSCode($cl_file);
-        $form_exists_only_mf = Form::whereNull('medstatnsk_id')->orderBy('form_code')->get();
-        $form_exists_only_nsk = MedstatNskFormLink::doesntHave('form')->get();
-        $table_exists_only_mf = Table::whereNull('medstatnsk_id')->with('form')->orderBy('form_id')->orderBy('table_code')->get();
-        $table_exists_only_nsk = MedstatNskTableLink::doesntHave('table')->whereNotIn('form_id', $form_exists_only_nsk->pluck('id'))->with('formnsk')->get();
-        $transposed_disparity = $this->findTransposedTablesDisparity();
+        $tansposed_nsktables = $this->matchingColumnMSCode($cl_file, $selected_forms);
+        if ($selected_forms) {
+            $form_exists_only_mf = Form::whereNull('medstatnsk_id')->whereIn('id', $selected_forms)->orderBy('form_code')->get();
+            $form_exists_only_nsk = MedstatNskFormLink::whereIn('id', $unmatchednsk_forms)->get();
+            $table_exists_only_mf = Table::whereNull('medstatnsk_id')->whereIn('form_id', $selected_forms)->with('form')->orderBy('form_id')->orderBy('table_code')->get();
+            $table_exists_only_nsk = MedstatNskTableLink::whereIn('id', $unmatchednsk_tables)->with('formnsk')->get();
+        } else {
+            $form_exists_only_mf = Form::whereNull('medstatnsk_id')->orderBy('form_code')->get();
+            $form_exists_only_nsk = MedstatNskFormLink::doesntHave('form')->get();
+            $table_exists_only_mf = Table::whereNull('medstatnsk_id')->with('form')->orderBy('form_id')->orderBy('table_code')->get();
+            $table_exists_only_nsk = MedstatNskTableLink::doesntHave('table')->whereNotIn('form_id', $form_exists_only_nsk->pluck('id'))->with('formnsk')->get();
+        }
+        $transposed_disparity = $this->findTransposedTablesDisparity($selected_forms);
 
         return view('jqxadmin.medstatNSimportLinksresult',
             compact(
@@ -359,7 +372,7 @@ class MedstatImportAdminController extends Controller
         return $numrecords;
     }
 
-    public function importNSTables($dbf)
+    public function importNSTables($dbf, $selected_forms)
     {
         $db = dbase_open($dbf, 2);
         if (!$db) {
@@ -386,26 +399,35 @@ class MedstatImportAdminController extends Controller
         }
         $values = implode(', ', $v );
         $res = \DB::insert($insert . $values);
-        $forms = Form::whereNotNull('medstatnsk_id')->get();
-        $cleaned_table_ids = Table::whereNotNull('medstatnsk_id')->update(['medstatnsk_id' => null ]);
+        $selected_forms ? $forms = Form::whereNotNull('medstatnsk_id')->whereIn('id', $selected_forms)->get() :
+            $forms = Form::whereNotNull('medstatnsk_id')->get();
+        $selected_forms ? $cleaned_table_ids = Table::whereNotNull('medstatnsk_id')->whereIn('form_id', $selected_forms)->update(['medstatnsk_id' => null ]) :
+            $cleaned_table_ids = Table::whereNotNull('medstatnsk_id')->update(['medstatnsk_id' => null ]);
         $t = 0;
+        $unmatched_nsktables = [];
         foreach ($forms as $form) {
             $linked_tables = \App\MedstatNskTableLink::where('form_id', $form->medstatnsk_id)->get();
             foreach ($linked_tables as $linked_table) {
                 $fullcode = $linked_table->tablen;
                 $trimedcode = preg_match('/\((?:[0-9.]*)(\d{4})\)/u', $fullcode, $match);
-                $mftable = Table::OfFormTableCode($form->id, $match[1])->first();
-                if ($mftable) {
-                    $mftable->medstatnsk_id = $linked_table->id;
-                    $mftable->save();
-                    $t++;
+                if (!$trimedcode) {
+                    $unmatched_nsktables[] = $linked_table->id;
+                } else {
+                    $mftable = Table::OfFormTableCode($form->id, $match[1])->first();
+                    if ($mftable) {
+                        $mftable->medstatnsk_id = $linked_table->id;
+                        $mftable->save();
+                        $t++;
+                    } else {
+                        $unmatched_nsktables[] = $linked_table->id;
+                    }
                 }
             }
         }
-        return [ $numrecords , $t, $cleaned_table_ids ];
+        return [ $numrecords , $t, $unmatched_nsktables, $cleaned_table_ids ];
     }
 
-    public function importNSRows($dbf, $album)
+    public function importNSRows($dbf, $album, $selected_forms)
     {
 /*        $db = dbase_open($dbf, 2);
         if (!$db) {
@@ -428,9 +450,10 @@ class MedstatImportAdminController extends Controller
         }
         $values = implode(', ', $v );
         $res = \DB::insert($insert . $values);*/
-
-        $tables = Table::whereNotNull('medstatnsk_id')->orderBy('form_id')->get();
-        $cleaned_row_ids = Row::whereNotNull('medstatnsk_id')->update(['medstatnsk_id' => null ]);
+        $selected_forms ? $tables = Table::whereNotNull('medstatnsk_id')->whereIn('form_id', $selected_forms)->orderBy('form_id')->get() :
+            $tables = Table::whereNotNull('medstatnsk_id')->orderBy('form_id')->get();
+        $selected_forms ? $cleaned_row_ids = Row::whereNotNull('medstatnsk_id')->whereIn('table_id', $tables->pluck('id'))->update(['medstatnsk_id' => null ]) :
+            $cleaned_row_ids = Row::whereNotNull('medstatnsk_id')->update(['medstatnsk_id' => null ]);
         $all_rows = 0;
         $matched_rows = 0;
         $unmatched_rows = [];
@@ -458,7 +481,7 @@ class MedstatImportAdminController extends Controller
         return [ $all_rows, $matched_rows, $unmatched_rows, $cleaned_row_ids  ];
     }
 
-    public function importNSColumns($dbf, $album)
+    public function importNSColumns($dbf, $album, $selected_forms)
     {
 /*        $db = dbase_open($dbf, 2);
         if (!$db) {
@@ -482,8 +505,10 @@ class MedstatImportAdminController extends Controller
         $values = implode(', ', $v );
         $res = \DB::insert($insert . $values);*/
         // в транспонированных таблицах коды Медстат НСК не прописываем, нет необходимости
-        $tables = Table::whereNotNull('medstatnsk_id')->where('transposed', 0)->orderBy('form_id')->get();
-        $cleaned_column_ids = Column::whereNotNull('medstatnsk_id')->update(['medstatnsk_id' => null ]);
+        $selected_forms ? $tables = Table::whereNotNull('medstatnsk_id')->where('transposed', 0)->whereIn('form_id', $selected_forms)->orderBy('form_id')->get() :
+            $tables = Table::whereNotNull('medstatnsk_id')->where('transposed', 0)->orderBy('form_id')->get();
+        $selected_forms ? $cleaned_column_ids = Column::whereNotNull('medstatnsk_id')->whereIn('table_id', $tables->pluck('id'))->update(['medstatnsk_id' => null ]) :
+            $cleaned_column_ids = Column::whereNotNull('medstatnsk_id')->update(['medstatnsk_id' => null ]);
         $all_columns = 0;
         $matched_columns = 0;
         $unmatched_columns = [];
@@ -524,7 +549,7 @@ class MedstatImportAdminController extends Controller
         return [ $all_columns, $matched_columns, $unmatched_columns, $cleaned_column_ids ];
     }
 
-    public function matchingFormMSCode($dbf)
+    public function matchingFormMSCode($dbf, $selected_forms)
     {
         $db = dbase_open($dbf, 2);
         if (!$db) {
@@ -542,19 +567,30 @@ class MedstatImportAdminController extends Controller
                 $matched->save();
             }
         }
-        $formlinks = \App\MedstatNskFormLink::whereNotNull('medstat_code')->get();
-        $cleaned_forms_ids = Form::whereNotNull('medstatnsk_id')->update(['medstatnsk_id' => null ]);
+        if ($selected_forms) {
+            Form::whereNotNull('medstatnsk_id')->whereIn('id', $selected_forms)->update(['medstatnsk_id' => null ]);
+            $medstat_codes = Form::whereIn('id', $selected_forms)->pluck('medstat_code');
+        } else {
+            Form::whereNotNull('medstatnsk_id')->update(['medstatnsk_id' => null ]);
+        }
+
         //dd($formlinks);
+        $selected_forms ? $formlinks = \App\MedstatNskFormLink::whereIn('medstat_code', $medstat_codes)->get() :
+            $formlinks = \App\MedstatNskFormLink::whereNotNull('medstat_code')->get();
         $matched_forms = 0;
+        $unmatched_forms = [];
         foreach ($formlinks as $formlink) {
-            $form = Form::OfMedstatCode($formlink->medstat_code)->first();
+            $selected_forms ? $form = Form::OfMedstatCode($formlink->medstat_code)->whereIn('id', $selected_forms)->first() :
+                $form = Form::OfMedstatCode($formlink->medstat_code)->first();
             if ($form) {
                 $form->medstatnsk_id = $formlink->id;
                 $form->save();
                 $matched_forms++;
+            } else {
+                $unmatched_forms[] = $formlink->id;
             }
         }
-        return $matched_forms;
+        return [ $matched_forms, $unmatched_forms ];
     }
 
 /*    public function matchingTableMSCode($dbf)
@@ -637,7 +673,7 @@ class MedstatImportAdminController extends Controller
         return $i;
     }*/
 
-    public function matchingColumnMSCode($dbf)
+    public function matchingColumnMSCode($dbf, $selected_forms)
     {
         $db = dbase_open($dbf, 2);
         if (!$db) {
@@ -658,7 +694,12 @@ class MedstatImportAdminController extends Controller
         }
         $values = implode(', ', $v );
         $res = \DB::insert($insert . $values);
-        $nskforms = \App\MedstatNskFormLink::all();
+        if ($selected_forms) {
+            $forms = Form::whereIn('id', $selected_forms)->whereNotNull('medstatnsk_id')->pluck('medstatnsk_id');
+            $nskforms = \App\MedstatNskFormLink::whereIn('id', $forms)->get();
+        } else {
+            $nskforms = \App\MedstatNskFormLink::all();
+        }
         $i = 0;
         foreach ($nskforms as $nskform) {
             $nsktables = \App\MedstatNskTableLink::OfForm($nskform->id)->get();
@@ -677,9 +718,11 @@ class MedstatImportAdminController extends Controller
         return $i;
     }
 
-    public function findTransposedTablesDisparity()
+    public function findTransposedTablesDisparity($selected_forms)
     {
-        $tables = Table::with('form')->orderBy('form_id', 'table_code')->get();
+        $selected_forms ? $tables = Table::whereNotNull('medstatnsk_id')->whereIn('form_id', $selected_forms)->with('form')->orderBy('form_id')->get() :
+            $tables = Table::whereNotNull('medstatnsk_id')->with('form')->orderBy('form_id')->get();
+        //$tables = Table::with('form')->orderBy('form_id', 'table_code')->get();
         $disparity = [];
         foreach ($tables as $table) {
             $nsk_table = \App\MedstatNskTableLink::find($table->medstatnsk_id);
