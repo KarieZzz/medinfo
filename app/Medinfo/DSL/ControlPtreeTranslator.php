@@ -21,6 +21,7 @@ class ControlPtreeTranslator
     public $parser;
     public $table;
     public $form;
+    public $relations = []; // если форма имеет разрезы помещаем id форм сюда
     public $currentForm;
     public $type = [];
     public $findex;
@@ -30,7 +31,7 @@ class ControlPtreeTranslator
     public $scopeOfUnits = false;
     public $units = [];
     public $scopeOfDocuments = false;
-    public $documents = [];
+    public $documents = []; // контроля ограничения по первичным или сводным документам
     public $scopeOfPeriods = false;
     public $incl_periods = [];
     public $excl_periods = [];
@@ -42,9 +43,16 @@ class ControlPtreeTranslator
     {
         $this->parser = $parser;
         $this->table = $table;
-        $this->form = Form::find($table->form_id);
+        $this->setForm();
         //dd($this->parser->cellrangeStack);
         //dd($this->parser->celladressStack);
+    }
+
+    public function setForm()
+    {
+        $this->form = Form::find($this->table->form_id);
+        $this->relations = $this->form->hasRelations()->pluck('id')->toArray();
+        //$this->relations[] = $this->table->form_id;
     }
 
     public function makeReadable() {  }
@@ -233,7 +241,7 @@ class ControlPtreeTranslator
             }*/
         }
     }
-// TODO: Добавить обработку статических групп по периодам
+
     public function parseStaticGroup($static_group) {
         $units = [];
         $period = null;
@@ -350,18 +358,19 @@ class ControlPtreeTranslator
                 //$iterations = $this->parser->argStack;
                 foreach ($lightweightCAStack as $key => $ca) {
                     if ($ca['ids']['t'] === $this->table->id) {
-                        $lightweightCAStack[$key]['codes']['c'] = $column->column_index;
+                        //$lightweightCAStack[$key]['codes']['c'] = $column->column_index;
+                        $lightweightCAStack[$key]['codes']['c'] = $column->column_code;
                         $lightweightCAStack[$key]['ids']['c'] = $column->id;
                     } else {
                         $c = Column::OfTableColumnIndex($ca['ids']['t'], $column->column_index)->first();
                         if (is_null($c)) {
                             throw new \Exception("В таблице id:{$ca['ids']['t']} не существует графы с индексом {$column->column_index}");
                         }
-                        $lightweightCAStack[$key]['codes']['r'] = $c->column_index;
-                        $lightweightCAStack[$key]['ids']['r'] = $c->id;
+                        //$lightweightCAStack[$key]['codes']['r'] = $c->column_index;
+                        $lightweightCAStack[$key]['codes']['c'] = $c->column_code;
+                        //$lightweightCAStack[$key]['ids']['r'] = $c->id;
+                        $lightweightCAStack[$key]['ids']['c'] = $c->id;
                     }
-
-
                 }
                 $this->iterations[$column->column_index] = $lightweightCAStack;
             }
@@ -389,6 +398,7 @@ class ControlPtreeTranslator
         $properties['scope_periods'] = $this->scopeOfPeriods;
         $properties['incl_periods'] = $this->incl_periods;
         $properties['excl_periods'] = $this->excl_periods;
+        $properties['relations'] = $this->relations;
 
 
         return $properties;

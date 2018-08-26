@@ -72,12 +72,12 @@ initformlist = function() {
         });
     fl.on('rowselect', function (event) {
         let row = event.args.row;
-        $("#relation").jqxDropDownList('clearSelection');
+        let rl = $("#relation");
+        rl.jqxDropDownList('clearSelection');
         $("#form_name").val(row.form_name);
         $("#form_index").val(row.form_index);
         $("#form_code").val(row.form_code);
-        //row.relation === null ? $("#relation").jqxDropDownList('val', '') : $("#relation").jqxDropDownList('val', row.relation); //val(row.relation);
-        $("#relation").val(row.relation);
+        rl.val(row.relation);
         $("#medstat_code").val(row.medstat_code);
         $("#short_ms_code").val(row.short_ms_code);
         $("#medstatnsk_id").val(row.medstatnsk_id);

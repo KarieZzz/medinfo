@@ -30,6 +30,11 @@ class Form extends Model
         return $this->belongsTo('App\Form', 'relation' , 'id');
     }
 
+    public function hasRelations()
+    {
+        return $this->hasMany('App\Form', 'relation' , 'id');
+    }
+
     public function scopeOfCode($query, $code)
     {
         return $query->where('form_code', $code);

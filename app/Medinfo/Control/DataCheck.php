@@ -160,7 +160,7 @@ class DataCheck
                 $rule['comment'] = $function->comment;
                 if ($evaluator->not_in_scope) {
                     $rule['not_in_scope'] = true;
-                    $rule['comment'] .= " Правило контроля не применяется к данному документу (ограничения по группе медицинских организаций)";
+                    $rule['comment'] .= " " . implode(' ', $evaluator->comment) ;
                 } else {
                     $rule['not_in_scope'] = false;
                 }

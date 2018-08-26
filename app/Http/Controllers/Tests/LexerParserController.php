@@ -76,13 +76,14 @@ class LexerParserController extends Controller
         //$i = 'зависимость(Г3, сумма(Г4:Г8))';
         //$i = 'зависимость(Г3, Г4, группы(сводные))';
 
-        //$i = "межгодовой(С1.0Г15+С1.0Г14-С1.0Г10,  С1.0Г10+С1.0Г11, 0)";
+/*        // межпериодные
+        $i = "межгодовой(С1.0Г15+С1.0Г14-С1.0Г10,  С1.0Г10+С1.0Г11, 0)";
         //$i = "межгодовой(С1Г3+С4Г3, С1Г3,  20)";
 
         //$i = "мгдиапазон(диапазон(С01Г3:С02Г6), 20)";
         //$i = "мгдиапазон(диапазон(С16Г3:С18Г3), 0.2)";
         //$i = "мгдиапазон(диапазон(С11Г3, С16Г3:С18Г3, С20Г3, С32Г3, С16Г3:С18Г3),  20)";
-        //$i = "мпдиапазон(диапазон(С3Г3:С3.2Г15), >=, группы(!пi))";
+        //$i = "мпдиапазон(диапазон(С3Г3:С3.2Г15), >=, группы(!пi))";*/
 
         //$i = "кратность(диапазон(С01Г3:С02Г6),  0.25)";
         //$i = "кратность(диапазон(С1Г3:С221Г8), 0.25 )";
@@ -90,7 +91,7 @@ class LexerParserController extends Controller
 
         //$i = '(a2 - a1)/a2 * 100 > a3';
 
-
+        $i = "сравнение(С1.0Г4+Т2000С1.0Г4, Ф14Т2000С1.0Г22, =)";
 
         //$cellcount = preg_match_all('/Ф([а-я0-9.-]+)Т([\w.-]+)С([\w.-]+)Г(\d{1,})/u', $i, $matches, PREG_SET_ORDER);
         //$res = preg_match('|(?:\()(.*?),(.*?)\)|usei', $i, $matches);
@@ -117,34 +118,24 @@ class LexerParserController extends Controller
         //$table = Table::find(15);     // Ф30 Т2100
         //$table = Table::find(50);     // Ф30 Т5117
         //$table = Table::find(252);    // Ф30 Т5301
+        $table = Table::find(111);      // Ф12 Т1000
         //$table = Table::find(112);    // Ф12 Т2000
-        //$table = Table::find(441);      // Ф12 Т4000
+        //$table = Table::find(441);    // Ф12 Т4000
         //$table = Table::find(115);    // Ф32 Т2120
+        //$table = Table::find(179);    // Ф37 Т2100
         //$table = Table::find(151);    // Ф41 Т2100
-        //$table = Table::find(2);    // Ф47 Т0100
+        //$table = Table::find(2);      // Ф47 Т0100
         //$table = Table::find(992);    // Ф201 Т1000
-        $table = Table::find(179);    // Ф37 Т2100
-        //$document = Document::find(13134); // 12 ф ГКБ№8 за 2016 год
-        //$document = Document::find(16845); // 12 ф ГКБ№8 за 2017 год
-        //$document = Document::find(12269); // 12 ф Все организации 2016 год
-        //$document = Document::find(13753); // 41 ф ДР1 за 2016 год
-        //$document = Document::find(12657); // 30 ф РБ Слюдянка за 2016 год
-        //$document = Document::find(12268); // 30 ф Свод за 2016 год
-        //$document = Document::find(19251); // 47 ф за 2017 год
-        //$document = Document::find(19264); // 201 ф за 1 квартал 2018 года (наркология)
-        //$document = Document::find(19265); // 201 ф за IV квартал 2017 года (наркология)
-        //$document = Document::find(16434); // 37 ф за 2017 год ИОПНД
-        $document = Document::find(19272); // 37 ф за I квартал 2018 года ИОПНД
-        //dd($document);
-         $translator = Translator::invoke($parser, $table);
+
+        $translator = Translator::invoke($parser, $table);
         //dd($translator);
-         //$translator = new ControlPtreeTranslator($parser, $table);
-         //$translator = new CompareTranslator($parser, $table);
+        //$translator = new ControlPtreeTranslator($parser, $table);
+        //$translator = new CompareTranslator($parser, $table);
         //$translator->setParentNodesFromRoot();
         //$translator->parseCellAdresses();
         //$translator->parseCellRanges();
         //$translator->validateVector();
-         $translator->prepareIteration();
+        $translator->prepareIteration();
         //dd($translator);
         //dd($translator->getProperties());
         //dd($translator->parser->root);
@@ -162,8 +153,7 @@ class LexerParserController extends Controller
         //dd(json_decode(json_encode($translator->iterations), TRUE));
         //dd($translator->type);
         //dd($translator->getProperties());
-
-
+// Запуск из десериализованного объекта pTree, сохраненного в БД
         //$cfunc = CFunction::find(2652); // сравнение(С8.0, С8.1+С8.2+С8.3+С8.4+С8.5+С8.6+С8.7+С8.8+С8.9+С8.10+С8.11+С8.12, >=)) ф. 12 т. 2000
         //$cfunc = CFunction::find(3280);
         //dd($cfunc);
@@ -172,6 +162,19 @@ class LexerParserController extends Controller
         //$props = json_decode($cfunc->properties, true);
         //dd($props);
         //dd($iterations);
+
+        //$document = Document::find(13134); // 12 ф ГКБ№8 за 2016 год
+        //$document = Document::find(16845); // 12 ф ГКБ№8 за 2017 год
+        //$document = Document::find(12269); // 12 ф Все организации 2016 год
+        //$document = Document::find(13753); // 41 ф ДР1 за 2016 год
+        //$document = Document::find(12657); // 30 ф РБ Слюдянка за 2016 год
+        //$document = Document::find(12268); // 30 ф Свод за 2016 год
+        //$document = Document::find(19251); // 47 ф за 2017 год
+        //$document = Document::find(19264); // 201 ф за 1 квартал 2018 года (наркология)
+        //$document = Document::find(19265); // 201 ф за IV квартал 2017 года (наркология)
+        //$document = Document::find(16434); // 37 ф за 2017 год ИОПНД
+        //$document = Document::find(19272); // 37 ф за I квартал 2018 года ИОПНД
+        $document = Document::find(2046);       // 12село ф за 2017 год Волоколамская ЦРБ
         $evaluator = Evaluator::invoke($translator->parser->root, $translator->getProperties(), $document);
         //$evaluator = new ControlFunctionEvaluator($translator->parser->root, $translator->getProperties(), $document);
         //$evaluator = new ControlFunctionEvaluator($pTree, $props, $document);
@@ -185,11 +188,13 @@ class LexerParserController extends Controller
 
         //return $evaluator->evaluate();
 
-        dd($evaluator->makeControl());
-        //dd($evaluator);
+        //dd($evaluator->makeControl());
+        $evaluator->makeControl();
+        dd($evaluator);
         //return ($evaluator->iterations);
         //return ($evaluator->properties);
         //return $evaluator->makeControl();
+        return $evaluator->makeControl();
         //dd($evaluator->pTree);
     }
 
@@ -380,11 +385,6 @@ class LexerParserController extends Controller
             $i++;
         }
         return 'Обработано функций: ' . $i;
-
-    }
-
-    public function normalizeTableOrder()
-    {
 
     }
 

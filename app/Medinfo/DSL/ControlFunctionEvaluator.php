@@ -25,6 +25,7 @@ class ControlFunctionEvaluator
     public $arguments;
     public $not_in_scope = false;
     public $valid;
+    public $comment = [];
 
     public function __construct(ParseTree $ptree, $properties, Document $document)
     {
@@ -48,6 +49,7 @@ class ControlFunctionEvaluator
                 $exclude[] = 0;
             } else {
                 $exclude[] = 1;
+                $this->comment[] = "Данный контроль не применяется к этому типу документа";
             }
         }
         if ($this->properties['scope_units']) {
@@ -55,6 +57,7 @@ class ControlFunctionEvaluator
                 $exclude[] = 0;
             } else {
                 $exclude[] = 1;
+                $this->comment[] = "Данный контроль не применяется к этой организационной единице";
             }
         }
         $slug = 'п' . trim($this->pattern->slug);
@@ -66,12 +69,19 @@ class ControlFunctionEvaluator
                 $exclude[] = 0;
             } else {
                 $exclude[] = 1;
+                $this->comment[] = "Данный контроль не применяется к документам этого отчетного периода";
             }
             if (count($this->properties['excl_periods']) > 0 && in_array($slug, $this->properties['excl_periods']) ) {
                 $exclude[] = 1;
+                $this->comment[] = "Данный контроль не применяется к документам этого отчетного периода";
             } else {
                 $exclude[] = 0;
             }
+        }
+        // Для форм-разрезов межформенный контроль не выполняем
+        if (in_array($this->document->form_id, $this->properties['relations']) && ($this->properties['type'] === 2)) {
+            $exclude[] = 1;
+            $this->comment[] = "Межформенные контроли не применяются к документам в разрезе форм";
         }
         //dd($exclude);
         if (array_sum($exclude) > 0) {
@@ -133,7 +143,8 @@ class ControlFunctionEvaluator
         $form_id = $this->document->form_id;
         foreach ($this->iterations as &$cell_adresses) {
             foreach ($cell_adresses as &$cell_adress) {
-                if ($cell_adress['ids']['f'] === $form_id && !isset($cell_adress['codes']['p'])) {
+                //if ($cell_adress['ids']['f'] === $form_id && !isset($cell_adress['codes']['p'])) {
+                if (in_array($cell_adress['ids']['f'], $this->properties['relations']) && !isset($cell_adress['codes']['p'])) {
                     $cell = Cell::OfDRC($this->document->id, $cell_adress['ids']['r'], $cell_adress['ids']['c'])->first(['value']);
                 } else {
                     if (isset($cell_adress['codes']['p'])) {
