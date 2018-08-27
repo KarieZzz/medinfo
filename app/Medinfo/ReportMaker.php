@@ -122,7 +122,7 @@ class ReportMaker
                     $value = $m->e($formula);
                 }
                 catch (\Exception $e) {
-                    dd("Ошибка при вычислении формулы: " . $formula . " " . $e);
+                    //dd("Ошибка при вычислении формулы: " . $formula . " " . $e);
                 }
                 //$value = eval('return ' . $formula . ';' );
                 //echo $formula . PHP_EOL;
