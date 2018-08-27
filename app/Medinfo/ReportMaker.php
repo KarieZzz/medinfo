@@ -80,14 +80,11 @@ class ReportMaker
     {
         $report_units = [];
         foreach ($this->units as $unit) {
-            if (!in_array($unit->id, $this->included) && ($unit->node_type == 3 || $unit->node_type == 4)) {
+            if (count($this->included) > 0 && !in_array($unit->id, $this->included) && ($unit->node_type == 3 || $unit->node_type == 4)) {
                 continue;
             }
-
-
             $report_units[$unit->id]['unit_name'] = $unit->unit_name;
             //$report_units[$unit->id]['inn'] = $unit->inn;
-
             $i = 0;
             $row_sum = 0;
             foreach ($indexes['content'] as $index => $rule) {
