@@ -22,6 +22,8 @@ class ReportPatternController extends Controller
         $patterns = ReportPattern::orderBy('name')->get(['id', 'name']);
         $periods = Period::orderBy('name')->get();
         $last_year = Period::LastYear()->first();
+        \Session::put('report_progress', 0);
+        \Session::save();
         //dd($patterns);
         return view('reports.reportpatterns', compact('patterns', 'periods', 'last_year'));
     }

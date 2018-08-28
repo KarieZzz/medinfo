@@ -15,6 +15,7 @@ use App\Form;
 use App\Table;
 use App\Document;
 use App\Cell;
+use \Session;
 
 class ReportMaker
 {
@@ -66,6 +67,9 @@ class ReportMaker
                 $this->units->push($all);
                 break;
         }
+        Session::put('report_progress', 0);
+        Session::put('count_of_units', $this->units->count());
+        Session::save();
 
         //dd($included);
         //dd(array_diff($this->units->toArray(), $included));
@@ -79,6 +83,8 @@ class ReportMaker
     public function makeReportByLegal(array $indexes)
     {
         $report_units = [];
+        $calculation_errors = [];
+        $u = 0;
         foreach ($this->units as $unit) {
             if (count($this->included) > 0 && !in_array($unit->id, $this->included) && ($unit->node_type == 3 || $unit->node_type == 4)) {
                 continue;
@@ -95,18 +101,16 @@ class ReportMaker
                 //$cellcount = preg_match_all('/(?:Ф(?P<f>[а-я0-9.-]*))?(?:Т(?P<t>[а-я0-9.-]*))?(?:С(?P<r>[0-9.-]*))?(?:Г(?P<c>\d{1,3}))/u', $formula, $matches, PREG_SET_ORDER);
                 //dd($matches);
                 $v = 0;
-
                 foreach ($matches as $c_addr) {
                     $form_code = $c_addr[1];
                     $table_code = $c_addr[2];
                     $row_code = $c_addr[3];
                     $col_index = $c_addr[4];
                     $form = Form::where('form_code', $form_code)->first();
-                    if ($unit->id === 115 && $c_addr[0] == 'Ф30Т1001С13Г4') {
+                    //if ($unit->id === 115 && $c_addr[0] == 'Ф30Т1001С13Г4') {
                         //dd($col_index);
-                    }
+                    //}
                     $v = $this->getAggregatedValue($unit, $form, $table_code, $row_code, $col_index);
-
                     $formula = str_replace($c_addr[0], $v, $formula);
                 }
                 $populationlinks = preg_match_all('/население\((\d{1,})\)/u', $formula, $populationmatches, PREG_SET_ORDER);
@@ -117,11 +121,11 @@ class ReportMaker
                 }
                 $m = new EvalMath;
                 $value = 0;
-
                 try {
                     $value = $m->e($formula);
                 }
                 catch (\Exception $e) {
+                    $calculation_errors[] = ['formula' => $formula, 'error' => $e->getMessage(), 'unit' => $unit];
                     //dd("Ошибка при вычислении формулы: " . $formula . " " . $e);
                 }
                 //$value = eval('return ' . $formula . ';' );
@@ -134,8 +138,11 @@ class ReportMaker
             }
             //echo $row_sum .PHP_EOL;
             $report_units[$unit->id]['row_sum'] = $row_sum;
+            $u++;
+            Session::put('report_progress', $u);
+            Session::save();
         }
-        return $report_units;
+        return [ $report_units, $calculation_errors ];
     }
 
     public function getAggregatedValue(Unit $unit, Form $form, $table_code, $row_code, $col_index)

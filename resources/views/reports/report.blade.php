@@ -1,5 +1,9 @@
 @extends('reports.report_layout')
 
+@section('description')
+    Консолидированный отчет Мединфо
+@endsection
+
 @section('title')
     <div class="col-sm-7"><h2>Консолидированный отчет Мединфо</h2></div>
 @endsection
@@ -10,6 +14,7 @@
             <h4>{{ $title }}</h4>
         </div>
     </div>
+    @include('reports.calc_error_alert')
     <div class="row">
         <table class="table table-bordered table-striped">
             <thead>

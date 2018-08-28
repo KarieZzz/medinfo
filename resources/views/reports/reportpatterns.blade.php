@@ -38,7 +38,7 @@
                         <div class="form-group">
                             <div class="col-sm-offset-2 col-sm-10">
                                 <button type="button" id="edit" class="btn btn-primary">Редактировать шаблон</button>
-                                <button type="button" id="perform" class="btn btn-success">Выполнить отчет</button>
+                                <button type="button" id="perform" class="btn btn-success" data-toggle="modal" data-target="#myModal">Выполнить отчет</button>
                                 <a href="/reports/patterns/create" class="btn btn-info" role="button">Новый шаблон</a>
                                 <button type="button" id="delete" class="btn btn-danger">Удалить шаблон</button>
                             </div>
@@ -46,13 +46,38 @@
                     </form>
                     <div class="panel panel-default">
                         <div class="panel-heading">Перечень показателей в альбоме</div>
-                        <div class="panel-body" id="indexes" style="max-height:460px;overflow: auto;">Выберите шаблон отчета</div>
+                        <div class="panel-body" id="indexes" style="max-height:400px;overflow: auto;">Выберите шаблон отчета</div>
                     </div>
                     <div class="panel panel-default">
                         <div class="panel-body" id="indexes">
                             <p>Данные в отчете группируются по территориальному принципу. В последней строке приводятся итоговые данные в соответствии со сводными данными
                                 по всем подведомственным учреждениям, включая федеральные.</p>
                             <p>Количество населения для расчетов берется из соответствующих строк т. 1000 формы 100 (имеются только за 2016 год)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div id="myModal" class="modal fade">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Выполнение отчета</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        {{--<div class="col-sm-2"><h3> <span class="text-danger" id="progress"></span> %</h3></div>--}}
+                        <div class="col-sm-12">
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
+                                     data-keyboard="false" style="width:0%" id="progress">
+
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -79,7 +104,7 @@
 <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/admin/reportpatternsadmin.js?v=016') }}"></script>
+<script src="{{ asset('/medinfo/admin/reportpatternsadmin.js?v=022') }}"></script>
 @endpush
 
 @section('inlinejs')

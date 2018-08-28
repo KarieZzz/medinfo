@@ -295,6 +295,7 @@ Route::group(['middleware' => ['medinfo']], function () {
 
     Route::get('reports/map/{level}/{period}', 'ReportControllerOld@consolidateIndexes');
     Route::get('reports/patterns/{pattern}/{period}/{sortorder}/perform', 'ReportControllerOld@performReport');
+    Route::get('/reports/patterns/progress', 'ReportControllerOld@getProgess');
 
     // Работа с lexer-parser
     Route::get('tests/lexer', 'Tests\LexerParserController@lexerTest');
@@ -302,7 +303,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('tests/parser', 'Tests\LexerParserController@func_parser');
     Route::get('tests/batchRename', 'Tests\LexerParserController@batchRename');
     Route::get('tests/calculation', 'Tests\LexerParserController@testCalculation');
-    Route::get('tests/vector', 'Test\VectorTestController@index');
+    Route::get('tests/vector', 'Tests\VectorTestController@index');
 
     // mail test
     Route::get('mailtest', 'StatDataInput\DocumentMessageController@testmail');

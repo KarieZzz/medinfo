@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Test;
+namespace App\Http\Controllers\Tests;
 
 use Ds\Vector;
 use Illuminate\Http\Request;

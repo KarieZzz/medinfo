@@ -16,7 +16,7 @@ initsplitter = function() {
     );
 };
 initdatasources = function() {
-    var patternsource =
+    let patternsource =
     {
         datatype: "json",
         datafields: [
@@ -27,7 +27,7 @@ initdatasources = function() {
         localdata: patterns
     };
     patternDataAdapter = new $.jqx.dataAdapter(patternsource);
-    var periodsource =
+    let periodsource =
     {
         datatype: "json",
         datafields: [
@@ -87,7 +87,7 @@ initformcontrols = function() {
         height: 32
     });
     plist.on('select', function (event) {
-        var args = event.args;
+        let args = event.args;
         current_period = args.item.value;
         $("#periodSelected").html('<div class="text-bold text-info" style="margin-left: -80px; margin-top: 10px">Выбран период: "'+ args.item.label +'"</div>');
     });
@@ -112,11 +112,26 @@ initformactions = function() {
             raiseError("Выберите запись для изменения/сохранения данных");
             return false;
         }
+        $("#progress").html(0);
+        let progres_timer = setInterval(function(){
+            $.get('/reports/patterns/progress', function(data) {
+                $("#progress").html(data + "%").css('width', data + "%");
+            });
+        }, 3000);
         let rowid = ilist.jqxGrid('getrowid', row);
         let route = url + rowid + '/' + current_period + '/' + sortorder + '/perform';
         //console.log(url);
-        //window.open(url);
-        location.replace(route);
+        //let report_window = window.open(route, );
+        //report_window.opener.focus();
+        //report_window.blur();
+        //$( report_window ).load(function() {
+          //  clearInterval(progres_timer);
+        //});
+        location.assign(route);
+        //$( window ).load(function() {
+          //  clearInterval(progres_timer);
+        //});
+
     });
     $("#fordigest").on('click', function() {
         sortorder = 2;

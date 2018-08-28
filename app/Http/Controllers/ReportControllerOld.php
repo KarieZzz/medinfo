@@ -34,7 +34,8 @@ JSON;
         $title = $structure['header']['title'];
         //$indexes = ReportMaker::makeReportByLegal($structure, $level, $period);
         $rp = new ReportMaker($level, $period);
-        $indexes = $rp->makeReportByLegal($structure);
+        $result = $rp->makeReportByLegal($structure);
+        $indexes = $result[0];
         return view('reports.report', compact('indexes', 'title', 'structure', 'count_of_indexes'));
     }
 
@@ -45,8 +46,16 @@ JSON;
         $title = $structure['header']['title'];
         //$indexes = ReportMaker::makeReportByLegal($structure, $level, $period);
         $rp = new ReportMaker($sortorder, $period, $sortorder);
-        $indexes = $rp->makeReportByLegal($structure);
-        return view('reports.report', compact('indexes', 'title', 'structure', 'count_of_indexes'));
+        $resusult = $rp->makeReportByLegal($structure);
+        $indexes = $resusult[0];
+        $calculation_errors = $resusult[1];
+        return view('reports.report', compact('indexes', 'title', 'structure', 'count_of_indexes', 'calculation_errors'));
     }
+
+    public function getProgess() {
+        $manadged = \Session::get('report_progress');
+        $all = \Session::get('count_of_units');
+        return round($manadged/$all*100, 1);
+   }
 
 }
