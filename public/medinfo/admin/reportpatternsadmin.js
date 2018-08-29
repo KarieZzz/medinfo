@@ -112,6 +112,9 @@ initformactions = function() {
             raiseError("Выберите запись для изменения/сохранения данных");
             return false;
         }
+        $('#repProgress').on('hide.bs.modal', function (e) {
+            return false;
+        })
         $("#progress").html(0).css('width', "0%");
         let progres_timer = setInterval(function(){
             $.get('/reports/patterns/progress', function(data) {

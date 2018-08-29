@@ -38,7 +38,7 @@
                         <div class="form-group">
                             <div class="col-sm-offset-2 col-sm-10">
                                 <button type="button" id="edit" class="btn btn-primary">Редактировать шаблон</button>
-                                <button type="button" id="perform" class="btn btn-success" data-toggle="modal" data-target="#myModal">Выполнить отчет</button>
+                                <button type="button" id="perform" class="btn btn-success" data-toggle="modal" data-target="#repProgress">Выполнить отчет</button>
                                 <a href="/reports/patterns/create" class="btn btn-info" role="button">Новый шаблон</a>
                                 <button type="button" id="delete" class="btn btn-danger">Удалить шаблон</button>
                             </div>
@@ -60,10 +60,8 @@
         </div>
     </div>
     <!-- Modal -->
-    <div id="myModal" class="modal fade">
+    <div id="repProgress" class="modal fade">
         <div class="modal-dialog">
-
-            <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">Выполнение отчета</h4>
