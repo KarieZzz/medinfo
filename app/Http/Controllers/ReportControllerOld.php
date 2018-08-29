@@ -53,9 +53,12 @@ JSON;
     }
 
     public function getProgess() {
+        $id = \Session::getId();
         $manadged = \Session::get('report_progress');
+        $current_unit = trim(\Session::get('current_unit'));
         $all = \Session::get('count_of_units');
-        return round($manadged/$all*100, 1);
+        $progress = round($manadged/$all*100, 1);
+        return ['session_id' => $id, 'manadged' => $manadged, 'current_unit' => $current_unit, 'count_of_units' => $all, 'progress' => $progress ] ;
    }
 
 }

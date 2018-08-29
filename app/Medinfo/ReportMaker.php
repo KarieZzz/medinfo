@@ -68,6 +68,7 @@ class ReportMaker
                 break;
         }
         Session::put('report_progress', 0);
+        Session::put('current_unit', '');
         Session::put('count_of_units', $this->units->count());
         Session::save();
 
@@ -140,6 +141,7 @@ class ReportMaker
             $report_units[$unit->id]['row_sum'] = $row_sum;
             $u++;
             Session::put('report_progress', $u);
+            Session::put('current_unit', $unit->unit_name);
             Session::save();
         }
         return [ $report_units, $calculation_errors ];
