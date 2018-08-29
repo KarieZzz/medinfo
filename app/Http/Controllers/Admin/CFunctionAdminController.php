@@ -227,6 +227,19 @@ class CFunctionAdminController extends Controller
         return view('jqxadmin.recompileformprotocol', compact('form','protocol'));
     }
 
+    public function recompileAll()
+    {
+        $protocol = [];
+        $forms = Form::all();
+        foreach ($forms as $form) {
+            $tables = Table::OfForm($form->id)->orderBy('table_index')->get();
+            foreach ($tables as $table) {
+                $protocol[$form->form_code][$table->table_code] = $this->recompile($table);
+            }
+        }
+        return $protocol;
+        //return view('jqxadmin.recompileformprotocol', compact('form','protocol'));
+    }
 
     public function recompileTable($scopeTable)
     {

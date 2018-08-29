@@ -34,12 +34,12 @@
 @endsection
 
 @push('loadcss')
-<link href="{{ asset('/css/medinfoeditform.css?v=008') }}" rel="stylesheet" type="text/css" />
+<link href="{{ asset('/css/medinfoeditform.css?v=012') }}" rel="stylesheet" type="text/css" />
 @endpush('loadcss')
 
 @push('loadjsscripts')
 @include('jqxdatainput.jsstack')
-    <script src="{{ asset('/medinfo/editdashboard.js?v=109') }}"></script>
+    <script src="{{ asset('/medinfo/editdashboard.js?v=120') }}"></script>
 @endpush('loadjsscripts')
 
 @section('inlinejs')

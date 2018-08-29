@@ -62,7 +62,7 @@ $.each(data_for_tables, function(table, content) {
     });
 });
 //console.log(current_table);
-//console.log(data_for_tables);
+console.log(data_for_tables);
 let there_is_calculated = data_for_tables[current_table].calcfields.length > 0;
 let current_row_name_datafield = data_for_tables[current_table].columns[1].dataField;
 let current_row_number_datafield = data_for_tables[current_table].columns[2].dataField;

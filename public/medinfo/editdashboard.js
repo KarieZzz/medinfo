@@ -1012,6 +1012,9 @@ function renderDgrid(rowid) {
     $("#extrabuttons").hide();
     tdropdown.jqxDropDownButton('close');
     splitter.jqxSplitter('collapse');
+    dgrid.jqxGrid('focus');
+    dgrid.jqxGrid({ 'keyboardnavigation': true  });
+    dgrid.jqxGrid('selectcell', 0, data_for_tables[current_table].firstdatacolumn);
 }
 
 // Инициализация вкладки протокола контроля формы
@@ -1096,6 +1099,7 @@ let initdatagrid = function() {
             theme: theme,
             editable: edit_permission,
             editmode: 'selectedcell',
+            //editmode: 'click',
             clipboard: true,
             columnsresize: true,
             //showfilterrow: false,
@@ -1162,7 +1166,9 @@ let initdatagrid = function() {
             }
         });
     });
-
+    dgrid.jqxGrid('focus');
+    dgrid.jqxGrid({ 'keyboardnavigation': true  });
+    dgrid.jqxGrid('selectcell', 0, data_for_tables[current_table].firstdatacolumn);
     dgrid.on('cellselect', function (event)
     {
         let cell_protocol_panel = $("#cellprotocol");
@@ -1341,13 +1347,13 @@ let cellbeginedit = function (row, datafield, columntype, value) {
         }
     }
 };
-let defaultEditor = function (row, cellvalue, editor, celltext, pressedChar) {
-    editor.jqxNumberInput({ decimalDigits: 0, digits: 12 });
+let defaultEditor = function (row, cellvalue, editor) {
+    editor.jqxNumberInput({ decimalDigits: 0, digits: 12  });
 };
-let initDecimal2Editor = function (row, cellvalue, editor, celltext, pressedChar) {
+let initDecimal2Editor = function (row, cellvalue, editor) {
     editor.jqxNumberInput({ decimalDigits: 2, digits: 12, decimalSeparator: ',' });
 };
-let initDecimal3Editor = function (row, cellvalue, editor, celltext, pressedChar) {
+let initDecimal3Editor = function (row, cellvalue, editor) {
     editor.jqxNumberInput({ decimalDigits: 3, digits: 12, decimalSeparator: ',' });
 };
 let cellsrenderer = function (row, column, value, defaulthtml, columnproperties) {

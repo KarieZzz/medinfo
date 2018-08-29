@@ -38,7 +38,7 @@ class TableEditing
         $cols = Column::OfTable($table->id)->orderBy('column_index')->whereDoesntHave('excluded', function ($query) use($album) {
             $query->where('album_id', $album->id);
         })->get();
-
+        $firstDataColumn = null;
         foreach ($cols as $col) {
             $datafields_arr[] = ['name'  => $col->id, 'type'  => 'string', ];
             $width = $col->size; // Ширина графы в пикселях при отображении в браузере
@@ -53,6 +53,9 @@ class TableEditing
                     $editor = 'defaultEditor';
             }
             if ($col->content_type === Column::DATA) {
+                if (!$firstDataColumn) {
+                    $firstDataColumn = $col->id;
+                }
                 $columns_arr[] = array(
                     'text'  => $col->column_code,
                     'dataField' => $col->id,
@@ -60,10 +63,9 @@ class TableEditing
                     'cellsalign' => 'right',
                     'align' => 'center',
                     'cellsrenderer' => 'cellsrenderer',
-                    //'cellsformat' => 'f',
+                    //'cellsformat' => 'n',
                     //'cellsformat' => 'd' . $decimal_count,
                     'columntype' => $columntype,
-                    //'columntype' => ,
                     'columngroup' => $col->id,
                     'filtertype' => 'number',
                     'cellclassname' => 'cellclass',
@@ -115,6 +117,7 @@ class TableEditing
         $fortable['tablecode'] = $table->table_code;
         $fortable['tablename'] = $table->table_name;
         $fortable['index'] = $table->table_index;
+        $fortable['firstdatacolumn'] = $firstDataColumn;
         $fortable['datafields'] = $datafields_arr;
         $fortable['calcfields'] = $calculated_fields;
         $fortable['columns'] = $columns_arr;
