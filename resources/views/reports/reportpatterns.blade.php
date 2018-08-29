@@ -70,7 +70,6 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        {{--<div class="col-sm-2"><h3> <span class="text-danger" id="progress"></span> %</h3></div>--}}
                         <div class="col-sm-12">
                             <div class="progress">
                                 <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
@@ -78,6 +77,14 @@
 
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <p>Обрабатывается:</p>
+                        </div>
+                        <div class="col-sm-8">
+                            <p id="ou"></p>
                         </div>
                     </div>
                 </div>
@@ -104,7 +111,7 @@
 <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/admin/reportpatternsadmin.js?v=026') }}"></script>
+<script src="{{ asset('/medinfo/admin/reportpatternsadmin.js?v=027') }}"></script>
 @endpush
 
 @section('inlinejs')

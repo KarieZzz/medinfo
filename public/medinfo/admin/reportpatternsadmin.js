@@ -115,25 +115,21 @@ initformactions = function() {
         $("#progress").html(0).css('width', "0%");
         let progres_timer = setInterval(function(){
             $.get('/reports/patterns/progress', function(data) {
-                console.log(data);
+                //console.log(data);
                 let p = data.progress + "%";
                 $("#progress").html(p).css('width', p);
+                $("#ou").html(data.current_unit);
             });
         }, 3000);
         let rowid = ilist.jqxGrid('getrowid', row);
         let route = url + rowid + '/' + current_period + '/' + sortorder + '/perform';
-        //console.log(url);
-        let report_window = window.open(route);
+        //let report_window = window.open(route);
         //report_window.opener.focus();
         //report_window.blur();
-        $( report_window ).load(function() {
-            clearInterval(progres_timer);
-        });
-        //location.assign(route);
-        //$( window ).load(function() {
+        //$( report_window ).load(function() {
           //  clearInterval(progres_timer);
         //});
-
+        location.assign(route);
     });
     $("#fordigest").on('click', function() {
         sortorder = 2;
