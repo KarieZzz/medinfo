@@ -21,7 +21,7 @@ localize = function() {
     localizationobj.thousandsseparator = " ";
     localizationobj.decimalseparator = ',';
     localizationobj.emptydatastring = "Нет данных. Установите условия отбора отчетных документов";
-    localizationobj.loadtext = "Загрузка..";
+    localizationobj.loadtext = "Загрузка";
     localizationobj.filtershowrowstring = "Показать строки где:";
     localizationobj.filtersearchstring = "Поиск:";
     return localizationobj;
