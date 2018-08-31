@@ -16,7 +16,7 @@ class UnitListsTable extends Migration
         Schema::create('unit_lists', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name', 128)->unique();
-            $table->string('slug', 64)->unique();
+            $table->string('slug', 32)->unique();
             $table->smallInteger('on_frontend')->index();
             $table->timestamps();
         });

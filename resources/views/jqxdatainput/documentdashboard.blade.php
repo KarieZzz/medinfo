@@ -126,9 +126,9 @@
 <script src="{{ asset('/jqwidgets/jqxbuttons.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxdropdownbutton.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxinput.js') }}"></script>
-<script src="{{ asset('/jqwidgets/jqxtextarea.js') }}"></script>
+<script src="{{ asset('/jqwidgets/jqxtextarea.js?v=001') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxcheckbox.js') }}"></script>
-<script src="{{ asset('/jqwidgets/jqxradiobutton.js') }}"></script>
+<script src="{{ asset('/jqwidgets/jqxradiobutton.js?v=001') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxlistbox.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxdropdownlist.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxgrid.js') }}"></script>
@@ -140,7 +140,7 @@
 <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/documentdashboard.js?v=104') }}"></script>
+<script src="{{ asset('/medinfo/documentdashboard.js?v=106') }}"></script>
 @endpush
 
 @section('inlinejs')
