@@ -46,7 +46,7 @@
 <script src="{{ asset('/jqwidgets/jqxmenu.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxnotification.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>
-<script src="{{ asset('/medinfo/admin/admin.js?v=000') }}"></script>
+<script src="{{ asset('/medinfo/admin/admin.js?v=001') }}"></script>
 <script src="{{ asset('/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
 @stack('loadjsscripts')
 <script type="text/javascript">
