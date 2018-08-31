@@ -264,6 +264,7 @@ aggregatedata = function() {
         //data: data,
         success: function (data, status, xhr) {
             if (typeof data.affected_cells !== 'undefined') {
+                console.log(data);
                 if (data.affected_cells > 0) {
                     raiseInfo("Сведение данных завершено");
                     rowdata.aggregated_at = data.aggregated_at;
