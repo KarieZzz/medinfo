@@ -52,7 +52,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="medinfo_id">Медстат НСК Id:</label>
+                        <label class="control-label col-sm-3" for="medstatnsk_id">Медстат НСК Id:</label>
                         <div class="col-sm-2">
                             <input type="text" class="form-control" id="medstatnsk_id">
                         </div>
@@ -103,7 +103,7 @@
 @endsection
 
 @push('loadjsscripts')
-    <script src="{{ asset('/jqwidgets/jqxsplitter.js') }}"></script>
+{{--    <script src="{{ asset('/jqwidgets/jqxsplitter.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxdata.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxpanel.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxscrollbar.js') }}"></script>
@@ -121,7 +121,7 @@
     <script src="{{ asset('/jqwidgets/jqxgrid.sort.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
+    <script src="{{ asset('/jqwidgets/localization.js') }}"></script>--}}
     <script src="{{ asset('/medinfo/admin/tableadmin.js?v=023') }}"></script>
 @endpush
 

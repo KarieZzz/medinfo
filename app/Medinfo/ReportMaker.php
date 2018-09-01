@@ -15,6 +15,7 @@ use App\Form;
 use App\Table;
 use App\Document;
 use App\Cell;
+use Mockery\Exception;
 use \Session;
 
 class ReportMaker
@@ -117,8 +118,13 @@ class ReportMaker
                 $populationlinks = preg_match_all('/население\((\d{1,})\)/u', $formula, $populationmatches, PREG_SET_ORDER);
                 foreach ($populationmatches as $populationmatch) {
                     $populationgroup = $populationmatch[1];
-                    $population = $this->getPopulation($populationgroup, $unit);
-                    $formula = str_replace($populationmatch[0], $population, $formula);
+                    try {
+                        $population = $this->getPopulation($populationgroup, $unit);
+                        $formula = str_replace($populationmatch[0], $population, $formula);
+                    } catch (\Exception $e) {
+                        $calculation_errors[] = ['formula' => $formula, 'error' => $e->getMessage(), 'unit' => $unit];
+                        $formula = str_replace($populationmatch[0], 0, $formula);
+                    }
                 }
                 $m = new EvalMath;
                 $value = 0;
@@ -225,15 +231,17 @@ class ReportMaker
                 //dd($unit);
                 //dd($this->population_form);
                 $document = Document::OfTUPF( 2, $unit->id, $this->period->id, $this->population_form->id)->first();
-                //$cells = Cell::OfDocument($document->id)->get();
-
+                if (!$document) {
+                    throw new \Exception("Форма \"(100) Население\" не найдена");
+                }
                 $cell = Cell::OfDRC(
                     $document->id,
                     $this->population_rows->where('row_code', $population_group)->first()->id,
                     $this->population_column->where('column_index', 3)->first()->id
                 )->first();
-                //dd($cell);
-                //$population = $cells[$population_group - 1]->value;
+                if (!$cell) {
+                    throw new \Exception("В форма \"(100) Население\" не найдена запрошенная группа населения ($population_group)");
+                }
                 $population = $cell->value;
                 break;
             case $unit->node_type == 3 || $unit->node_type == 4 :

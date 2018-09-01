@@ -84,7 +84,7 @@
 @endsection
 
 @push('loadjsscripts')
-    <script src="{{ asset('/jqwidgets/jqxsplitter.js') }}"></script>
+{{--    <script src="{{ asset('/jqwidgets/jqxsplitter.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxdata.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxpanel.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxscrollbar.js') }}"></script>
@@ -100,7 +100,7 @@
     <script src="{{ asset('/jqwidgets/jqxgrid.columnsresize.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxgrid.selection.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
+    <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>--}}
     <script src="{{ asset('/plugins/pgenerator/jquery.pGenerator.js') }}"></script>
     <script src="{{ asset('/medinfo/admin/workeradmin.js?v=001') }}"></script>
 @endpush

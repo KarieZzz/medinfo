@@ -38,7 +38,6 @@
 @endpush('loadcss')
 
 @push('loadjsscripts')
-@include('jqxdatainput.jsstack')
     <script src="{{ asset('/medinfo/editdashboard.js?v=128') }}"></script>
 @endpush('loadjsscripts')
 

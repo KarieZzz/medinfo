@@ -174,7 +174,7 @@
 @endsection
 
 @push('loadjsscripts')
-    <script src="{{ asset('/jqwidgets/jqxsplitter.js') }}"></script>
+{{--    <script src="{{ asset('/jqwidgets/jqxsplitter.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxdata.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxpanel.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxscrollbar.js') }}"></script>
@@ -192,7 +192,7 @@
     <script src="{{ asset('/jqwidgets/jqxgrid.sort.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
+    <script src="{{ asset('/jqwidgets/localization.js') }}"></script>--}}
     <script src="{{ asset('/medinfo/admin/tablepicker.js?v=007') }}"></script>
     <script src="{{ asset('/medinfo/admin/rcadmin.js?v=033') }}"></script>
 @endpush

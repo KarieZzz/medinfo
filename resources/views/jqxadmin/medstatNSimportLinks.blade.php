@@ -43,13 +43,13 @@
 @endsection
 
 @push('loadjsscripts')
-    <script src="{{ asset('/jqwidgets/jqxdata.js') }}"></script>
+{{--    <script src="{{ asset('/jqwidgets/jqxdata.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxscrollbar.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxbuttons.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxcheckbox.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxlistbox.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxdropdownlist.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
+    <script src="{{ asset('/jqwidgets/localization.js') }}"></script>--}}
     <script src="{{ asset('/medinfo/admin/medstatnskstructinport.js?v=004') }}"></script>
 @endpush
 
