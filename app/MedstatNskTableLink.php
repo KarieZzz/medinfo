@@ -21,7 +21,11 @@ class MedstatNskTableLink extends Model
 
     public function scopeOfForm($query, $id)
     {
-        return $query
-            ->where('form_id', $id);
+        return $query->where('form_id', $id);
+    }
+
+    public function scopeOfTableCode($query, $table_code)
+    {
+        return $query->where('tablen', $table_code);
     }
 }

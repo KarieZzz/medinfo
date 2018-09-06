@@ -17,7 +17,7 @@ class MedstatNskDataImportController extends Controller
         $this->middleware('admins');
     }
 
-    public function selectFileNSMedstatData(Request $request)
+    public function selectFileNSMedstatData()
     {
         return view('jqxadmin.medstatNSimportData');
     }

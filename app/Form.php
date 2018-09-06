@@ -60,11 +60,14 @@ class Form extends Model
         return $query->whereNull('medstat_code');
     }
 
+    public function scopeHasMedstatNSK($query)
+    {
+        return $query->whereNotNull('medstatnsk_id');
+    }
+
     public function scopeNSK($query, $id)
     {
         return $query->where('medstatnsk_id', $id);
     }
-
-
 
 }

@@ -21,9 +21,7 @@ class Row extends Model
 
     public function scopeOfTable($query, $table)
     {
-        return $query
-            //->orderBy('row_index')
-            ->where('table_id', $table);
+        return $query->where('table_id', $table);
     }
 
     public function scopeOfTableRowIndex($query, $table, $rowindex)
@@ -49,7 +47,13 @@ class Row extends Model
 
     public function scopeInMedstat($query)
     {
+        return $query->whereNotNull('medstat_code');
+    }
+
+    public function scopeOfTableRowMedstatNskCode($query, $table, $medstatnsk_id)
+    {
         return $query
-            ->whereNotNull('medstat_code');
+            ->where('table_id', $table)
+            ->where('medstatnsk_id', $medstatnsk_id);
     }
 }

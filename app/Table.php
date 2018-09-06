@@ -65,6 +65,11 @@ class Table extends Model
         return $query->where('medstat_code', $code);
     }
 
+    public function scopeHasMedstatNskId($query)
+    {
+        return $query->whereNotNull('medstatnsk_id');
+    }
+
     public function scopeOfMedstatNsk($query, $id)
     {
         return $query->where('medstatnsk_id', $id);

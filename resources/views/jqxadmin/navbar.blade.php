@@ -49,6 +49,7 @@
                     <li><a href="/reports/patterns">Отчеты</a></li>
                     <li><a href="/reports/br/querycomposer">Справка</a></li>
                     <li type="separator"></li>
+                    <li><a href="/admin/cfunctions/medstatnskimport">Импорт контролей из формата Медстат (Новосибирск)</a></li>
 {{--                    <li><a href="/admin/micontrols/vtk">Методики контроля Мединфо (внутритабличные)</a></li>
                     <li><a href="/admin/micontrols/vfk">Методики контроля Мединфо (внутриформенные)</a></li>
                     <li><a href="/admin/micontrols/mfk">Методики контроля Мединфо (межформенные)</a></li>--}}
