@@ -90,6 +90,8 @@ class ConvertNskControls
         $elements = preg_split('/[\+\-]/', $part);
         $part_replacements = [];
         $convert_errors = [];
+        $row_summ_keys = [];
+        $column_summ_keys = [];
         foreach ( $elements as $element ) {
             $element_replacements = [];
             // преобразования простых ссылок на строки
@@ -109,12 +111,13 @@ class ConvertNskControls
                         $diapazon = explode('..', $summ_element);
                         $row1 = Row::OfTableRowIndex($table->id, $diapazon[0])->first();
                         $row2 = Row::OfTableRowIndex($table->id, $diapazon[1])->first();
-                        $summ_element = 'С' . $row1->row_code . ':C' . $row2->row_code;
+                        $summ_element = 'С' . $row1->row_code . ':С' . $row2->row_code;
                     } else {
                         $row = Row::OfTableRowIndex($table->id, $summ_element)->first();
                         $summ_element = 'С' . $row->row_code;
                     }
                 }
+                $row_summ_keys[] = count($element_replacements);
                 $element_replacements[] = 'сумма(' . implode(',', $summ_elements) . ')';
             }
             if (preg_match('/Г(\d+)/u', $element, $column_simple)) {
@@ -139,11 +142,30 @@ class ConvertNskControls
                         $summ_element = 'Г' . $column->column_code;
                     }
                 }
+                $column_summ_keys[] = count($element_replacements);
                 $element_replacements[] = 'сумма(' . implode(',', $col_summ_elements) . ')';
             }
 
-            if (count($element_replacements) > 0 ) {
-                $part_replacements[] = $element_replacements[0] . (isset($element_replacements[1]) ? $element_replacements[1] : '');
+
+            if ( count($element_replacements) === 1 ) {
+                $part_replacements[] = $element_replacements[0];
+            } elseif ( count($element_replacements) === 2 ) {
+                switch (true) {
+                    case (count($row_summ_keys) === 0 && count($column_summ_keys) === 0) :
+                        $part_replacements[] = $element_replacements[0] . $element_replacements[1];
+                        break;
+                    case isset($row_summ_keys[0]) :
+                        if ($row_summ_keys[0] === 0) {
+                            //preg_match_all('/С[0-9.\-]/u', $element_replacements[0], $matches);
+                            //dump(preg_match_all('/С([\w.-]+)/u', $element_replacements[0], $matches));
+                            //dump($element_replacements[0]);
+                            //dd($matches);
+                            $part_replacements[] = preg_replace('/С[0-9.\-]+/u', '\0' . $element_replacements[1], $element_replacements[0]);
+                            unset($element_replacements[1]);
+                            //dd($part_replacements);
+                        }
+                        break;
+                }
             }
 
             /*                $element_replacements[] = preg_replace_callback('/(?:(?:Г(?P<col_summ_pre>\[[0-9.,]{4,}\]))|(?:Г(?P<col_simple_pre>\d+)))?(?:(?:С(?P<row_summ>\[[0-9.,]{4,}\]))|(?:С(?P<row_simple>\d+)))?(?:(?:Г(?P<col_summ_after>\[[0-9.,]{4,}\]))|(?:Г(?P<col_simple_after>\d+)))?/u', function ($matches) {

@@ -67,7 +67,7 @@ let updateFunctionList = function() {
 let initButtons = function() {
     $('#blocked').jqxSwitchButton({
         height: 31,
-        width: 81,
+        width: 120,
         onLabel: 'Да',
         offLabel: 'Нет',
         checked: false });

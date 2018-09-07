@@ -222,13 +222,13 @@ initButtons = function() {
     });
     $('#excludedRow').jqxSwitchButton({
         height: 31,
-        width: 81,
+        width: 120,
         onLabel: 'Да',
         offLabel: 'Нет',
         checked: false });
     $('#excludedColumn').jqxSwitchButton({
         height: 31,
-        width: 81,
+        width: 120,
         onLabel: 'Да',
         offLabel: 'Нет',
         checked: false });
