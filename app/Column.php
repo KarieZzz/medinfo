@@ -10,10 +10,10 @@ class Column extends Model
     const HEADER        = 1;
     const CALCULATED    = 2;
     const DATA          = 4;
-    const COMMENT       = 5;
+    const SUBHEADER     = 5;
 
     protected $fillable = [
-        'table_id', 'column_index', 'column_code', 'column_name', 'content_type', 'size', 'decimal_count', 'medstat_code', 'medinfo_id',
+        'table_id', 'column_index', 'column_code', 'column_name', 'content_type', 'size', 'decimal_count', 'medstat_code', 'medstatnsk_id',
     ];
 
     public function excluded()
@@ -43,7 +43,7 @@ class Column extends Model
             case self::DATA :
                 $contentType = 'data';
                 break;
-            case self::COMMENT :
+            case self::SUBHEADER :
                 $contentType = 'comment';
                 break;
             default :
@@ -60,7 +60,7 @@ class Column extends Model
 
     public function scopeWhithoutComment($query)
     {
-        return $query->where('content_type', '<>' , self::COMMENT);
+        return $query->where('content_type', '<>' , self::SUBHEADER);
     }
 
     public function scopeOfTable($query, $table)
@@ -89,6 +89,23 @@ class Column extends Model
         return $query
             ->where('table_id', $table)
             ->where('medstat_code', $mscode);
+    }
+
+    public function scopeHeader($query)
+    {
+        return $query->where('content_type', self::HEADER);
+    }
+
+    public function scopeSubheader($query)
+    {
+        return $query->where('content_type', self::SUBHEADER);
+    }
+
+    public function scopeHeaders($query)
+    {
+        return $query
+            ->where('content_type', self::HEADER)
+            ->orWhere('content_type', self::SUBHEADER);
     }
 
     public function scopeCalculated($query)
