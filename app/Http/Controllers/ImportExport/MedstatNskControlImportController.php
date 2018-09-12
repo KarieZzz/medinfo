@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\ImportExport;
 
+use App\MedstatNskTableLink;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -68,7 +69,9 @@ class MedstatNskControlImportController extends Controller
             GROUP BY nn.form, nn.\"table\", nn.\"left\", nn.\"right\", nn.relation, nn.cycle );";
         $dubs_count = \DB::delete($delete_duplicates);
 
-        \App\Medinfo\Control\ConvertNskControls::covertInTable();
+        $converter = new \App\Medinfo\Control\ConvertNskControls();
+        //$converter->covertInTable();
+        $converter->convertInterTable();
 
         $rec_count = MedstatNskControl::count();
         $inter_form_count = MedstatNskControl::InterForm()->count();
