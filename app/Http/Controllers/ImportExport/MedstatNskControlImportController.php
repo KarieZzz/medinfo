@@ -70,8 +70,9 @@ class MedstatNskControlImportController extends Controller
         $dubs_count = \DB::delete($delete_duplicates);
 
         $converter = new \App\Medinfo\Control\ConvertNskControls();
-        //$converter->covertInTable();
-        $converter->convertInterTable();
+        //$converter->covertInTableControls();
+        //$converter->convertInterTableControls();
+        $converter->convertInterFormControls();
 
         $rec_count = MedstatNskControl::count();
         $inter_form_count = MedstatNskControl::InterForm()->count();
