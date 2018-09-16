@@ -23,17 +23,35 @@
                     </li>
                 @endforeach
             </ol>--}}
-             <h4>Для последующей загрузки необходимо выбрать формы</h4>
-             <form style="margin-top: 3px" action="/admin/cfunctions/medstatimportmake" method="post" enctype="multipart/form-data">
+             <form style="margin-top: 3px" action="/admin/cfunctions/medstatnskimportmake" method="post" enctype="multipart/form-data">
                  <div class="form-group">
-                     <label for="error_level">Установить уровень ошибки для импортируемых контролей:</label>
+                     <label for="error_level">Уровень ошибки импортируемых контролей:</label>
                      <select class="form-control" name="error_level" id="error_level">
                          <option value="1">Ошибка</option>
                          <option value="2">Предупреждение</option>
                      </select>
                  </div>
                  <div class="form-group">
-                     <label for="selectForm">Загружать данные из выбранных форм</label>
+                     <label for="initial_status">Исходный статус импортируемых контролей:</label>
+                     <select class="form-control" name="initial_status" id="initial_status">
+                         <option value="1">Включен</option>
+                         <option value="2">Блокирован</option>
+                     </select>
+                 </div>
+                 <div class="form-group">
+                     <label>Виды импортируемых контролей:</label>
+                     <div class="checkbox">
+                         <label><input type="checkbox" name="control_type_import[]" value="1">Внутритабличные</label>
+                     </div>
+                     <div class="checkbox">
+                         <label><input type="checkbox" name="control_type_import[]" value="2">Межтабличные</label>
+                     </div>
+                     <div class="checkbox disabled">
+                         <label><input type="checkbox" name="control_type_import[]" value="3">Межформенные</label>
+                     </div>
+                 </div>
+                 <div class="form-group">
+                     <label for="selectForm">Формы, из которых будут импортированы контроли:</label>
                      <div id="selectForm"></div>
                  </div>
                  <div class="form-group">

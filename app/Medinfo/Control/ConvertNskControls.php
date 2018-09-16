@@ -27,40 +27,50 @@ class ConvertNskControls
     public $convert_errors = [];
     public $column_offset;
 
-    public function __construct($selected_form = null)
+    public function __construct(array $selected_forms)
     {
-        if (!$selected_form) {
-            $this->forms = Form::Real()->HasMedstatNSK()->get();
-            //$this->forms = Form::Real()->HasMedstatNSK()->where('form_code', '30')->get();
-            //$this->forms = Form::Real()->HasMedstatNSK()->where('form_code', '14')->get();
-        }
+        $this->forms = Form::Real()->HasMedstatNSK()->whereIn('id', $selected_forms)->get();
     }
 
     public function covertInTableControls()
     {
+        $this->convert_errors = [];
+        $this->table_errors = [];
+        $converted = [];
+        $i = 0;
         foreach ($this->forms as $this->form) {
+            $converted['forms'][$i] = ['form' => [ 'form_id' => $this->form->id, 'form_code' =>  $this->form->form_code ]];
             $table_links = MedstatNskTableLink::OfForm($this->form->medstatnsk_id)->orderBy('tablen')->get();
+            $j = 0;
             foreach ($table_links as $table_link) {
+                $this->host_form = $this->form;
                 $this->host_table = Table::OfMedstatNsk($table_link->id)->first();
-                if (!$this->table) {
+                if (!$this->host_table) {
                     $this->table_errors[] = ['form_code' => $this->form->form_code, 'table_code' => $table_link->tablen, 'comment' => 'Таблица отсутствует в системе'];
                 } else {
                     $intables = MedstatNskControl::InTable()->NSKForm($this->form->medstatnsk_id)->NSKTableCode($table_link->tablen)->orderBy('left')->get();
                     $table_fixcol = Column::OfTable($this->host_table->id)->Headers()->count();
                     $this->column_offset = $table_link->fixcol - $table_fixcol;
-                    $converted = $this->convertInTables($intables);
+                    $converted['forms'][$i]['form']['tables'][$j]['table'] = ['table_id' => $this->host_table->id, 'table_code' => $this->host_table->table_code];
+                    $converted['forms'][$i]['form']['tables'][$j]['scripts'] = $this->convertInTables($intables);
+                    $j++;
                 }
             }
+            $i++;
         }
-        dump($this->convert_errors);
-        dd($this->table_errors);
-        //dd($form);
+        $converted['convert_errors'] = $this->convert_errors;
+        $converted['table_errors'] = $this->table_errors;
+        return $converted;
+
     }
 
     public function convertInterTableControls()
     {
+        $this->convert_errors = [];
+        $this->table_errors = [];
         foreach ($this->forms as $this->form) {
             $intertables = MedstatNskControl::InterTable()->NSKForm($this->form->medstatnsk_id)->orderBy('left')->get();
+            $this->host_form = $this->form;
             $converted = $this->convertInterTables($intertables);
         }
         dump($this->convert_errors);
@@ -77,9 +87,9 @@ class ConvertNskControls
             $left = $this->initialProcessing($interform->left);
             $right = $this->initialProcessing($interform->right);
             $lefmost_ft_link_found = preg_match('/Ф([а-яА-СУ-Я0-9]+)Т\([0-9\.]*(\d{4})\)/u', $left, $lefmost_link);
-            //dd($lefmost_link);
             if ($lefmost_ft_link_found) {
-                $this->host_form = Form::OfCode($lefmost_link[1])->first();
+                $nsk_form = MedstatNskFormLink::OfCode('Ф'. $lefmost_link[1])->first();
+                $this->host_form = $nsk_form->form;
                 //dd($this->host_form);
                 if (!$this->host_form) {
                     $this->table_errors[] = ['form_code' => $lefmost_link[1], 'table_code' => $lefmost_link[2], 'comment' => 'Форма отсутствует в системе'];
@@ -97,7 +107,9 @@ class ConvertNskControls
                     'table_code' => 'В формуле межформенного контроля не найдена ссылка на форму/таблицу'];
                 continue;
             }
+
             $converted_left = $this->convertInterFormPart($left);
+            //dd($converted_left);
             $converted_right = $this->convertInterFormPart($right);
             echo '<p style="color: blue">сравнение(' . $converted_left . ', ' . $converted_right . ', ' . $interform->relation . ')</p>';
         }
@@ -107,21 +119,21 @@ class ConvertNskControls
 
     public function convertInTables($intables)
     {
-        $converted = 0;
-        foreach ($intables as $intable) {
-            echo '<p>' . $intable->left . ' ' . $intable->relation . ' ' . $intable->right . ' scope:' . $intable->cycle . '</p>';
-            $left = $this->initialProcessing($intable->left);
-            $right = $this->initialProcessing($intable->right);
+        $converted = [];
+        $count = $intables->count();
+        for ($i = 0; $i < $count; $i++) {
+        //foreach ($intables as $intable) {
+            $converted[$i]['source_script'] = $intables[$i]->left . ' ' . $intables[$i]->relation . ' ' . $intables[$i]->right . ' scope:' . $intables[$i]->cycle ;
+            $left = $this->initialProcessing($intables[$i]->left);
+            $right = $this->initialProcessing($intables[$i]->right);
             $converted_left = $this->convertPart($left);
             $converted_right = $this->convertPart($right);
-            if (empty($intable->cycle)) {
-                echo '<p style="color: blue">сравнение(' . $converted_left . ', ' . $converted_right . ', ' . $intable->relation . ')</p>';
+            if (empty($intables[$i]->cycle)) {
+                $converted[$i]['converted_script'] = 'сравнение(' . $converted_left . ', ' . $converted_right . ', ' . $intables[$i]->relation;
             } else {
-                $converted_iteration = $this->convertIteration($intable->cycle);
-                echo '<p style="color: blue">сравнение(' . $converted_left . ', ' . $converted_right . ', ' . $intable->relation . ' , ,' . $converted_iteration . ')</p>';
+                $converted_iteration = $this->convertIteration($intables[$i]->cycle);
+                $converted[$i]['converted_script'] = 'сравнение(' . $converted_left . ', ' . $converted_right . ', ' . $intables[$i]->relation . ' , ,' . $converted_iteration;
             }
-
-            $converted++;
         }
         return $converted;
     }
@@ -198,7 +210,6 @@ class ConvertNskControls
 
     public function convertInterFormPart($part)
     {
-        //$part = 'Ф36Т(2100)СТР3ГР10';
         $form_table_found = preg_match_all('/Ф([а-яА-СУ-Я0-9]+)Т\([0-9\.]*(\d{4})\)/u', $part, $form_table_codes);
         //dd($form_table_codes);
         if (!$form_table_found) {
@@ -259,6 +270,7 @@ class ConvertNskControls
         $i = 0;
         //dump($elements);
         foreach ($elements as $element) {
+            //dump($element);
             if (!$this->setCurrentForm($form_prefixes[$i])) {
                 $form_prefixes[$i] = "Ошибка конвертирования кода формы ({$form_prefixes[$i]})";
             }
@@ -275,9 +287,13 @@ class ConvertNskControls
             //dump($row_key, $row_summ_key, $column_key, $column_summ_key);
             empty($prefixes[$i]) ? $tlink = '' : $tlink = 'Т' . $prefixes[$i];
             empty($form_prefixes[$i]) ? $flink = '' : $flink = 'Ф' . $form_prefixes[$i];
+            //dump($element_replacements);
+            //dd($this->form);
             if (count($element_replacements) === 1) {
+
                 $part_replacements[] = $flink . $tlink . $element_replacements[0];
             } elseif (count($element_replacements) === 2) {
+
                 switch (true) {
                     case (!$row_summ_key && !$column_summ_key) :
                         $part_replacements[] = $flink . $tlink . $element_replacements[0] . $element_replacements[1];
@@ -375,6 +391,7 @@ class ConvertNskControls
 
     public function setCurrentForm($code)
     {
+        //dd($this->host_form);
         if (empty($code)) {
             $this->form = $this->host_form;
         } else {

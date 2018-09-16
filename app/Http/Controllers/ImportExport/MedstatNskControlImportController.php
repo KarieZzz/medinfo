@@ -68,12 +68,6 @@ class MedstatNskControlImportController extends Controller
             FROM medstat_nsk_controls nn
             GROUP BY nn.form, nn.\"table\", nn.\"left\", nn.\"right\", nn.relation, nn.cycle );";
         $dubs_count = \DB::delete($delete_duplicates);
-
-        $converter = new \App\Medinfo\Control\ConvertNskControls();
-        //$converter->covertInTableControls();
-        //$converter->convertInterTableControls();
-        $converter->convertInterFormControls();
-
         $rec_count = MedstatNskControl::count();
         $inter_form_count = MedstatNskControl::InterForm()->count();
         $inter_table_count = MedstatNskControl::InterTable()->count();
@@ -81,5 +75,30 @@ class MedstatNskControlImportController extends Controller
         $forms = \App\Form::orderBy('form_code')->get(['id', 'form_code', 'form_name']);
         return view('jqxadmin.medstatNSControlsimportIntermediateResult', compact( 'rec_count', 'inter_form_count',
             'inter_table_count', 'intable_count', 'dubs_count', 'forms' ));
+    }
+
+    public function makeNSMedstatControlImport(Request $request)
+    {
+        $this->validate($request, [
+                'control_type_import' => 'required|array',
+                'formids' => 'required',
+                'selectedallforms' => 'in:1,0',
+
+            ]
+        );
+        $formids = explode(',', $request->formids);
+        $converter = new \App\Medinfo\Control\ConvertNskControls($formids);
+        if (in_array('1', $request->control_type_import)) {
+            $intables = $converter->covertInTableControls();
+            dd($intables);
+        }
+        if (in_array('2', $request->control_type_import)) {
+            //$converter->convertInterTableControls();
+        }
+        if (in_array('3', $request->control_type_import)) {
+            //$converter->convertInterFormControls();
+        }
+
+
     }
 }

@@ -98,6 +98,7 @@ return [
     'custom'               => [
         'attribute-name' => [
             'rule-name' => 'custom-message',
+
         ],
     ],
     /*
@@ -121,7 +122,9 @@ return [
         'album' => 'альбом форм',
         'album_name' => 'имя альбома',
         'columns' => 'столбцы',
+        'control_type_import' => 'типы импортируемых контролей',
         'form_id' => 'идентификатор формы',
+        'formids' => 'коды форм',
         'name' => 'наименование',
         'password' => 'пароль',
         'periodicity' => 'периодичность',
@@ -131,6 +134,5 @@ return [
         'table_name' => 'наименование таблицы',
         'unit_name' => 'наименование организационной единицы',
         'unit_code' => 'код организационной единицы',
-
     ],
 ];

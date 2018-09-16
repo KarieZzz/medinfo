@@ -232,6 +232,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     // Импорт контролей из формата Медстат(Новосибирск)
     Route::get('admin/cfunctions/medstatnskimport', 'ImportExport\MedstatNskControlImportController@selectFileNSMedstatControls');
     Route::post('admin/cfunctions/medstatnskimport', 'ImportExport\MedstatNskControlImportController@uploadFileNSMedstatControlCsv');
+    Route::post('admin/cfunctions/medstatnskimportmake', 'ImportExport\MedstatNskControlImportController@makeNSMedstatControlImport');
 
 
     // Утилиты для обслуживания системы
