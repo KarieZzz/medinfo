@@ -1,7 +1,7 @@
 @extends('jqxadmin.app')
 
-@section('title', 'Загрузка данных из формата Медстат (Новосибирск)')
-@section('headertitle', 'Менеджер загрузки данных из формата Медстат (Новосибирск)')
+@section('title', 'Импорт контролей из формата Медстат (Новосибирск)')
+@section('headertitle', 'Менеджер импорта контролей из формата Медстат (Новосибирск)')
 
 @section('content')
     @include('jqxadmin.error_alert')
@@ -46,8 +46,8 @@
                      <div class="checkbox">
                          <label><input type="checkbox" name="control_type_import[]" value="2">Межтабличные</label>
                      </div>
-                     <div class="checkbox disabled">
-                         <label><input type="checkbox" name="control_type_import[]" value="3">Межформенные</label>
+                     <div class="checkbox">
+                         <label><input type="checkbox" name="control_type_import[]" value="3">Межформенные <span class="text-danger">*</span></label>
                      </div>
                  </div>
                  <div class="form-group">
@@ -60,7 +60,11 @@
                  </div>
                  <input id="formids" name="formids" type="hidden" value="">
                  <input id="selectedallforms" name="selectedallforms" type="hidden" value="">
-                  <button type="submit" class="btn btn-primary">Импортировать</button>
+                 <div class="checkbox">
+                     <label><input type="checkbox" name="clear_old_controls" value="1">Удалить контроли из выделенных форм перед импортом </label>
+                 </div>
+                 <button type="submit" class="btn btn-primary">Импортировать</button>
+                 <p class="text-info" style="padding-top: 10px">* - межформенные контроли импортируются все, внезависимости от выбранных форм</p>
             </form>
         </div>
         </div>
