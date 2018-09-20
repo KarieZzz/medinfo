@@ -102,10 +102,11 @@ class MedstatNskControlImportController extends Controller
             foreach ($forms as $form) {
                 $tables = Table::OfForm($form->id)->get();
                 foreach ($tables as $table) {
-                    $deleted_old += CFunction::OfTable($table->id)->delete();
+                    $deleted_old += CFunction::OfTable($table->id)->InForm()->delete();
                 }
             }
         }
+        $function_id = 1; // Функция "сравнение"
         $converter = new \App\Medinfo\Control\ConvertNskControls($formids);
         $intables_saved_count = 0;
         $intertables_saved_count = 0;
@@ -114,7 +115,6 @@ class MedstatNskControlImportController extends Controller
             $intables = $converter->covertInTableControls();
             //dd($intables);
             $control_type = 1; // Внутриформенный контроль
-            $function_id = 1; // Функция "сранвение"
             foreach ( $intables['forms'] as  $intable_form ) {
                 foreach ($intable_form['tables'] as $int_table) {
                     foreach ($int_table['scripts'] as $int_script) {
@@ -136,10 +136,8 @@ class MedstatNskControlImportController extends Controller
         }
         if (in_array('2', $request->control_type_import)) {
             $intertables = $converter->convertInterTableControls();
-            $control_type = 1; // Внутриформенный контроль
             //dd($intertables);
             $control_type = 1; // Внутриформенный контроль
-            $function_id = 1; // Функция "сранвение"
             foreach ( $intertables['forms'] as  $intertable_form ) {
                 foreach ($intertable_form['tables'] as $inter_table) {
                     $newfunction = new CFunction();
@@ -157,9 +155,25 @@ class MedstatNskControlImportController extends Controller
         }
         if (in_array('3', $request->control_type_import)) {
             $interforms = $converter->convertInterFormControls();
-            $control_type = 2; // Межформенный контроль
             //dd($interforms);
+            if ($request->clear_old_controls) {
+                $deleted_old_interform = CFunction::InterForm()->delete();
+            }
+            $control_type = 2; // Межформенный контроль
+            foreach ($interforms['scripts'] as $interform) {
+                $newfunction = new CFunction();
+                $newfunction->table_id = $interform['table']['table_id'];
+                $newfunction->level = $request->error_level;
+                $newfunction->script = $interform['converted_script'];
+                $newfunction->comment = $interform['comment'];
+                $newfunction->blocked = $blocked;
+                $newfunction->type = $control_type;
+                $newfunction->function = $function_id;
+                $newfunction->save();
+                $interform_saved_count++;
+            }
         }
+
         $all = $intables_saved_count + $intertables_saved_count + $interform_saved_count;
         return view('jqxadmin.medstatNSControlsimportFinalResult', compact( 'forms','all', 'intables_saved_count', 'intertables_saved_count', 'interform_saved_count'));
     }

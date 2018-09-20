@@ -111,8 +111,8 @@ class ConvertNskControls
                     $this->table_errors[] = ['form_code' => $this->host_form->form_code, 'table_code' => $lefmost_link[2], 'comment' => 'Таблица отсутствует в системе'];
                     continue;
                 }
-                $converted[$i]['form'] = [ 'form_id' => $this->host_form->id, 'form_code' =>  $this->host_form->form_code ];
-                $converted[$i]['table'] = ['table_id' => $this->host_table->id, 'table_code' => $this->host_table->table_code];
+                $converted['scripts'][$i]['form'] = [ 'form_id' => $this->host_form->id, 'form_code' =>  $this->host_form->form_code ];
+                $converted['scripts'][$i]['table'] = ['table_id' => $this->host_table->id, 'table_code' => $this->host_table->table_code];
             } else {
                 $this->convert_errors[] = ['element' => '',
                     'formula' => $source_formula,
@@ -123,8 +123,9 @@ class ConvertNskControls
 
             $converted_left = $this->convertInterFormPart($left);
             $converted_right = $this->convertInterFormPart($right);
-            $converted[$i]['source_script'] = $source_formula;
-            $converted[$i]['converted_script'] = 'сравнение(' . $converted_left . ', ' . $converted_right . ', ' . $interform->relation . ')';
+            $converted['scripts'][$i]['source_script'] = $source_formula;
+            $converted['scripts'][$i]['comment'] = $interform->comment . ' (конв. МС(НСК) ' . $this->datetime . ')';
+            $converted['scripts'][$i]['converted_script'] = 'сравнение(' . $converted_left . ', ' . $converted_right . ', ' . $interform->relation . ')';
             $i++;
         }
         $converted['convert_errors'] = $this->convert_errors;
@@ -185,7 +186,7 @@ class ConvertNskControls
             //dd($converted_right);
             $converted[$i] = ['table_id' => $this->host_table->id, 'table_code' => $this->host_table->table_code];
             $converted[$i]['scripts']['source_script'] = $source_formula;
-            $converted[$i]['scripts']['comment'] =  $intertable->comment;
+            $converted[$i]['scripts']['comment'] =  $intertable->comment . ' (конв. МС(НСК) ' . $this->datetime . ')';
             if (empty($intertable->cycle)) {
                 $converted[$i]['scripts']['converted_script'] = 'сравнение(' . $converted_left . ', ' . $converted_right . ', ' . $intertable->relation . ')';
             } else {
@@ -200,7 +201,6 @@ class ConvertNskControls
 
     public function convertInterTabPart($part, $form_prefixes = null)
     {
-        //$part = 'Т(3.2100)ГР[3,9]СТР[65..69]-Т(3.2100)ГР[5,12]СТР[65..69]';
         //преобразование ссылок на таблицу типа Т(3.2100) -> Т2100
         $part = preg_replace('/Т\([0-9\.]*(\d{4})\)/u', 'Т\1', $part);
         $table_found = preg_match_all('/Т(\d{4})/u', $part, $table_codes);
@@ -217,11 +217,6 @@ class ConvertNskControls
             }
             return $ret;
         }, $table_codes[1]);
-
-        //dump($part);
-        //dump($table_codes);
-        //dump($prefixes);
-
         return $this->convertPart($part, $prefixes, $form_prefixes);
     }
 
@@ -233,11 +228,18 @@ class ConvertNskControls
             $this->convert_errors[] = ['element' => '',
                 'formula' => $part,
                 'form_code' => 'При конвертировании межформенного контроля, в нем не найдена корректная ссылка на форму',
-                'table_code' => ''];;
+                'table_code' => ''];
         }
-        $prefixes = array_map(function ($f) {
+        $prefixes = array_map(function ($f) use ($part) {
             $ret = '';
             $nsk_form = MedstatNskFormLink::OfCode('Ф'. $f)->first();
+            if (is_null($nsk_form->form)) {
+                $this->convert_errors[] = ['element' => '',
+                    'formula' => $part,
+                    'form_code' => 'При конвертировании межформенного контроля, в нем не найдена корректная ссылка на форму (' . $f . ')' ,
+                    'table_code' => ''];
+                return 'некорректная ссылка на форму (' . $f . ')' ;
+            }
             if ($nsk_form->form->form_code !== $this->host_form->form_code) {
                 $ret = $nsk_form->form->form_code;
             }
