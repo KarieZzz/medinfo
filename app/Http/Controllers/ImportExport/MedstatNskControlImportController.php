@@ -97,7 +97,7 @@ class MedstatNskControlImportController extends Controller
             $blocked = true;
         }
         $forms = Form::whereIn('id', $formids)->get();
-        if ($request->clear_old_controls) {
+        if ((in_array('1', $request->control_type_import) || in_array('2', $request->control_type_import) ) && $request->clear_old_controls) {
             $deleted_old = 0;
             foreach ($forms as $form) {
                 $tables = Table::OfForm($form->id)->get();
