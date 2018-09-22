@@ -20,7 +20,7 @@ class CreateTablesTable extends Migration
             $table->string('table_code', 6)->nullable()->index();
             $table->string('table_name', 256)->index();
             $table->char('medstat_code', 4)->nullable()->index();
-            $table->integer('medinfo_id')->index();
+            $table->integer('medstatnsk_id')->index()->nullable();
             $table->integer('transposed')->default(0);
             $table->integer('aggregated_column_id')->nullable();
             $table->integer('deleted')->default(0)->index();
