@@ -186,7 +186,7 @@ initFormTableFilter = function() {
     levellist.on('rowselect', function (event) {
         $("#levelListContainer").jqxDropDownButton('close');
         var args = event.args;
-        if (args.rowindex == -1) {
+        if (args.rowindex === -1) {
             return false;
         }
         var r = args.row;
@@ -230,9 +230,9 @@ initRowList = function() {
                 { text: 'Имя', datafield: 'row_name' , width: '380px'}
             ]
         });
-    if (groupmode == 1) {
+    if (groupmode === 1) {
         rlist.on('rowselect', function (event) { rowtableclick(event); });
-    } else if (groupmode == 2) {
+    } else if (groupmode === 2) {
         rlist.on('rowselect', function (event) { rowtableclick(event); });
         rlist.on('rowunselect', function (event) { rowtableclick(event); });
     }
@@ -257,9 +257,9 @@ initColumnList = function() {
                 { text: 'Имя', datafield: 'column_name' , width: '300px'}
             ]
         });
-    if (groupmode == 2) {
+    if (groupmode === 2) {
         clist.on('rowselect', function (event) { columntableclick(event); });
-    } else if (groupmode == 1) {
+    } else if (groupmode === 1) {
         clist.on('rowselect', function (event) { columntableclick(event); });
         clist.on('rowunselect', function (event) { columntableclick(event); });
     }
@@ -376,10 +376,10 @@ var getselectedcolumns = function () {
 };
 
 var rowtableclick = function (event) {
-    if (groupmode == 1) {
+    if (groupmode === 1) {
         $("#rowListContainer").jqxDropDownButton('close');
         var args = event.args;
-        if (args.rowindex == -1) {
+        if (args.rowindex === -1) {
             return false;
         }
         var r = args.row;
@@ -388,17 +388,17 @@ var rowtableclick = function (event) {
         //console.log(r);
         $("#rowSelected").html('<div class="text-bold text-danger" style="margin-left: -100px">Справка будет сгруппирована по строке: ' + r.row_code + ' "'+ r.row_name + '"</div>');
         $("#columnListContainer").jqxDropDownButton({ disabled: false });
-    } else if (groupmode == 2) {
+    } else if (groupmode === 2) {
         var selected = getselectedrows();
         $("#rowSelected").html('<div class="text-bold text-info" style="margin-left: -100px">Выбрано строк для вывода данных: ' + selected.length + '</div>');
     }
 };
 
 var columntableclick = function (event) {
-    if (groupmode == 2) {
+    if (groupmode === 2) {
         $("#columnListContainer").jqxDropDownButton('close');
         var args = event.args;
-        if (args.rowindex == -1) {
+        if (args.rowindex === -1) {
             return false;
         }
         var r = args.row;
@@ -407,7 +407,7 @@ var columntableclick = function (event) {
         //console.log(args);
         $("#columnSelected").html('<div class="text-bold text-danger" style="margin-left: -100px">Справка будет сгруппирована по графе: ' + r.column_index + ' "' + r.column_name + '"</div>');
         $("#rowListContainer").jqxDropDownButton({ disabled: false });
-    } else if (groupmode == 1) {
+    } else if (groupmode === 1) {
         var selected = getselectedcolumns();
         $("#columnSelected").html('<div class="text-bold text-info" style="margin-left: -100px">Выбрано граф для вывода данных: ' + selected.length + '</div>');
     }

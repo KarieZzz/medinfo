@@ -141,7 +141,7 @@ initColumnList = function() {
         $("#column_name").val(row.column_name);
         $("#column_code").val(row.column_code);
         $("#column_type").val(row.content_type);
-        $("#size").val(row.size);
+        $("#field_size").val(row.size);
         $("#decimal_count").val(row.decimal_count);
         $("#column_medstat_code").val(row.medstat_code);
         $("#column_medstatnsk_id").val(row.medstatnsk_id);
@@ -186,7 +186,7 @@ setcolumnquery = function() {
         "&column_name=" + $("#column_name").val() +
         "&column_code=" + $("#column_code").val() +
         "&content_type=" + $("#column_type").val() +
-        "&size=" + $("#size").val() +
+        "&size=" + $("#field_size").val() +
         "&decimal_count=" + $("#decimal_count").val() +
         "&medstat_code=" + $("#column_medstat_code").val() +
         "&medstatnsk_id=" + $("#column_medstatnsk_id").val() +
@@ -237,6 +237,10 @@ initButtons = function() {
 // Операции со строками
 initRowActions = function() {
     $("#insertrow").click(function () {
+        if (current_table === 0) {
+            raiseError('Не выбрана текущая таблица');
+            return false;
+        }
         let data = setrowquery();
         $.ajax({
             dataType: 'json',
@@ -320,6 +324,10 @@ initRowActions = function() {
 };
 initColumnActions = function() {
     $("#insertcolumn").click(function () {
+        if (current_table === 0) {
+            raiseError('Не выбрана текущая таблица');
+            return false;
+        }
         let data = setcolumnquery();
         $.ajax({
             dataType: 'json',

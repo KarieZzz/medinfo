@@ -3,7 +3,9 @@
     <div class="col-md-4">
         <form style="margin-top: 3px" class="form-inline">
             <div class="form-group">
-                <div id="formList"></div>
+                <div id="formListContainer">
+                    <div id="formList"></div>
+                </div>
             </div>
             <div class="form-group">
                 <div id="tableListContainer">

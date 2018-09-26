@@ -26,7 +26,7 @@ class RowColumnAdminController extends Controller
 
     public function index()
     {
-        $forms = Form::orderBy('form_index')->get(['id', 'form_code']);
+        $forms = Form::orderBy('form_code')->get(['id', 'form_code', 'form_name']);
         $columnTypes = DicColumnType::all();
         $album = $this->getDefaultAlbum();
         return view('jqxadmin.rowcolumns', compact('forms', 'columnTypes', 'album'));
@@ -193,7 +193,7 @@ class RowColumnAdminController extends Controller
                 'column_name' => 'required|max:128',
                 'column_code' => 'required|max:8',
                 'content_type' => 'integer',
-                'size' => 'integer',
+                'field_size' => 'integer',
                 'decimal_count' => 'integer',
                 'medstat_code' => 'digits:2',
                 'medstatnsk_id' => 'integer',
@@ -206,17 +206,17 @@ class RowColumnAdminController extends Controller
         $newcolumn->column_name = $request->column_name;
         $newcolumn->column_code = $request->column_code;
         $newcolumn->content_type = $request->content_type;
-        $newcolumn->size = $request->size;
-        $newcolumn->decimal_count = $request->decimal_count;
+        $newcolumn->size = $request->field_size;
+        $newcolumn->decimal_count = empty($request->decimal_count) ? 0 : $request->decimal_count;
         $newcolumn->medstat_code = empty($request->medstat_code) ? null : $request->medstat_code;
         $newcolumn->medstatnsk_id = empty($request->medstatnsk_id) ? null : $request->medstatnsk_id;
         try {
             $newcolumn->save();
             return ['message' => 'Новая запись создана. Id:' . $newcolumn->id];
         } catch (\Illuminate\Database\QueryException $e) {
-            $errorCode = $e->errorInfo[0];
+            $errorCode = $e->errorInfo[1];
             switch ($errorCode) {
-                case '23505':
+                case 7:
                     $message = 'Запись не сохранена. Дублирующиеся значения.';
                     break;
                 default:

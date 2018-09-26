@@ -645,7 +645,7 @@ initDropdowns = function () {
         groups.jqxDropDownButton({disabled:true});
     }
     mondropdown.jqxDropDownButton({width: 350, height: 32, theme: theme});
-    mondropdown.jqxDropDownButton('setContent', '<div style="margin: 9px"></i>Мониторинги</div>');
+    mondropdown.jqxDropDownButton('setContent', '<div style="margin: 9px">Мониторинги</div>');
     mondropdown.on('close', function () {
         updatedocumenttable()
     });
@@ -669,7 +669,7 @@ clearAllFilters = function (event) {
             montree.jqxTreeGrid('uncheckRow' , checkedMonitorings[i].id);
         }
     }
-    mondropdown.jqxDropDownButton('setContent', '<div style="margin: 9px"></i>Мониторинги</div>');
+    mondropdown.jqxDropDownButton('setContent', '<div style="margin: 9px">Мониторинги</div>');
     terr.jqxTreeGrid('clearSelection');
     terr.jqxDropDownButton('setContent', '<div style="margin: 9px">Медицинские организации (по территориям)</div>');
     groups.jqxTreeGrid('clearSelection');

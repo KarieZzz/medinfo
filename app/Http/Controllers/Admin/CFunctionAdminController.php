@@ -31,7 +31,7 @@ class CFunctionAdminController extends Controller
 
     public function index()
     {
-        $forms = Form::orderBy('form_index')->get(['id', 'form_code']);
+        $forms = Form::orderBy('form_code')->get(['id', 'form_code', 'form_name']);
         $error_levels = DicErrorLevel::all(['code', 'name']);
         return view('jqxadmin.cfunctions', compact('forms', 'error_levels'));
     }

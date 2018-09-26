@@ -62,7 +62,7 @@
                     <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                     <li><a href="/admin/units">Территории/Медицинские организации</a></li>
-                    <li><a href="/admin/units/groups">Группы медицинских организаций</a></li>
+                    {{--<li><a href="/admin/units/groups">Группы медицинских организаций</a></li>--}}
                     <li><a href="/admin/units/lists">Списки медицинских организаций для расчетных таблиц</a></li>
                     <li><a href="/admin/units/medstatimport">Импорт территорий/медицинских организаций из формата Медстат (Новосибирск)</a></li>
                 </ul>

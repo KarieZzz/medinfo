@@ -98,7 +98,7 @@
                     <div class="form-group">
                         <label class="control-label col-md-3" for="size">Размер поля (px):</label>
                         <div class="col-md-2">
-                            <input type="text" class="form-control input-sm" id="size">
+                            <input type="text" class="form-control input-sm" id="field_size" name="field_size">
                         </div>
                         <label class="control-label col-md-3" for="decimal_count">Знаков после запятой (десятичных):</label>
                         <div class="col-md-2">
@@ -193,8 +193,8 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>--}}
-    <script src="{{ asset('/medinfo/admin/tablepicker.js?v=008') }}"></script>
-    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=034') }}"></script>
+    <script src="{{ asset('/medinfo/admin/tablepicker.js?v=014') }}"></script>
+    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=037') }}"></script>
 @endpush
 
 @section('inlinejs')

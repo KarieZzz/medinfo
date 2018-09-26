@@ -18,7 +18,7 @@ class ConsRulesAndListsAdminController extends Controller
 
     public function index()
     {
-        $forms = \App\Form::orderBy('form_index')->get(['id', 'form_code']);
+        $forms = \App\Form::orderBy('form_code')->get(['id', 'form_code', 'form_name']);
         return view('jqxadmin.set_consrules_and_lists', compact('forms'));
     }
 

@@ -31,12 +31,12 @@
                             <input type="text" class="form-control" id="unit_code">
                         </div>
                     </div>
-                    <div class="form-group">
+{{--                    <div class="form-group">
                         <label class="control-label col-sm-3" for="unit_code">Тип территории (1-город, 2-район, 3-район округа):</label>
                         <div class="col-sm-2">
                             <input type="text" class="form-control" id="territory_type">
                         </div>
-                    </div>
+                    </div>--}}
                     <div class="form-group">
                         <label class="control-label col-sm-3" for="inn">Индивидуальный налоговый номер:</label>
                         <div class="col-sm-2">
@@ -80,7 +80,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-7">
+                        <div class="col-sm-offset-1 col-sm-8">
                             <button type="button" id="save" class="btn btn-primary">Сохранить изменения</button>
                             <button type="button" id="insert" class="btn btn-success">Вставить новую запись</button>
                             <button type="button" id="delete" class="btn btn-danger">Удалить запись</button>
@@ -113,7 +113,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>--}}
-    <script src="{{ asset('/medinfo/admin/unitadmin.js?v=007') }}"></script>
+    <script src="{{ asset('/medinfo/admin/unitadmin.js?v=008') }}"></script>
 @endpush
 
 @section('inlinejs')

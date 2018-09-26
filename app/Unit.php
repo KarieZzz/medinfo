@@ -24,7 +24,12 @@ class Unit extends Model
 
     public function groups()
     {
-        return $this->hasMany('App\UnitGroupMember', 'ou_id', 'id');
+        return $this->hasMany('App\UnitListMember', 'ou_id', 'id');
+    }
+
+    public function lists()
+    {
+        return $this->hasMany('App\UnitListMember', 'ou_id', 'id');
     }
 
     // Выбор Территорий
