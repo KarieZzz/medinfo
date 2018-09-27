@@ -20,7 +20,7 @@ class ReportController extends Controller
         $forms = \App\Form::orderBy('form_index')->get(['id', 'form_code']);
         $periods = \App\Period::orderBy('name')->get();
         $last_year = \App\Period::LastYear()->first();
-        $upper_levels = \App\UnitsView::whereIn('type', [1,2,5])->get();
+        $upper_levels = \App\UnitsView::whereIn('type', ['1','2','100'])->get();
         return view('reports.composequickquery', compact('forms', 'upper_levels', 'periods', 'last_year'));
     }
 

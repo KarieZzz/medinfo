@@ -66,10 +66,10 @@ initdropdowns = function() {
         datatype: "json",
         datafields: [
             { name: 'id' },
-            { name: 'group_name' }
+            { name: 'name' }
         ],
         id: 'id',
-        localdata: groups
+        localdata: lists
     };
     groupeDataAdapter = new $.jqx.dataAdapter(groupesource);
     $("#group_id").jqxDropDownList({
@@ -77,9 +77,9 @@ initdropdowns = function() {
         source: groupeDataAdapter,
         filterable: true,
         filterPlaceHolder: "Поиск",
-        displayMember: "group_name",
+        displayMember: "name",
         valueMember: "id",
-        placeHolder: "Выберите группу:",
+        placeHolder: "Выберите список:",
         width: 300,
         height: 34
     });

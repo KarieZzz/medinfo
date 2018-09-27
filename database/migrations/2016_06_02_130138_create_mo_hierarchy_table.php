@@ -27,6 +27,7 @@ class CreateMoHierarchyTable extends Migration
             $table->smallInteger('blocked')->default(0);
             $table->softDeletes();
             $table->timestamps();
+            $table->unique(['unit_name', 'parent_id']);
         });
     }
 

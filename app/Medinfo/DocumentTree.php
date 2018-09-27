@@ -126,12 +126,6 @@ class DocumentTree
     private function tree_element($parent) {
 
         $lev_query = "SELECT id FROM mo_hierarchy WHERE parent_id = $parent";
-/*        $lev_query = "SELECT id FROM mo_hierarchy WHERE parent_id = $parent
-          UNION SELECT id FROM unit_groups WHERE parent_id = $parent
-          UNION SELECT ou_id FROM unit_group_members WHERE group_id = $parent";*/
-/*        $lev_query = "
-          SELECT ou_id AS id FROM unit_group_members WHERE group_id = $parent";*/
-        //dd($lev_query);
         $res = DB::select($lev_query);
         $units = [];
         //var_dump($res);
@@ -167,20 +161,6 @@ class DocumentTree
             //echo $doc_query;
             $this->documents = DB::select($doc_query);
             if ($this->filter_mode == 2 ) {
-/*                $group_doc_query = "SELECT d.id, u.group_code AS unit_code, u.group_name AS unit_name, f.form_code,
-                  f.form_name, s.name state, m.name monitoring, p.name period, t.name doctype, a.protected,
-                  CASE WHEN (SELECT sum(v.value) FROM statdata v where d.id = v.doc_id) > 0 THEN 1 ELSE 0 END filled
-                  FROM documents d
-                    JOIN forms f on d.form_id = f.id
-                    JOIN unit_groups u on d.ou_id = u.id
-                    JOIN dic_document_states s on d.state = CAST(s.code AS numeric)
-                    JOIN dic_document_types t on d.dtype = CAST(t.code AS numeric)
-                    JOIN monitorings m ON d.monitoring_id = m.id
-                    JOIN periods p on d.period_id = p.id
-                    LEFT JOIN aggregates a ON a.doc_id = d.id
-                  WHERE d.ou_id = {$this->top_node} {$this->scopes['t']} {$this->scopes['m']} {$this->scopes['f']} {$this->scopes['p']} {$this->scopes['s']}
-                  GROUP BY d.id, u.group_code, u.group_name, f.form_code, f.form_name, m.name, p.name, s.name, t.name, a.protected
-                  ORDER BY f.form_code, p.name";*/
                 $group_doc_query = "SELECT d.id, u.slug AS unit_code, u.name AS unit_name, f.form_code,
                   f.form_name, s.name state, m.name monitoring, p.name period, t.name doctype, a.protected,
                   CASE WHEN (SELECT sum(v.value) FROM statdata v where d.id = v.doc_id) > 0 THEN 1 ELSE 0 END filled
@@ -227,16 +207,6 @@ class DocumentTree
             $res = DB::select($doc_query);
 
             if ($this->filter_mode == 2 ) {
-               /* $group_doc_query = "SELECT d.id, u.group_code AS unit_code, u.group_name AS unit_name,  m.name monitoring, f.form_code, f.form_name, p.name period, a.aggregated_at,
-                    CASE WHEN (SELECT sum(v.value) FROM statdata v WHERE d.id = v.doc_id) > 0 THEN 1 ELSE 0 END filled
-                  FROM documents d
-                  LEFT JOIN forms f on d.form_id = f.id
-                  LEFT JOIN unit_groups u on d.ou_id = u.id
-                  LEFT JOIN aggregates a ON d.id = a.doc_id
-                  JOIN monitorings m ON d.monitoring_id = m.id
-                  JOIN periods p on d.period_id = p.id
-                   WHERE d.ou_id = {$this->top_node} {$this->scopes['m']} {$this->scopes['f']} {$this->scopes['p']} {$this->scopes['t']}
-                   ORDER BY f.form_code, p.name";*/
                 $group_doc_query = "SELECT d.id, u.slug AS unit_code, u.name AS unit_name,  m.name monitoring, f.form_code, f.form_name, p.name period, a.aggregated_at,
                     CASE WHEN (SELECT sum(v.value) FROM statdata v WHERE d.id = v.doc_id) > 0 THEN 1 ELSE 0 END filled
                   FROM documents d
@@ -276,11 +246,11 @@ class DocumentTree
             $res = DB::select($doc_query);
 
             if ($this->filter_mode == 2 ) {
-                $group_doc_query = "SELECT d.id, u.group_code AS unit_code, u.group_name AS unit_name,  m.name monitoring, f.form_code, f.form_name, p.name period,
+                $group_doc_query = "SELECT d.id, u.slug AS unit_code, u.name AS unit_name, m.name monitoring, f.form_code, f.form_name, p.name period,
                     CASE WHEN (SELECT sum(v.value) FROM statdata v WHERE d.id = v.doc_id) > 0 THEN 1 ELSE 0 END filled
                   FROM documents d
                   LEFT JOIN forms f on d.form_id = f.id
-                  LEFT JOIN unit_groups u on d.ou_id = u.id
+                  LEFT JOIN unit_lists u on d.ou_id = u.id
                   JOIN monitorings m ON d.monitoring_id = m.id
                   JOIN periods p on d.period_id = p.id
                    WHERE d.ou_id = {$this->top_node} {$this->scopes['m']} {$this->scopes['f']} {$this->scopes['p']} {$this->scopes['t']} 

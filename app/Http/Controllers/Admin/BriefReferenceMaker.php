@@ -10,9 +10,9 @@ use App\Form;
 use App\Row;
 use App\Table;
 use App\Unit;
-use App\UnitGroup;
-use App\UnitGroupMember;
-use App\UnitsView;
+use App\UnitList;
+use App\UnitListMember;
+//use App\UnitsView;
 use App\Album;
 use App\Period;
 use App\Cell;
@@ -79,9 +79,9 @@ class BriefReferenceMaker extends Controller
                 //dd($units);
                 //$top = $units->shift();
                 $top = Unit::find($level);
-            } elseif ($type == 5) {
-                $top = UnitGroup::find($level);
-                $members = UnitGroupMember::OfGroup($level)->get(['ou_id']);
+            } elseif ($type == 100) {
+                $top = UnitList::find($level);
+                $members = UnitListMember::OfGroup($level)->get(['ou_id']);
                 $units = Unit::whereIn('id', $members)->get();
                 //dd($members);
             }

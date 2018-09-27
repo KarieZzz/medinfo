@@ -19,28 +19,25 @@ class UnitTree
     public function __construct($top_level_id = null)
     {
         if (is_null($top_level_id)) {
-            throw new Exception("Не определен Id организации/территории/группы верхнего уровня");
+            throw new \Exception("Не определен Id организации/территории/группы верхнего уровня");
         }
         $this->top_level_id = $top_level_id;
     }
 
     public static function getSimpleTree($parent = 0)
     {
-        //if ($parent == 0) {
-            //$mo_tree = \DB::select("select id, parent_id, unit_code, unit_name from mo_hierarchy where blocked = 0 ORDER BY unit_code");
-        //} else {
-            $mo_tree = self::getChilds($parent);
-            $this_one = \DB::select("SELECT id, parent_id, unit_code, unit_name FROM mo_hierarchy WHERE id = $parent");
-            $mo_tree = array_merge($mo_tree, $this_one);
-        //}
+        $mo_tree = self::getChilds($parent);
+        $this_one = \DB::select("SELECT id, parent_id, unit_code, unit_name FROM mo_hierarchy WHERE id = $parent");
+        $mo_tree = array_merge($mo_tree, $this_one);
         return $mo_tree;
     }
 
     public static function getChilds($parent)
     {
-        $lev_query = "SELECT id, parent_id, unit_code, unit_name FROM mo_hierarchy WHERE blocked = 0 AND parent_id = $parent
-            UNION SELECT id, parent_id, group_code AS unit_code, group_name FROM unit_groups WHERE parent_id = $parent
-            ORDER BY unit_code";
+/*        $lev_query = "SELECT id, parent_id, unit_code, unit_name FROM mo_hierarchy WHERE blocked = 0 AND parent_id = $parent
+            UNION SELECT id, NULL AS parent_id, slug AS unit_code, name AS unit_name FROM unit_lists WHERE $parent IS NULL
+            ORDER BY 2";*/
+        $lev_query = "SELECT id, parent_id, unit_code, unit_name FROM mo_hierarchy WHERE blocked = 0 AND parent_id = $parent ORDER BY unit_code";
         $res = \DB::select($lev_query);
         $units = array();
         if (count($res) > 0) {
@@ -55,12 +52,14 @@ class UnitTree
     public static function getMoTree($parent)
     {
         $units = array();
-        $this_one = \DB::select("SELECT id, parent_id, unit_code, unit_name FROM mo_hierarchy WHERE id = $parent
-          UNION SELECT id, parent_id, group_code AS unit_code, group_name FROM unit_groups WHERE id = $parent");
+/*        $this_one = \DB::select("SELECT id, parent_id, unit_code, unit_name FROM mo_hierarchy WHERE id = $parent
+          UNION SELECT id, NULL AS parent_id, slug AS unit_code, name AS unit_name FROM unit_lists WHERE id = $parent");*/
+        $this_one = \DB::select("SELECT id, parent_id, unit_code, unit_name FROM mo_hierarchy WHERE id = $parent");
         $units = array_merge($units, $this_one);
-        $lev_query = "SELECT id, parent_id, unit_code, unit_name FROM mo_hierarchy WHERE blocked = 0 AND parent_id = $parent
-            UNION SELECT id, parent_id, group_code AS unit_code, group_name FROM unit_groups WHERE parent_id = $parent
-            ORDER BY unit_code";
+/*        $lev_query = "SELECT id, parent_id, unit_code, unit_name FROM mo_hierarchy WHERE blocked = 0 AND parent_id = $parent
+            UNION SELECT id, 0 as parent_id, slug AS unit_code, name AS unit_name FROM unit_lists 
+            ORDER BY 2";*/
+        $lev_query = "SELECT id, parent_id, unit_code, unit_name FROM mo_hierarchy WHERE blocked = 0 AND parent_id = $parent ORDER BY unit_code";
         $res = \DB::select($lev_query);
         if (count($res) > 0) {
             foreach ($res as $r) {

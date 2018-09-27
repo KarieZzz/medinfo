@@ -24,7 +24,7 @@ class BriefReferenceController extends Controller
         $forms = Form::orderBy('form_index')->get(['id', 'form_code']);
         $periods = Period::orderBy('name')->get();
         $last_year = Period::LastYear()->first();
-        $upper_levels = UnitsView::whereIn('type', [1,2,5])->get();
+        $upper_levels = UnitsView::whereIn('type', ['1','2','100'])->get();
         return view('jqxadmin.composequickquery', compact('forms', 'upper_levels', 'periods', 'last_year'));
     }
 }

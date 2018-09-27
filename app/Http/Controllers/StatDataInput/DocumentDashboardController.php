@@ -27,7 +27,6 @@ class DocumentDashboardController extends Controller
     public function index()
     {
         $worker = Auth::guard('datainput')->user();
-
         $worker_scope_get = WorkerScope::where('worker_id', $worker->id)->first();
         is_null($worker_scope_get) ? dd('Не указан перечень учрежденй, к которым имеет доступ пользователь') : $worker_scope = $worker_scope_get->ou_id;
         $last_scope_get = WorkerSetting::where('worker_id', $worker->id)->where('name','ou')->first();
@@ -35,9 +34,9 @@ class DocumentDashboardController extends Controller
         $filter_mode = WorkerSetting::where('worker_id', $worker->id)->where('name','filter_mode')->first(['value']);
         $permission = $worker->permission;
         $disabled_states = config('medinfo.disabled_states.' . $worker->role);
-        if (!is_null($worker_scope)) {
+/*        if (!is_null($worker_scope)) {
             $mo_tree = UnitTree::getSimpleTree();
-        }
+        }*/
         if ($permission & config('medinfo.permission.permission_audit_document')) {
             $audit_permission = true;
         }
@@ -56,7 +55,7 @@ class DocumentDashboardController extends Controller
         // Периоды отображаемые по умолчанию (поставил последний и предпоследний по датам убывания)
         //$period_ids = $periods[0]->id . ',' . $periods[1]->id;
         $period_ids = WorkerSetting::where('worker_id', $worker->id)->where('name','periods')->first(['value']);
-        return view('jqxdatainput.documentdashboard', compact('mo_tree', 'worker', 'worker_scope', 'last_scope', 'filter_mode', 'periods', 'period_ids',
+        return view('jqxdatainput.documentdashboard', compact( 'worker', 'worker_scope', 'last_scope', 'filter_mode', 'periods', 'period_ids',
             'disabled_states', 'audit_permission', 'mf', 'mon_ids', 'form_ids', 'states', 'state_ids'));
     }
 

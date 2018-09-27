@@ -12,7 +12,7 @@ use App\Form;
 use App\Table;
 use App\NECell;
 use App\NECellCondition;
-use App\UnitGroup;
+use App\UnitList;
 use App\Medinfo\TableEditing;
 
 class NECellAdminController extends Controller
@@ -33,8 +33,8 @@ class NECellAdminController extends Controller
 
     public function conditions()
     {
-        $groups = UnitGroup::all();
-        return view('jqxadmin.conditions', compact('groups'));
+        $lists = UnitList::all();
+        return view('jqxadmin.conditions', compact('lists'));
     }
 
     public function fetchGrid(Table $table)
@@ -142,7 +142,7 @@ class NECellAdminController extends Controller
     {
         $this->validate($request, [
                 'condition_name' => 'required',
-                'group_id' => 'required|exists:unit_groups,id',
+                'group_id' => 'required|exists:unit_lists,id',
                 'exclude' => 'required|in:1,0',
             ]
         );

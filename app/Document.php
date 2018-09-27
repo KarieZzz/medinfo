@@ -78,6 +78,7 @@ class Document extends Model
     {
         return $query->where('dtype', 2);
     }
+
     public function scopeOfUPF($query, $ou, $period, $form)
     {
         return $query

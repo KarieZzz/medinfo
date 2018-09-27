@@ -22,7 +22,7 @@ class MOAdminController extends Controller
 
     public function index()
     {
-        $unit_types = DicUnitType::all(['code', 'name']);
+        $unit_types = DicUnitType::OuTypes()->orderBy('code')->get(['code', 'name']);
         $aggregate_units = Unit::MayBeAggregate()->orderBy('unit_name')->get(['id', 'unit_name']);
         return view('jqxadmin.units', compact('unit_types', 'aggregate_units'));
     }

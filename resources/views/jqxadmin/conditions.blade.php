@@ -64,14 +64,14 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>--}}
-    <script src="{{ asset('/medinfo/admin/conditionadmin.js') }}"></script>
+    <script src="{{ asset('/medinfo/admin/conditionadmin.js?v=001') }}"></script>
 @endpush
 
 @section('inlinejs')
     @parent
     <script type="text/javascript">
         var conditionDataAdapter;
-        var groups = {!! $groups !!}
+        var lists = {!! $lists !!}
         initsplitter();
         initdatasources();
         initdropdowns();
