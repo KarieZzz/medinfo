@@ -16,7 +16,7 @@
             <tr>
                  <td width="120">{{ $function->script }}</td>
                  <td width="120">{{ $function->comment }}</td>
-                 <td width="10">{{ $function->level }}</td>
+                 <td width="30">{{ $function->level }}</td>
             </tr>
         @endforeach
     </table>
