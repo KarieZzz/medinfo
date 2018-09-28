@@ -10,11 +10,13 @@
         <tr>
             <th>Скрипт</th>
             <th>Комментарий/описание</th>
+            <th>Уровень (1 - ошибка, 2 - предупреждение)</th>
         </tr>
         @foreach($functions as $function)
             <tr>
                  <td width="120">{{ $function->script }}</td>
                  <td width="120">{{ $function->comment }}</td>
+                 <td width="10">{{ $function->level }}</td>
             </tr>
         @endforeach
     </table>
