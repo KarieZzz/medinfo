@@ -182,6 +182,13 @@ let initFunctionActions = function() {
         }
         window.open(recompileForm_url + current_form);
     });
+    $("#excelExport").click(function () {
+        if (current_form === 0) {
+            raiseError("Не выбрана форма из которой экспортируются функции");
+            return false;
+        }
+        window.open(excelExport_url + current_form);
+    });
 };
 
 let performAction = function() {

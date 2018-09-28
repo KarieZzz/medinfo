@@ -18,6 +18,11 @@ class ValuechangingLog extends Model
             ->where('d', $document);
     }
 
+    public function document()
+    {
+        return $this->belongsTo('App\Document');
+    }
+
     public function worker()
     {
         return $this->belongsTo('App\Worker');

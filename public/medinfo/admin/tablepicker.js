@@ -76,6 +76,7 @@ let initFormTableFilter = function() {
         if (args.rowindex === -1) {
             return false;
         }
+        current_form = args.row.id;
         updateTableDropdownList(args.row);
     });
 

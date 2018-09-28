@@ -37,14 +37,17 @@
                     </div>
                     <div class="form-group">
                         <div class="row">
-                            <div class="col-sm-offset-2 col-sm-4">
+                            <div class="col-sm-offset-1 col-sm-4">
                                 <button type="button" id="save" class="btn btn-primary">Сохранить изменения</button>
                                 <button type="button" id="insert" class="btn btn-success">Вставить новую запись</button>
                                 <button type="button" id="delete" class="btn btn-danger">Удалить запись</button>
                             </div>
-                            <div class="col-sm-offset-1 col-sm-3"><span>Перекомпилировать все функции: </span>
+                            <div class="col-sm-3"><span>Перекомпилировать все функции: </span>
                                 <button type="button" id="recompileTable" class="btn btn-default">В таблице</button>
                                 <button type="button" id="recompileForm" class="btn btn-default">В форме</button>
+                            </div>
+                            <div class="col-sm-3"><span>Экспорт: </span>
+                                <button type="button" id="excelExport" class="btn btn-default">Excel</button>
                             </div>
                         </div>
                     </div>
@@ -74,8 +77,8 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>--}}
-    <script src="{{ asset('/medinfo/admin/tablepicker.js?v=011') }}"></script>
-    <script src="{{ asset('/medinfo/admin/cfunctionadmin.js?v=005') }}"></script>
+    <script src="{{ asset('/medinfo/admin/tablepicker.js?v=013') }}"></script>
+    <script src="{{ asset('/medinfo/admin/cfunctionadmin.js?v=008') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -90,6 +93,7 @@
         let functionfetch_url = '/admin/cfunctions/fetchcf/';
         let recompileTable_url = '/admin/cfunctions/recompiletable/';
         let recompileForm_url = '/admin/cfunctions/recompileform/';
+        let excelExport_url = '/admin/cfunctions/excelexport/';
         let forms = {!! $forms  !!};
         let errorLevels = {!! $error_levels !!};
         let fgrid = $("#functionList");
