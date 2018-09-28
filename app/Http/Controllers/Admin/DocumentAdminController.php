@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-//use App\Medinfo\PeriodMM;
-use App\Unit;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
+use App\Unit;
 use App\Medinfo\DocumentTree;
 use App\Medinfo\UnitTree;
 use App\UnitGroup;
@@ -41,8 +40,6 @@ class DocumentAdminController extends Controller
         $state_ids = $states->pluck('code');
         $period_ids = $periods[0]->id;
         $dtype_ids = $dtypes->pluck('code');
-        //dd($periods);
-        //return $periods;
         return view('jqxadmin.documents', compact('monitorings', 'albums', 'forms', 'form_ids', 'states', 'state_ids', 'periods', 'period_ids', 'dtypes', 'dtype_ids'));
     }
 
@@ -144,8 +141,13 @@ class DocumentAdminController extends Controller
     public function deleteDocuments(Request $request)
     {
         $documents = explode(",", $request->documents );
-        // Удаление статданных из всех выбранных документов
+        // Удаление связанных объектов
         Cell::WhereIn('doc_id', $documents)->delete();
+        DocumentMessage::WhereIn('doc_id', $documents)->delete();
+        \App\DocumentAudition::WhereIn('doc_id', $documents)->delete();
+        \App\Aggregate::WhereIn('doc_id', $documents)->delete();
+        \App\Consolidate::WhereIn('doc_id', $documents)->delete();
+        \App\ValuechangingLog::WhereIn('d', $documents)->delete();
         $comment = 'Удалены статданные документов №№' . $request->documents . ' ';
         $affected = Document::destroy($documents);
         $comment .= 'Удалены документы №№' . $request->documents;

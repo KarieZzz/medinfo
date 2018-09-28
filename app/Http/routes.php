@@ -164,6 +164,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('admin/cfunctions/recompileform/{scopeFrom}', 'Admin\CFunctionAdminController@recompileForm');
     Route::get('admin/dcheck/selected', 'StatDataInput\DataCheckController@selectControlConditions');
     Route::get('admin/dcheck/selectedcheck', 'StatDataInput\DataCheckController@selectedControl');
+    Route::get('admin/cfunctions/excelexport/{form}', 'Admin\CFunctionAdminController@excelExport');
 
     // Менеджер правил рассчета консолидированных таблиц
     Route::resource('admin/consolidation', 'Admin\ConsolidationRuleAdminController');
