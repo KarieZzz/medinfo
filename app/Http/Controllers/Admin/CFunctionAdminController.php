@@ -333,8 +333,8 @@ class CFunctionAdminController extends Controller
             $functions =  CFunction::ofTable($table->id)->get();
             $excel->sheet($table->table_code , function($sheet) use ($table, $functions) {
                 $sheet->loadView('reports.cfunctions_excel', compact('table', 'functions'));
-                $sheet->getStyle(\App\Medinfo\ExcelExport::getCellByRC(4, 1) . ':' . \App\Medinfo\ExcelExport::getCellByRC(4, 2))->getAlignment()->setWrapText(true);
-                $sheet->getStyle(\App\Medinfo\ExcelExport::getCellByRC(4, 1) . ':' . \App\Medinfo\ExcelExport::getCellByRC(count($functions)+3, 2))->getBorders()
+                $sheet->getStyle(\App\Medinfo\ExcelExport::getCellByRC(3, 1) . ':' . \App\Medinfo\ExcelExport::getCellByRC(count($functions)+3, 2))->getAlignment()->setWrapText(true);
+                $sheet->getStyle(\App\Medinfo\ExcelExport::getCellByRC(3, 1) . ':' . \App\Medinfo\ExcelExport::getCellByRC(count($functions)+3, 2))->getBorders()
                     ->getAllBorders()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THIN);
             });
         }
