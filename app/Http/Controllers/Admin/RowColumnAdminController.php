@@ -215,6 +215,7 @@ class RowColumnAdminController extends Controller
             return ['message' => 'Новая запись создана. Id:' . $newcolumn->id];
         } catch (\Illuminate\Database\QueryException $e) {
             $errorCode = $e->errorInfo[1];
+            dd($e);
             switch ($errorCode) {
                 case 7:
                     $message = 'Запись не сохранена. Дублирующиеся значения.';
