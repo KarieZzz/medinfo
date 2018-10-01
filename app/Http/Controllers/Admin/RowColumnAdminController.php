@@ -162,7 +162,7 @@ class RowColumnAdminController extends Controller
         $column->column_name = $request->column_name;
         $column->column_code = $request->column_code;
         $column->content_type = $request->content_type;
-        $column->size = $request->size;
+        $column->size = $request->field_size;
         $column->decimal_count = $request->decimal_count;
         $column->medstat_code = empty($request->medstat_code) ? null : $request->medstat_code;
         $column->medstatnsk_id = empty($request->medstatnsk_id) ? null : $request->medstatnsk_id;
@@ -215,7 +215,6 @@ class RowColumnAdminController extends Controller
             return ['message' => 'Новая запись создана. Id:' . $newcolumn->id];
         } catch (\Illuminate\Database\QueryException $e) {
             $errorCode = $e->errorInfo[1];
-            dd($e);
             switch ($errorCode) {
                 case 7:
                     $message = 'Запись не сохранена. Дублирующиеся значения.';
