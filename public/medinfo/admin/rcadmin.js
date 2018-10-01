@@ -254,6 +254,12 @@ initRowActions = function() {
                     raiseInfo(data.message);
                 }
                 rlist.jqxGrid('updatebounddata', 'data');
+                rlist.on("bindingcomplete", function (event) {
+                    let newindex = rlist.jqxGrid('getrowboundindexbyid', data.id);
+                    rlist.jqxGrid('selectrow', newindex);
+                    rlist.jqxGrid('ensurerowvisible', newindex);
+
+                });
             },
             error: function (xhr, status, errorThrown) {
                 $.each(xhr.responseJSON, function(field, errorText) {
@@ -285,6 +291,7 @@ initRowActions = function() {
                 rlist.on("bindingcomplete", function (event) {
                     var newindex = rlist.jqxGrid('getrowboundindexbyid', rowid);
                     rlist.jqxGrid('selectrow', newindex);
+                    rlist.jqxGrid('ensurerowvisible', newindex);
 
                 });
             },
@@ -341,6 +348,12 @@ initColumnActions = function() {
                     raiseInfo(data.message);
                 }
                 clist.jqxGrid('updatebounddata', 'data');
+                clist.on("bindingcomplete", function (event) {
+                    let newindex = rlist.jqxGrid('getrowboundindexbyid', data.id);
+                    clist.jqxGrid('selectrow', newindex);
+                    clist.jqxGrid('ensurerowvisible', newindex);
+
+                });
             },
             error: function (xhr, status, errorThrown) {
                 $.each(xhr.responseJSON, function(field, errorText) {
@@ -372,6 +385,7 @@ initColumnActions = function() {
                 clist.on("bindingcomplete", function (event) {
                     let newindex = clist.jqxGrid('getrowboundindexbyid', rowid);
                     clist.jqxGrid('selectrow', newindex);
+                    clist.jqxGrid('ensurerowvisible', newindex);
 
                 });
             },

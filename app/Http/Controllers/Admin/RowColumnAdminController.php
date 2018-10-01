@@ -118,7 +118,7 @@ class RowColumnAdminController extends Controller
         $newrow->medstatnsk_id = empty($request->medstatnsk_id) ? null : $request->medstatnsk_id;
         try {
             $newrow->save();
-            return ['message' => 'Новая запись создана. Id:' . $newrow->id];
+            return ['message' => 'Новая запись создана. Id:' . $newrow->id, 'id' => $newrow->id];
         } catch (\Illuminate\Database\QueryException $e) {
             $errorCode = $e->errorInfo[0];
             switch ($errorCode) {
@@ -212,7 +212,7 @@ class RowColumnAdminController extends Controller
         $newcolumn->medstatnsk_id = empty($request->medstatnsk_id) ? null : $request->medstatnsk_id;
         try {
             $newcolumn->save();
-            return ['message' => 'Новая запись создана. Id:' . $newcolumn->id];
+            return ['message' => 'Новая запись создана. Id:' . $newcolumn->id, 'id' => $newcolumn->id];
         } catch (\Illuminate\Database\QueryException $e) {
             $errorCode = $e->errorInfo[1];
             switch ($errorCode) {
