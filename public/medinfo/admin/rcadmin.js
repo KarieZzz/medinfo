@@ -432,7 +432,7 @@ let initColumnFormulaWindow = function () {
     let columnid;
     let formulaid = null;
     $("#editFormula").click(function () {
-        formula.attr("placeholder", "");;
+        formula.attr("placeholder", "");
         let colHeader = $("#columnNameId");
         colHeader.html("");
         let row = clist.jqxGrid('getselectedrowindex');

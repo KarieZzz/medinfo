@@ -108,6 +108,18 @@ class RowColumnAdminController extends Controller
                 'excluded' => 'required|in:1,0',
             ]
         );
+        $code_exists = Row::OfTableRowCode($request->table_id, $request->row_code)->exists();
+        if ($code_exists) {
+            return ['error' => 422, 'message' => 'Запись с таким же кодом строки уже существует в этой таблице'];
+        }
+        $index_exists = Row::OfTableRowIndex($request->table_id, $request->row_index)->exists();
+        if ($index_exists) {
+            $reindexed = Row::OfTable($request->table_id)->where('row_index','>=', $request->row_index)->orderBy('row_index', 'desc')->get();
+            foreach ($reindexed as $item) {
+                $item->row_index++;
+                $item->save();
+            }
+        }
         $newrow = new Row;
         $newrow->table_id = $request->table_id;
         $newrow->row_index = $request->row_index;
@@ -198,6 +210,18 @@ class RowColumnAdminController extends Controller
                 'excluded' => 'required|in:1,0',
             ]
         );
+        $code_exists = Column::OfTableColumnCode($request->table_id, $request->column_code)->exists();
+        if ($code_exists) {
+            return ['error' => 422, 'message' => 'Запись с таким же кодом графы уже существует в этой таблице'];
+        }
+        $index_exists = Column::OfTableColumnIndex($request->table_id, $request->column_index)->exists();
+        if ($index_exists) {
+            $reindexed = Column::OfTable($request->table_id)->where('column_index','>=', $request->column_index)->orderBy('column_index', 'desc')->get();
+            foreach ($reindexed as $item) {
+                $item->column_index++;
+                $item->save();
+            }
+        }
         $newcolumn = new Column;
         $newcolumn->table_id = $request->table_id;
         $newcolumn->column_index = $request->column_index;

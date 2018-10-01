@@ -71,18 +71,18 @@
                             <div id="Documents"></div>
                         </div>
                         <div class="jqx-hideborder">
-                            <div id="DocumentPropertiesSplitter">
-                                <div id="messagesExpander" class="panel panel-default panel">
+                            {{--<div id="DocumentPropertiesSplitter">--}}
+                                <div id="messagesExpander" class="panel panel-default panel" style="height: 95%">
                                     <div id="messagesTitle" class="panel-heading">Сообщения и комментарии <a href="#" id="openMessagesListWindow"><...></a></div>
                                     <div id="DocumentMessages" class="panel-body" style="height: 85%; padding: 0; overflow-y: auto"></div>
                                 </div>
-                                <div class="jqx-hideborder" >
+{{--                                <div class="jqx-hideborder" >
                                     <div id="auditExpander">
                                         <div>Статус проверки документа <a href="#" id="openAuditionListWindow"><...></a></div>
                                         <div id="DocumentAuditions"></div>
                                     </div>
                                 </div>
-                            </div>
+                            </div>--}}
                         </div>
                     </div>
 
@@ -141,7 +141,7 @@
 <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>--}}
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/documentdashboard.js?v=106') }}"></script>
+<script src="{{ asset('/medinfo/documentdashboard.js?v=109') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -179,6 +179,7 @@
         initDocumentSource();
         initdocumentstabs();
         initdocumentproperties();
+        //initauditionproperties
         initConsolidates();
         initRecentDocuments();
         initpopupwindows();

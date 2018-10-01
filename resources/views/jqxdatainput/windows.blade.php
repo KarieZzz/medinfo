@@ -13,7 +13,7 @@
         <div id="changeStateAlertMessage" style="margin-top: 5px; display: none"></div>
     </div>
 </div>
-<div id="changeAuditStateWindow">
+{{--<div id="changeAuditStateWindow">
     <div>Изменение статуса проверки документа</div>
     <div style="overflow: hidden;">
         <div style='margin-top: 10px;' class="auditstateradio" id='noaudit'>
@@ -41,7 +41,7 @@
         <input style="margin-right: 5px;" type="button" id="SaveBatchAuditState" value="Изменить статус проверки документов" />
         <input id="CancelBatchAuditStateChanging" type="button" value="Отменить" /></td>
     </div>
-</div>
+</div>--}}
 <div id="sendMessageWindow">
     <div>Комментарий/сообщение к документу</div>
     <div style="overflow: hidden;">

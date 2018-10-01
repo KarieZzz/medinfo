@@ -11,6 +11,8 @@ let calculate_url = '/admin/consolidate/';
 let log_form_url = '/admin/documents/valuechanginglog/';
 let current_top_level_node = 0;
 let filter_mode = 1; // 1 - по территориям; 2 - по группам
+let terr = $("#moSelectorByTerritories");
+let groups = $('#moSelectorByGroups');
 let grouptree = $("#groupTree");
 let motree = $("#moTree");
 let montree = $("#monTree");
@@ -158,6 +160,29 @@ initfilterdatasources = function() {
     changestateDA =  new $.jqx.dataAdapter(states_source);
     periodsDataAdapter = new $.jqx.dataAdapter(periods_source);
     dtypesDataAdapter = new $.jqx.dataAdapter(dtypes_source);
+};
+
+initDropdowns = function () {
+    terr.jqxDropDownButton({width: 350, height: 32, theme: theme});
+    terr.jqxDropDownButton('setContent', '<div style="margin: 9px">Медицинские организации (по территориям)</div>');
+    groups.jqxDropDownButton({width: 350, height: 32, theme: theme});
+    groups.jqxDropDownButton('setContent', '<div style="margin: 9px">Медицинские организации (по группам)</div>');
+/*    mondropdown.jqxDropDownButton({width: 350, height: 32, theme: theme});
+    mondropdown.jqxDropDownButton('setContent', '<div style="margin: 9px">Мониторинги</div>');
+    mondropdown.on('close', function () {
+        updatedocumenttable()
+    });
+    periodDropDown.jqxDropDownButton({width: 350, height: 32, theme: theme});
+    periodDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px">Отчетные периоды</div>');
+    periodDropDown.on('close', function () {
+        updatedocumenttable()
+    });
+    statusDropDown.jqxDropDownButton({width: 350, height: 32, theme: theme});
+    statusDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px">Статусы отчетов</div>');
+    statusDropDown.on('close', function () {
+        updatedocumenttable()
+    });
+    $("#clearAllFilters").click( clearAllFilters );*/
 };
 
 getCheckedMonsForms = function() {
@@ -377,9 +402,9 @@ initnewdocumentwindow = function () {
     });
 };
 
-initmotabs = function() {
+/*initmotabs = function() {
     $("#motabs").jqxTabs({  height: '100%', width: '100%', theme: theme });
-};
+};*/
 
 // Инициализация разбивки рабочего стола на области
 initsplitters = function() {
@@ -443,6 +468,41 @@ rendergrouptreetoolbar = function() {
 initmotree = function() {
     motree.jqxTreeGrid(
         {
+            width: 770,
+            height: 600,
+            theme: theme,
+            source: mo_dataAdapter,
+            selectionMode: "singleRow",
+            showToolbar: true,
+            renderToolbar: rendermotreetoolbar,
+            hierarchicalCheckboxes: false,
+            checkboxes: false,
+            filterable: true,
+            filterMode: "simple",
+            localization: localize(),
+            columnsResize: true,
+            ready: function()
+            {
+                // expand row with 'EmployeeKey = 32'
+                motree.jqxTreeGrid('expandRow', 0);
+            },
+            columns: [
+                { text: 'Код', dataField: 'unit_code', width: 170 },
+                { text: 'Наименование', dataField: 'unit_name', width: 585 }
+            ]
+        });
+    motree.on('filter',
+        function (event)
+        {
+            let args = event.args;
+            let filters = args.filters;
+            motree.jqxTreeGrid('expandAll');
+        }
+    );
+
+
+/*    motree.jqxTreeGrid(
+        {
             width: '98%',
             height: '99%',
             theme: theme,
@@ -473,7 +533,8 @@ initmotree = function() {
             var filters = args.filters;
             motree.jqxTreeGrid('expandAll');
         }
-    );
+    );*/
+
     motree.on('rowSelect', function (event) {
         var args = event.args;
         var new_top_level_node = args.key;

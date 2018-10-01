@@ -12,7 +12,16 @@
     <div>
         <div id="leftPanel">
             <div>
-                <div class="jqx-hideborder jqx-hidescrollbars" id="motabs">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="well well-sm">
+                            <div id="moSelectorByTerritories"><div id="moTree"></div></div>
+                            <div id="moSelectorByGroups"><div class="jqx-hideborder" id="groupTree"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+{{--                <div class="jqx-hideborder jqx-hidescrollbars" id="motabs">
                     <ul>
                         <li style="margin-left: 30px;">Медицинские организации по территориям</li>
                         <li>По группам</li>
@@ -24,7 +33,7 @@
                         <div class="jqx-hideborder" id="groupTree"></div>
                     </div>
                 </div>
-            </div>
+            </div>--}}
             <div id="filtertabs">
                 <ul>
                     <li style="margin-left: 30px;" class="header-name">Мониторинги/формы</li>
@@ -192,7 +201,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>--}}
-    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=021') }}"></script>
+    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=024') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -209,8 +218,9 @@
         let checkedperiods = [{!! $period_ids !!}];
         datasources();
         initfilterdatasources();
+        initDropdowns();
         initnewdocumentwindow();
-        initmotabs();
+        //initmotabs();
         initsplitters();
         initmotree();
         initgrouptree();
