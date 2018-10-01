@@ -148,7 +148,7 @@ class RowColumnAdminController extends Controller
     {
         $this->validate($request, [
                 'column_index' => 'required|digits_between:1,51',
-                'column_name' => 'required|max:128',
+                'column_name' => 'required|max:256',
                 'column_code' => 'required|max:8',
                 'content_type' => 'integer',
                 'size' => 'integer',
@@ -190,7 +190,7 @@ class RowColumnAdminController extends Controller
         $this->validate($request, [
                 'table_id' => 'required|exists:tables,id',
                 'column_index' => 'required|digits_between:1,51',
-                'column_name' => 'required|max:128',
+                'column_name' => 'required|max:256',
                 'column_code' => 'required|max:8',
                 'content_type' => 'integer',
                 'field_size' => 'integer',
