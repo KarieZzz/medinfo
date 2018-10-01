@@ -194,7 +194,7 @@
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>--}}
     <script src="{{ asset('/medinfo/admin/tablepicker.js?v=015') }}"></script>
-    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=043') }}"></script>
+    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=045') }}"></script>
 @endpush
 
 @section('inlinejs')

@@ -349,7 +349,7 @@ initColumnActions = function() {
                 }
                 clist.jqxGrid('updatebounddata', 'data');
                 clist.on("bindingcomplete", function (event) {
-                    let newindex = rlist.jqxGrid('getrowboundindexbyid', data.id);
+                    let newindex = clist.jqxGrid('getrowboundindexbyid', data.id);
                     clist.jqxGrid('selectrow', newindex);
                     clist.jqxGrid('ensurerowvisible', newindex);
 
