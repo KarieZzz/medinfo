@@ -193,8 +193,8 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>--}}
-    <script src="{{ asset('/medinfo/admin/tablepicker.js?v=015') }}"></script>
-    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=045') }}"></script>
+    <script src="{{ asset('/medinfo/admin/tablepicker.js?v=016') }}"></script>
+    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=046') }}"></script>
 @endpush
 
 @section('inlinejs')

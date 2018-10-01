@@ -89,7 +89,6 @@ initRowList = function() {
                 { text: '№ п/п', datafield: 'row_index', width: '50px' },
                 //{ text: 'Исключена из альбома', datafield: 'excluded', columntype: 'checkbox', width: '90px'  },
                 { text: 'Исключена из альбома', datafield: 'excluded', width: '90px'  },
-                //{ text: 'Код таблицы', datafield: 'table_code', width: '70px'  },
                 { text: 'Код', datafield: 'row_code', width: '70px'  },
                 { text: 'Имя', datafield: 'row_name' , width: '480px'},
                 { text: 'Код МС(мск)', datafield: 'medstat_code', width: '80px' },
@@ -98,13 +97,14 @@ initRowList = function() {
         });
     rlist.on('rowselect', function (event) {
         let row = event.args.row;
-        $("#row_index").val(row.row_index);
-        $("#row_name").val(row.row_name);
-        $("#row_code").val(row.row_code);
-        $("#row_medstat_code").val(row.medstat_code);
-        $("#row_medstatnsk_id").val(row.medstatnsk_id);
-        //$("#excludedRow").val(row.excluded);
-        row.excluded > 0 ? $("#excludedRow").val(true) : $("#excludedRow").val(false);
+        if (typeof row !== 'undefined') {
+            $("#row_index").val(row.row_index);
+            $("#row_name").val(row.row_name);
+            $("#row_code").val(row.row_code);
+            $("#row_medstat_code").val(row.medstat_code);
+            $("#row_medstatnsk_id").val(row.medstatnsk_id);
+            row.excluded > 0 ? $("#excludedRow").val(true) : $("#excludedRow").val(false);
+        }
     });
 };
 //Таблица граф
@@ -125,7 +125,6 @@ initColumnList = function() {
                 { text: '№ п/п', datafield: 'column_index', width: '50px' },
                 //{ text: 'Исключена из альбома', datafield: 'excluded', columntype: 'checkbox', width: '90px'  },
                 { text: 'Исключена из альбома', datafield: 'excluded', width: '90px'  },
-                //{ text: 'Код таблицы', datafield: 'table_code', width: '70px'  },
                 { text: 'Имя', datafield: 'column_name' , width: '300px'},
                 { text: 'Код', datafield: 'column_code' , width: '50px'},
                 { text: 'Тип', datafield: 'content_type', width: '50px' },
@@ -137,16 +136,17 @@ initColumnList = function() {
         });
     clist.on('rowselect', function (event) {
         let row = event.args.row;
-        $("#column_index").val(row.column_index);
-        $("#column_name").val(row.column_name);
-        $("#column_code").val(row.column_code);
-        $("#column_type").val(row.content_type);
-        $("#field_size").val(row.size);
-        $("#decimal_count").val(row.decimal_count);
-        $("#column_medstat_code").val(row.medstat_code);
-        $("#column_medstatnsk_id").val(row.medstatnsk_id);
-        row.excluded > 0 ? $("#excludedColumn").val(true) : $("#excludedColumn").val(false);
-
+        if (typeof row !== 'undefined') {
+            $("#column_index").val(row.column_index);
+            $("#column_name").val(row.column_name);
+            $("#column_code").val(row.column_code);
+            $("#column_type").val(row.content_type);
+            $("#field_size").val(row.size);
+            $("#decimal_count").val(row.decimal_count);
+            $("#column_medstat_code").val(row.medstat_code);
+            $("#column_medstatnsk_id").val(row.medstatnsk_id);
+            row.excluded > 0 ? $("#excludedColumn").val(true) : $("#excludedColumn").val(false);
+        }
     });
 };
 // функция для обновления связанных объектов после выбора таблицы
