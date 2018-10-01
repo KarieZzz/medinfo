@@ -89,7 +89,6 @@ class RowColumnAdminController extends Controller
             $result = ['message' => 'Запись id ' . $row->id . ' сохранена. ' . $add];
         } catch (\Illuminate\Database\QueryException $e) {
             $errorCode = $e->errorInfo[0];
-            // duplicate key value - код ошибки 7 при использовании PostgreSQL
             if($errorCode == '23505'){
                 $result = ['error' => 422, 'message' => 'Запись не сохранена. Дублирование данных.'];
             }
@@ -151,7 +150,7 @@ class RowColumnAdminController extends Controller
                 'column_name' => 'required|max:256',
                 'column_code' => 'required|max:8',
                 'content_type' => 'integer',
-                'size' => 'integer',
+                'field_size' => 'integer',
                 'decimal_count' => 'integer',
                 'medstat_code' => 'digits:2',
                 'medstatnsk_id' => 'integer',
@@ -162,7 +161,7 @@ class RowColumnAdminController extends Controller
         $column->column_name = $request->column_name;
         $column->column_code = $request->column_code;
         $column->content_type = $request->content_type;
-        $column->size = $request->field_size;
+        $column->size = $request->field_size ? (int)$request->field_size : 100;
         $column->decimal_count = $request->decimal_count;
         $column->medstat_code = empty($request->medstat_code) ? null : $request->medstat_code;
         $column->medstatnsk_id = empty($request->medstatnsk_id) ? null : $request->medstatnsk_id;
@@ -177,7 +176,6 @@ class RowColumnAdminController extends Controller
             $result = ['message' => 'Запись id ' . $column->id . ' сохранена ' . $add];
         } catch (\Illuminate\Database\QueryException $e) {
             $errorCode = $e->errorInfo[0];
-            // duplicate key value - код ошибки 7 при использовании PostgreSQL
             if($errorCode == '23505'){
                 $result = ['error' => 422, 'message' => 'Запись не сохранена. Дублирование данных.'];
             }
@@ -206,7 +204,7 @@ class RowColumnAdminController extends Controller
         $newcolumn->column_name = $request->column_name;
         $newcolumn->column_code = $request->column_code;
         $newcolumn->content_type = $request->content_type;
-        $newcolumn->size = $request->field_size;
+        $newcolumn->size = $request->field_size ? (int)$request->field_size : 100;
         $newcolumn->decimal_count = empty($request->decimal_count) ? 0 : $request->decimal_count;
         $newcolumn->medstat_code = empty($request->medstat_code) ? null : $request->medstat_code;
         $newcolumn->medstatnsk_id = empty($request->medstatnsk_id) ? null : $request->medstatnsk_id;
@@ -214,10 +212,10 @@ class RowColumnAdminController extends Controller
             $newcolumn->save();
             return ['message' => 'Новая запись создана. Id:' . $newcolumn->id, 'id' => $newcolumn->id];
         } catch (\Illuminate\Database\QueryException $e) {
-            $errorCode = $e->errorInfo[1];
+            $errorCode = $e->errorInfo[0];
             switch ($errorCode) {
-                case 7:
-                    $message = 'Запись не сохранена. Дублирующиеся значения.';
+                case '23505':
+                    $message = 'Запись не сохранена. Дублирующиеся значения (' . $errorCode . ').';
                     break;
                 default:
                     $message = 'Новая запись не создана. Код ошибки ' . $errorCode . '.';

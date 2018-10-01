@@ -111,9 +111,8 @@ class DocumentAdminController extends Controller
                         Document::create($newdoc);
                         $i++;
                     } catch (\Illuminate\Database\QueryException $e) {
-                        $errorCode = $e->errorInfo[1];
-                        // duplicate key value - код ошибки при использовании PostgreSQL
-                        if($errorCode == 7){
+                        $errorCode = $e->errorInfo[0];
+                        if($errorCode == '23505'){
                             $duplicate++;
                         }
                     }
@@ -124,8 +123,8 @@ class DocumentAdminController extends Controller
                         Document::create($newdoc);
                         $i++;
                     } catch (\Illuminate\Database\QueryException $e) {
-                        $errorCode = $e->errorInfo[1];
-                        if($errorCode == 7){
+                        $errorCode = $e->errorInfo[0];
+                        if($errorCode == '23505'){
                             $duplicate++;
                         }
                     }
@@ -217,9 +216,8 @@ class DocumentAdminController extends Controller
                 Document::create($newdoc);
                 $i++;
             } catch (\Illuminate\Database\QueryException $e) {
-                $errorCode = $e->errorInfo[1];
-                // duplicate key value - код ошибки при использовании PostgreSQL
-                if($errorCode == 7){
+                $errorCode = $e->errorInfo[0];
+                if($errorCode == '23505'){
                     $duplicate++;
                 }
             }

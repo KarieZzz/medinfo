@@ -55,9 +55,9 @@ class PeriodAdminController extends Controller
             $newperiod = Period::create($request->all());
             return ['message' => 'Новая запись создана. Id:' . $newperiod->id];
         } catch (\Illuminate\Database\QueryException $e) {
-            $errorCode = $e->errorInfo[1];
+            $errorCode = $e->errorInfo[0];
             // duplicate key value - код ошибки 7 при использовании PostgreSQL
-            if($errorCode == 7){
+            if($errorCode == '23505'){
                 return ['error' => 422, 'message' => 'Новая запись не создана. Существует Период с такими же датами начала и окончания.'];
             }
         }
@@ -114,9 +114,8 @@ class PeriodAdminController extends Controller
             $period->save();
             $result = ['message' => 'Запись id ' . $period->id . ' сохранена'];
         } catch (\Illuminate\Database\QueryException $e) {
-            $errorCode = $e->errorInfo[1];
-            // duplicate key value - код ошибки 7 при использовании PostgreSQL
-            if($errorCode == 7){
+            $errorCode = $e->errorInfo[0];
+            if($errorCode == '23505'){
                 $result = ['error' => 422, 'message' => 'Запись не сохранена. Дублирование имени/дат отчетного периода.'];
             }
         }

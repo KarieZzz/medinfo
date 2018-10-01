@@ -44,9 +44,8 @@ class FormAdminController extends Controller
             $newform->save();
             return [ 'message' => 'Новая запись создана. Id:' . $newform->id ];
         } catch (\Illuminate\Database\QueryException $e) {
-            $errorCode = $e->errorInfo[1];
-            // duplicate key value - код ошибки 7 при использовании PostgreSQL
-            if($errorCode == 7){
+            $errorCode = $e->errorInfo[0];
+            if($errorCode == '23505'){
                 return ['error' => 422, 'message' => 'Новая запись не создана. Существует форма с таким же именем/кодом.'];
             }
         }
@@ -68,9 +67,8 @@ class FormAdminController extends Controller
             $form->save();
             $result = ['message' => 'Запись id ' . $form->id . ' сохранена'];
         } catch (\Illuminate\Database\QueryException $e) {
-            $errorCode = $e->errorInfo[1];
-            // duplicate key value - код ошибки 7 при использовании PostgreSQL
-            if($errorCode == 7){
+            $errorCode = $e->errorInfo[0];
+            if($errorCode == '23505'){
                 $result = ['error' => 422, 'message' => 'Запись не сохранена. Дублирование имени/кода формы.'];
             }
         }
