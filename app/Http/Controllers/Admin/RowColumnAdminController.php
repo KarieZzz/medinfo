@@ -146,9 +146,19 @@ class RowColumnAdminController extends Controller
 
     public function rowDelete(Row $row)
     {
+        if (!$row) {
+            return ['error' => 422, 'message' => 'Ошибка удаления. Строка не найдена'];
+        }
         $cell_count = Cell::countOfCellsByRow($row->id);
+        $table_id = $row->table_id;
+        $row_index = $row->row_index;
         if ($cell_count == 0) {
             $row->delete();
+            $reindexed = Row::OfTable($table_id)->where('row_index','>', $row_index)->orderBy('row_index')->get();
+            foreach ($reindexed as $item) {
+                $item->row_index--;
+                $item->save();
+            }
             return ['message' => 'Удалена строка Id' . $row->id ];
         } else {
             return ['error' => 422, 'message' => 'Строка Id' . $row->id . ' содержит данные. Удаление невозможно.' ];
@@ -251,9 +261,19 @@ class RowColumnAdminController extends Controller
 
     public function columnDelete(Column $column)
     {
+        if (!$column) {
+            return ['error' => 422, 'message' => 'Ошибка удаления. Графа не найдена'];
+        }
         $cell_count = Cell::countOfCellsByColumn($column->id);
+        $table_id = $column->table_id;
+        $column_index = $column->row_index;
         if ($cell_count === 0) {
             $column->delete();
+            $reindexed = Column::OfTable($table_id)->where('row_index','>', $column_index)->orderBy('column_index')->get();
+            foreach ($reindexed as $item) {
+                $item->column_index--;
+                $item->save();
+            }
             return ['message' => 'Удалена графа Id' . $column->id ];
         } else {
             return ['error' => 422, 'message' => 'Графа Id' . $column->id . ' содержит данные. Удаление невозможно.' ];
