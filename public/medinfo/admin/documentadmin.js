@@ -722,6 +722,8 @@ initdocumentslist = function() {
             source: dataAdapter,
             columnsresize: true,
             selectionmode: 'checkbox',
+            showfilterrow: true,
+            filterable: true,
             columns: [
                 { text: '№', datafield: 'id', width: '60px', cellsrenderer: linkrenderer },
                 { text: 'Тип', datafield: 'doctype' , width: '80px'},
