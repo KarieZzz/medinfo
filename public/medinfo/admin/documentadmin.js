@@ -476,7 +476,7 @@ initmotree = function() {
             showToolbar: true,
             renderToolbar: rendermotreetoolbar,
             hierarchicalCheckboxes: false,
-            checkboxes: false,
+            checkboxes: true,
             filterable: true,
             filterMode: "simple",
             localization: localize(),
@@ -535,7 +535,29 @@ initmotree = function() {
         }
     );*/
 
-    motree.on('rowSelect', function (event) {
+    motree.on('rowSelect',
+        function (event)
+        {
+            let args = event.args;
+            let new_top_level_node = args.key;
+            if (new_top_level_node === current_top_level_node && filter_mode === 1) {
+                return false;
+            }
+            current_top_level_node =  new_top_level_node;
+            filter_mode = 1; // режим отбора документов по территориям
+            updatedocumenttable();
+            //terr.jqxDropDownButton('close');
+            if (current_top_level_node === 0) {
+                terr.jqxDropDownButton('setContent', '<div style="margin: 9px">Медицинские организации (по территориям)</div>');
+            } else {
+                terr.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: #337ab7;"></i>Медицинские организации (по территориям)</div>');
+            }
+            groups.jqxDropDownButton('setContent', '<div style="margin: 9px">Медицинские организации (по группам)</div>');
+            return true;
+        }
+    );
+
+/*    motree.on('rowSelect', function (event) {
         var args = event.args;
         var new_top_level_node = args.key;
         if (new_top_level_node == current_top_level_node) {
@@ -545,7 +567,8 @@ initmotree = function() {
         filter_mode = 1; // режим отбора документов по территориям
         updatedocumenttable();
         return true;
-    });
+    });*/
+
     motree.on('rowCheck', function (event) {
         //$(this).jqxTreeGrid({ showToolbar: true });
         $("#buttonplus").show();
