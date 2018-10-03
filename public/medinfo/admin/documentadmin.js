@@ -22,9 +22,13 @@ let checkedforms = [];
 
 // Инициализация источников данных для таблиц
 docroute = function () {
-    let route = '&filter_mode=' + filter_mode + '&ou=' + current_top_level_node +  '&dtypes=' + checkeddtypes.join();
-    route += '&states='+ checkedstates.join() +'&monitorings=' + checkedmonitorings.join() +'&forms=' + checkedforms.join() + '&periods=' + checkedperiods.join()
-    return route;
+    return '&filter_mode=' + filter_mode
+        + '&ou=' + current_top_level_node
+        + '&dtypes=' + checkeddtypes.join()
+        + '&states='+ checkedstates.join()
+        + '&monitorings=' + checkedmonitorings.join()
+        + '&forms=' + checkedforms.join()
+        + '&periods=' + checkedperiods.join();
 };
 datasources = function() {
     mo_source =
@@ -34,7 +38,8 @@ datasources = function() {
             { name: 'id', type: 'int' },
             { name: 'parent_id', type: 'int' },
             { name: 'unit_code', type: 'string' },
-            { name: 'unit_name', type: 'string' }
+            { name: 'unit_name', type: 'string' },
+            { name: 'node_type', type: 'int' }
         ],
         hierarchy:
         {
@@ -428,23 +433,6 @@ initsplitters = function() {
         panels: [{ size: '50%', min: 100, collapsible: false }, { min: '100px', collapsible: true}]
     });
 };
-// Рендеринг панели инструментов для выделенных территорий/учреждений
-//var rendermotreetoolbar = function(toolbar) {
-rendermotreetoolbar = function() {
-    let toolbar = $("#filtermoTree");
-    let container = $("<div style='display: none' id='buttonplus'></div>");
-    let newdoc_form = $('#newForm');
-    let newdocument = $("<i style='height: 14px' class='fa fa-wpforms fa-lg' title='Новый документ'></i>");
-    newdocument.jqxButton({ theme: theme });
-    container.append(newdocument);
-    //var newdocument = $("#newdocument");
-    newdocument.on('click', function() {
-        $('#selectPrimary').jqxCheckBox('enable');
-        $('#selectAggregate').jqxCheckBox('uncheck');
-        newdoc_form.jqxWindow('open');
-    });
-    toolbar.append(container);
-};
 
 rendergrouptreetoolbar = function() {
     var toolbar = $("#filtergroupTree");
@@ -474,7 +462,7 @@ initmotree = function() {
             source: mo_dataAdapter,
             selectionMode: "singleRow",
             showToolbar: true,
-            renderToolbar: rendermotreetoolbar,
+            renderToolbar: motreeToolbar,
             hierarchicalCheckboxes: false,
             checkboxes: true,
             filterable: true,
@@ -499,7 +487,6 @@ initmotree = function() {
             motree.jqxTreeGrid('expandAll');
         }
     );
-
 
 /*    motree.jqxTreeGrid(
         {
@@ -534,7 +521,6 @@ initmotree = function() {
             motree.jqxTreeGrid('expandAll');
         }
     );*/
-
     motree.on('rowSelect',
         function (event)
         {
@@ -568,7 +554,6 @@ initmotree = function() {
         updatedocumenttable();
         return true;
     });*/
-
     motree.on('rowCheck', function (event) {
         //$(this).jqxTreeGrid({ showToolbar: true });
         $("#buttonplus").show();
@@ -582,7 +567,38 @@ initmotree = function() {
             //$(this).jqxTreeGrid({ showToolbar: false });
             $("#buttonplus").hide();
         }
-
+    });
+};
+// Рендеринг панели инструментов для выделенных территорий/учреждений
+motreeToolbar = function (toolbar) {
+    toolbar.append("<button type='button' id='collapseAll' class='btn btn-default btn-sm'>Свернуть все</button>");
+    toolbar.append("<button type='button' id='expandAll' class='btn btn-default btn-sm'>Развернуть все</button>");
+    toolbar.append("<button type='button' id='uncheckAll' class='btn btn-default btn-sm'>Снять выбор</button>");
+    toolbar.append("<label style='margin-left: 10px; margin-right: 10px' class='checkbox-inline'><input type='checkbox' value=''>Выбирать входящие</label>");
+    toolbar.append("<button type='button' style='display: none' id='buttonplus' class='btn btn-default btn-sm'>Создать документы</button>");
+    //let container = $("<div style='display: none' id='buttonplus'></div>");
+    let newdocform = $('#newForm');
+    //let newdocbutton = $("<i style='height: 18px; display: none' id='buttonplus' class='fa fa-wpforms fa-lg' title='Новый документ'></i>");
+    //newdocbutton.jqxButton({ theme: theme });
+    //container.append(newdocument);
+    //toolbar.append(newdocbutton);
+    $("#buttonplus").on('click', function() {
+        $('#selectPrimary').jqxCheckBox('enable');
+        $('#selectAggregate').jqxCheckBox('uncheck');
+        newdocform.jqxWindow('open');
+    });
+    $("#expandAll").click(function (event) {
+        motree.jqxTreeGrid('expandAll');
+    });
+    $("#collapseAll").click(function (event) {
+        motree.jqxTreeGrid('collapseAll');
+        motree.jqxTreeGrid('expandRow', 0);
+    });
+    $("#uncheckAll").click(function (event) {
+        let checkedRows = motree.jqxTreeGrid('getCheckedRows');
+        for (i = 0; i < checkedRows.length; i++) {
+            motree.jqxTreeGrid('uncheckRow', checkedRows[i].uid);
+        }
     });
 };
 

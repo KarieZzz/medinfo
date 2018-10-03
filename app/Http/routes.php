@@ -200,14 +200,12 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::post('admin/units/addlistmembers/{list}', 'Admin\ListMOAdminController@addMembers');
     Route::delete('admin/units/removelistmembers/{list}/{members}', 'Admin\ListMOAdminController@removeMembers');
     Route::delete('admin/units/removeall/{list}', 'Admin\ListMOAdminController@removeAll');
-
 /*    Route::get('admin/micontrols/vtk', 'Admin\MedinfoControlsAdminController@index');
     Route::get('admin/micontrols/fetchcontrolledrows/{table}/{scope}', 'Admin\MedinfoControlsAdminController@fetchControlledRows');
     Route::get('admin/micontrols/vtk/fetchcontrollingrows/{table}/{relation}', 'Admin\MedinfoControlsAdminController@fetchControllingRows');
     Route::get('admin/micontrols/fetchcolumns/{firstcol}/{countcol}', 'Admin\MedinfoControlsAdminController@fetchColumns');
     Route::get('admin/micontrols/translate/{form}', 'Admin\MedinfoControlsAdminController@MIRulesTranslate');
     Route::get('admin/micontrols/saverules', 'Admin\MedinfoControlsAdminController@BatchRuleSave');*/
-
     // Менеджер отчетных документов
     Route::get('admin/documents', 'Admin\DocumentAdminController@index');
     Route::get('admin/fetchugroups', 'Admin\DocumentAdminController@fetch_unitgroups');
@@ -220,6 +218,8 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::patch('admin/documentstatechange', 'Admin\DocumentAdminController@changeState');
     Route::patch('admin/protectaggregates', 'Admin\DocumentAdminController@protect_aggregated');
     Route::get('admin/documents/valuechanginglog/{document}', 'Admin\ValueChangingAdminController@showFormEditingLog');
+    Route::get('admin/documents/create_set1', 'Admin\DocumentAdminController@documentSetCreating1');
+    Route::get('admin/documents/create_set2', 'Admin\DocumentAdminController@documentSetCreating2');
 
     // импорт данных из формата Медстат
     Route::get('admin/documents/medstatimport', 'ImportExport\MedstatImportAdminController@index');

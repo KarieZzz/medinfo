@@ -50,6 +50,16 @@ class Unit extends Model
         return $query->where('node_type', 4);
     }
 
+    public function scopeSubDivision($query)
+    {
+        return $query->where('node_type', 5);
+    }
+
+    public function scopeSubUnits($query)
+    {
+        return $query->where('node_type', 4)->orWhere('node_type', 5);
+    }
+
     // Выбор учреждений образования и социальной защиты
     public function scopeSchoolAndSocial($query)
     {
@@ -76,9 +86,7 @@ class Unit extends Model
     public function scopeMayBeAggregate($query)
     {
         return $query
-            ->where('aggregate', 1)
-            ->orWhere('node_type', 1)
-            ->orWhere('node_type', 2);
+            ->where('aggregate', 1);
     }
 
     public function scopeOfCountry($query)

@@ -78,63 +78,25 @@ class DocumentAdminController extends Controller
     public function createDocuments(Request $request)
     {
         $mode = $request->filter_mode;
-        $allowprimary = false;
-        $allowaggregate = false;
         $units = explode(",", $request->units);
         $monitoring = Monitoring::find($request->monitoring);
         $album = $request->album;
         $forms = explode(",", $request->forms);
         $create_primary = $request->primary;
         $create_aggregate = $request->aggregate;
-        $period_id = $request->period;
+        $period = Period::find($request->period);
         $initial_state = $request->state;
-        $i = 0;
-        $duplicate = 0;
-        foreach ($units as $unit_id) {
-            if ($mode == 1) {
-                $unit = Unit::find($unit_id);
-                $unit->report ? $allowprimary = true : $allowprimary = false;
-                $unit->aggregate ? $allowaggregate = true : $allowaggregate = false;
-            }  elseif ($mode == 2) {
-                $allowprimary = false;
-                $allowaggregate = true;
-                $unit = UnitGroup::find($unit_id);
-            }
-            foreach ($forms as $form_id) {
-                $newdoc = ['ou_id' => $unit->id, 'monitoring_id' => $monitoring->id, 'album_id' => $album, 'form_id' => $form_id ,
-                    'period_id' => $period_id, 'state' => $initial_state ];
-
-                if ($create_primary && $allowprimary) {
-                    $newdoc['dtype'] = 1;
-                    //Document::create($newdoc);
-                    try {
-                        Document::create($newdoc);
-                        $i++;
-                    } catch (\Illuminate\Database\QueryException $e) {
-                        $errorCode = $e->errorInfo[0];
-                        if($errorCode == '23505'){
-                            $duplicate++;
-                        }
-                    }
-                }
-                if ($create_aggregate && $allowaggregate) {
-                    $newdoc['dtype'] = 2;
-                    try {
-                        Document::create($newdoc);
-                        $i++;
-                    } catch (\Illuminate\Database\QueryException $e) {
-                        $errorCode = $e->errorInfo[0];
-                        if($errorCode == '23505'){
-                            $duplicate++;
-                        }
-                    }
-                }
-            }
-        }
-        $data['count_of_created'] = $i;
-        $data['count_of_duplicated'] = $duplicate;
-        $data['count_of_all'] = count($units)*count($forms);
-        return $data;
+        return \App\Medinfo\DocumentCreate::documentBulkCreate(
+            $mode,
+            $units,
+            $monitoring,
+            $forms,
+            $album,
+            $period,
+            $initial_state,
+            $create_primary,
+            $create_aggregate
+        );
     }
 
     public function deleteDocuments(Request $request)
@@ -226,4 +188,55 @@ class DocumentAdminController extends Controller
         $data['count_of_duplicated'] = $duplicate;
         return $data;
     }
+
+    public function documentSetCreating1()
+    {
+        $mode = 1; // по-территориально
+        $units = Unit::SubUnits()->pluck('id')->toArray();
+        $monitoring = Monitoring::find(100001);
+        $album = 14; // ФСН 2018 год
+        $forms = [2,7,6,86,71,74]; // 30, 12, 14, 14дс, 16-вн, 57 формы
+        $period = Period::find(12);
+        $initial_state = 2;
+        $create_primary = true;
+        $create_aggregate = false;
+        $result = \App\Medinfo\DocumentCreate::documentBulkCreate(
+            $mode,
+            $units,
+            $monitoring,
+            $forms,
+            $album,
+            $period,
+            $initial_state,
+            $create_primary,
+            $create_aggregate
+        );
+        var_dump($result);
+    }
+
+    public function documentSetCreating2()
+    {
+        $mode = 1; // по-территориально
+        $units = Unit::Legal()->MayBeAggregate()->pluck('id')->toArray();
+        $monitoring = Monitoring::find(100001);
+        $album = 14; // ФСН 2018 год
+        $forms = [2,7,6,86,71,74]; // 30, 12, 14, 14дс, 16-вн, 57 формы
+        $period = Period::find(12);
+        $initial_state = 2;
+        $create_primary = false;
+        $create_aggregate = true;
+        $result = \App\Medinfo\DocumentCreate::documentBulkCreate(
+            $mode,
+            $units,
+            $monitoring,
+            $forms,
+            $album,
+            $period,
+            $initial_state,
+            $create_primary,
+            $create_aggregate
+        );
+        var_dump($result);
+    }
+
 }
