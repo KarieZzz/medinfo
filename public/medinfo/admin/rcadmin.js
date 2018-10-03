@@ -497,3 +497,93 @@ let initColumnFormulaWindow = function () {
         });
     });
 };
+
+let initOrderControls = function () {
+    let up = $("#row_up");
+    let down = $("#row_down");
+    let left = $("#column_left");
+    let right = $("#column_right");
+
+    up.click(function () {
+        reorderRows(row_up_url);
+    });
+    down.click(function () {
+        reorderRows(row_down_url);
+    });
+    left.click(function () {
+        reorderColumns(column_left_url);
+    });
+    right.click(function () {
+        reorderColumns(column_right_url);
+    });
+};
+
+function getCurrentRow() {
+    let row = rlist.jqxGrid('getselectedrowindex');
+    if (row === -1) {
+        return false;
+    }
+    return rlist.jqxGrid('getrowid', row);
+}
+
+function getCurrentColumn() {
+    let row = clist.jqxGrid('getselectedrowindex');
+    if (row === -1) {
+        return false;
+    }
+    return clist.jqxGrid('getrowid', row);
+}
+
+function reorderRows(url) {
+    let selected = getCurrentRow();
+    if (!selected) {
+        raiseError("Строка не выбрана");
+        return false;
+    }
+    $.ajax({
+        dataType: 'json',
+        url: url + selected,
+        method: "PATCH",
+        success: function (data, status, xhr) {
+            if (typeof data.error !== 'undefined') {
+                raiseError(data.message);
+            }
+            rlist.jqxGrid('updatebounddata', 'data');
+            rlist.on("bindingcomplete", function (event) {
+                let newindex = rlist.jqxGrid('getrowboundindexbyid', selected);
+                rlist.jqxGrid('selectrow', newindex);
+                rlist.jqxGrid('ensurerowvisible', newindex);
+            });
+        },
+        error: function (xhr, status, errorThrown) {
+            raiseError('Ошибка при изменении порядкового номера строки', xhr);
+        }
+    });
+}
+
+function reorderColumns(url) {
+    let selected = getCurrentColumn();
+    if (!selected) {
+        raiseError("Графа не выбрана");
+        return false;
+    }
+    $.ajax({
+        dataType: 'json',
+        url: url + selected,
+        method: "PATCH",
+        success: function (data, status, xhr) {
+            if (typeof data.error !== 'undefined') {
+                raiseError(data.message);
+            }
+            clist.jqxGrid('updatebounddata', 'data');
+            clist.on("bindingcomplete", function (event) {
+                let newindex = clist.jqxGrid('getrowboundindexbyid', selected);
+                clist.jqxGrid('selectrow', newindex);
+                clist.jqxGrid('ensurerowvisible', newindex);
+            });
+        },
+        error: function (xhr, status, errorThrown) {
+            raiseError('Ошибка при изменении порядкового номера графы', xhr);
+        }
+    });
+}

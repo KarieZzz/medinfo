@@ -65,7 +65,7 @@ class RowColumnAdminController extends Controller
     public function rowUpdate(Row $row, Request $request)
     {
         $this->validate($request, [
-                'row_index' => 'required|integer',
+                'row_index' => 'required|integer|min:1|max:999',
                 'row_name' => 'required|max:256',
                 'row_code' => 'required|max:16',
                 'medstat_code' => 'digits:3',
@@ -100,7 +100,7 @@ class RowColumnAdminController extends Controller
     {
         $this->validate($request, [
                 'table_id' => 'required|exists:tables,id',
-                'row_index' => 'required|integer',
+                'row_index' => 'required|integer|min:1|max:999',
                 'row_name' => 'required|max:256',
                 'row_code' => 'required|max:16',
                 'medstat_code' => 'digits:3',
@@ -168,7 +168,7 @@ class RowColumnAdminController extends Controller
     public function columnUpdate(Column $column, Request $request)
     {
         $this->validate($request, [
-                'column_index' => 'required|digits_between:1,51',
+                'column_index' => 'required|integer|min:1|max:50',
                 'column_name' => 'required|max:256',
                 'column_code' => 'required|max:8',
                 'content_type' => 'integer',
@@ -209,7 +209,7 @@ class RowColumnAdminController extends Controller
     {
         $this->validate($request, [
                 'table_id' => 'required|exists:tables,id',
-                'column_index' => 'required|digits_between:1,51',
+                'column_index' => 'required|integer|min:1|max:50',
                 'column_name' => 'required|max:256',
                 'column_code' => 'required|max:8',
                 'content_type' => 'integer',
@@ -279,6 +279,77 @@ class RowColumnAdminController extends Controller
             return ['error' => 422, 'message' => 'Графа Id' . $column->id . ' содержит данные. Удаление невозможно.' ];
         }
     }
+
+    public function rowUp(Row $row)
+    {
+        $current_index = $row->row_index;
+        //dd($current_index-1);
+        $prevrow = Row::OfTable($row->table_id)->where('row_index', $current_index - 1)->first();
+        //dd($prevtable);
+        if(is_null($prevrow)){
+            return ['error' => 422, 'message' => 'Выше некуда.'];
+        }
+        $row->row_index = 0;
+        $row->save();
+        $prevrow->row_index = $current_index;
+        $prevrow->save();
+        $row->row_index = $current_index - 1;
+        $row->save();
+        return [$current_index, $current_index - 1];
+    }
+
+    public function rowDown(Row $row)
+    {
+        $current_index = $row->row_index;
+        //dd($current_index-1);
+        $nextrow = Row::OfTable($row->table_id)->where('row_index', $current_index + 1)->first();
+        //dd($prevtable);
+        if(is_null($nextrow)){
+            return ['error' => 422, 'message' => 'Ниже некуда.'];
+        }
+        $row->row_index = 0;
+        $row->save();
+        $nextrow->row_index = $current_index;
+        $nextrow->save();
+        $row->row_index = $current_index + 1;
+        $row->save();
+        return [$current_index, $current_index + 1];
+    }
+
+    public function columnLeft(Column $column)
+    {
+        $current_index = $column->column_index;
+        //dd($current_index-1);
+        $prevcol = Column::OfTable($column->table_id)->where('column_index', $current_index - 1)->first();
+        //dd($prevcol);
+        if(is_null($prevcol)){
+            return ['error' => 422, 'message' => 'Левее некуда.'];
+        }
+        $column->column_index = 0;
+        $column->save();
+        $prevcol->column_index = $current_index;
+        $prevcol->save();
+        $column->column_index = $current_index - 1;
+        $column->save();
+        return [$current_index, $current_index - 1];
+    }
+
+    public function columnRight(Column $column)
+    {
+        $current_index = $column->column_index;
+        $nextcol = Column::OfTable($column->table_id)->where('column_index', $current_index + 1)->first();
+        if(is_null($nextcol)){
+            return ['error' => 422, 'message' => 'Правее некуда.'];
+        }
+        $column->column_index = 0;
+        $column->save();
+        $nextcol->column_index = $current_index;
+        $nextcol->save();
+        $column->column_index = $current_index + 1;
+        $column->save();
+        return [$current_index, $current_index + 1];
+    }
+
     // Сопоставление строк в Мединфо и в Медстат
     public function rowsMatching($formcode)
     {
@@ -334,7 +405,6 @@ class RowColumnAdminController extends Controller
                         } else {
                             $errors[$table->id][] = 'Не совпадает код по строке Медстат' . $matched_rows[7]  . '!';
                         }
-
                         //$errors[$table->id][] = 'Не совпадает код по строке' ;
                     }
                 }

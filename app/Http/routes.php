@@ -132,6 +132,12 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::patch('admin/rc/columnupdate/{column}', 'Admin\RowColumnAdminController@columnUpdate');
     Route::delete('admin/rc/columndelete/{column}', 'Admin\RowColumnAdminController@columnDelete');
     Route::post('admin/rc/columncreate', 'Admin\RowColumnAdminController@columnStore');
+    // Изменение порядка строк
+    Route::patch('admin/rc/rowup/{row}', 'Admin\RowColumnAdminController@rowUp');
+    Route::patch('admin/rc/rowdown/{row}', 'Admin\RowColumnAdminController@rowDown');
+    // Изменение порядка граф
+    Route::patch('admin/rc/columnleft/{column}', 'Admin\RowColumnAdminController@columnLeft');
+    Route::patch('admin/rc/columnright/{column}', 'Admin\RowColumnAdminController@columnRight');
 
     Route::get('admin/rc/columnformula/show/{column}', 'Admin\CalculatedColumnAdminController@show');
     Route::post('admin/rc/columnformula/store/{column}', 'Admin\CalculatedColumnAdminController@store');

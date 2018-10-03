@@ -52,10 +52,12 @@
                         <div class="col-md-7 text-primary"> </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-md-offset-2 col-md-7">
+                        <div class="col-md-offset-2 col-md-10">
                             <button type="button" id="saverow" class="btn btn-primary">Сохранить изменения</button>
                             <button type="button" id="insertrow" class="btn btn-success">Вставить новую запись</button>
                             <button type="button" id="deleterow" class="btn btn-danger">Удалить запись</button>
+                            <button type="button" id="row_up" class="btn btn-sm btn-default">Вверх</button>
+                            <button type="button" id="row_down" class="btn btn-sm btn-default">Вниз</button>
                         </div>
                     </div>
                 </form>
@@ -115,15 +117,6 @@
                             <input type="text" class="form-control input-sm" id="column_medstatnsk_id">
                         </div>
                     </div>
-                {{--<div class="form-group">
-
-                                            <div class="col-md-7">
-                                                <button type="button" id="top" class="btn btn-sm btn-default">В начало </button>
-                                                <button type="button" id="up" class="btn btn-sm btn-default">Вверх</button>
-                                                <button type="button" id="down" class="btn btn-sm btn-default">Вниз</button>
-                                                <button type="button" id="bottom" class="btn btn-sm btn-default">В конец</button>
-                                            </div>
-                    </div>--}}
                     <div class="form-group">
                         <label class="control-label col-md-3" for="excludedColumn">
                             Исключена из текущего альбома <a href="albums" target="_blank" class="text-primary album-name" title="Изменить текущий альбом">("{{ $album->album_name }}")</a>:
@@ -133,10 +126,12 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-md-offset-2 col-md-7">
+                        <div class="col-md-offset-2 col-md-10">
                             <button type="button" id="savecolumn" class="btn btn-primary">Сохранить изменения</button>
                             <button type="button" id="insertcolumn" class="btn btn-success">Вставить новую запись</button>
                             <button type="button" id="deletecolumn" class="btn btn-danger">Удалить запись</button>
+                            <button type="button" id="column_left" class="btn btn-sm btn-default">Влево</button>
+                            <button type="button" id="column_right" class="btn btn-sm btn-default">Вправо</button>
                         </div>
                     </div>
                 </form>
@@ -194,7 +189,7 @@
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>--}}
     <script src="{{ asset('/medinfo/admin/tablepicker.js?v=016') }}"></script>
-    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=046') }}"></script>
+    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=048') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -212,6 +207,10 @@
         let showcolumnformula_url = '/admin/rc/columnformula/show/';
         let updatecolumnformula_url = '/admin/rc/columnformula/update/';
         let storecolumnformula_url = '/admin/rc/columnformula/store/';
+        let row_up_url = '/admin/rc/rowup/';
+        let row_down_url = '/admin/rc/rowdown/';
+        let column_left_url = '/admin/rc/columnleft/';
+        let column_right_url = '/admin/rc/columnright/';
         let forms = {!! $forms  !!};
         let columnTypes = {!! $columnTypes !!};
         let rlist = $("#rowList");
@@ -227,6 +226,7 @@
         initButtons();
         initRowActions();
         initColumnActions();
+        initOrderControls();
         initColumnFormulaWindow();
     </script>
 @endsection
