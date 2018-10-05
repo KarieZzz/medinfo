@@ -257,7 +257,7 @@ class ControlPtreeTranslator
                 break;
             case UnitGroup::$reserved_slugs[3] :
             case UnitGroup::$reserved_slugs[4] :
-                $units = Unit::SubLegal()->get()->pluck('id')->toArray();
+                $units = Unit::SubUnits()->get()->pluck('id')->toArray();
                 break;
             case UnitGroup::$reserved_slugs[5] :
             case UnitGroup::$reserved_slugs[6] :
