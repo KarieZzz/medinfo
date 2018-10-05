@@ -16,7 +16,7 @@ class CreateAggregatesTable extends Migration
             $table->integer('doc_id')->primary();
             $table->integer('protected')->index();
             $table->timestamp('aggregated_at')->nullable()->index();
-            $table->string('include_docs', 2048)->nullable();
+            $table->text('include_docs')->nullable();
             $table->timestamps();
         });
     }

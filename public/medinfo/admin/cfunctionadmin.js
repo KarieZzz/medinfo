@@ -17,7 +17,9 @@ let initdatasources = function() {
             { name: 'typename', map: 'type>name', type: 'string' },
             { name: 'script', type: 'string' },
             { name: 'comment', type: 'string' },
-            { name: 'blocked', type: 'bool' }
+            { name: 'blocked', type: 'bool' },
+            { name: 'created_at', type: 'string' },
+            { name: 'updated_at', type: 'string' }
         ],
         id: 'id',
         url: functionfetch_url + current_table,
@@ -40,12 +42,14 @@ let initFunctionList = function() {
             sortable: true,
             columns: [
                 { text: 'Id', datafield: 'id', width: '50px' },
-                { text: 'Код таблицы', datafield: 'table_code', width: '70px'  },
+                //{ text: 'Код таблицы', datafield: 'table_code', width: '70px'  },
                 { text: 'Уровень', datafield: 'levelname', width: '120px'  },
                 { text: 'Тип', datafield: 'typename', width: '120px'  },
-                { text: 'Функция контроля', datafield: 'script' , width: '55%'},
+                { text: 'Функция контроля', datafield: 'script' , width: '45%'},
                 { text: 'Комментарий', datafield: 'comment', width: '400px' },
-                { text: 'Отключена', datafield: 'blocked', columntype: 'checkbox', width: '70px' }
+                { text: 'Отключена', datafield: 'blocked', columntype: 'checkbox', width: '70px' },
+                { text: 'Создана', datafield: 'created_at', width: '130px' },
+                { text: 'Обновлена', datafield: 'updated_at', width: '130px' }
             ]
         });
     fgrid.on('rowselect', function (event) {
@@ -119,6 +123,11 @@ let initFunctionActions = function() {
                     raiseInfo(data.message);
                 }
                 fgrid.jqxGrid('updatebounddata', 'data');
+                fgrid.on("bindingcomplete", function (event) {
+                    let newindex = fgrid.jqxGrid('getrowboundindexbyid', data.id);
+                    fgrid.jqxGrid('selectrow', newindex);
+                    fgrid.jqxGrid('ensurerowvisible', newindex);
+                });
             },
             error: function (xhr, status, errorThrown) {
                 $.each(xhr.responseJSON, function(field, errorText) {
@@ -149,6 +158,7 @@ let initFunctionActions = function() {
                     fgrid.on("bindingcomplete", function (event) {
                         let newindex = fgrid.jqxGrid('getrowboundindexbyid', id);
                         fgrid.jqxGrid('selectrow', newindex);
+                        fgrid.jqxGrid('ensurerowvisible', newindex);
                     });
                 }
             },

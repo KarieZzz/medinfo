@@ -38,7 +38,7 @@ class CFunctionAdminController extends Controller
 
     public function fetchControlFunctions(int $table)
     {
-        return CFunction::OfTable($table)->orderBy('updated_at')->with('table')->with('level')->with('type')->get();
+        return CFunction::OfTable($table)->orderBy('created_at', 'desc')->orderBy('updated_at', 'desc')->with('table')->with('level')->with('type')->get();
     }
 
     public function fetchCFofForm(int $form)
@@ -112,7 +112,8 @@ class CFunctionAdminController extends Controller
         try {
             $newfunction->save();
             $deleted_protocols =  ControlCashe::where('table_id', $table->id)->delete();
-            return ['message' => 'Новая запись создана. Id:' . $newfunction->id . 'Удалено кэшированных протоколов контроля: ' . $deleted_protocols];
+            return [ 'message' => 'Новая запись создана. Id:' . $newfunction->id . ' Удалено кэшированных протоколов контроля: ' . $deleted_protocols,
+                'id' => $newfunction->id ];
         } catch (\Illuminate\Database\QueryException $e) {
             $errorCode = $e->errorInfo[0];
             switch ($errorCode) {
@@ -333,8 +334,8 @@ class CFunctionAdminController extends Controller
             $functions =  CFunction::ofTable($table->id)->get();
             $excel->sheet($table->table_code , function($sheet) use ($table, $functions) {
                 $sheet->loadView('reports.cfunctions_excel', compact('table', 'functions'));
-                $sheet->getStyle(\App\Medinfo\ExcelExport::getCellByRC(3, 1) . ':' . \App\Medinfo\ExcelExport::getCellByRC(count($functions)+3, 3))->getAlignment()->setWrapText(true);
-                $sheet->getStyle(\App\Medinfo\ExcelExport::getCellByRC(3, 1) . ':' . \App\Medinfo\ExcelExport::getCellByRC(count($functions)+3, 3))->getBorders()
+                $sheet->getStyle(\App\Medinfo\ExcelExport::getCellByRC(3, 1) . ':' . \App\Medinfo\ExcelExport::getCellByRC(count($functions)+3, 4))->getAlignment()->setWrapText(true);
+                $sheet->getStyle(\App\Medinfo\ExcelExport::getCellByRC(3, 1) . ':' . \App\Medinfo\ExcelExport::getCellByRC(count($functions)+3, 4))->getBorders()
                     ->getAllBorders()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THIN);
             });
         }

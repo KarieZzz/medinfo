@@ -258,7 +258,6 @@ initRowActions = function() {
                     let newindex = rlist.jqxGrid('getrowboundindexbyid', data.id);
                     rlist.jqxGrid('selectrow', newindex);
                     rlist.jqxGrid('ensurerowvisible', newindex);
-
                 });
             },
             error: function (xhr, status, errorThrown) {
@@ -292,7 +291,6 @@ initRowActions = function() {
                     var newindex = rlist.jqxGrid('getrowboundindexbyid', rowid);
                     rlist.jqxGrid('selectrow', newindex);
                     rlist.jqxGrid('ensurerowvisible', newindex);
-
                 });
             },
             error: function (xhr, status, errorThrown) {

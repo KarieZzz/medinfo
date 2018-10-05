@@ -20,7 +20,7 @@
                     <div class="form-group">
                         <label class="control-label col-sm-3" for="script">Текст функции:</label>
                         <div class="col-sm-8">
-                            <textarea rows="7" class="form-control" id="script"></textarea>
+                            <textarea rows="7" class="form-control" id="script" spellcheck="false"></textarea>
                         </div>
                     </div>
                     <div class="form-group">
@@ -78,7 +78,7 @@
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>--}}
     <script src="{{ asset('/medinfo/admin/tablepicker.js?v=013') }}"></script>
-    <script src="{{ asset('/medinfo/admin/cfunctionadmin.js?v=008') }}"></script>
+    <script src="{{ asset('/medinfo/admin/cfunctionadmin.js?v=010') }}"></script>
 @endpush
 
 @section('inlinejs')

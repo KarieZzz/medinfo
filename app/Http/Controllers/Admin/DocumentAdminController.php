@@ -109,6 +109,7 @@ class DocumentAdminController extends Controller
         \App\Aggregate::WhereIn('doc_id', $documents)->delete();
         \App\Consolidate::WhereIn('doc_id', $documents)->delete();
         \App\ValuechangingLog::WhereIn('d', $documents)->delete();
+        \App\RecentDocument::WhereIn('document_id', $documents)->delete();
         $comment = 'Удалены статданные документов №№' . $request->documents . ' ';
         $affected = Document::destroy($documents);
         $comment .= 'Удалены документы №№' . $request->documents;
