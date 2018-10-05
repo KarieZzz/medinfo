@@ -30,9 +30,11 @@ class ListMOAdminController extends Controller
                 'slug' => 'required|max:32|unique:unit_lists',
             ]
         );
+        if (in_array($request->slug, UnitList::$reserved_slugs)) {
+            return ['error' => 422, 'message' => 'Запись не сохранена. Псевдоним не должен совпадать с зарезервированными наименованиями'];
+        }
         $new = UnitList::create([ 'name' => $request->name, 'slug' => $request->slug ]);
         return ['stored' => true, 'id' => $new->id];
-
     }
 
     public function storeAs(UnitList $list)
@@ -41,6 +43,9 @@ class ListMOAdminController extends Controller
         //dd($listmembers);
         $copyname = $list->name . ' копия';
         $copyslug = $list->slug . '_копия';
+        if (in_array($copyslug, UnitList::$reserved_slugs)) {
+            return ['error' => 422, 'message' => 'Запись не сохранена. Псевдоним не должен совпадать с зарезервированными наименованиями'];
+        }
         $new = UnitList::firstOrCreate([ 'name' => $copyname, 'slug' => $copyslug ]);
         foreach ($listmembers as $listmember) {
             UnitListMember::create([ 'list_id' => $new->id, 'ou_id' => $listmember ]);
@@ -52,6 +57,9 @@ class ListMOAdminController extends Controller
     public function update($id, Request $request)
     {
         $this->validate($request, ['onfrontend' => 'required|in:1,0']);
+        if (in_array($request->slug, UnitList::$reserved_slugs)) {
+            return ['error' => 422, 'message' => 'Запись не сохранена. Псевдоним не должен совпадать с зарезервированными наименованиями'];
+        }
         $list = UnitList::find($id);
         $list->on_frontend = $request->onfrontend;
         if ($list->name !== $request->name) {

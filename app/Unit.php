@@ -89,7 +89,7 @@ class Unit extends Model
             ->where('aggregate', 1);
     }
 
-    public function scopeOfCountry($query)
+    public function scopeCountry($query)
     {
         return $query
             ->where('countryside', true);

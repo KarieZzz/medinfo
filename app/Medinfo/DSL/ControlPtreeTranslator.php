@@ -14,7 +14,7 @@ use App\Table;
 use App\Row;
 use App\Column;
 use App\Unit;
-use App\UnitGroup;
+use App\UnitList;
 
 class ControlPtreeTranslator
 {
@@ -167,8 +167,8 @@ class ControlPtreeTranslator
         if (count($this->parser->includeGroupStack) > 0 ||  count($this->parser->excludeGroupStack) > 0) {
             $this->scopeOfUnits = true;
             foreach ($this->parser->includeGroupStack as $group_slug) {
-                if (!in_array($group_slug, UnitGroup::$reserved_slugs)) {
-                    $group = UnitGroup::OfSlug($group_slug)->first();
+                if (!in_array($group_slug, UnitList::$reserved_slugs)) {
+                    $group = UnitList::Slug($group_slug)->first();
                     if (is_null($group)) {
                         throw new \Exception("Группа $group_slug не существует");
                     }
@@ -188,8 +188,8 @@ class ControlPtreeTranslator
              }
              //dd($includes);
             foreach ($this->parser->excludeGroupStack as $group_slug) {
-                if (!in_array($group_slug, UnitGroup::$reserved_slugs)) {
-                    $group = UnitGroup::OfSlug($group_slug)->first();
+                if (!in_array($group_slug, UnitList::$reserved_slugs)) {
+                    $group = UnitList::Slug($group_slug)->first();
                     if (is_null($group)) {
                         throw new \Exception("Группа $group_slug не существует");
                     }
@@ -247,47 +247,50 @@ class ControlPtreeTranslator
         $period = null;
         $dtype = null;
         switch ($static_group) {
-            case UnitGroup::$reserved_slugs[1] :
+            case UnitList::$reserved_slugs[1] :
                 $this->scopeOfDocuments = true;
-                $dtype = UnitGroup::PRIMARY;
+                $dtype = UnitList::PRIMARY;
                 break;
-            case UnitGroup::$reserved_slugs[2] :
+            case UnitList::$reserved_slugs[2] :
                 $this->scopeOfDocuments = true;
-                $dtype = UnitGroup::AGGREGATE;
+                $dtype = UnitList::AGGREGATE;
                 break;
-            case UnitGroup::$reserved_slugs[3] :
-            case UnitGroup::$reserved_slugs[4] :
+            case UnitList::$reserved_slugs[3] :
+            case UnitList::$reserved_slugs[4] :
                 $units = Unit::SubUnits()->get()->pluck('id')->toArray();
                 break;
-            case UnitGroup::$reserved_slugs[5] :
-            case UnitGroup::$reserved_slugs[6] :
+            case UnitList::$reserved_slugs[5] :
+            case UnitList::$reserved_slugs[6] :
                 $units = Unit::Legal()->get()->pluck('id')->toArray();
                 break;
-            case UnitGroup::$reserved_slugs[7] :
-            case UnitGroup::$reserved_slugs[8] :
+            case UnitList::$reserved_slugs[7] :
+            case UnitList::$reserved_slugs[8] :
                 $units = Unit::Territory()->get()->pluck('id')->toArray();
                 break;
                 // Периоды месячные
-            case UnitGroup::$reserved_slugs[9]  :
-            case UnitGroup::$reserved_slugs[10] :
-            case UnitGroup::$reserved_slugs[11] :
-            case UnitGroup::$reserved_slugs[12] :
-            case UnitGroup::$reserved_slugs[13] :
-            case UnitGroup::$reserved_slugs[14] :
-            case UnitGroup::$reserved_slugs[15] :
-            case UnitGroup::$reserved_slugs[16] :
-            case UnitGroup::$reserved_slugs[17] :
-            case UnitGroup::$reserved_slugs[18] :
-            case UnitGroup::$reserved_slugs[19] :
-            case UnitGroup::$reserved_slugs[20] :
-            case UnitGroup::$reserved_slugs[21] :
+            case UnitList::$reserved_slugs[9]  :
+            case UnitList::$reserved_slugs[10] :
+            case UnitList::$reserved_slugs[11] :
+            case UnitList::$reserved_slugs[12] :
+            case UnitList::$reserved_slugs[13] :
+            case UnitList::$reserved_slugs[14] :
+            case UnitList::$reserved_slugs[15] :
+            case UnitList::$reserved_slugs[16] :
+            case UnitList::$reserved_slugs[17] :
+            case UnitList::$reserved_slugs[18] :
+            case UnitList::$reserved_slugs[19] :
+            case UnitList::$reserved_slugs[20] :
+            case UnitList::$reserved_slugs[21] :
                 // Периоды квартальные
-            case UnitGroup::$reserved_slugs[22] :
-            case UnitGroup::$reserved_slugs[23] :
-            case UnitGroup::$reserved_slugs[24] :
-            case UnitGroup::$reserved_slugs[25] :
+            case UnitList::$reserved_slugs[22] :
+            case UnitList::$reserved_slugs[23] :
+            case UnitList::$reserved_slugs[24] :
+            case UnitList::$reserved_slugs[25] :
                 $this->scopeOfPeriods = true;
                 $period = $static_group;
+                break;
+            case UnitList::$reserved_slugs[26] :
+                $units = Unit::Country()->get()->pluck('id')->toArray();
                 break;
             default:
                 throw new \Exception("Группа $static_group не определена");
