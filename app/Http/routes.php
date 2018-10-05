@@ -218,8 +218,10 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::patch('admin/documentstatechange', 'Admin\DocumentAdminController@changeState');
     Route::patch('admin/protectaggregates', 'Admin\DocumentAdminController@protect_aggregated');
     Route::get('admin/documents/valuechanginglog/{document}', 'Admin\ValueChangingAdminController@showFormEditingLog');
+
     Route::get('admin/documents/create_set1', 'Admin\DocumentAdminController@documentSetCreating1');
     Route::get('admin/documents/create_set2', 'Admin\DocumentAdminController@documentSetCreating2');
+    Route::get('admin/documents/create_set3', 'Admin\DocumentAdminController@documentSetCreating3');
 
     // импорт данных из формата Медстат
     Route::get('admin/documents/medstatimport', 'ImportExport\MedstatImportAdminController@index');

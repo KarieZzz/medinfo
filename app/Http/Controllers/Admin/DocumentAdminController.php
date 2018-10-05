@@ -189,14 +189,39 @@ class DocumentAdminController extends Controller
         $data['count_of_duplicated'] = $duplicate;
         return $data;
     }
-
+    // первичные отчеты по подразделениям
     public function documentSetCreating1()
     {
         $mode = 1; // по-территориально
         $units = Unit::SubUnits()->pluck('id')->toArray();
         $monitoring = Monitoring::find(100001);
         $album = 14; // ФСН 2018 год
-        $forms = [2,7,6,86,71,74]; // 30, 12, 14, 14дс, 16-вн, 57 формы
+        $forms = [2,91,7,104,6,86,71,74,17,88,45,5,8,47  ]; // 30, 301, 12, ,1201, 14, 14дс, 16-вн, 57, 53, 1-дети, 19, 13, 32, 232 формы
+        $period = Period::find(12);
+        $initial_state = 2;
+        $create_primary = true;
+        $create_aggregate = false;
+        $result = \App\Medinfo\DocumentCreate::documentBulkCreate(
+            $mode,
+            $units,
+            $monitoring,
+            $forms,
+            $album,
+            $period,
+            $initial_state,
+            $create_primary,
+            $create_aggregate
+        );
+        var_dump($result);
+    }
+    // первичные отчеты по подразделениям
+    public function documentSetCreating2()
+    {
+        $mode = 1; // по-территориально
+        $units = Unit::Legal()->pluck('id')->toArray();
+        $monitoring = Monitoring::find(100001);
+        $album = 14; // ФСН 2018 год
+        $forms = [2,91,7,104,6,86,71,74,17,88,45,5,8,47  ]; // 30, 301, 12, ,1201, 14, 14дс, 16-вн, 57, 53, 1-дети, 19, 13, 32, 232 формы
         $period = Period::find(12);
         $initial_state = 2;
         $create_primary = true;
@@ -215,13 +240,14 @@ class DocumentAdminController extends Controller
         var_dump($result);
     }
 
-    public function documentSetCreating2()
+    // сводные отчеты
+    public function documentSetCreating3()
     {
         $mode = 1; // по-территориально
         $units = Unit::Legal()->MayBeAggregate()->pluck('id')->toArray();
         $monitoring = Monitoring::find(100001);
         $album = 14; // ФСН 2018 год
-        $forms = [2,7,6,86,71,74]; // 30, 12, 14, 14дс, 16-вн, 57 формы
+        $forms = [2,91,7,104,6,86,71,74,17,88,45,5,8,47  ]; // 30, 301, 12, ,1201, 14, 14дс, 16-вн, 57, 53, 1-дети, 19, 13, 32, 232 формы
         $period = Period::find(12);
         $initial_state = 2;
         $create_primary = false;
@@ -239,5 +265,6 @@ class DocumentAdminController extends Controller
         );
         var_dump($result);
     }
+
 
 }

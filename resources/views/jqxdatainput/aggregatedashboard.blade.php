@@ -16,8 +16,8 @@
 @section('headertitle', 'Просмотр/редактирование сводного отчетного документа')
 
 @section('additionalTabLi')
-    <li>Свод по ячейке</li>
-    <li>Свод по периодам</li>
+    <li>Разрез по ячейке</li>
+    <li>Разрез по периодам</li>
 @endsection
 
 @section('additionalTabDiv')
