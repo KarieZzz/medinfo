@@ -222,6 +222,8 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('admin/documents/create_set1', 'Admin\DocumentAdminController@documentSetCreating1');
     Route::get('admin/documents/create_set2', 'Admin\DocumentAdminController@documentSetCreating2');
     Route::get('admin/documents/create_set3', 'Admin\DocumentAdminController@documentSetCreating3');
+    Route::get('admin/documents/create_set4', 'Admin\DocumentAdminController@documentSetCreating4');
+    Route::get('admin/documents/create_set5', 'Admin\DocumentAdminController@documentSetCreating5');
 
     // импорт данных из формата Медстат
     Route::get('admin/documents/medstatimport', 'ImportExport\MedstatImportAdminController@index');

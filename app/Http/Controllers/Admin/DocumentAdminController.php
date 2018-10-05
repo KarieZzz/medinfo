@@ -266,5 +266,56 @@ class DocumentAdminController extends Controller
         var_dump($result);
     }
 
+    // первичные отчеты по подразделениям - специализированные
+    public function documentSetCreating4()
+    {
+        $mode = 1; // по-территориально
+        $units = Unit::Legal()->pluck('id')->toArray();
+        $monitoring = Monitoring::find(100001);
+        $album = 14; // ФСН 2018 год
+        $forms = [9,27,25,20,22,101,21,28,24,14,73,5,8,47  ]; // 9,34,10,11,36,36-пл,37,7,8,33.61 формы
+        $period = Period::find(12);
+        $initial_state = 2;
+        $create_primary = true;
+        $create_aggregate = false;
+        $result = \App\Medinfo\DocumentCreate::documentBulkCreate(
+            $mode,
+            $units,
+            $monitoring,
+            $forms,
+            $album,
+            $period,
+            $initial_state,
+            $create_primary,
+            $create_aggregate
+        );
+        var_dump($result);
+    }
+
+    // сводные отчеты - специализированные формы
+    public function documentSetCreating5()
+    {
+        $mode = 1; // по-территориально
+        $units = Unit::MayBeAggregate()->pluck('id')->toArray();
+        $monitoring = Monitoring::find(100001);
+        $album = 14; // ФСН 2018 год
+        $forms = [9,27,25,20,22,101,21,28,24,14,73,5,8,47  ]; // 9,34,10,11,36,36-пл,37,7,8,33.61 формы
+        $period = Period::find(12);
+        $initial_state = 2;
+        $create_primary = false;
+        $create_aggregate = true;
+        $result = \App\Medinfo\DocumentCreate::documentBulkCreate(
+            $mode,
+            $units,
+            $monitoring,
+            $forms,
+            $album,
+            $period,
+            $initial_state,
+            $create_primary,
+            $create_aggregate
+        );
+        var_dump($result);
+    }
 
 }
