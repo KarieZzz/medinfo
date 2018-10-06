@@ -527,6 +527,27 @@ function searchTableByIndex(index) {
     return found;
 }
 
+function set_navigation_buttons_status(index) {
+    switch (true) {
+        case 1 == max_table_index :
+            nexttable.attr('disabled', true );
+            prevtable.attr('disabled', true );
+            break;
+        case index == max_table_index :
+            nexttable.attr('disabled', true );
+            prevtable.attr('disabled', false );
+            break;
+        case index == 1 :
+            nexttable.attr('disabled', false );
+            prevtable.attr('disabled', true );
+            break;
+        default :
+            nexttable.attr('disabled', false );
+            prevtable.attr('disabled', false );
+            break;
+    }
+}
+
 let checkform = function () {
     let data;
     $.ajax({
@@ -994,6 +1015,7 @@ function renderDgrid(rowid) {
     current_table = rowid;
     current_table_code = data_for_tables[current_table].tablecode;
     current_table_index = data_for_tables[current_table].index;
+    set_navigation_buttons_status(current_table_index);
     current_row_name_datafield = data_for_tables[current_table].columns[1].dataField;
     current_row_number_datafield = data_for_tables[current_table].columns[2].dataField;
     dgrid.jqxGrid('beginupdate');
@@ -1237,27 +1259,44 @@ let initdatagrid = function() {
 };
 // Панель инструментов для редактируемой таблицы
 let inittoolbarbuttons = function () {
-    tdropdown.jqxDropDownButton({width: 120, height:20, theme: theme});
+    tdropdown.jqxDropDownButton({width: 120, height: 22, theme: theme});
     tdropdown.jqxDropDownButton('setContent', '<div style="margin-top: 3px">Таблицы</div>');
+    set_navigation_buttons_status(current_table_index);
     nexttable.click( function() {
         let oldindex = current_table_index;
+        let found = false;
         let next = ++current_table_index;
-        let found = searchTableByIndex(next);
+        do {
+            found = searchTableByIndex(next);
+            if (found) {
+                renderDgrid(found);
+                return true;
+            }
+            next++;
+        } while (next < max_table_index);
         if (!found) {
             current_table_index = oldindex;
             return false;
         }
-        renderDgrid(found);
+        //renderDgrid(found);
     });
     prevtable.click( function() {
         let oldindex = current_table_index;
         let prev = --current_table_index;
         let found = searchTableByIndex(prev);
+        do {
+            found = searchTableByIndex(prev);
+            if (found) {
+                renderDgrid(found);
+                return true;
+            }
+            prev--;
+        } while (prev > 0);
         if (!found) {
             current_table_index = oldindex;
             return false;
         }
-        renderDgrid(found);
+        //renderDgrid(found);
     });
     if (!there_is_calculated) {
         calculate.attr('disabled', true );

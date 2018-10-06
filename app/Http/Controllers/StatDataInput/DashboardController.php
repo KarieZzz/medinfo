@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\StatDataInput;
 
 use App\UnitGroup;
+use App\UnitList;
 use Illuminate\Http\Request;
 use Illuminate\Auth\GenericUser;
 use Illuminate\Support\Facades\Auth;
@@ -43,7 +44,7 @@ class DashboardController extends Controller
         $form = Form::find($document->form_id);
         $current_unit = Unit::find($document->ou_id);
         if (!$current_unit) {
-            $current_unit = UnitGroup::find($document->ou_id);
+            $current_unit = UnitList::find($document->ou_id);
         }
         if ($worker->role === 0 ) {
             $editpermission = true;
@@ -124,7 +125,7 @@ class DashboardController extends Controller
         $tables = Table::OfForm($form_id)->whereDoesntHave('excluded', function ($query) use($album) {
             $query->where('album_id', $album->id);
         })->orderBy('table_index')->get();
-        //dd($tables);
+        $max_index = $tables->last()->table_index;
         $forformtable = [];
         $datafortables = [];
         foreach ($tables as $table) {
@@ -136,6 +137,7 @@ class DashboardController extends Controller
         $datafortables_json = addslashes(json_encode($datafortables));
         $composedata['tablelist'] = $forformtable;
         $composedata['tablecompose'] = $datafortables_json;
+        $composedata['max_index'] = $max_index;
         //$composedata['tablecompose'] = $datafortables;
         return $composedata;
     }
@@ -337,7 +339,7 @@ class DashboardController extends Controller
     }*/
 
     // TODO: Доработать сохранение настроек редактирования отчета (таблица, фильтры, ширина колонок и т.д.)
-    protected function getLastState(GenericUser $worker, Document $document, Form $form, $album)
+    protected function getLastState($worker, Document $document, Form $form, $album)
     {
         $realform = null;
         if ($form->relation) {

@@ -10,6 +10,7 @@ let current_user_role = '{{ $worker->role }}';
 let current_table = '{{ $laststate['currenttable']->id }}';
 let current_table_code = '{{ $laststate['currenttable']->table_code }}';
 let current_table_index = '{{ $laststate['currenttable']->table_index }}';
+let max_table_index = '{!!  $renderingtabledata['max_index'] !!}';
 let splitter = $("#formEditLayout");
 let fgrid = $("#FormTables"); // селектор для сетки с перечнем таблиц
 let dgrid = $("#DataGrid"); // селектор для сетки с данными таблиц

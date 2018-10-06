@@ -79,7 +79,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-7">
+                        <div class="col-sm-offset-1 col-sm-11">
                             <button type="button" id="create" class="btn btn-success">Создать</button>
                             <button type="button" id="save" class="btn btn-primary">Сохранить</button>
                             <button type="button" id="resetform" class="btn btn-default">Очистить форму</button>
