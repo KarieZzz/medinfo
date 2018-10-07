@@ -65,7 +65,15 @@
                 </ul>
                 <div>
                     <div class="jqx-hideborder jqx-hidescrollbars" style="width: 100%; height: 100%">
-                    <h3 style="margin-left: 30px">Первичные отчеты</h3>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <h3 style="margin-left: 30px">Первичные отчеты</h3>
+                            </div>
+                            <div class="col-md-9">
+                                <h3 class="pull-right" style="padding-right: 10px"><small class="text-info" id="mo_parents_breadcrumb">...</small></h3>
+                            </div>
+                        </div>
+
                     <div id="DocumentPanelSplitter">
                         <div >
                             <div id="Documents"></div>
@@ -154,7 +162,7 @@
         let periods = {!! $periods !!};
         let states = {!! $states !!};
         let checkedmf = [{!! $mf->value or '' !!}]; // Выбранные в последнем сеансе мониторинги и формы
-        let lasstscope = {{ is_null($last_scope) ? $worker_scope : $last_scope }};
+        let lasstscope = '{{ is_null($last_scope) ? $worker_scope : $last_scope }}';
         let checkedmonitorings = [{!! $mon_ids->value or '' !!}];
         let checkedforms = [{!! $form_ids->value or '' !!}];
         let checkedstates = [{!! $state_ids->value or '' !!}];
@@ -170,12 +178,12 @@
         datasources();
         initSplitters();
         initMonitoringTree();
-        initStatusList();
-        initDropdowns();
-        initFilterIcons();
         initmotree();
         initgrouptree();
         initPeriodTree();
+        initStatusList();
+        initDropdowns();
+        initFilterIcons();
         initDocumentSource();
         initdocumentstabs();
         initdocumentproperties();

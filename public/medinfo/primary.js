@@ -1,8 +1,6 @@
 /**
  * Created by shameev on 09.09.2016.
  */
-
-
 /*
 let initlayout = function() {
     layout = [{

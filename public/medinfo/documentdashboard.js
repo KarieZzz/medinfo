@@ -18,10 +18,13 @@ let export_form_url = "/datainput/formexport/";
 let consolsource_url = 'datainput/fetchconsolidates?';
 let montree = $("#monTree");
 let motree = $("#moTree");
+let ouarray = [];
+let oucount = 0;
 let grouptree = $("#groupTree");
 let periodTree = $("#periodTree");
 let stateList = $("#statesListbox");
 let dgrid = $("#Documents"); // сетка для первичных документов
+let primary_mo_bc = $("#mo_parents_breadcrumb");
 let agrid = $("#Aggregates"); // сетка для сводных документов
 let cgrid = $("#Consolidates"); // сетка для консолидированных документов
 let rgrid = $("#Recent"); // сетка для последних документов
@@ -745,6 +748,21 @@ montreeToolbar = function (toolbar) {
 };
 // инициализация дерева Территорий/Медицинских организаций
 initmotree = function() {
+    motree.on('bindingComplete', function (event) {
+        let tree = motree.jqxTreeGrid('getRows');
+        var traverseTree = function(tree)
+        {
+            for(var i = 0; i < tree.length; i++)
+            {
+                ouarray.push({ id: tree[i].id, parent: tree[i].parent ? tree[i].parent['id'] : null, unit: tree[i].unit_name}) ;
+                if (tree[i].records) {
+                    traverseTree(tree[i].records);
+                }
+            }
+        };
+        traverseTree(tree);
+        oucount = ouarray.length;
+    });
     motree.jqxTreeGrid(
         {
             width: 770,
@@ -762,7 +780,6 @@ initmotree = function() {
             columnsResize: true,
             ready: function()
             {
-                // expand row with 'EmployeeKey = 32'
                 motree.jqxTreeGrid('expandRow', 0);
             },
             columns: [
@@ -953,6 +970,11 @@ initStatusList = function() {
 // инициализация вкладок с документами
 initdocumentstabs = function() {
     $("#documenttabs").jqxTabs({  height: '100%', width: '100%', theme: theme });
+    let bc = makeMOBreadcrumb(current_top_level_node);
+    primary_mo_bc.html(bc);
+    dgrid.on("bindingcomplete", function (event) {
+        dgrid.jqxGrid('selectrow', 0);
+    });
     dgrid.jqxGrid(
         {
             width: '100%',
@@ -978,11 +1000,17 @@ initdocumentstabs = function() {
     dgrid.on('rowselect', function (event)
     {
         let row = event.args.row;
+        let bc = '';
+        if (typeof row === 'undefined') {
+            return false;
+        }
         let murl = docmessages_url + 'document=' + row.id;
         current_document_form_code = row.form_code;
         current_document_form_name = row.form_name;
         current_document_ou_name = row.unit_name;
         current_document_state = row.state;
+        bc = makeMOBreadcrumb(row.ou_id);
+        primary_mo_bc.html(bc);
         $.getJSON( murl, function( data ) {
             if (data.responce === 0) {
                 $("#DocumentMessages").html("Нет сообщений для данного документа");
@@ -1485,6 +1513,7 @@ initDocumentSource = function () {
             datatype: "json",
             datafields: [
                 { name: 'id', type: 'int' },
+                { name: 'ou_id', type: 'int' },
                 { name: 'unit_code', type: 'string' },
                 { name: 'unit_name', type: 'string' },
                 { name: 'form_code', type: 'string' },
@@ -1504,6 +1533,7 @@ initDocumentSource = function () {
             datatype: "json",
             datafields: [
                 {name: 'id', type: 'int'},
+                {name: 'ou_id', type: 'int'},
                 {name: 'unit_code', type: 'string'},
                 {name: 'unit_name', type: 'string'},
                 {name: 'form_code', type: 'string'},
@@ -1546,3 +1576,46 @@ initFilterIcons = function () {
         statusDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: #337ab7;"></i>Статусы отчетов</div>');
     }
 };
+
+function makeMOBreadcrumb(ou_id) {
+    let parents = getAncestors(ou_id);
+    if (parents === null) {
+        return '...';
+    }
+    let bc = '/ ';
+    let all = parents.pop();
+    for (i = parents.length-1; i >= 0; i--) {
+        bc += parents[i] + " / ";
+    }
+    return bc;
+}
+
+function searchMOById(id) {
+    if (id === null) {
+        return null;
+    }
+    for (i = 0; i < oucount; i++ ) {
+        if (ouarray[i].id === id) {
+            return ouarray[i];
+        } 
+    }
+    return null;
+}
+
+function getAncestors(id) {
+    let ancestors = [];
+    let current = searchMOById(id);
+    if (current === null) {
+        return null;
+    }
+    var traversAncestors = function(parent)
+    {
+        let found = searchMOById(parent);
+        if (found) {
+            ancestors.push(found.unit) ;
+            traversAncestors(found.parent);
+        }
+    };
+    traversAncestors(current.parent);
+    return ancestors;
+}
