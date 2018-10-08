@@ -6,8 +6,8 @@ initsplitter = function() {
             theme: theme,
             panels:
                 [
-                    { size: '55%', min: '10%'},
-                    { size: '45%', min: '10%'}
+                    { size: '57%', min: '10%'},
+                    { size: '43%', min: '10%'}
                 ]
         }
     );
@@ -84,8 +84,8 @@ initdatasources = function() {
 inittablelist = function() {
     unitlist.jqxGrid(
         {
-            width: '98%',
-            height: '90%',
+            width: '100%',
+            height: '98%',
             theme: theme,
             localization: localize(),
             source: unitDataAdapter,

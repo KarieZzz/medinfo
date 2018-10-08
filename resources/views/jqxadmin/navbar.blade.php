@@ -1,4 +1,4 @@
-<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+<nav class="navbar navbar-default" role="navigation">
     <div class="container-fluid" style="z-index: 1">
         <div class="navbar-header">
             <a class="navbar-brand" href="#">Адмнистрирование Мединфо</a>
@@ -43,6 +43,7 @@
                     <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                     <li><a href="/admin/cfunctions">Функции контроля</a></li>
+                    <li><a href="/admin/cfunctions/all">Функции контроля (полный перечень)</a></li>
                     <li><a href="/admin/dcheck/selected">Выборочный контроль</a></li>
                     <li><a href="/admin/consolidation">Функции рассчета</a></li>
                     <li><a href="/admin/cons">Функции рассчета (new)</a></li>
@@ -53,8 +54,6 @@
 {{--                    <li><a href="/admin/micontrols/vtk">Методики контроля Мединфо (внутритабличные)</a></li>
                     <li><a href="/admin/micontrols/vfk">Методики контроля Мединфо (внутриформенные)</a></li>
                     <li><a href="/admin/micontrols/mfk">Методики контроля Мединфо (межформенные)</a></li>--}}
-
-
                 </ul>
             </li>
             <li class="dropdown">
@@ -78,9 +77,9 @@
             </li>
             <li><a href="#">@yield('local_actions')</a></li>
         </ul>
-        <div class="navbar-header">
+{{--        <div class="navbar-header">
             <a class="navbar-brand" href="#"><span class="text-primary">@yield('title')</span></a>
-        </div>
+        </div>--}}
         <ul class="nav navbar-nav navbar-right">
             <li><a href="/admin/logout"><span class="glyphicon glyphicon-log-in"></span> Завершить работу</a></li>
         </ul>

@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class DicCfunctionType extends Model
 {
     //
+    protected $primaryKey = 'code';
+
     public function scopeInForm($query)
     {
         return $query

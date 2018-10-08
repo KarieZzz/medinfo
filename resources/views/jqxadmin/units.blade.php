@@ -6,7 +6,7 @@
 @section('content')
 <div id="mainSplitter" >
     <div>
-        <div id="unitList" style="margin: 10px"></div>
+        <div id="unitList"></div>
     </div>
     <div id="formContainer">
         <div id="propertiesForm" class="panel panel-default">
@@ -113,7 +113,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>--}}
-    <script src="{{ asset('/medinfo/admin/unitadmin.js?v=008') }}"></script>
+    <script src="{{ asset('/medinfo/admin/unitadmin.js?v=009') }}"></script>
 @endpush
 
 @section('inlinejs')

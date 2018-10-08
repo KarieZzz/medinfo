@@ -70,7 +70,9 @@
                                 <h3 style="margin-left: 30px">Первичные отчеты</h3>
                             </div>
                             <div class="col-md-9">
-                                <h3 class="pull-right" style="padding-right: 10px"><small class="text-info" id="mo_parents_breadcrumb">...</small></h3>
+                                <h3 class="pull-right" style="padding-right: 10px" title="Выделенная организационная единица входит в состав">
+                                    <small class="text-info" id="mo_parents_breadcrumb">...</small>
+                                </h3>
                             </div>
                         </div>
 

@@ -12,21 +12,19 @@
         body {
             height: 100%;
             overflow: hidden;
-            /* The html and body elements cannot have any padding or margin. */
         }
         /* Wrapper for page content to push down footer */
-        #wrap {
+/*        #wrap {
             min-height: 100%;
             height: auto;
-
         }
         #widgets-content-wrap {
             position: absolute;
             width:100%;
             height: 100%;
-            /* Pad bottom by footer height */
+            !* Pad bottom by footer height *!
             padding: 40px 0 0 0;
-        }
+        }*/
     </style>
     <title id="Description">@yield('headertitle')</title>
     <!-- Bootstrap core CSS -->

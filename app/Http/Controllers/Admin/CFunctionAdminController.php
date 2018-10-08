@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\DicCfunctionType;
 use Illuminate\Http\Request;
 
 //use App\Http\Requests;
@@ -34,6 +35,17 @@ class CFunctionAdminController extends Controller
         $forms = Form::orderBy('form_code')->get(['id', 'form_code', 'form_name']);
         $error_levels = DicErrorLevel::all(['code', 'name']);
         return view('jqxadmin.cfunctions', compact('forms', 'error_levels'));
+    }
+
+    public function cfunctionsAll()
+    {
+        $error_levels = DicErrorLevel::all(['code', 'name']);
+        return view('jqxadmin.cfunctions_all', compact('error_levels'));
+    }
+
+    public function fetchCcfunctionsAll()
+    {
+        return CFunction::orderBy('created_at', 'desc')->orderBy('updated_at', 'desc')->with('table.form')->with('level')->with('type')->get();
     }
 
     public function fetchControlFunctions(int $table)
@@ -164,14 +176,14 @@ class CFunctionAdminController extends Controller
     {
         $this->validate($request, $this->validateRules());
         $table = Table::find($cfunction->table_id);
-        $cfunction->level = $request->level;
+        $cfunction->level = (int)$request->level;
         $cache = $this->compile1($request->script, $table);
         if (!$cache) {
             return ['error' => 422, 'message' => $this->compile_error];
         }
         $cfunction->script = $request->script;
         $cfunction->comment = $request->comment;
-        $cfunction->blocked = $request->blocked;
+        $cfunction->blocked = $request->blocked === '0' ? false : true;
         $cfunction->type = $cache['properties']['type'];
         $cfunction->function = $cache['properties']['function_id'];
         $cfunction->ptree = $cache['ptree'];
@@ -180,7 +192,17 @@ class CFunctionAdminController extends Controller
         try {
             $cfunction->save();
             $deleted_protocols =  ControlCashe::where('table_id', $table->id)->delete();
-            return ['message' => 'Запись id ' . $cfunction->id . ' сохранена.' . 'Удалено кэшированных протоколов контроля: ' . $deleted_protocols];
+            $message = 'Запись id ' . $cfunction->id . ' сохранена.' . 'Удалено кэшированных протоколов контроля: ' . $deleted_protocols;
+            $script = $cfunction->script;
+            $comment = $cfunction->comment;
+            $levelcode = $cfunction->level;
+            $levelname = DicErrorLevel::find((string)$cfunction->level)->name;
+            $typename = DicCfunctionType::find((string)$cfunction->type)->name;
+            $function = $cfunction->function;
+            $blocked = $cfunction->blocked;
+            $created_at = $cfunction->created_at->toDateTimeString();
+            $updated_at = $cfunction->updated_at->toDateTimeString();
+            return compact('message', 'script', 'comment', 'blocked', 'typename', 'function', 'levelname', 'levelcode', 'created_at', 'updated_at' );
         } catch (\Illuminate\Database\QueryException $e) {
             $errorCode = $e->errorInfo[0];
             switch ($errorCode) {

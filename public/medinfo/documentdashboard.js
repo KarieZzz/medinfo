@@ -1032,8 +1032,7 @@ initdocumentstabs = function() {
                 $("#DocumentMessages").html("<table class='table table-bordered table-condensed table-hover table-striped' style='width: 100%'>" + items.join( "" ) + "</table>");
             }
         });
-
-        let aurl = docauditions_url + 'document=' + row.id;
+/*        let aurl = docauditions_url + 'document=' + row.id;
         current_document_audits = [];
         $.getJSON( aurl, function( data ) {
             if (data.responce === 0) {
@@ -1060,7 +1059,7 @@ initdocumentstabs = function() {
                 });
                 $("#DocumentAuditions").html("<table class='control_result' style='width: 100%'>" + items.join( "" ) + "</table>");
             }
-        });
+        });*/
     });
     dgrid.on('rowdoubleclick', function (event)
     {

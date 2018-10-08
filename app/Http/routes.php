@@ -161,8 +161,10 @@ Route::group(['middleware' => ['medinfo']], function () {
 
     // Менеджер функций контроля
     Route::get('admin/cfunctions', 'Admin\CFunctionAdminController@index');
+    Route::get('admin/cfunctions/all', 'Admin\CFunctionAdminController@cfunctionsAll');
     Route::get('admin/cfunctions/fetchcf/{table}', 'Admin\CFunctionAdminController@fetchControlFunctions');
     Route::get('admin/cfunctions/fetchofform/{form}', 'Admin\CFunctionAdminController@fetchCFofForm');
+    Route::get('admin/cfunctions/fetchall', 'Admin\CFunctionAdminController@fetchCcfunctionsAll');
     Route::post('admin/cfunctions/create/{table}', 'Admin\CFunctionAdminController@store1');
     Route::patch('admin/cfunctions/update/{cfunction}', 'Admin\CFunctionAdminController@update1');
     Route::delete('admin/cfunctions/delete/{cfunction}', 'Admin\CFunctionAdminController@delete');

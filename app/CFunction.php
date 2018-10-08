@@ -11,6 +11,21 @@ class CFunction extends Model
     protected $fillable = ['table_id', 'level', 'type', 'function', 'script', 'comment', 'blocked', ];
     protected $hidden = ['ptree', 'properties', ];
 
+    public function table()
+    {
+        return $this->belongsTo('App\Table');
+    }
+
+    public function level()
+    {
+        return $this->belongsTo('App\DicErrorLevel', 'level', 'code');
+    }
+
+    public function type()
+    {
+        return $this->belongsTo('App\DicCfunctionType', 'type', 'code');
+    }
+
     public function scopeOfTable($query, $table)
     {
         return $query->where('table_id', $table);
@@ -44,21 +59,6 @@ class CFunction extends Model
     public function scopeActive($query)
     {
         return $query->where('blocked', 0);
-    }
-
-    public function table()
-    {
-        return $this->belongsTo('App\Table');
-    }
-
-    public function level()
-    {
-        return $this->belongsTo('App\DicErrorLevel', 'level', 'code');
-    }
-
-    public function type()
-    {
-        return $this->belongsTo('App\DicCfunctionType', 'type', 'code');
     }
 
 }
