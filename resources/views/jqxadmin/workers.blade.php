@@ -83,7 +83,7 @@
             <span id="mo_selected_name" class='text-info'></span>
             <button type="button" id="mo_selected_save" class="btn btn-default">Сохранить выбор</button>
         </div>
-        <div id="mo_tree_container" style="margin: 5px; padding: 10px 0 0 10px; display: none">
+        <div id="mo_tree_container" style="margin: 5px; padding: 10px 0 0 10px">
             <div id="moTree"></div>
         </div>
     </div>

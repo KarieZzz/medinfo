@@ -1393,6 +1393,9 @@ let cellbeginedit = function (row, datafield, columntype, value) {
 let defaultEditor = function (row, cellvalue, editor) {
     editor.jqxNumberInput({ decimalDigits: 0, digits: 12  });
 };
+let initDecimal1Editor = function (row, cellvalue, editor) {
+    editor.jqxNumberInput({ decimalDigits: 1, digits: 12, decimalSeparator: ',' });
+};
 let initDecimal2Editor = function (row, cellvalue, editor) {
     editor.jqxNumberInput({ decimalDigits: 2, digits: 12, decimalSeparator: ',' });
 };

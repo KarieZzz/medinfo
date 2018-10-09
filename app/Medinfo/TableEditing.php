@@ -43,6 +43,9 @@ class TableEditing
             $datafields_arr[] = ['name'  => $col->id, 'type'  => 'string', ];
             $width = $col->size; // Ширина графы в пикселях при отображении в браузере
             switch ( $col->decimal_count) {
+                case 1:
+                    $editor = 'initDecimal1Editor';
+                    break;
                 case 2:
                     $editor = 'initDecimal2Editor';
                     break;
