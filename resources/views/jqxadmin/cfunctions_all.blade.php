@@ -56,7 +56,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>--}}
-    <script src="{{ asset('/medinfo/admin/cfunctionadminall.js?v=017') }}"></script>
+    <script src="{{ asset('/medinfo/admin/cfunctionadminall.js?v=018') }}"></script>
 @endpush
 
 @section('inlinejs')

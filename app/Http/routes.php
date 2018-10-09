@@ -252,6 +252,8 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('admin/system/fixrowindex', 'System\FixRowColumnIndexes@fixRowIndexes');
     Route::get('admin/system/fixcolumnindex', 'System\FixRowColumnIndexes@fixColumnIndexes');
     Route::get('admin/system/fixtableindex', 'System\FixRowColumnIndexes@fixTableIndexes');
+    Route::get('admin/system/clearnecells', 'System\ClearNECells@index');
+    Route::post('admin/system/clearnecells', 'System\ClearNECells@clearNECells');
     Route::get('admin/cfunctions/recompileall', 'Admin\CFunctionAdminController@recompileAll');
 
     // Ввод и корректировка статданных

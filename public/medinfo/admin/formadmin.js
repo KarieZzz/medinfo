@@ -120,11 +120,7 @@ initformactions = function() {
                 }
                 fl.jqxGrid('updatebounddata');
             },
-            error: function (xhr, status, errorThrown) {
-                $.each(xhr.responseJSON, function(field, errorText) {
-                    raiseError(errorText);
-                });
-            }
+            error: xhrErrorNotificationHandler
         });
     });
     $("#save").click(function () {
@@ -148,11 +144,7 @@ initformactions = function() {
                 }
                 $("#formList").jqxGrid('updatebounddata');
             },
-            error: function (xhr, status, errorThrown) {
-                $.each(xhr.responseJSON, function(field, errorText) {
-                    raiseError(errorText);
-                });
-            }
+            error: xhrErrorNotificationHandler
         });
     });
     $("#delete").click(function () {
@@ -180,7 +172,7 @@ initformactions = function() {
                 fl.jqxGrid('clearselection');
             },
             error: function (xhr, status, errorThrown) {
-                raiseError('Ошибка удаления отчетного периода', xhr);
+                raiseError('Ошибка удаления формы', xhr);
             }
         });
     });

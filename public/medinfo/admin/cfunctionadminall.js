@@ -47,8 +47,8 @@ let initFunctionList = function() {
                 { text: 'Таблица', datafield: 'table_code', width: '60px'  },
                 { text: 'Уровень', datafield: 'levelname', width: '120px'  },
                 { text: 'Тип', datafield: 'typename', width: '120px'  },
-                { text: 'Функция контроля', datafield: 'script' , width: '40%'},
-                { text: 'Комментарий', datafield: 'comment', width: '400px' },
+                { text: 'Функция контроля', datafield: 'script' , width: '530px'},
+                { text: 'Комментарий', datafield: 'comment', width: '640px' },
                 { text: 'Откл', datafield: 'blocked', columntype: 'checkbox', width: '40px' },
                 { text: 'Создана', datafield: 'created_at', width: '130px' },
                 { text: 'Обновлена', datafield: 'updated_at', width: '130px' }

@@ -88,7 +88,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>--}}
-    <script src="{{ asset('/medinfo/admin/formadmin.js?v=009') }}"></script>
+    <script src="{{ asset('/medinfo/admin/formadmin.js?v=011') }}"></script>
 @endpush
 
 @section('inlinejs')

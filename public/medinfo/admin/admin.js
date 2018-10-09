@@ -41,6 +41,7 @@ localize = function() {
     localizationobj.filtersearchstring = "Поиск:";
     return localizationobj;
 };
+
 initnotifications = function() {
     $("#serverErrorNotification").jqxNotification({
         width: 250, position: "top-right", opacity: 0.9,
@@ -50,7 +51,7 @@ initnotifications = function() {
         width: 250, position: "top-right", opacity: 0.9,
         autoOpen: false, animationOpenDelay: 600, autoClose: true, autoCloseDelay: 5000, template: "info"
     });
-}
+};
 
 initConfirmWindow = function() {
     var cbutton = $('#cancelButton');
@@ -68,5 +69,16 @@ initConfirmWindow = function() {
     confirmpopup.on('close', function (event) {
         confirm_action = event.args.dialogResult.OK;
     });
+
+    xhrErrorNotificationHandler = function (xhr, status, errorThrown) {
+    if (xhr.status === 401) {
+        raiseError('Пользователь не авторизован.', xhr );
+        return false;
+    }
+    $.each(xhr.responseJSON, function(field, errorText) {
+        raiseError(errorText);
+    });
+
+}
 
 };

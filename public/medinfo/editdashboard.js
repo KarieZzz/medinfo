@@ -63,12 +63,12 @@ let tabledatacheck = function(table_id, type) {
         data: data,
         beforeSend: beforecheck,
         success: gettableprotocol
-    }).fail(function(jqXHR, textStatus, errorThrown) {
+    }).fail(function(xhr, textStatus, errorThrown) {
         $("#tableprotocol").html('');
         $('#formprotocolloader').hide();
         $('#protocolloader').hide();
-        if (jqXHR.status == 401) {
-            raiseError('Пользователь не авторизован.', jqXHR );
+        if (xhr.status === 401) {
+            raiseError('Пользователь не авторизован.', xhr );
             return false;
         }
         raiseError("Ошибка получения протокола контроля с сервера.");
@@ -670,11 +670,11 @@ let checkform = function () {
             fgrid.jqxDataTable('refresh');
             dgrid.jqxGrid('refresh');
         }
-    }).fail(function(jqXHR, textStatus, errorThrown) {
+    }).fail(function(xhr, textStatus, errorThrown) {
         $('#formprotocol').html('');
         $('#formprotocolloader').hide();
-        if (jqXHR.status === 401) {
-            raiseError('Пользователь не авторизован.', jqXHR );
+        if (xhr.status === 401) {
+            raiseError('Пользователь не авторизован.', xhr );
             return false;
         }
         raiseError("Ошибка получения протокола контроля с сервера.");
@@ -1158,23 +1158,23 @@ let initdatagrid = function() {
             data: data,
             method: 'POST',
             success: function (data, status, xhr) {
-                if (data.error == 401) {
+                if (data.error === 401) {
                     raiseError("Данные не сохранены. Пользователь не авторизован!");
                 }
-                else if (data.error == 1001) {
+                else if (data.error === 1001) {
                     raiseError("Данные не сохранены. Отсутствуют права на изменение данных в этом документе");
 
                 }
                 else {
                     if (data.cell_affected) {
-                        timestamp = new Date();
+/*                        timestamp = new Date();
                         log_str = $("#log").html();
-                        if (log_str == "Изменений не было") {
+                        if (log_str === "Изменений не было") {
                             log_str = "";
                         }
                         $("#log").html(log_str + timestamp.toLocaleString() + " Изменена ячейка т ." + data_for_tables[current_table].tablecode +", с."+ readable_coordinates.row
                             + ", г." + readable_coordinates.column + ". (" + oldvalue +
-                            " >> " + value + ").</br>");
+                            " >> " + value + ").</br>");*/
                         editedCells.push({ t: current_table, r: rowBoundIndex, c: colid});
                         if (protocol_control_created) {
                             $(".inactual-protocol").show();
@@ -1184,6 +1184,10 @@ let initdatagrid = function() {
                 }
             },
             error: function (xhr, status, errorThrown) {
+                if (xhr.status === 401) {
+                    raiseError('Пользователь не авторизован.', xhr );
+                    return false;
+                }
                 raiseError("Ошибка сохранения данных на сервере. " + xhr.status + ' (' + xhr.statusText + ') - ' + status + ". Обратитесь к администратору.");
             }
         });

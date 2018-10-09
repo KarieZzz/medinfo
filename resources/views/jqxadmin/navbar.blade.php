@@ -71,6 +71,7 @@
                     <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                     <li><a href="/admin/documents">Менеджер отчетных документов</a></li>
+                    <li><a href="/admin/system/clearnecells">Очистка закрещенных ячеек</a></li>
                     <li><a href="/admin/documents/medstatimport">Импорт данных из формата Медстат (ЦНИИОИЗ)</a></li>
                     <li><a href="/admin/documents/medstatnskimport">Импорт данных из формата Медстат (Новосибирск)</a></li>
                 </ul>
