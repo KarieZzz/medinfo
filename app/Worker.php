@@ -10,6 +10,11 @@ class Worker extends Model
     protected $fillable = ['name', 'password', 'email', 'description', 'role', 'permission', 'blocked'];
     protected $hidden = ['password'];
 
+    public function worker_scopes()
+    {
+        return $this->hasOne('App\WorkerScope');
+    }
+
     public function scopeOfRole($query, $type)
     {
         return $query->where('role', $type);
@@ -25,15 +30,6 @@ class Worker extends Model
         return $query->where('role', 1);
     }
 
-    public function worker_scopes()
-    {
-        return $this->hasOne('App\WorkerScope');
-    }
-
-    /**
-     * @param array $ou_ids
-     * @return array
-     */
     public static function getExecutorEmails(array $ou_ids)
     {
         //$res = \DB::select("SELECT w.email FROM worker_scopes ws JOIN workers w ON ws.worker_id = w.id

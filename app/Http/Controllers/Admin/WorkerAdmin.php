@@ -68,12 +68,19 @@ class WorkerAdmin extends Controller
                 'name' => 'required|unique:workers|max:24',
                 'password' => 'required|max:16|min:4',
                 'email' => 'email',
-                'role' => 'digits:1',
-                'permission' => 'digits_between:3,4',
+                'role' => 'required|digits:1',
+                //'permission' => 'digits_between:3,4',
                 'blocked' => 'required|in:1,0',
             ]
         );
-        $worker = new Worker($request->all());
+        $worker = new Worker();
+        $worker->name = $request->name;
+        $worker->password = $request->password;
+        $worker->email = $request->email;
+        $worker->description = $request->description;
+        $worker->blocked = $request->blocked;
+        $worker->role = (int)$request->role;
+        $worker->permission = $this->setPermission($worker->role);
         $worker->save();
         $responce['responce']['comment'] = 'Новая запись создана. Id:' . $worker->id;  ;
         return $responce;
@@ -85,8 +92,8 @@ class WorkerAdmin extends Controller
                 'name' => 'required|max:24',
                 'password' => 'required|max:16|min:4',
                 'email' => 'email',
-                'role' => 'digits:1',
-                'permission' => 'digits_between:3,4',
+                'role' => 'required|digits:1',
+                //'permission' => 'digits_between:3,4',
                 'blocked' => 'required|in:1,0',
             ]
         );
@@ -95,12 +102,61 @@ class WorkerAdmin extends Controller
         $worker->password = $request->password;
         $worker->email = $request->email;
         $worker->description = $request->description;
-        $worker->role = $request->role;
-        $worker->permission = $request->permission;
+        $worker->role = (int)$request->role;
+        $worker->permission = $this->setPermission($worker->role);
         $worker->blocked = $request->blocked;
         $worker->save();
         $responce['responce']['comment'] = 'Запись с Id' . $worker->id . ' сохранена'  ;
         return $responce;
+    }
+
+    public function setPermission($role)
+    {
+        $permission = 0;
+        switch ($role) {
+            case 1 :
+                $permission =
+                    config('medinfo.permission.permission_read_report') +
+                    config('medinfo.permission.permission_edit_report') +
+                    config('medinfo.permission.permission_set_status_prepared');
+                break;
+            case 2 :
+                $permission =
+                    config('medinfo.permission.permission_read_report') +
+                    config('medinfo.permission.permission_audit_document');
+                break;
+            case 3 :
+                $permission =
+                    config('medinfo.permission.permission_read_report') +
+                    config('medinfo.permission.permission_edit_prepared_report') +
+                    config('medinfo.permission.permission_edit_accepted_report') +
+                    config('medinfo.permission.permission_set_status_accepted_declined');
+                break;
+            case 4 :
+                $permission =
+                    config('medinfo.permission.permission_read_report') +
+                    config('medinfo.permission.permission_edit_prepared_report') +
+                    config('medinfo.permission.permission_edit_accepted_report') +
+                    config('medinfo.permission.permission_edit_aggregated_report') +
+                    config('medinfo.permission.permission_set_status_accepted_declined') +
+                    config('medinfo.permission.permission_set_status_approved');
+                break;
+            case 0 :
+                $permission =
+                    config('medinfo.permission.permission_read_report') +
+                    config('medinfo.permission.permission_edit_report') +
+                    config('medinfo.permission.permission_edit_prepared_report') +
+                    config('medinfo.permission.permission_edit_accepted_report') +
+                    config('medinfo.permission.permission_edit_approved_report') +
+                    config('medinfo.permission.permission_edit_aggregated_report') +
+                    config('medinfo.permission.permission_change_any_status') +
+                    config('medinfo.permission.permission_set_status_prepared') +
+                    config('medinfo.permission.permission_set_status_accepted_declined') +
+                    config('medinfo.permission.permission_set_status_approved') +
+                    config('medinfo.permission.permission_audit_document');
+                break;
+        }
+        return $permission;
     }
 
     public function worker_scope_update(Request $request)

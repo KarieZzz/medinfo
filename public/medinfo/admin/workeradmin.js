@@ -197,12 +197,12 @@ initactions = function() {
         });
     });
     $("#save").click(function () {
-        var row = $('#userList').jqxGrid('getselectedrowindex');
-        if (row == -1) {
+        let row = wlist.jqxGrid('getselectedrowindex');
+        if (row === -1) {
             raiseError("Выберите запись для изменения/сохранения данных");
             return false;
         }
-        var rowid = $("#userList").jqxGrid('getrowid', row);
+        let rowid = wlist.jqxGrid('getrowid', row);
         $.ajax({
             dataType: 'json',
             url: workerupdate_url + rowid,
@@ -210,15 +210,14 @@ initactions = function() {
             data: setquerystring(),
             success: function (data, status, xhr) {
                 raiseInfo(data.responce.comment);
-                $("#userList").jqxGrid('updatebounddata');
-            },
-            error: function (xhr, status, errorThrown) {
-                m = 'Данные не сохранены. ';
-                $.each(xhr.responseJSON, function(field, errorText) {
-                    m += errorText[0];
+                wlist.jqxGrid('updatebounddata', 'data');
+                wlist.on("bindingcomplete", function (event) {
+                    var newindex = wlist.jqxGrid('getrowboundindexbyid', rowid);
+                    wlist.jqxGrid('selectrow', newindex);
+                    wlist.jqxGrid('ensurerowvisible', newindex);
                 });
-                raiseError(m, xhr);
-            }
+            },
+            error: xhrErrorNotificationHandler
         });
     });
     $("#delete").click(function () {
@@ -246,9 +245,7 @@ initactions = function() {
                     raiseError(data.message);
                 }
             },
-            error: function (xhr, status, errorThrown) {
-                raiseError('Ошибка сохранения данных на сервере', xhr);
-            }
+            error: xhrErrorNotificationHandler
         });
 
     });

@@ -36,20 +36,27 @@
                     </div>
                     <div class="form-group">
                         <label class="control-label col-sm-3" for="email">E-mail:</label>
-                        <div class="col-sm-3">
+                        <div class="col-sm-4">
                             <input type="email" class="form-control" id="email">
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="control-label col-sm-3" for="role">Роль:</label>
-                        <div class="col-sm-2">
-                            <input type="number" class="form-control" id="role">
+                        <div class="col-sm-4">
+                            <select class="form-control" id="role">
+                                <option value="1" selected="selected">Исполнитель</option>
+                                <option value="2" selected="selected">Эксперт-специалист</option>
+                                <option value="3" selected="selected">Эксперт-статистик</option>
+                                <option value="4" selected="selected">Руководитель приема отчетов</option>
+                                <option value="0" selected="selected">Администратор</option>
+                            </select>
+                            {{--<input type="number" class="form-control" id="role">--}}
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="control-label col-sm-3" for="permission">Разрешения:</label>
                         <div class="col-sm-2">
-                            <input type="number" class="form-control" id="permission">
+                            <input type="number" class="form-control" id="permission" disabled="disabled">
                         </div>
                     </div>
                     <div class="form-group">
@@ -59,7 +66,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-7">
+                        <div class="col-sm-offset-1 col-sm-11">
                             <button type="button" id="save" class="btn btn-primary">Сохранить изменения</button>
                             <button type="button" id="insert" class="btn btn-success">Вставить новую запись</button>
                             <button type="button" id="delete" class="btn btn-danger">Удалить запись</button>
@@ -102,7 +109,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>--}}
     <script src="{{ asset('/plugins/pgenerator/jquery.pGenerator.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/workeradmin.js?v=001') }}"></script>
+    <script src="{{ asset('/medinfo/admin/workeradmin.js?v=002') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -112,6 +119,7 @@
         let mo_tree_message = $("#mo_tree_comment");
         let workerupdate_url = '/admin/workers/update/';
         let workerdelete_url = '/admin/workers/delete/';
+        let wlist = $("#userList");
         initsplitter();
         inituserlist();
         initmotree();
