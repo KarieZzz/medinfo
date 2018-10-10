@@ -265,6 +265,7 @@ getcheckedunits = function() {
     let ids = [];
     let checkedRows;
     let i;
+    console.log(filter_mode);
     if (filter_mode === 1) {
         checkedRows = motree.jqxTreeGrid('getCheckedRows');
         for (i = 0; i < checkedRows.length; i++) {
@@ -272,6 +273,7 @@ getcheckedunits = function() {
         }
     } else if (filter_mode === 2) {
         checkedRows = grouptree.jqxTreeGrid('getCheckedRows');
+        console.log(checkedRows);
         for (i = 0; i < checkedRows.length; i++) {
             ids.push(checkedRows[i].uid);
         }
@@ -640,7 +642,7 @@ initgrouptree = function() {
         {
             var args = event.args;
             var new_top_level_node = args.key;
-            if (new_top_level_node == current_top_level_node && filter_mode === 2) {
+            if (new_top_level_node == current_top_level_node && filter_mode == 2) {
                 return false;
             }
             filter_mode = 2; // режим отбора документов по группам

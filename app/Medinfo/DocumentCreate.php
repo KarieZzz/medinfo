@@ -25,14 +25,15 @@ class DocumentCreate
         $i = 0;
         $duplicate = 0;
         foreach ($units as $unit_id) {
-            if ($mode == 1) {
+            if ($mode === '1') {
                 $unit = Unit::find($unit_id);
                 $unit->report ? $allowprimary = true : $allowprimary = false;
                 $unit->aggregate ? $allowaggregate = true : $allowaggregate = false;
-            }  elseif ($mode == 2) {
+            }  elseif ($mode === '2') {
                 $allowprimary = false;
                 $allowaggregate = true;
                 $unit = UnitList::find($unit_id);
+                //dd($unit);
             }
             foreach ($forms as $form_id) {
                 $newdoc = ['ou_id' => $unit->id, 'monitoring_id' => $monitoring->id, 'album_id' => $album, 'form_id' => $form_id ,
@@ -53,6 +54,7 @@ class DocumentCreate
                 }
                 if ($create_aggregate && $allowaggregate) {
                     $newdoc['dtype'] = 2;
+                    //Document::create($newdoc);
                     try {
                         Document::create($newdoc);
                         $i++;

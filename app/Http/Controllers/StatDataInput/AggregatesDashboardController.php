@@ -5,7 +5,8 @@ namespace App\Http\Controllers\StatDataInput;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Unit;
-use App\UnitGroupMember;
+//use App\UnitGroupMember;
+use App\UnitListMember;
 use App\Document;
 use App\Aggregate;
 use App\Row;
@@ -29,8 +30,6 @@ class AggregatesDashboardController extends DashboardController
         $calc = Column::Calculated()->pluck('id')->toArray();
         $calc[] = 0;
         $calculatedColumns = implode(',', $calc);
-        //dd($calculatedColumns);
-        //echo implode(',', $calculatedColumns);
         if ($protected) {
             $result['aggregate_status'] = 500;
             $result['error_message'] =  'Данный документ защищен от повторного сведения';
@@ -39,12 +38,11 @@ class AggregatesDashboardController extends DashboardController
         $result = [];
         // перед сведением данных удаление старых данных
         Cell::where('doc_id', $document->id)->delete();
-        if ($unitgroup == 1) {
+        if ($unitgroup === 1) {
             $units = Unit::getDescendants($document->ou_id);
-        } else {
-            $units = UnitGroupMember::OfGroup($document->ou_id)->pluck('ou_id');
+        } elseif ($unitgroup === 2) {
+            $units = UnitListMember::List($document->ou_id)->pluck('ou_id');
         }
-        //dd($units);
         $included_documents = Document::whereIn('ou_id', $units)
             ->where('dtype', 1)
             ->where('monitoring_id', $document->monitoring_id)
@@ -58,7 +56,6 @@ class AggregatesDashboardController extends DashboardController
             return $result;
         }
         $now = Carbon::now();
-
         $query = "INSERT INTO statdata
             (doc_id, table_id, row_id, col_id, value, created_at, updated_at )
           SELECT '{$document->id}', v.table_id, v.row_id, v.col_id, SUM(value), '$now', '$now'  FROM statdata v
