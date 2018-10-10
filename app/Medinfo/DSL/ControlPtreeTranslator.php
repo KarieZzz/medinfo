@@ -353,7 +353,7 @@ class ControlPtreeTranslator
         }  elseif ($this->vector[0] === self::COLUMNS) {
             // Если аргумент ограничивающий итерацию по графам (графы(...)) не пустой, выбираем графы из диапазона
             if (count($this->parser->rcStack) > 0) {
-                $columns = Column::OfTable($this->table->id)->OfDataType()->whereIn('column_index', $this->parser->rcStack)->orderBy('column_index')->get();
+                $columns = Column::OfTable($this->table->id)->OfDataType()->whereIn('column_code', $this->parser->rcStack)->orderBy('column_code')->get();
             } else {
                 $columns = Column::OfTable($this->table->id)->OfDataType()->orderBy('column_index')->get();
             }

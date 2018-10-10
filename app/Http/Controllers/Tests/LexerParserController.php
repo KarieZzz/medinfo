@@ -91,8 +91,9 @@ class LexerParserController extends Controller
 
         //$i = '(a2 - a1)/a2 * 100 > a3';
         //$i = "сравнение(С1.0Г4+Т2000С1.0Г4, Ф14Т2000С1.0Г22, =)";
-        $i = "сравнение(С1.0, С2.0+С3.0+С4.0+С5.0+С6.0+С7.0+С8.0+С9.0+С10.0+С11.0+С12.0+С13.0+С14.0+С15.0+С17.0+С18.0+С19.0+С20.0, =)";
+        //$i = "сравнение(С1.0, С2.0+С3.0+С4.0+С5.0+С6.0+С7.0+С8.0+С9.0+С10.0+С11.0+С12.0+С13.0+С14.0+С15.0+С17.0+С18.0+С19.0+С20.0, =)";
         //$i = "сравнение(Г8, Г10, =)";
+        $i = "сравнение(С139, С140+С141+С142, =, , графы(9,12-17))";
 
         //$cellcount = preg_match_all('/Ф([а-я0-9.-]+)Т([\w.-]+)С([\w.-]+)Г(\d{1,})/u', $i, $matches, PREG_SET_ORDER);
         //$res = preg_match('|(?:\()(.*?),(.*?)\)|usei', $i, $matches);
@@ -115,11 +116,11 @@ class LexerParserController extends Controller
         //dd($parser->cellrangeStack);
         //dd($parser->argStack);
 
-        //$table = Table::find(10);     // Ф30 Т1100
+        $table = Table::find(10);     // Ф30 Т1100
         //$table = Table::find(15);     // Ф30 Т2100
         //$table = Table::find(50);     // Ф30 Т5117
         //$table = Table::find(252);    // Ф30 Т5301
-        $table = Table::find(111);      // Ф12 Т1000
+        //$table = Table::find(111);      // Ф12 Т1000
         //$table = Table::find(112);    // Ф12 Т2000
         //$table = Table::find(441);    // Ф12 Т4000
         //$table = Table::find(115);    // Ф32 Т2120
@@ -164,12 +165,12 @@ class LexerParserController extends Controller
         //dd($props);
         //dd($iterations);
 
-        $document = Document::find(47884); // 12 ф Все организации 3 кв. МСК
+        //$document = Document::find(47884); // 12 ф Все организации 3 кв. МСК
         //$document = Document::find(16845); // 12 ф ГКБ№8 за 2017 год
         //$document = Document::find(12269); // 12 ф Все организации 2016 год
         //$document = Document::find(13753); // 41 ф ДР1 за 2016 год
         //$document = Document::find(12657); // 30 ф РБ Слюдянка за 2016 год
-        //$document = Document::find(12268); // 30 ф Свод за 2016 год
+        $document = Document::find(4965); // 30 ф Все организации 3 кв. МСК
         //$document = Document::find(19251); // 47 ф за 2017 год
         //$document = Document::find(19264); // 201 ф за 1 квартал 2018 года (наркология)
         //$document = Document::find(19265); // 201 ф за IV квартал 2017 года (наркология)
