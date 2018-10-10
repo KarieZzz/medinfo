@@ -1,11 +1,11 @@
 let mon_tree_url = '/admin/fetch_mon_tree/';
+let group_tree_url = '/admin/fetchugroups';
 let docsource_url = '/admin/fetchdocuments?';
 let createdocuments_url = '/admin/createdocuments';
 let deletedocuments_url = '/admin/deletedocuments';
 let erasedocuments_url = '/admin/erasedocuments';
 let clonedocuments_url = '/admin/clonedocuments';
 let changestate_url = '/admin/documentstatechange';
-let group_tree_url = '/admin/fetchugroups';
 let protectaggregate_url = '/admin/protectaggregates';
 let calculate_url = '/admin/consolidate/';
 let log_form_url = '/admin/documents/valuechanginglog/';
@@ -21,7 +21,7 @@ let checkedmonitorings = [];
 let checkedforms = [];
 
 // Инициализация источников данных для таблиц
-docroute = function () {
+docroute = function() {
     return '&filter_mode=' + filter_mode
         + '&ou=' + current_top_level_node
         + '&dtypes=' + checkeddtypes.join()
@@ -55,9 +55,11 @@ datasources = function() {
         dataType: "json",
         dataFields: [
             { name: 'id', type: 'int' },
-            { name: 'parent_id', type: 'int' },
-            { name: 'group_code', type: 'string' },
-            { name: 'group_name', type: 'string' }
+            //{ name: 'parent_id', type: 'int' },
+            //{ name: 'group_code', type: 'string' },
+            //{ name: 'group_name', type: 'string' },
+            { name: 'slug', type: 'string' },
+            { name: 'name', type: 'string' }
         ],
         hierarchy:
         {
@@ -456,8 +458,8 @@ rendergrouptreetoolbar = function() {
 initmotree = function() {
     motree.jqxTreeGrid(
         {
-            width: 770,
-            height: 600,
+            width: '770px',
+            height: '600px',
             theme: theme,
             source: mo_dataAdapter,
             selectionMode: "singleRow",
@@ -605,8 +607,8 @@ motreeToolbar = function (toolbar) {
 initgrouptree = function() {
     grouptree.jqxTreeGrid(
         {
-            width: '100%',
-            height: '100%',
+            width: '670px',
+            height: '600px',
             theme: theme,
             source: ugroup_dataAdapter,
             selectionMode: "singleRow",
@@ -621,15 +623,15 @@ initgrouptree = function() {
                 grouptree.jqxTreeGrid('expandRow', 0);
             },
             columns: [
-                { text: 'Код', dataField: 'group_code', width: 120 },
-                { text: 'Наименование', dataField: 'group_name', width: 545 }
+                { text: 'Сокр', dataField: 'slug', width: 120 },
+                { text: 'Наименование', dataField: 'name', width: 545 }
             ]
         });
     grouptree.on('filter',
         function (event)
         {
-            var args = event.args;
-            var filters = args.filters;
+            let args = event.args;
+            let filters = args.filters;
             grouptree.jqxTreeGrid('expandAll');
         }
     );
@@ -638,7 +640,7 @@ initgrouptree = function() {
         {
             var args = event.args;
             var new_top_level_node = args.key;
-            if (new_top_level_node == current_top_level_node && filter_mode == 2) {
+            if (new_top_level_node == current_top_level_node && filter_mode === 2) {
                 return false;
             }
             filter_mode = 2; // режим отбора документов по группам

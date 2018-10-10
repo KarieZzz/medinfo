@@ -10,7 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Unit;
 use App\Medinfo\DocumentTree;
 use App\Medinfo\UnitTree;
-use App\UnitGroup;
+//use App\UnitGroup;
 use App\Monitoring;
 use App\Period;
 use App\Document;
@@ -56,7 +56,8 @@ class DocumentAdminController extends Controller
     public function fetch_unitgroups()
     {
         //return UnitTree::getSimpleTree($parent);
-        return UnitGroup::all();
+        //return UnitGroup::all();
+        return \App\UnitList::all();
     }
 
     public function fetchDocuments(Request $request)

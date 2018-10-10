@@ -832,8 +832,8 @@ motreeToolbar = function (toolbar) {
 initgrouptree = function() {
     grouptree.jqxTreeGrid(
         {
-            width: 670,
-            height: 600,
+            width: '670px',
+            height: '600px',
             theme: theme,
             source: ugroup_dataAdapter,
             selectionMode: "singleRow",

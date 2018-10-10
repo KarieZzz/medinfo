@@ -16,7 +16,7 @@
                     <div class="col-sm-12">
                         <div class="well well-sm">
                             <div id="moSelectorByTerritories"><div id="moTree"></div></div>
-                            <div id="moSelectorByGroups"><div class="jqx-hideborder" id="groupTree"></div></div>
+                            <div id="moSelectorByGroups"><div id="groupTree" style="height: 300px"></div></div>
                         </div>
                     </div>
                 </div>
@@ -201,7 +201,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>--}}
-    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=028') }}"></script>
+    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=029') }}"></script>
 @endpush
 
 @section('inlinejs')
