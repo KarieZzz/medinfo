@@ -90,8 +90,9 @@ class LexerParserController extends Controller
         //$i = "кратность(диапазон(С01Г3:С02Г6),  .25)";
 
         //$i = '(a2 - a1)/a2 * 100 > a3';
-
-        $i = "сравнение(С1.0Г4+Т2000С1.0Г4, Ф14Т2000С1.0Г22, =)";
+        //$i = "сравнение(С1.0Г4+Т2000С1.0Г4, Ф14Т2000С1.0Г22, =)";
+        $i = "сравнение(С1.0, С2.0+С3.0+С4.0+С5.0+С6.0+С7.0+С8.0+С9.0+С10.0+С11.0+С12.0+С13.0+С14.0+С15.0+С17.0+С18.0+С19.0+С20.0, =)";
+        //$i = "сравнение(Г8, Г10, =)";
 
         //$cellcount = preg_match_all('/Ф([а-я0-9.-]+)Т([\w.-]+)С([\w.-]+)Г(\d{1,})/u', $i, $matches, PREG_SET_ORDER);
         //$res = preg_match('|(?:\()(.*?),(.*?)\)|usei', $i, $matches);
@@ -163,7 +164,7 @@ class LexerParserController extends Controller
         //dd($props);
         //dd($iterations);
 
-        //$document = Document::find(13134); // 12 ф ГКБ№8 за 2016 год
+        $document = Document::find(47884); // 12 ф Все организации 3 кв. МСК
         //$document = Document::find(16845); // 12 ф ГКБ№8 за 2017 год
         //$document = Document::find(12269); // 12 ф Все организации 2016 год
         //$document = Document::find(13753); // 41 ф ДР1 за 2016 год
@@ -174,7 +175,7 @@ class LexerParserController extends Controller
         //$document = Document::find(19265); // 201 ф за IV квартал 2017 года (наркология)
         //$document = Document::find(16434); // 37 ф за 2017 год ИОПНД
         //$document = Document::find(19272); // 37 ф за I квартал 2018 года ИОПНД
-        $document = Document::find(2046);       // 12село ф за 2017 год Волоколамская ЦРБ
+        //$document = Document::find(2046);       // 12село ф за 2017 год Волоколамская ЦРБ
         $evaluator = Evaluator::invoke($translator->parser->root, $translator->getProperties(), $document);
         //$evaluator = new ControlFunctionEvaluator($translator->parser->root, $translator->getProperties(), $document);
         //$evaluator = new ControlFunctionEvaluator($pTree, $props, $document);
@@ -190,7 +191,7 @@ class LexerParserController extends Controller
 
         //dd($evaluator->makeControl());
         $evaluator->makeControl();
-        dd($evaluator);
+        //dd($evaluator);
         //return ($evaluator->iterations);
         //return ($evaluator->properties);
         //return $evaluator->makeControl();

@@ -54,7 +54,7 @@ class AggregatesDashboardController extends DashboardController
         $stringified_documents = implode(',', $included_documents->toArray());
         if (!$stringified_documents) {
             $result['aggregate_status'] = 500;
-            $result['error_message'] =  'Нет первичных документов для сведения';
+            $result['error_message'] =  'Нет первичных документов, содержащих данные, для сведения';
             return $result;
         }
         $now = Carbon::now();
@@ -66,7 +66,10 @@ class AggregatesDashboardController extends DashboardController
             JOIN tables t on (v.table_id = t.id)
             JOIN forms f on d.form_id = f.id
             JOIN mo_hierarchy h on d.ou_id = h.id
-          WHERE d.id in ({$stringified_documents}) AND h.blocked <> 1 AND v.col_id NOT IN ($calculatedColumns) GROUP BY v.table_id, v.row_id, v.col_id";
+          WHERE d.id in ({$stringified_documents}) 
+            AND h.blocked <> 1 
+            AND v.col_id NOT IN ($calculatedColumns) 
+          GROUP BY v.table_id, v.row_id, v.col_id";
         $affected_cells = \DB::select($query);
         $aggregate = Aggregate::firstOrCreate(['doc_id' => $document->id]);
         $aggregate->include_docs = $stringified_documents;

@@ -9,8 +9,8 @@ initsplitter = function() {
             theme: theme,
             panels:
                 [
-                    { size: '60%', min: '10%', collapsible: false },
-                    { size: '40%', min: '10%', collapsible: false }
+                    { size: '80%', min: '10%', collapsible: false },
+                    { size: '20%', min: '10%', collapsible: true }
                 ]
         }
     );
@@ -32,19 +32,11 @@ initdatasources = function() {
                 return false;
             }
         },*/
-        loadError: function(jqXHR, status, error) {
-            if (jqXHR.status === 401) {
-                raiseError('Пользователь не авторизован.', jqXHR );
-            }
-            if (jqXHR.status === 404) {
-                $("#tableProperties").html('<div>Выберите форму и таблицу для редактирования</div>');
-            }
-        }
+        loadError: xhrErrorNotificationHandler
     });
-
 };
 
-initdropdowns = function() {
+/*initdropdowns = function() {
     let conditionsource =
     {
         datatype: "json",
@@ -66,7 +58,7 @@ initdropdowns = function() {
         width: 300,
         height: 34
     });
-};
+};*/
 
 // Форма ввода данных по таблице
 initTableGrid = function() {
@@ -86,7 +78,7 @@ initTableGrid = function() {
             columngroups: columngroups
         });
 
-    grid.on('cellselect',  function() {
+/*    grid.on('cellselect',  function() {
         //let cells = $('#tableGrid').jqxGrid('getselectedcells');
         if (cellbeginedit) {
             clearTimeout(cellbeginedit);
@@ -94,13 +86,13 @@ initTableGrid = function() {
         cellbeginedit = setTimeout(function () {
             fetchcellcondition();
         }, 500);
-    });
+    });*/
 
     grid.on('cellvaluechanged', function (event) {
         let rowBoundIndex = args.rowindex;
         let rowid = $('#tableGrid').jqxGrid('getrowid', rowBoundIndex);
-        let condition = $("#condition").val() !== ''  ? $("#condition").val() : 0 ;
-        //console.log(condition);
+        //let condition = $("#condition").val() !== ''  ? $("#condition").val() : 0 ;
+        let condition = 0 ;
         let colid = event.args.datafield;
         let newstate = args.newvalue ? 1 : 0;
         //var oldvalue = args.oldvalue;
@@ -126,7 +118,7 @@ initTableGrid = function() {
     });
 };
 
-fetchcellcondition = function() {
+/*fetchcellcondition = function() {
     $("#conditionInfo").html('Выделено ячеек: 0');
     let range = [];
     let cells = grid.jqxGrid('getselectedcells');
@@ -166,7 +158,7 @@ fetchcellcondition = function() {
         $("#conditionInfo").html("В выделенном диапазоне только редактируемые ячейки");
     }
     $("#selectedInfo").html("Выделено ячеек: " + cells.length);
-};
+};*/
 
 updateRelated = function() {
     updateTableGrid();
@@ -230,7 +222,8 @@ initCellActions = function() {
 
 setcellrange = function(noedit) {
     let newstate = noedit ? 1 : 0;
-    let condition = $("#condition").val() !== ''  ? $("#condition").val() : 0 ;
+    //let condition = $("#condition").val() !== ''  ? $("#condition").val() : 0 ;
+    let condition = 0;
     let range = [];
     let cells = grid.jqxGrid('getselectedcells');
     let selected_count = cells.length;

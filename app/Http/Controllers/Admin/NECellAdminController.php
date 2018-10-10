@@ -25,10 +25,9 @@ class NECellAdminController extends Controller
 
     public function list()
     {
-        $forms = Form::orderBy('form_index')->with('tables')->get(['id', 'form_code']);
-        $tables = Table::orderBy('form_id')->orderBy('table_index')->get(['id', 'form_id', 'table_code']);
+        $forms = Form::orderBy('form_code')->get(['id', 'form_code', 'form_name']);
         $conditions = NECellCondition::all();
-        return view('jqxadmin.necells', compact('forms', 'tables', 'conditions'));
+        return view('jqxadmin.necells', compact('forms', 'conditions'));
     }
 
     public function conditions()

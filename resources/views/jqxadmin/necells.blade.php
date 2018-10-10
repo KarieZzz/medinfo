@@ -11,24 +11,28 @@
     </div>
     <div>
         <div id="columnPropertiesForm" class="panel panel-default" style="padding: 3px; width: 100%">
-            <div class="panel-heading"><h3>Cвойства нередактируемых ячеек</h3></div>
+            {{--<div class="panel-heading"><h3>Cвойства нередактируемых ячеек</h3></div>--}}
             <div class="panel-body">
                 <form id="columnform" class="form-horizontal" >
-                    <div class="form-group">
+                    {{--<div class="form-group">
                         <label class="control-label col-sm-3" for="condition">Условие закрешивания:</label>
                         <div class="col-sm-2">
                             <div id="condition" style="padding-left: 12px"></div>
                         </div>
+                    </div>--}}
+                    <div class="form-group">
+                        <div class="col-sm-offset-1 col-sm-11">
+                            <button type="button" id="editable" class="btn btn-success">Разрешить редактирование</button>
+                        </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-8">
-                            <button type="button" id="editable" class="btn btn-success">Разрешить редактирование</button>
+                        <div class="col-sm-offset-1 col-sm-11">
                             <button type="button" id="noteditable" class="btn btn-danger">Запретить редактирование</button>
                         </div>
                     </div>
                 </form>
-                <div class="well" id="selectedInfo">Выделено ячеек: 0</div>
-                <div class="well" id="conditionInfo">Условия не определены</div>
+                {{--<div class="well" id="selectedInfo">Выделено ячеек: 0</div>--}}
+                {{--<div class="well" id="conditionInfo">Условия не определены</div>--}}
             </div>
         </div>
     </div>
@@ -56,8 +60,8 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>--}}
-    <script src="{{ asset('/medinfo/admin/tablepicker.js?v=007') }}"></script>
-    <script src="{{ asset('/medinfo/admin/necellsadmin.js?v=006') }}"></script>
+    <script src="{{ asset('/medinfo/admin/tablepicker.js?v=008') }}"></script>
+    <script src="{{ asset('/medinfo/admin/necellsadmin.js?v=008') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -78,7 +82,8 @@
         let changecellstate_url = '/admin/necells/changecellstate/';
         let changerangestate_url = '/admin/necells/range/';
         let forms = {!! $forms  !!};
-        let conditions = {!! $conditions !!};
+        //let conditions = {!! $conditions !!};
+        let conditions = 0;
         let current_form = 0;
         let current_table = 0;
         let cellbeginedit = null;
@@ -89,7 +94,7 @@
         initFilterDatasources();
         initsplitter();
         initdatasources();
-        initdropdowns();
+        //initdropdowns();
         initFormTableFilter();
         initTableGrid();
         initCellActions();

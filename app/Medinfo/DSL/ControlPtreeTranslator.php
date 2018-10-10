@@ -367,7 +367,7 @@ class ControlPtreeTranslator
                     } else {
                         $c = Column::OfTableColumnIndex($ca['ids']['t'], $column->column_index)->first();
                         if (is_null($c)) {
-                            throw new \Exception("В таблице id:{$ca['ids']['t']} не существует графы с индексом {$column->column_index}");
+                            throw new \Exception("В таблице id:{$ca['ids']['t']} не существует графы с кодом {$column->column_code}");
                         }
                         //$lightweightCAStack[$key]['codes']['r'] = $c->column_index;
                         $lightweightCAStack[$key]['codes']['c'] = $c->column_code;
@@ -375,7 +375,7 @@ class ControlPtreeTranslator
                         $lightweightCAStack[$key]['ids']['c'] = $c->id;
                     }
                 }
-                $this->iterations[$column->column_index] = $lightweightCAStack;
+                $this->iterations[$column->column_code] = $lightweightCAStack;
             }
         }
         //dd($this->iterations);
@@ -540,6 +540,7 @@ class ControlPtreeTranslator
                     }
                     $columnid = $column->id;
                     $colindex = $column->column_index;
+                    $colcode = $column->column_code;
                     $cadrr = 'Г' . $colindex;
                     $f = $fprops['codes']['f'];
                     $t = $fprops['codes']['t'];
@@ -561,7 +562,7 @@ class ControlPtreeTranslator
                         $range[$j]['codes']['f'] = $f;
                         $range[$j]['codes']['t'] = $t;
                         $range[$j]['codes']['r'] = $rowcode;
-                        $range[$j]['codes']['c'] = $colindex;
+                        $range[$j]['codes']['c'] = $colcode;
 
                         $range[$j]['ids']['f'] = $fprops['ids']['f'];
                         $range[$j]['ids']['t'] = $fprops['ids']['t'];
@@ -762,7 +763,7 @@ class ControlPtreeTranslator
         if (is_null($column)) {
             $table = $this->getTableInfo($table_id);
             $form = $table->form()->first();
-            throw new \Exception("В таблице id:{$table_id} (($table->table_code) {$table->table_name} в форме {$form->form_code}) не существует графы для ввода данных с индексом $code");
+            throw new \Exception("В таблице id:{$table_id} (($table->table_code) {$table->table_name} в форме {$form->form_code}) не существует графы для ввода данных с кодом $code");
         }
         return $column;
     }
