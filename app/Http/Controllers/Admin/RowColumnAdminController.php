@@ -266,10 +266,10 @@ class RowColumnAdminController extends Controller
         }
         $cell_count = Cell::countOfCellsByColumn($column->id);
         $table_id = $column->table_id;
-        $column_index = $column->row_index;
+        $column_index = $column->column_index;
         if ($cell_count === 0) {
             $column->delete();
-            $reindexed = Column::OfTable($table_id)->where('row_index','>', $column_index)->orderBy('column_index')->get();
+            $reindexed = Column::OfTable($table_id)->where('column_index','>', $column_index)->orderBy('column_index')->get();
             foreach ($reindexed as $item) {
                 $item->column_index--;
                 $item->save();
