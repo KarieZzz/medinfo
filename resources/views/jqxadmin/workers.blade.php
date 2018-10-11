@@ -70,24 +70,28 @@
                             <button type="button" id="save" class="btn btn-primary">Сохранить изменения</button>
                             <button type="button" id="insert" class="btn btn-success">Вставить новую запись</button>
                             <button type="button" id="delete" class="btn btn-danger">Удалить запись</button>
+                            <button type="button" id="setunits" class="btn btn-default">Выбор территорий/учреждений</button>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
-        <div class="well">
-            <span><strong>МО/территория, к данным которой имеет доступ пользователь: </strong></span>
-            <span id="mo_tree_comment"></span>
-        </div>
-        <div id="mo_selected_info" style="display: none">
-            <span id="mo_selected_name" class='text-info'></span>
-            <button type="button" id="mo_selected_save" class="btn btn-default">Сохранить выбор</button>
-        </div>
-        <div id="mo_tree_container" style="margin: 5px; padding: 10px 0 0 10px">
-            <div id="moTree"></div>
+        <div class="panel panel-default">
+            <div class="panel-heading"><h4>МО/территории, к данным которых имеет доступ пользователь</h4></div>
+            <div class="panel-body" id="unitList"></div>
         </div>
     </div>
 </div>
+    <div id="setScopeWindow">
+        <div id="newFormHeader">
+            <span id="headerContainer" style="float: left">Доступ к медицинским организациям/территориям</span>
+        </div>
+        <div>
+            <div id="moTree"></div>
+            <button type="button" id="setUnitScopeSave" class="btn btn-primary btn-sm" style="margin-top: 5px">Сохранить выбор</button>
+            <div>Выбрано организаций: <span id="countCheckedUnits"></span></div>
+        </div>
+    </div>
 @endsection
 
 @push('loadjsscripts')
@@ -109,7 +113,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>--}}
     <script src="{{ asset('/plugins/pgenerator/jquery.pGenerator.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/workeradmin.js?v=002') }}"></script>
+    <script src="{{ asset('/medinfo/admin/workeradmin.js?v=008') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -119,7 +123,11 @@
         let mo_tree_message = $("#mo_tree_comment");
         let workerupdate_url = '/admin/workers/update/';
         let workerdelete_url = '/admin/workers/delete/';
+        let fetchunits_url = '/admin/workers/fetch_units/';
+        let user_scope_url = "/admin/workers/fetch_scopes/";
         let wlist = $("#userList");
+        let motree = $("#moTree");
+        let unitlist = $("#unitList");
         initsplitter();
         inituserlist();
         initmotree();

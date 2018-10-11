@@ -24,26 +24,27 @@ class UnitTree
         $this->top_level_id = $top_level_id;
     }
 
-    public static function getSimpleTree($parent = 0)
+    public static function getSimpleTree($parent = 0, bool $get_only_legal = false)
     {
-        $mo_tree = self::getChilds($parent);
+        $addwhere = '';
+        if ($get_only_legal) {
+            $addwhere  = ' AND node_type IN (1,2,3) ';
+        }
+        $mo_tree = self::getChilds($parent, $addwhere);
         $this_one = \DB::select("SELECT id, parent_id, unit_code, unit_name FROM mo_hierarchy WHERE id = $parent");
         $mo_tree = array_merge($mo_tree, $this_one);
         return $mo_tree;
     }
 
-    public static function getChilds($parent)
+    public static function getChilds($parent, $addwhere = '')
     {
-/*        $lev_query = "SELECT id, parent_id, unit_code, unit_name FROM mo_hierarchy WHERE blocked = 0 AND parent_id = $parent
-            UNION SELECT id, NULL AS parent_id, slug AS unit_code, name AS unit_name FROM unit_lists WHERE $parent IS NULL
-            ORDER BY 2";*/
-        $lev_query = "SELECT id, parent_id, unit_code, unit_name FROM mo_hierarchy WHERE blocked = 0 AND parent_id = $parent ORDER BY unit_code";
+        $lev_query = "SELECT id, parent_id, unit_code, unit_name FROM mo_hierarchy WHERE blocked = 0 AND parent_id = $parent $addwhere ORDER BY unit_code";
         $res = \DB::select($lev_query);
         $units = array();
         if (count($res) > 0) {
             foreach ($res as $r) {
                 $units[] = $r;
-                $units = array_merge($units, self::getChilds($r->id));
+                $units = array_merge($units, self::getChilds($r->id, $addwhere));
             }
         }
         return $units;

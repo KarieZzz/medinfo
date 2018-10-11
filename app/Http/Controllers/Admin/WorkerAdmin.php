@@ -31,34 +31,17 @@ class WorkerAdmin extends Controller
         //return "{\"data\":" .json_encode($workers). "}";
     }
 
-/*    public function fetch_mo_hierarchy()
+    public function fetch_units()
     {
-        $mo_tree = DB::select("select id, parent_id, unit_code, unit_name from mo_hierarchy where blocked = 0 ORDER BY unit_code");
-        return $mo_tree;
-    }*/
+        return \App\Medinfo\UnitTree::getSimpleTree(0, true);
+    }
 
     public function fetch_worker_scopes($id)
     {
-        $data = Array();
         if (!$id) {
-            $data['scopes'] = false;
-            $data['comment'] = "Не указан Id пользователя. Список учреждений предоставить не возможно";
-            $responce_no_user['responce'] = $data;
-            return $responce_no_user;
+            abort(500, 'No worker Id');
         }
-        $scope = DB::selectOne("select w.ou_id, o.unit_code, o.unit_name from worker_scopes w join mo_hierarchy o
-          on w.ou_id = o.id WHERE worker_id = {$id}");
-        if (!$scope) {
-            $data['scopes'] = 0;
-            $data['comment'] = "Не указаны";
-        } else {
-            $data['scope'] = $scope->ou_id;
-            $data['unit_code'] = $scope->unit_code;
-            $data['unit_name'] = $scope->unit_name;
-            $data['comment'] = $scope->unit_name;
-        }
-        $responce['responce'] = $data;
-        return $responce;
+        return WorkerScope::Worker($id)->get();
     }
 
     public function worker_store(Request $request)
@@ -78,12 +61,24 @@ class WorkerAdmin extends Controller
         $worker->password = $request->password;
         $worker->email = $request->email;
         $worker->description = $request->description;
-        $worker->blocked = $request->blocked;
         $worker->role = (int)$request->role;
         $worker->permission = $this->setPermission($worker->role);
-        $worker->save();
-        $responce['responce']['comment'] = 'Новая запись создана. Id:' . $worker->id;  ;
-        return $responce;
+        $worker->blocked = $request->blocked;
+        try {
+            $worker->save();
+            return ['message' => 'Новая запись создана. Id:' . $worker->id, 'id' => $worker->id];
+        } catch (\Illuminate\Database\QueryException $e) {
+            $errorCode = $e->errorInfo[0];
+            switch ($errorCode) {
+                case '23505':
+                    $message = 'Запись не сохранена. Дублирующиеся значения (' . $errorCode . ').';
+                    break;
+                default:
+                    $message = 'Новая запись не создана. Код ошибки ' . $errorCode . '.';
+                    break;
+            }
+            return ['error' => 422, 'message' => $message];
+        }
     }
 
     public function worker_update(Worker $worker, Request $request)
@@ -105,9 +100,21 @@ class WorkerAdmin extends Controller
         $worker->role = (int)$request->role;
         $worker->permission = $this->setPermission($worker->role);
         $worker->blocked = $request->blocked;
-        $worker->save();
-        $responce['responce']['comment'] = 'Запись с Id' . $worker->id . ' сохранена'  ;
-        return $responce;
+        try {
+            $worker->save();
+            return ['message' => 'Запись id ' . $worker->id . ' сохранена.'];
+        } catch (\Illuminate\Database\QueryException $e) {
+            $errorCode = $e->errorInfo[0];
+            switch ($errorCode) {
+                case '23505':
+                    $message = 'Запись не сохранена. Дублирующиеся значения (' . $errorCode . ').';
+                    break;
+                default:
+                    $message = 'Новая запись не создана. Код ошибки ' . $errorCode . '.';
+                    break;
+            }
+            return ['error' => 422, 'message' => $message];
+        }
     }
 
     public function setPermission($role)
@@ -162,32 +169,38 @@ class WorkerAdmin extends Controller
     public function worker_scope_update(Request $request)
     {
         $this->validate($request, [
-            'userid' => 'required',
+            'workerid' => 'required',
             'newscope' => 'required',
         ]);
-        //$ret = DB::insert("INSERT INTO worker_scopes (worker_id, ou_id)
-          //VALUES ({$request->userid}, {$request->newscope})
-          //ON CONFLICT (worker_id) DO UPDATE SET ou_id = EXCLUDED.ou_id;");
-        $current_scope = WorkerScope::where('worker_id', $request->userid)->first();
-        if ($current_scope) {
-            $current_scope->ou_id = $request->newscope;
-            $current_scope->save();
-            $responce['responce']['comment'] = 'Учреждение/территория, к которому  имеет доступ пользователь, обновлено';
+        $newScope = explode(",", $request->newscope);
+        $currentScope = WorkerScope::Worker($request->workerid)->pluck('ou_id')->toArray();
+        $unitedScope = array_merge($currentScope, $newScope);
+        $unitedScope = array_unique($unitedScope);
+        $areRemoved = array_diff($unitedScope, $newScope);
+
+
+
+        WorkerScope::Worker($request->workerid)->whereIn('ou_id', $areRemoved)->delete();
+
+        if ($currentScope) {
+            $currentScope->ou_id = $request->newscope;
+            $currentScope->save();
+            $comment = 'Учреждение/территория, к которому  имеет доступ пользователь, обновлено';
         } else {
             $new_scope = new WorkerScope();
             $new_scope->worker_id = $request->userid;
             $new_scope->ou_id = $request->newscope;
             $new_scope->with_descendants = 1;
             $new_scope->save();
-            $responce['responce']['comment'] = 'Учреждение/территория, к которому  имеет доступ пользователь, введено'  ;
+            $comment = 'Учреждение/территория, к которому  имеет доступ пользователь, введено'  ;
         }
-        return $responce;
+        return compact('comment');
     }
 
     public function worker_delete(Worker $worker)
     {
         $id = $worker->id;
-        $scope_deleted = WorkerScope::where('worker_id', $id)->delete();
+        $scope_deleted = WorkerScope::Worker($id)->delete();
         $worker_deleted = $worker->delete();
         if ($worker_deleted) {
             $message = 'Удалена пользователь Id ' . $id;

@@ -353,11 +353,7 @@ initColumnActions = function() {
 
                 });
             },
-            error: function (xhr, status, errorThrown) {
-                $.each(xhr.responseJSON, function(field, errorText) {
-                    raiseError(errorText);
-                });
-            }
+            error: xhrErrorNotificationHandler
         });
     });
     $("#savecolumn").click(function () {
@@ -384,14 +380,9 @@ initColumnActions = function() {
                     let newindex = clist.jqxGrid('getrowboundindexbyid', rowid);
                     clist.jqxGrid('selectrow', newindex);
                     clist.jqxGrid('ensurerowvisible', newindex);
-
                 });
             },
-            error: function (xhr, status, errorThrown) {
-                $.each(xhr.responseJSON, function(field, errorText) {
-                    raiseError(errorText);
-                });
-            }
+            error: xhrErrorNotificationHandler
         });
     });
     $("#deletecolumn").click(function () {
@@ -487,11 +478,7 @@ let initColumnFormulaWindow = function () {
                     raiseError("Ошибка сохранения. " + data.message)
                 }
             },
-            error: function (xhr, status, errorThrown) {
-                $.each(xhr.responseJSON, function(field, errorText) {
-                    raiseError(errorText);
-                });
-            }
+            error: xhrErrorNotificationHandler
         });
     });
 };
@@ -553,9 +540,7 @@ function reorderRows(url) {
                 rlist.jqxGrid('ensurerowvisible', newindex);
             });
         },
-        error: function (xhr, status, errorThrown) {
-            raiseError('Ошибка при изменении порядкового номера строки', xhr);
-        }
+        error: xhrErrorNotificationHandler
     });
 }
 
@@ -580,8 +565,6 @@ function reorderColumns(url) {
                 clist.jqxGrid('ensurerowvisible', newindex);
             });
         },
-        error: function (xhr, status, errorThrown) {
-            raiseError('Ошибка при изменении порядкового номера графы', xhr);
-        }
+        error: xhrErrorNotificationHandler
     });
 }

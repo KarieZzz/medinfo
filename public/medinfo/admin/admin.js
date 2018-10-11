@@ -39,6 +39,8 @@ localize = function() {
     localizationobj.loadtext = "Загрузка";
     localizationobj.filtershowrowstring = "Показать строки где:";
     localizationobj.filtersearchstring = "Поиск:";
+    localizationobj.sortascendingstring = "Сортировка по возрастанию";
+    localizationobj.sortdescendingstring = "Сортировка по убыванию";
     return localizationobj;
 };
 
@@ -69,8 +71,9 @@ initConfirmWindow = function() {
     confirmpopup.on('close', function (event) {
         confirm_action = event.args.dialogResult.OK;
     });
+};
 
-    xhrErrorNotificationHandler = function (xhr, status, errorThrown) {
+xhrErrorNotificationHandler = function (xhr, status, errorThrown) {
     if (xhr.status === 401) {
         raiseError('Пользователь не авторизован.', xhr );
         return false;
@@ -78,7 +81,5 @@ initConfirmWindow = function() {
     $.each(xhr.responseJSON, function(field, errorText) {
         raiseError(errorText);
     });
-
-}
 
 };

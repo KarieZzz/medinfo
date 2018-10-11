@@ -1,4 +1,5 @@
 let mon_tree_url = '/admin/fetch_mon_tree/';
+let motree_url = '/admin/documents/fetchmotree';
 let group_tree_url = '/admin/fetchugroups';
 let docsource_url = '/admin/fetchdocuments?';
 let createdocuments_url = '/admin/createdocuments';
@@ -48,7 +49,7 @@ datasources = function() {
         },
         id: 'id',
         root: '',
-        url: 'fetch_mo_tree/0'
+        url: motree_url
     };
     ugroup_source =
     {

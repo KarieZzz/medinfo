@@ -11,4 +11,14 @@ class WorkerScope extends Model
     {
         return $this->belongsTo('App\Worker', 'id' , 'worker_id');
     }
+
+    public function unit()
+    {
+        return $this->belongsTo('App\Unit', 'id' , 'ou_id');
+    }
+
+    public function scopeWorker($query, $worker)
+    {
+        return $query->where('worker_id', $worker);
+    }
 }

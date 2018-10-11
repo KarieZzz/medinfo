@@ -57,8 +57,8 @@ Route::group(['middleware' => ['medinfo']], function () {
     // Менеджер пользователей - исполнителей
     Route::get('admin/workers', 'Admin\WorkerAdmin@index' );
     Route::get('admin/fetch_workers', 'Admin\WorkerAdmin@fetch_workers');
-    Route::get('admin/fetch_mo_tree/{parent}', 'Admin\DocumentAdminController@fetch_mo_hierarchy');
-    Route::get('admin/fetch_worker_scopes/{id}', 'Admin\WorkerAdmin@fetch_worker_scopes');
+    Route::get('admin/workers/fetch_units', 'Admin\WorkerAdmin@fetch_units');
+    Route::get('admin/workers/fetch_scopes/{id}', 'Admin\WorkerAdmin@fetch_worker_scopes');
     Route::post('admin/workers/create', 'Admin\WorkerAdmin@worker_store');
     Route::patch('admin/workers/update/{worker}', 'Admin\WorkerAdmin@worker_update');
     Route::patch('admin/workers/updateuserscope', 'Admin\WorkerAdmin@worker_scope_update');
@@ -210,6 +210,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('admin/micontrols/saverules', 'Admin\MedinfoControlsAdminController@BatchRuleSave');*/
     // Менеджер отчетных документов
     Route::get('admin/documents', 'Admin\DocumentAdminController@index');
+    Route::get('admin/documents/fetchmotree', 'Admin\DocumentAdminController@fetch_mo_hierarchy');
     Route::get('admin/fetchugroups', 'Admin\DocumentAdminController@fetch_unitgroups');
     Route::get('admin/fetch_mon_tree', 'Admin\DocumentAdminController@fetch_monitorings');
     Route::get('admin/fetchdocuments', 'Admin\DocumentAdminController@fetchDocuments');

@@ -12,7 +12,7 @@ class Worker extends Model
 
     public function worker_scopes()
     {
-        return $this->hasOne('App\WorkerScope');
+        return $this->hasMany('App\WorkerScope');
     }
 
     public function scopeOfRole($query, $type)

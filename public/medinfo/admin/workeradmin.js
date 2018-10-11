@@ -11,7 +11,7 @@ initsplitter = function() {
     });
 };
 initdropdowns = function() {
-    var rolesource =
+    let rolesource =
     {
         datatype: "json",
         datafields: [
@@ -42,10 +42,10 @@ inituserlist = function() {
         root: null
     };
     var dataAdapter = new $.jqx.dataAdapter(usersource);
-    $("#userList").jqxGrid(
+    wlist.jqxGrid(
         {
             width: '98%',
-            height: '90%',
+            height: '98%',
             theme: theme,
             localization: localize(),
             source: dataAdapter,
@@ -63,14 +63,9 @@ inituserlist = function() {
                 { text: 'Заблокирован', datafield: 'blocked', width: '40px' }
             ]
         });
-    $('#userList').on('rowselect', function (event) {
-        mo_tree_message.html('');
-        $("#moTree").jqxTreeGrid('collapseAll');
-        $("#moTree").jqxTreeGrid('expandRow', 0);
-        $("#mo_tree_container").show();
-        $("#mo_selected_info").hide();
-        $("#mo_selected_name").html('');
-        var row = event.args.row;
+    wlist.on('rowselect', function (event) {
+        uncheckAllUnits();
+        let row = event.args.row;
         $("#name").val(row.name);
         $("#password").val(row.password);
         $("#email").val(row.email);
@@ -79,27 +74,67 @@ inituserlist = function() {
         $("#permission").val(row.permission);
         $("#blocked").val(row.blocked == 1);
         $("#scopes").html("");
-        var user_scope_url = "fetch_worker_scopes/" + row.id;
-        $.getJSON( user_scope_url, function( data) {
-            var m = '';
-            var mo_tree_comment = data.responce.comment;
-            var items = [];
-            ou_id = data.responce.scope;
-
-            if (ou_id === 0) {
-                m += " Не указаны.";
-            }
-            else {
-                unit_name = data.responce.unit_name;
-                row = $("#moTree").jqxTreeGrid('getRow', ou_id);
-            }
-            mo_tree_message.html(mo_tree_comment);
+        let scopeurl = user_scope_url + row.id;
+        let units = [];
+        $.ajax({
+            dataType: 'json',
+            url: scopeurl,
+            method: "GET",
+            success: function (data, status, xhr) {
+                for (i = 0; i < data.length; i++) {
+                    motree.jqxTreeGrid('checkRow', data[i].ou_id);
+                    let row = motree.jqxTreeGrid('getRow', data[i].ou_id);
+                    let r = 0;
+                    let ancestors = getAncestors(row);
+                    units.push({ou: row, ancestors: ancestors});
+                }
+                setUnitList(units);
+            },
+            error: xhrErrorNotificationHandler
         });
-
     });
 };
+
+function setUnitList(units) {
+    let list = '';
+    list += '<ol>';
+    for(let i = 0; i < units.length; i++) {
+        list += '<li>' + units[i].ou.unit_name + '</li>';
+    }
+    list += '</ol>';
+    console.log(units[0].ou.unit_name);
+    $("#unitList").html(list);
+}
+
+function getAncestors(row) {
+    let ancestors = [];
+    let current = row.parent;
+    if (current === null) {
+        return null;
+    }
+    ancestors.push(current);
+    var traversAncestors = function(parent)
+    {
+        if (parent) {
+            ancestors.push(parent);
+            traversAncestors(parent.parent);
+        }
+    };
+    traversAncestors(current.parent);
+    return ancestors;
+}
+
 initmotree = function() {
-    var mo_source =
+    $('#setScopeWindow').jqxWindow({
+        width: '790px',
+        height: '620px',
+        resizable: false,
+        autoOpen: false,
+        isModal: true,
+        cancelButton: $('#cancelButton'),
+        position: { x: 310, y: 125 },
+    });
+    let mo_source =
     {
         dataType: "json",
         dataFields: [
@@ -115,47 +150,90 @@ initmotree = function() {
         },
         id: 'id',
         root: '',
-        url: 'fetch_mo_tree/0'
+        url: fetchunits_url
     };
-    var mo_dataAdapter = new $.jqx.dataAdapter(mo_source);
-    $("#mo_tree_container").jqxDropDownButton({ width: 250, height: 31, theme: theme });
-    $("#mo_tree_container").jqxDropDownButton('setContent', 'Выбор территории/учреждения');
-    $("#moTree").jqxTreeGrid(
+    let mo_dataAdapter = new $.jqx.dataAdapter(mo_source);
+    motree.jqxTreeGrid(
         {
-            width: 680,
-            height: 280,
+            width: '100%',
+            height: '530px',
             theme: theme,
             localization: localize(),
             source: mo_dataAdapter,
             selectionMode: "singleRow",
+            showToolbar: true,
+            renderToolbar: motreeToolbar,
+            hierarchicalCheckboxes: false,
+            checkboxes: true,
             filterable: true,
             filterMode: "simple",
             columnsResize: true,
             ready: function()
             {
-                // expand row with 'EmployeeKey = 32'
-                $("#moTree").jqxTreeGrid('expandRow', 0);
+                motree.jqxTreeGrid('expandRow', 0);
             },
             columns: [
-                { text: 'Код', dataField: 'unit_code', width: 100 },
-                { text: 'Наименование', dataField: 'unit_name', width: 540 }
+                { text: 'Код', dataField: 'unit_code', width: 170 },
+                { text: 'Наименование', dataField: 'unit_name', width: 590 }
             ]
         });
-    $('#moTree').on('filter',
+    motree.on('filter',
         function (event)
         {
-            var args = event.args;
-            var filters = args.filters;
+            let args = event.args;
+            let filters = args.filters;
             $('#moTree').jqxTreeGrid('expandAll');
         }
     );
-    $('#moTree').on('rowSelect', function (event) {
-        var args = event.args;
-        var row = args.row;
-        var key = args.key;
-        selected = "<strong>Выбрано учреждение:</strong> " + row.unit_code + " " + row.unit_name;
-        $("#mo_selected_info").show();
-        $("#mo_selected_name").html(selected);
+    motree.on('rowCheck', function (event) {
+        let checked = $(this).jqxTreeGrid('getCheckedRows');
+        $("#countCheckedUnits").html(checked.length);
+    });
+    motree.on('rowUncheck', function (event) {
+        let checked = $(this).jqxTreeGrid('getCheckedRows');
+        $("#countCheckedUnits").html(checked.length);
+    });
+};
+
+getcheckedunits = function() {
+    let ids = [];
+    let checkedRows;
+    let i;
+    checkedRows = motree.jqxTreeGrid('getCheckedRows');
+    for (i = 0; i < checkedRows.length; i++) {
+        ids.push(checkedRows[i].uid);
+    }
+    return ids;
+};
+
+uncheckAllUnits = function() {
+    let checkedUnits = motree.jqxTreeGrid('getCheckedRows');
+    for (i = 0; i < checkedUnits.length; i++) {
+        motree.jqxTreeGrid('uncheckRow', checkedUnits[i].uid);
+    }
+    $("#countCheckedUnits").html(0);
+    //motree.jqxTreeGrid('collapseAll');
+    //motree.jqxTreeGrid('expandRow', 0);
+};
+
+
+motreeToolbar = function (toolbar) {
+    toolbar.append("<button type='button' id='collapseAll' class='btn btn-default btn-sm'>Свернуть все</button>");
+    toolbar.append("<button type='button' id='expandAll' class='btn btn-default btn-sm'>Развернуть все</button>");
+    toolbar.append("<button type='button' id='uncheckAll' class='btn btn-default btn-sm'>Снять выбор</button>");
+    $("#expandAll").click(function (event) {
+        motree.jqxTreeGrid('expandAll');
+    });
+    $("#collapseAll").click(function (event) {
+        motree.jqxTreeGrid('collapseAll');
+        motree.jqxTreeGrid('expandRow', 0);
+    });
+    $("#uncheckAll").click(function (event) {
+        let checkedRows = motree.jqxTreeGrid('getCheckedRows');
+        for (i = 0; i < checkedRows.length; i++) {
+            motree.jqxTreeGrid('uncheckRow', checkedRows[i].uid);
+        }
+        $("#countCheckedUnits").html(0);
     });
 };
 
@@ -169,7 +247,6 @@ setquerystring = function() {
         "&blocked=" + ($("#blocked").val() ? 1 :0);
         //+ "&_token={{ csrf_token() }}";
 };
-
 initactions = function() {
     $('#blocked').jqxSwitchButton({
         height: 31,
@@ -184,16 +261,20 @@ initactions = function() {
             method: "POST",
             data: setquerystring(),
             success: function (data, status, xhr) {
-                raiseInfo(data.responce.comment);
-                $("#userList").jqxGrid('updatebounddata');
-            },
-            error: function (xhr, status, errorThrown) {
-                m = 'Данные не сохранены. ';
-                $.each(xhr.responseJSON, function(field, errorText) {
-                    m += errorText[0];
+                if (typeof data.error !== 'undefined') {
+                    raiseError(data.message);
+                } else {
+                    raiseInfo(data.message);
+                }
+                wlist.jqxGrid('updatebounddata', 'data');
+                wlist.on("bindingcomplete", function (event) {
+                    let newindex = wlist.jqxGrid('getrowboundindexbyid', data.id);
+                    wlist.jqxGrid('selectrow', newindex);
+                    wlist.jqxGrid('ensurerowvisible', newindex);
                 });
-                raiseError(m, xhr);
-            }
+
+            },
+            error: xhrErrorNotificationHandler
         });
     });
     $("#save").click(function () {
@@ -209,10 +290,14 @@ initactions = function() {
             method: "PATCH",
             data: setquerystring(),
             success: function (data, status, xhr) {
-                raiseInfo(data.responce.comment);
+                if (typeof data.error !== 'undefined') {
+                    raiseError(data.message);
+                } else {
+                    raiseInfo(data.message);
+                }
                 wlist.jqxGrid('updatebounddata', 'data');
                 wlist.on("bindingcomplete", function (event) {
-                    var newindex = wlist.jqxGrid('getrowboundindexbyid', rowid);
+                    let newindex = wlist.jqxGrid('getrowboundindexbyid', rowid);
                     wlist.jqxGrid('selectrow', newindex);
                     wlist.jqxGrid('ensurerowvisible', newindex);
                 });
@@ -221,12 +306,12 @@ initactions = function() {
         });
     });
     $("#delete").click(function () {
-        var row = $('#userList').jqxGrid('getselectedrowindex');
-        if (row == -1) {
+        var row = wlist.jqxGrid('getselectedrowindex');
+        if (row === -1) {
             raiseError("Выберите запись для удаления");
             return false;
         }
-        var rowid = $("#userList").jqxGrid('getrowid', row);
+        var rowid = wlist.jqxGrid('getrowid', row);
         var confirm_text = 'Подтвердите удаление пользователя Id' + rowid ;
         if (!confirm(confirm_text)) {
             return false;
@@ -238,8 +323,8 @@ initactions = function() {
             success: function (data, status, xhr) {
                 if (data.worker_deleted) {
                     raiseInfo(data.message);
-                    $('#userList').jqxGrid('clearselection');
-                    $('#userList').jqxGrid('updatebounddata');
+                    wlist.jqxGrid('clearselection');
+                    wlist.jqxGrid('updatebounddata');
                 }
                 else {
                     raiseError(data.message);
@@ -250,10 +335,10 @@ initactions = function() {
 
     });
     $("#mo_selected_save").click(function () {
-        var user = $('#userList').jqxGrid('getselectedrowindex');
-        var userid = $("#userList").jqxGrid('getrowid', user);
-        var scopeselected = $("#moTree").jqxTreeGrid('getSelection');
-        var userscope = $("#moTree").jqxTreeGrid('getKey', scopeselected[0]);
+        var user = wlist.jqxGrid('getselectedrowindex');
+        var userid = wlist.jqxGrid('getrowid', user);
+        var scopeselected = motree.jqxTreeGrid('getSelection');
+        var userscope = motree.jqxTreeGrid('getKey', scopeselected[0]);
         var data = "userid=" + userid + "&newscope=" + userscope;
         $.ajax({
             dataType: 'json',
@@ -262,15 +347,9 @@ initactions = function() {
             data: data,
             success: function (data, status, xhr) {
                 mo_tree_message.html(scopeselected[0].unit_name );
-                raiseInfo(data.responce.comment)
+                raiseInfo(data.comment)
             },
-            error: function (xhr, status, errorThrown) {
-                m = 'Даные не сохранены. ';
-                $.each(xhr.responseJSON, function(field, errorText) {
-                    m += errorText[0];
-                });
-                raiseError(m, xhr);
-            }
+            error: xhrErrorNotificationHandler
         });
     });
 
@@ -283,5 +362,11 @@ initactions = function() {
         'lowercase': true,
         'numbers':   true,
         'specialChars': false
+    });
+
+    $("#setunits").click(function () {
+        $("#countCheckedUnits").html(motree.jqxTreeGrid('getCheckedRows').length);
+        $('#setScopeWindow').jqxWindow('open');
+
     });
 };
