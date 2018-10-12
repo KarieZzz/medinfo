@@ -9,6 +9,9 @@
 namespace App\Medinfo;
 
 
+use App\Unit;
+use App\WorkerScope;
+
 class UnitTree
 {
     public $top_level_id;
@@ -68,6 +71,35 @@ class UnitTree
                 $units = array_merge($units, self::getChilds($r->id));
             }
         }
+        return $units;
+    }
+
+    public static function getMoTreeByWorker($worker)
+    {
+        $wscopes = WorkerScope::Worker($worker)->get();
+        if (!$wscopes) {
+            throw new \Exception('У пользователя не определен доступ к организационным единицам');
+        }
+        if ($wscopes->count() === 1) {
+            return self::getMoTree($wscopes[0]->ou_id);
+        }
+        $units = [];
+        //$root = Unit::Root()->get()->toArray();
+        //$units = array_merge($units, $root);
+        foreach ($wscopes as $wscope) {
+            $this_one = Unit::where('id', $wscope->ou_id)->get()->toArray();
+            $this_one[0]['parent_id'] = null;
+            $units = array_merge($units, $this_one);
+            $lev_query = "SELECT id, parent_id, unit_code, unit_name FROM mo_hierarchy WHERE blocked = 0 AND parent_id = {$this_one[0]['id']} ORDER BY unit_code";
+            $res = \DB::select($lev_query);
+            if (count($res) > 0) {
+                foreach ($res as $r) {
+                    $units[] = $r;
+                    $units = array_merge($units, self::getChilds($r->id));
+                }
+            }
+        }
+        //dd($units);
         return $units;
     }
 

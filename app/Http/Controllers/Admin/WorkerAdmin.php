@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\DocumentMessage;
+use App\RecentDocument;
+use App\ValuechangingLog;
+use App\WorkerSetting;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -46,9 +50,8 @@ class WorkerAdmin extends Controller
 
     public function worker_store(Request $request)
     {
-        //
         $this->validate($request, [
-                'name' => 'required|unique:workers|max:24',
+                'user_name' => 'required|max:24',
                 'password' => 'required|max:16|min:4',
                 'email' => 'email',
                 'role' => 'required|digits:1',
@@ -57,7 +60,7 @@ class WorkerAdmin extends Controller
             ]
         );
         $worker = new Worker();
-        $worker->name = $request->name;
+        $worker->name = $request->user_name;
         $worker->password = $request->password;
         $worker->email = $request->email;
         $worker->description = $request->description;
@@ -84,7 +87,7 @@ class WorkerAdmin extends Controller
     public function worker_update(Worker $worker, Request $request)
     {
         $this->validate($request, [
-                'name' => 'required|max:24',
+                'user_name' => 'required|max:24',
                 'password' => 'required|max:16|min:4',
                 'email' => 'email',
                 'role' => 'required|digits:1',
@@ -93,7 +96,7 @@ class WorkerAdmin extends Controller
             ]
         );
         //$worker = Worker::find($request->id);
-        $worker->name = $request->name;
+        $worker->name = $request->user_name;
         $worker->password = $request->password;
         $worker->email = $request->email;
         $worker->description = $request->description;
@@ -169,45 +172,50 @@ class WorkerAdmin extends Controller
     public function worker_scope_update(Request $request)
     {
         $this->validate($request, [
-            'workerid' => 'required',
+            'worker' => 'required',
             'newscope' => 'required',
         ]);
         $newScope = explode(",", $request->newscope);
-        $currentScope = WorkerScope::Worker($request->workerid)->pluck('ou_id')->toArray();
+        if (in_array('0', $newScope)) {
+            $sc = WorkerScope::firstOrNew(['worker_id' => $request->worker]);
+            $sc->ou_id = 0;
+            $sc->save();
+            $scope_deleted = WorkerScope::Worker($request->worker)->where('ou_id','<>' ,0)->delete();
+            $message = 'Установлен доступ ко всем организационным единицам';
+            return compact('message', 'scope_deleted');
+        }
+        $currentScope = WorkerScope::Worker($request->worker)->pluck('ou_id')->toArray();
         $unitedScope = array_merge($currentScope, $newScope);
         $unitedScope = array_unique($unitedScope);
-        $areRemoved = array_diff($unitedScope, $newScope);
+        $pureList = array_intersect($unitedScope, $newScope);
 
+        //dd($pureList);
 
-
-        WorkerScope::Worker($request->workerid)->whereIn('ou_id', $areRemoved)->delete();
-
-        if ($currentScope) {
-            $currentScope->ou_id = $request->newscope;
-            $currentScope->save();
-            $comment = 'Учреждение/территория, к которому  имеет доступ пользователь, обновлено';
-        } else {
-            $new_scope = new WorkerScope();
-            $new_scope->worker_id = $request->userid;
-            $new_scope->ou_id = $request->newscope;
-            $new_scope->with_descendants = 1;
-            $new_scope->save();
-            $comment = 'Учреждение/территория, к которому  имеет доступ пользователь, введено'  ;
+        foreach ($pureList as $ou) {
+            $sc = WorkerScope::Worker($request->worker)->firstOrCreate(['worker_id' => $request->worker,'ou_id' => $ou, 'with_descendants' => 1]);
+            //$sc->save();
         }
-        return compact('comment');
+        $deleted = WorkerScope::Worker($request->worker)->whereNotIn('ou_id', $pureList)->delete();
+        $saved = count($pureList);
+        $message = 'Список доступа обновлен. Включено ' . $saved . ' ОЕ, удалено - ' . $deleted;
+        return compact('message','saved', 'deleted');
     }
 
     public function worker_delete(Worker $worker)
     {
         $id = $worker->id;
         $scope_deleted = WorkerScope::Worker($id)->delete();
+        $recent_deleted = RecentDocument::OfWorker($id)->delete();
+        $valchangelog_deleted = ValuechangingLog::OfWorker($id)->delete();
+        $wsettings_deleted = WorkerSetting::OfWorker($id)->delete();
+        $docmessages_deleted = DocumentMessage::OfWorker($id)->delete();
         $worker_deleted = $worker->delete();
         if ($worker_deleted) {
             $message = 'Удалена пользователь Id ' . $id;
         } else {
             $message = 'Ошибка удаления пользователя Id ' . $id;
         }
-        return compact('worker_deleted', 'scope_deleted', 'message');
+        return compact('worker_deleted', 'scope_deleted', 'recent_deleted', 'valchangelog_deleted', 'wsettings_deleted', 'docmessages_deleted','message');
     }
 
 }

@@ -14,9 +14,9 @@
             <div class="panel-body">
                 <form id="form" class="form-horizontal">
                     <div class="form-group">
-                        <label class="control-label col-sm-3" for="name">Имя пользователя:</label>
+                        <label class="control-label col-sm-3" for="user_name">Имя пользователя:</label>
                         <div class="col-sm-3">
-                            <input type="text" class="form-control" id="name">
+                            <input type="text" class="form-control" id="user_name">
                         </div>
                     </div>
                     <div class="form-group">
@@ -77,8 +77,15 @@
             </div>
         </div>
         <div class="panel panel-default">
-            <div class="panel-heading"><h4>МО/территории, к данным которых имеет доступ пользователь</h4></div>
-            <div class="panel-body" id="unitList"></div>
+            <div class="panel-heading" id="unitListHeader">
+                <div class="row">
+                    <div class="col-md-6"><p>МО/территории, к данным которых имеет доступ пользователь*</p></div>
+                    <div class="col-md-6"><button id="ouListSave" class="btn btn-default btn-sm" style="display: none">Сохранить изменения</button></div>
+                </div>
+
+            </div>
+            <div class="panel-body" style="height:200px;overflow: auto;" id="unitList"></div>
+            <div class="panel-footer"><p class="text-info">* - Включая все входящие в состав организационные единицы</p></div>
         </div>
     </div>
 </div>
@@ -88,8 +95,17 @@
         </div>
         <div>
             <div id="moTree"></div>
-            <button type="button" id="setUnitScopeSave" class="btn btn-primary btn-sm" style="margin-top: 5px">Сохранить выбор</button>
-            <div>Выбрано организаций: <span id="countCheckedUnits"></span></div>
+            <div class="row" style="margin: 10px 0 0 0 ">
+                <div class="col-md-offset-1 col-md-4">
+                    <button type="button" id="applyList" class="btn btn-primary btn-sm" >Применить</button>
+                    <button type="button" id="cancelListChanges" class="btn btn-danger btn-sm" >Отмена</button>
+                </div>
+                <div>
+                    <div class="col-md-5">
+                        <p>Выбрано организаций: <span id="countCheckedUnits"></span></p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 @endsection
@@ -113,7 +129,7 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>--}}
     <script src="{{ asset('/plugins/pgenerator/jquery.pGenerator.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/workeradmin.js?v=008') }}"></script>
+    <script src="{{ asset('/medinfo/admin/workeradmin.js?v=019') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -121,6 +137,9 @@
     <script type="text/javascript">
         let selected_scopes = [];
         let mo_tree_message = $("#mo_tree_comment");
+        let sv = $("#save");
+        let dl = $("#delete");
+        let su = $("#setunits");
         let workerupdate_url = '/admin/workers/update/';
         let workerdelete_url = '/admin/workers/delete/';
         let fetchunits_url = '/admin/workers/fetch_units/';

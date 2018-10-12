@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class WorkerScope extends Model
 {
     //
+    protected $fillable = ['worker_id', 'ou_id', 'with_descendants'];
+
     public function workers()
     {
         return $this->belongsTo('App\Worker', 'id' , 'worker_id');

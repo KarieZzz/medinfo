@@ -32,6 +32,10 @@ class Unit extends Model
         return $this->hasMany('App\UnitListMember', 'ou_id', 'id');
     }
 
+    public function scopeRoot($query)
+    {
+        return $query->where('id', 0);
+    }
     // Выбор Территорий
     public function scopeTerritory($query)
     {

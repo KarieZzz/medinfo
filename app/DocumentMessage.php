@@ -11,6 +11,11 @@ class DocumentMessage extends Model
         'doc_id', 'user_id', 'message',
     ];
 
+    public function scopeOfWorker($query, $worker)
+    {
+        return $query->where('user_id', $worker);
+    }
+
     public function worker()
     {
         return $this->hasOne('App\Worker', 'id', 'user_id');

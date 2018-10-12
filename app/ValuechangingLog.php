@@ -18,6 +18,11 @@ class ValuechangingLog extends Model
             ->where('d', $document);
     }
 
+    public function scopeOfWorker($query, $worker)
+    {
+        return $query->where('worker_id', $worker);
+    }
+
     public function document()
     {
         return $this->belongsTo('App\Document');

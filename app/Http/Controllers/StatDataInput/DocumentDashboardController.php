@@ -68,7 +68,9 @@ class DocumentDashboardController extends Controller
     public function fetch_mo_hierarchy($parent = 0)
     {
         //return UnitTree::getSimpleTree($parent);
-        return UnitTree::getMoTree((int)$parent);
+        //return UnitTree::getMoTree((int)$parent);
+        $worker = Auth::guard('datainput')->user();
+        return UnitTree::getMoTreeByWorker($worker->id);
     }
 
     public function fetch_unitgroups()
