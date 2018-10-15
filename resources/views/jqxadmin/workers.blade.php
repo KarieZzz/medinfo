@@ -45,10 +45,10 @@
                         <div class="col-sm-4">
                             <select class="form-control" id="role">
                                 <option value="1" selected="selected">Исполнитель</option>
-                                <option value="2" selected="selected">Эксперт-специалист</option>
-                                <option value="3" selected="selected">Эксперт-статистик</option>
-                                <option value="4" selected="selected">Руководитель приема отчетов</option>
-                                <option value="0" selected="selected">Администратор</option>
+                                <option value="2">Эксперт-специалист</option>
+                                <option value="3">Эксперт-статистик</option>
+                                <option value="4">Руководитель приема отчетов</option>
+                                <option value="0">Администратор</option>
                             </select>
                             {{--<input type="number" class="form-control" id="role">--}}
                         </div>

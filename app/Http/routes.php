@@ -121,6 +121,12 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::patch('admin/tables/top/{table}', 'Admin\TableAdminController@top');
     Route::patch('admin/tables/bottom/{table}', 'Admin\TableAdminController@bottom');
 
+    // Менеджер разделов форм
+    Route::get('admin/formsections/fetchfs', 'Admin\FormSectionAdminController@fetch_formsections');
+    Route::get('admin/formsections/editsection/{fs}', 'Admin\FormSectionAdminController@editSection');
+
+    Route::resource('admin/formsections', 'Admin\FormSectionAdminController');
+
     // Менеджер строк и граф
     Route::get('admin/rc', 'Admin\RowColumnAdminController@index');
     Route::get('admin/rc/fetchrows/{table}', 'Admin\RowColumnAdminController@fetchRows');
@@ -192,7 +198,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('admin/consolidate/{document}', 'Admin\DocumentConsolidationController@consolidateDocument' );
     Route::get('admin/consolidate_table/{document}/{table}', 'Admin\DocumentConsolidationController@consolidatePivotTable' );
 
-    // Менеджер списков МО для рассчета консолидированных таблиц
+    // Менеджер списков МО для формирования сводов/рассчета консолидированных таблиц
     Route::resource('admin/units/lists', 'Admin\ListMOAdminController');
     Route::post('admin/units/lists/createcopy/{list}', 'Admin\ListMOAdminController@storeAs');
     Route::get('admin/units/fetchlists', 'Admin\ListMOAdminController@fetchlits');

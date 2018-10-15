@@ -23,11 +23,11 @@
 @endsection
 
 @push('loadcss')
-    <link href="{{ asset('/css/medinfoeditform.css?v=013') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('/css/medinfoeditform.css?v=014') }}" rel="stylesheet" type="text/css" />
 @endpush('loadcss')
 
 @push('loadjsscripts')
-    <script src="{{ asset('/medinfo/editdashboard.js?v=135') }}"></script>
+    <script src="{{ asset('/medinfo/editdashboard.js?v=143') }}"></script>
 {{--    <script src="{{ asset('/medinfo/primary.js?v=018') }}"></script>--}}
 @endpush('loadjsscripts')
 

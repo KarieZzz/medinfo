@@ -1,8 +1,6 @@
 /**
  * Created by shameev on 12.07.2016.
  */
-// Обработка состояния кнопочек перевода в полноэкранный режим
-// Пометка/снятие пометки волнистой чертой неверных таблиц
 let initDgridSize = function () {
     return initialViewport - topOffset1;
 };
@@ -1019,13 +1017,13 @@ function renderDgrid(rowid) {
     current_row_name_datafield = data_for_tables[current_table].columns[1].dataField;
     current_row_number_datafield = data_for_tables[current_table].columns[2].dataField;
     dgrid.jqxGrid('beginupdate');
-    tablesource.datafields = data_for_tables[current_table].datafields;
-    tablesource.url = source_url + current_table;
-    data_for_tables[current_table].calcfields.length > 0 ? there_is_calculated = true : there_is_calculated = false;
-    there_is_calculated ? calculate.prop('disabled', false ) : calculate.attr('disabled', true );
-    dgrid.jqxGrid( { columns: data_for_tables[current_table].columns } );
-    dgrid.jqxGrid( { columngroups: data_for_tables[current_table].columngroups } );
-    dgrid.jqxGrid('updatebounddata');
+        tablesource.datafields = data_for_tables[current_table].datafields;
+        tablesource.url = source_url + current_table;
+        data_for_tables[current_table].calcfields.length > 0 ? there_is_calculated = true : there_is_calculated = false;
+        there_is_calculated ? calculate.prop('disabled', false ) : calculate.attr('disabled', true );
+        dgrid.jqxGrid( { columns: data_for_tables[current_table].columns } );
+        dgrid.jqxGrid( { columngroups: data_for_tables[current_table].columngroups } );
+        dgrid.jqxGrid('updatebounddata');
     dgrid.jqxGrid('endupdate');
     //layout[0].items[1].items[0].items[0].title = "Таблица " + data_for_tables[current_table].tablecode + ', "' + data_for_tables[current_table].tablename + '"';
     $("#TableTitle").html("Таблица " + data_for_tables[current_table].tablecode + ', "' + data_for_tables[current_table].tablename + '"');
@@ -1035,8 +1033,8 @@ function renderDgrid(rowid) {
     tdropdown.jqxDropDownButton('close');
     splitter.jqxSplitter('collapse');
     dgrid.jqxGrid('focus');
-    dgrid.jqxGrid({ 'keyboardnavigation': true  });
     dgrid.jqxGrid('selectcell', 0, data_for_tables[current_table].firstdatacolumn);
+    dgrid.jqxGrid({ 'keyboardnavigation': true  });
 }
 
 // Инициализация вкладки протокола контроля формы
@@ -1131,72 +1129,11 @@ let initdatagrid = function() {
             columns: data_for_tables[current_table].columns,
             columngroups: data_for_tables[current_table].columngroups
         });
-    dgrid.on('cellvaluechanged', function (event) {
-        let rowBoundIndex = args.rowindex;
-        let rowid = dgrid.jqxGrid('getrowid', rowBoundIndex);
-        let colid = event.args.datafield;
-        let value = args.newvalue;
-        let oldvalue;
-        if (typeof args.oldvalue !== 'undefined') {
-            oldvalue = args.oldvalue;
-        } else {
-            oldvalue = null;
-        }
-        let readable_coordinates = getreadablecelladress(rowid, colid);
-
-        current_edited_cell.t = current_table;
-        current_edited_cell.r = rowBoundIndex;
-        current_edited_cell.c = colid;
-        current_edited_cell.valid = true;
-        current_edited_cell.rowid = rowid;
-
-        let data = "row=" + rowid + "&column=" + colid + "&value=" + value+ "&oldvalue=" + oldvalue;
-        $.ajax({
-            dataType: 'json',
-            url: savevalue_url + current_table ,
-            //timeout: 1000,
-            data: data,
-            method: 'POST',
-            success: function (data, status, xhr) {
-                if (data.error === 401) {
-                    raiseError("Данные не сохранены. Пользователь не авторизован!");
-                }
-                else if (data.error === 1001) {
-                    raiseError("Данные не сохранены. Отсутствуют права на изменение данных в этом документе");
-
-                }
-                else {
-                    if (data.cell_affected) {
-/*                        timestamp = new Date();
-                        log_str = $("#log").html();
-                        if (log_str === "Изменений не было") {
-                            log_str = "";
-                        }
-                        $("#log").html(log_str + timestamp.toLocaleString() + " Изменена ячейка т ." + data_for_tables[current_table].tablecode +", с."+ readable_coordinates.row
-                            + ", г." + readable_coordinates.column + ". (" + oldvalue +
-                            " >> " + value + ").</br>");*/
-                        editedCells.push({ t: current_table, r: rowBoundIndex, c: colid});
-                        if (protocol_control_created) {
-                            $(".inactual-protocol").show();
-                            //$("#protocolcomment").html();
-                        }
-                    }
-                }
-            },
-            error: function (xhr, status, errorThrown) {
-                if (xhr.status === 401) {
-                    raiseError('Пользователь не авторизован.', xhr );
-                    return false;
-                }
-                raiseError("Ошибка сохранения данных на сервере. " + xhr.status + ' (' + xhr.statusText + ') - ' + status + ". Обратитесь к администратору.");
-            }
-        });
-    });
+    dgrid.on('cellvaluechanged', simpleSaving);
     dgrid.jqxGrid('focus');
     dgrid.jqxGrid({ 'keyboardnavigation': true  });
     dgrid.jqxGrid('selectcell', 0, data_for_tables[current_table].firstdatacolumn);
-    dgrid.on('cellselect', function (event)
-    {
+    dgrid.on('cellselect', function (event) {
         let cell_protocol_panel = $("#cellprotocol");
         let header;
         let args = event.args;
@@ -1261,6 +1198,73 @@ let initdatagrid = function() {
         }
     });
 };
+
+function simpleSaving(event) {
+    let rowBoundIndex = args.rowindex;
+    let rowid = dgrid.jqxGrid('getrowid', rowBoundIndex);
+    //let colid = event.args.datafield;
+    let colid = args.datafield;
+    if (checkIsNotEditable(rowid, colid)) {
+        return false;
+    }
+    let value = args.newvalue;
+    let oldvalue;
+    if (typeof args.oldvalue !== 'undefined') {
+        oldvalue = args.oldvalue;
+    } else {
+        oldvalue = null;
+    }
+    //let readable_coordinates = getreadablecelladress(rowid, colid);
+
+    current_edited_cell.t = current_table;
+    current_edited_cell.r = rowBoundIndex;
+    current_edited_cell.c = colid;
+    current_edited_cell.valid = true;
+    current_edited_cell.rowid = rowid;
+
+    let data = "row=" + rowid + "&column=" + colid + "&value=" + value+ "&oldvalue=" + oldvalue;
+    $.ajax({
+        dataType: 'json',
+        url: savevalue_url + current_table ,
+        //timeout: 1000,
+        data: data,
+        method: 'POST',
+        success: function (data, status, xhr) {
+            if (data.error === 401) {
+                raiseError("Данные не сохранены. Пользователь не авторизован!");
+            }
+            else if (data.error === 1001) {
+                raiseError("Данные не сохранены. Отсутствуют права на изменение данных в этом документе");
+
+            }
+            else {
+                if (data.cell_affected) {
+                    /*                        timestamp = new Date();
+                                            log_str = $("#log").html();
+                                            if (log_str === "Изменений не было") {
+                                                log_str = "";
+                                            }
+                                            $("#log").html(log_str + timestamp.toLocaleString() + " Изменена ячейка т ." + data_for_tables[current_table].tablecode +", с."+ readable_coordinates.row
+                                                + ", г." + readable_coordinates.column + ". (" + oldvalue +
+                                                " >> " + value + ").</br>");*/
+                    editedCells.push({ t: current_table, r: rowBoundIndex, c: colid});
+                    if (protocol_control_created) {
+                        $(".inactual-protocol").show();
+                        //$("#protocolcomment").html();
+                    }
+                }
+            }
+        },
+        error: function (xhr, status, errorThrown) {
+            if (xhr.status === 401) {
+                raiseError('Пользователь не авторизован.', xhr );
+                return false;
+            }
+            raiseError("Ошибка сохранения данных на сервере. " + xhr.status + ' (' + xhr.statusText + ') - ' + status + ". Обратитесь к администратору.");
+        }
+    });
+}
+
 // Панель инструментов для редактируемой таблицы
 let inittoolbarbuttons = function () {
     tdropdown.jqxDropDownButton({width: 120, height: 22, theme: theme});
@@ -1383,13 +1387,21 @@ let inittoolbarbuttons = function () {
 // проверяем ли находится ли данная ячейка в списке запрещенных к редактированию ячеек
 let cellbeginedit = function (row, datafield, columntype, value) {
     let rowid = dgrid.jqxGrid('getrowid', row);
-    let necell_count = not_editable_cells.length;
-    for (let i = 0; i < necell_count; i++) {
-        if (not_editable_cells[i].t == current_table &&  not_editable_cells[i].r == rowid && not_editable_cells[i].c == datafield ) {
-            return false;
-        }
+    if (checkIsNotEditable(rowid, datafield)) {
+        return false;
     }
 };
+
+function checkIsNotEditable(rowid, colid) {
+    let necell_count = not_editable_cells.length;
+    for (let i = 0; i < necell_count; i++) {
+        if (not_editable_cells[i].t == current_table && not_editable_cells[i].r == rowid && not_editable_cells[i].c == colid ) {
+            return true;
+        }
+    }
+    return false;
+}
+
 let defaultEditor = function (row, cellvalue, editor) {
     editor.jqxNumberInput({ decimalDigits: 0, digits: 12  });
 };
@@ -1403,8 +1415,12 @@ let initDecimal3Editor = function (row, cellvalue, editor) {
     editor.jqxNumberInput({ decimalDigits: 3, digits: 12, decimalSeparator: ',' });
 };
 let cellsrenderer = function (row, column, value, defaulthtml, columnproperties) {
-    if (!value) { return defaulthtml  }
+    if (!value) {
+        return;
+    }
+    //let fixdecimal = value.replace(/(,)+/,'.');
     let formated = $(defaulthtml).html(localizednumber.format(value));
+    //console.log(formated);
     return formated[0].outerHTML;
 };
 let cellclass = function (row, columnfield, value, rowdata) {
@@ -1414,7 +1430,7 @@ let cellclass = function (row, columnfield, value, rowdata) {
     let not_editable = '';
     for (let i = 0; i < not_editable_cells.length; i++) {
         if (not_editable_cells[i].t == current_table && not_editable_cells[i].r == rowdata.id && not_editable_cells[i].c == columnfield) {
-            not_editable = 'jqx-grid-cell-pinned jqx-grid-cell-pinned-bootstrap';
+            return 'jqx-grid-cell-pinned jqx-grid-cell-pinned-bootstrap not_editable';
         }
     }
     if (marking_mode === 'control') {
@@ -1443,7 +1459,8 @@ let cellclass = function (row, columnfield, value, rowdata) {
                         invalid_cell = '';
                     }
                 }*/
-        return  alerted_cell + ' ' + invalid_cell +' ' + class_by_edited_row + ' ' + not_editable;
+        //return  alerted_cell + ' ' + invalid_cell +' ' + class_by_edited_row + ' ' + not_editable;
+        return  alerted_cell + ' ' + invalid_cell +' ' + class_by_edited_row;
     }
     else if (marking_mode === 'compareperiods') {
         let class_compare = '';

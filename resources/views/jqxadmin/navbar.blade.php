@@ -29,6 +29,7 @@
                     <li><a href="/admin/monitorings">Мониторинги</a></li>
                     <li><a href="/admin/albums">Альбомы форм</a></li>
                     <li><a href="/admin/forms">Формы</a></li>
+                    <li><a href="/admin/formsections">Разделы форм</a></li>
                     <li><a href="/admin/tables">Таблицы</a></li>
                     <li><a href="/admin/rc">Строки и Графы</a></li>
                     <li type="separator"></li>

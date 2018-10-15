@@ -206,6 +206,7 @@ class DashboardController extends Controller
 
     public function saveValue(Request $request, $document, $table)
     {
+        //dd($request->value);
         $worker = Auth::guard('datainput')->user();
         $document = Document::find($document);
         if ($worker->role === 0 ) {
