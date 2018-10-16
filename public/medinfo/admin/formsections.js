@@ -27,7 +27,7 @@ let initFunctionList = function() {
     fsgrid.jqxGrid(
         {
             width: '100%',
-            height: '70%',
+            height: '60%',
             theme: theme,
             localization: localize(),
             source: fsectionDataAdapter,
@@ -60,7 +60,8 @@ let updateFunctionList = function() {
 // Операции с функциями контроля
 
 let setquerystring = function() {
-    return "&section=" + $("#section_name").val() +  "&form=" + $("#form").val() ;
+    let include = $("#include").prop("checked") ? '1' :  '0' ;
+    return "&section=" + $("#section_name").val() + "&form=" + $("#form").val() + "&album=" + $("#album").val() + "&include=" + include;
 };
 
 let initFunctionActions = function() {
@@ -121,6 +122,36 @@ let initFunctionActions = function() {
         });
     });
 
+    $("#delete").click(function () {
+        let row = fsgrid.jqxGrid('getselectedrowindex');
+        if (row === -1 && typeof row !== 'undefined') {
+            raiseError("Не выбрана запись для удаления");
+            return false;
+        }
+        let id = fsgrid.jqxGrid('getrowid', row);
+        let confirm_text = 'Подтвердите удаление раздела Id ' + id + '.';
+        if (!confirm(confirm_text)) {
+            return false;
+        }
+        $.ajax({
+            dataType: 'json',
+            url: url + '/' + id,
+            method: "DELETE",
+            success: function (data, status, xhr) {
+                if (typeof data.error !== 'undefined') {
+                    raiseError(data.message);
+                } else {
+                    raiseInfo(data.message);
+                    $("#formsection")[0].reset();
+                }
+                fsgrid.jqxGrid('updatebounddata', 'data');
+                fsgrid.jqxGrid('clearselection');
+            },
+            error: xhrErrorNotificationHandler
+        });
+
+    });
+
     $("#editSection").click(function () {
         let row = fsgrid.jqxGrid('getselectedrowindex');
         if (row === -1 && typeof row !== 'undefined') {
@@ -129,24 +160,5 @@ let initFunctionActions = function() {
         }
         let id = fsgrid.jqxGrid('getrowid', row);
         window.open(editsection_url + id)
-    });
-};
-
-let performAction = function() {
-    $.ajax({
-        dataType: 'json',
-        url: url + '/' + current_function,
-        method: "DELETE",
-        success: function (data, status, xhr) {
-            if (typeof data.error !== 'undefined') {
-                raiseError(data.message);
-            } else {
-                raiseInfo(data.message);
-                $("#form")[0].reset();
-            }
-            fsgrid.jqxGrid('updatebounddata', 'data');
-            fsgrid.jqxGrid('clearselection');
-        },
-        error: xhrErrorNotificationHandler
     });
 };

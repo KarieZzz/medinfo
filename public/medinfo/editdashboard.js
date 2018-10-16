@@ -524,7 +524,6 @@ function searchTableByIndex(index) {
     });
     return found;
 }
-
 function set_navigation_buttons_status(index) {
     switch (true) {
         case 1 == max_table_index :
@@ -920,7 +919,7 @@ let getreadablecelladress = function(row, column) {
     let column_index = dgrid.jqxGrid('getcolumnproperty', column, 'text');
     return { row: row_code, column: column_index};
 };
-// Возыращает данные для состава свода по медицинским организациям и движения по периодам
+// Возвращает данные для состава свода по медицинским организациям и движения по периодам
 let fetchcelllayer = function(row, column) {
     let layer_container = $("<table class='table table-condensed table-striped table-bordered'></table>");
     let period_container = $("<table class='table table-condensed table-striped table-bordered'></table>");
@@ -1340,6 +1339,13 @@ let inittoolbarbuttons = function () {
         let url = tableexport_url + current_table ;
         location.replace(url);
     });
+
+    fsdropdown.jqxDropDownButton({width: 170, height: 22, theme: theme});
+    fsdropdown.jqxDropDownButton('setContent', '<div style="margin-top: 3px">Управление разделами</div>');
+    $("#FormSections").show();
+    if (current_user_role !== '3' && current_user_role !== '4') {
+        fsdropdown.hide();
+    }
 
     let oldVal = "";
     filterinput.on('keydown', function (event) {

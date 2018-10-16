@@ -13,7 +13,7 @@ class AddForeinKeys extends Migration
     public function up()
     {
         //
-        DB::statement('ALTER TABLE public.access_log ADD CONSTRAINT "#accessLog" FOREIGN KEY (user_id) REFERENCES public.users (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION');
+/*        DB::statement('ALTER TABLE public.access_log ADD CONSTRAINT "#accessLog" FOREIGN KEY (user_id) REFERENCES public.users (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION');
         DB::statement('ALTER TABLE public.aggregates ADD CONSTRAINT "#aggregateDocuments" FOREIGN KEY (doc_id) REFERENCES public.documents (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION');
         DB::statement('ALTER TABLE public.album_columns ADD CONSTRAINT "#albumColumn" FOREIGN KEY (album_id) REFERENCES public.albums (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION');
         DB::statement('ALTER TABLE public.album_forms ADD CONSTRAINT "#forms" FOREIGN KEY (form_id) REFERENCES public.forms (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION');
@@ -52,7 +52,7 @@ class AddForeinKeys extends Migration
         DB::statement('ALTER TABLE public.valuechanging_log ADD CONSTRAINT "#valueLogWorker" FOREIGN KEY (worker_id) REFERENCES public.workers (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION;');
         DB::statement('ALTER TABLE public.worker_scopes ADD CONSTRAINT "#workScopeHierarchy" FOREIGN KEY (ou_id) REFERENCES public.mo_hierarchy (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION');
         DB::statement('ALTER TABLE public.worker_scopes ADD CONSTRAINT "#workerScope" FOREIGN KEY (worker_id) REFERENCES public.workers (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION');
-        DB::statement('ALTER TABLE public.worker_settings ADD CONSTRAINT "#worker" FOREIGN KEY (worker_id) REFERENCES public.workers (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION');
+        DB::statement('ALTER TABLE public.worker_settings ADD CONSTRAINT "#worker" FOREIGN KEY (worker_id) REFERENCES public.workers (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION');*/
     }
 
     /**
@@ -63,7 +63,7 @@ class AddForeinKeys extends Migration
     public function down()
     {
         //
-        DB::statement('ALTER TABLE public.access_log DROP CONSTRAINT IF EXISTS "#accessLog"');
+/*        DB::statement('ALTER TABLE public.access_log DROP CONSTRAINT IF EXISTS "#accessLog"');
         DB::statement('ALTER TABLE public.aggregates DROP CONSTRAINT IF EXISTS "#aggregateDocuments"');
         DB::statement('ALTER TABLE public.album_columns DROP CONSTRAINT IF EXISTS "#albumColumn"');
         DB::statement('ALTER TABLE public.album_forms DROP CONSTRAINT IF EXISTS "#forms"');
@@ -102,6 +102,6 @@ class AddForeinKeys extends Migration
         DB::statement('ALTER TABLE public.valuechanging_log DROP CONSTRAINT IF EXISTS "#valueLogWorker"');
         DB::statement('ALTER TABLE public.worker_scopes DROP CONSTRAINT IF EXISTS "#workScopeHierarchy"');
         DB::statement('ALTER TABLE public.worker_scopes DROP CONSTRAINT IF EXISTS "#workerScope"');
-        DB::statement('ALTER TABLE public.worker_settings DROP CONSTRAINT IF EXISTS "#worker"');
+        DB::statement('ALTER TABLE public.worker_settings DROP CONSTRAINT IF EXISTS "#worker"');*/
     }
 }

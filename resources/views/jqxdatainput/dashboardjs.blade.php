@@ -11,15 +11,14 @@ let current_table = '{{ $laststate['currenttable']->id }}';
 let current_table_code = '{{ $laststate['currenttable']->table_code }}';
 let current_table_index = '{{ $laststate['currenttable']->table_index }}';
 let max_table_index = '{!!  $renderingtabledata['max_index'] !!}';
+let formsections = {!! $formsections !!};
 let splitter = $("#formEditLayout");
 let fgrid = $("#FormTables"); // селектор для сетки с перечнем таблиц
 let dgrid = $("#DataGrid"); // селектор для сетки с данными таблиц
 let controltabs = $("#ControlTabs");
-
 let tdropdown = $('#TableList');
 let prevtable = $('#Previous');
 let nexttable = $('#Following');
-
 let filterinput = $("#SearchField");
 let clearfilter = $("#ClearFilter");
 let calculate = $("#Сalculate");
@@ -28,6 +27,7 @@ let tcheck = $("#TableCheck");
 let idtcheck = $("#IDTableCheck");
 let iptcheck = $("#IPTableCheck");
 let formcheck = $("#FormCheck");
+let fsdropdown = $('#SectionsManager');
 
 let localizednumber = new Intl.NumberFormat('ru-RU');
 let edited_tables = [{!! implode(',', $editedtables) !!}];

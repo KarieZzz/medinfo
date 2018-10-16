@@ -44,10 +44,15 @@ class CalculateColumnController extends Controller
             $pt = $parcer->expression();
             $replacementStacks = json_decode($c->calculation->compiled);
             foreach ($replacementStacks->cellstack as $el) {
+                $header = '';
                 if ($replacementStacks->vector === 'rows') {
-                    $header = Row::find($el[0]->r)->row_name;
+                    if ($row = Row::find($el[0]->r)) {
+                        $header = $row->row_name;
+                    }
                 } elseif ($replacementStacks->vector === 'columns') {
-                    $header = Column::find($el[0]->c)->column_name;
+                    if ($column = Column::find($el[0]->c)) {
+                        $header = $column->column_name;
+                    }
                 }
                 $i = 0;
                 foreach ($el as $cellLink) {

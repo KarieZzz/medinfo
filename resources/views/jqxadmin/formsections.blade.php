@@ -14,10 +14,31 @@
                 <label for="form">Форма:</label>
                 <select class="form-control" id="form" name="form">
                     <option></option>
-                    @foreach($forms as $el)
-                        <option value="{{ $el->id }}">({{ $el->form_code }}) {{ $el->form_name }}</option>
+                    @foreach($forms as $form)
+                        <option value="{{ $form->id }}">({{ $form->form_code }}) {{ $form->form_name }}</option>
                     @endforeach
                 </select>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="form">Альбом:</label>
+                        <select class="form-control" id="album" name="album">
+                            <option></option>
+                            @foreach($albums as $album)
+                                <option value="{{ $album->id }}" @if($album->default) selected="selected" @endif>{{ $album->album_name }} @if($album->default)(по умолчанию)@endif</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="radio">
+                            <label><input type="radio" name="optradio" id="include" checked>Включить в выбранный альбом</label>
+                        </div>
+                        <div class="radio">
+                            <label><input type="radio" name="optradio" id="exclude" >Исключить из выбранного альбома</label>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="form-group">
                 <label for="section_name">Наименование раздела:</label>
@@ -33,7 +54,7 @@
 @endsection
 
 @push('loadjsscripts')
-    <script src="{{ asset('/medinfo/admin/formsections.js?v=004') }}"></script>
+    <script src="{{ asset('/medinfo/admin/formsections.js?v=007') }}"></script>
 @endpush
 
 @section('inlinejs')

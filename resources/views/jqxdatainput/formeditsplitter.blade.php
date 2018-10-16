@@ -16,6 +16,19 @@
                 </div>
                 <button class="btn btn-default navbar-btn" id="FormCheck" title="Контроль формы"><i>К</i><small>формы</small></button>
                 <button class="btn btn-default navbar-btn" id="tableExcelExport" title="Экспорт данных таблицы в MS Excel"> <span class='fa fa-file-excel-o fa-lg' ></span></button>
+                <div class="btn-group">
+                    <div id="SectionsManager" class="btn btn-default">
+                        <div id="FormSections" style="display: none">
+                            <table class="table">
+                                @foreach($formsections as $formsection)
+                                    <tr>
+                                        <td>{{ $formsection->section_name }}</td><td><button>Принят</button></td><td><button>Отклонен</button></td>
+                                    </tr>
+                                @endforeach
+                            </table>
+                        </div>
+                    </div>
+                </div>
                 <form class="navbar-form navbar-right">
                 <div class="input-group">
                     <input type="text" class="form-control" id="SearchField" placeholder="Поиск строки">

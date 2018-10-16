@@ -14,11 +14,17 @@ class FormSection extends Model
         return $this->belongsTo('App\Form');
     }
 
+    public function albums()
+    {
+        return $this->hasMany('App\AlbumFormsection', 'formsection_id');
+    }
+
     public function scopeOfForm($query, $form)
     {
         return $query
-            //->orderBy('table_index')
             ->where('form_id', $form);
     }
+
+
 
 }

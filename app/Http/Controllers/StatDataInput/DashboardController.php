@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\StatDataInput;
 
+use App\FormSection;
 use App\UnitGroup;
 use App\UnitList;
 use Illuminate\Http\Request;
@@ -60,13 +61,14 @@ class DashboardController extends Controller
         //dd($noteditablecells );
         $renderingtabledata = $this->composeDataForTablesRendering($form, $editedtables, $album);
         $laststate = $this->getLastState($worker, $document, $form, $album);
+        $formsections = $this->getFormSections($form->id, $album->id);
         //return $datafortables;
         //return $renderingtabledata;
         \App\RecentDocument::create(['worker_id' => $worker->id, 'document_id' => $document->id, 'occured_at' => Carbon::now(), ]);
         return view($this->dashboardView(), compact(
             'current_unit', 'document', 'worker', 'album', 'statelabel', 'editpermission', 'editmode', 'monitoring',
             'form', 'period', 'editedtables', 'noteditablecells', 'forformtable', 'renderingtabledata',
-            'laststate'
+            'laststate', 'formsections'
         ));
     }
 
@@ -362,4 +364,12 @@ class DashboardController extends Controller
         $laststate['currenttable'] = $current_table;
         return $laststate;
     }
+
+    public function getFormSections($form, $album)
+    {
+        return FormSection::OfForm($form)->whereHas('albums', function ($query) use($album) {
+            $query->where('album_id', $album);
+        })->get();
+    }
+
 }

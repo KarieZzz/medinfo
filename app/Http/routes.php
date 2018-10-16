@@ -124,7 +124,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     // Менеджер разделов форм
     Route::get('admin/formsections/fetchfs', 'Admin\FormSectionAdminController@fetch_formsections');
     Route::get('admin/formsections/editsection/{fs}', 'Admin\FormSectionAdminController@editSection');
-
+    Route::patch('admin/formsections/editsection/{fs}', 'Admin\FormSectionAdminController@updateSectionSet');
     Route::resource('admin/formsections', 'Admin\FormSectionAdminController');
 
     // Менеджер строк и граф
