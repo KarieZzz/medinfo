@@ -87,18 +87,19 @@ class DocumentMessageController extends Controller
         $emails = [ 'shameev@miac-io.ru', 'shameev38@gmail.com'] ;
         try {
             Mail::send('emails.test', $for_mail_body, function ($m) use ($emails) {
-                $m->from('noreply@miac-io.ru', 'Тестовое email сообщение Мединфо');
+                $m->from('medinfo@miac-io.ru', 'Тестовое email сообщение Мединфо');
                 $m->to($emails)->subject('Тестовое сообщение');
             });
         } catch(\Exception $e){
             dd($e);
         }
+
         if( count(Mail::failures()) > 0 ) {
             foreach (Mail::failures() as $email_address) {
-                echo 'Не доставлено ' . $email_address;
+                echo 'Не доставлено ' . $email_address . ' ';
             }
         } else {
-            echo 'Вроде ушло';
+            echo 'Доставлено';
         }
     }
 
