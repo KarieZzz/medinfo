@@ -93,7 +93,7 @@ class DocumentMessageController extends Controller
         } catch(\Exception $e){
             dd($e);
         }
-
+        echo '<p>' . $remark . '</p>';
         if( count(Mail::failures()) > 0 ) {
             foreach (Mail::failures() as $email_address) {
                 echo '<p>Не доставлено ' . $email_address . '</p> ';

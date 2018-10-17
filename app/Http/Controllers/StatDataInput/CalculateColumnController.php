@@ -91,7 +91,13 @@ class CalculateColumnController extends Controller
                     }
                     $cell->save();
                 } catch (\Exception $e) {
-                    $result['errors'][] = 'Ошибка записи данных в графу' . $c->column_index . ' по строке ' . Row::find($el[0]->r)->row_code;
+                    $row_code = '';
+                    if ($r = Row::find($el[0]->r)) {
+                        $row_code = 'с кодом: ' . $r->row_code;
+                    } else {
+                        $row_code = 'с Id: ' . $el[0]->r;
+                    }
+                    $result['errors'][] = 'Ошибка записи данных в графу' . $c->column_index . ' по строке ' . $row_code;
                 }
             }
         }
