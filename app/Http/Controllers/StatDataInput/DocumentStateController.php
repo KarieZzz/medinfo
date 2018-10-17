@@ -127,6 +127,7 @@ class DocumentStateController extends Controller
                 $data['new_status'] = $newalias;
                 $newmessage->message = "Статус документа изменен на \"". $newlabel . "\". " .  $remark;
                 $newmessage->save();
+                //dd(config('medinfo.permission'));
                 $for_mail_body = compact('document', 'remark', 'worker','form', 'current_unit', 'newlabel');
                 try {
                     Mail::send('emails.changestatemessage', $for_mail_body, function ($m) use ($emails) {
