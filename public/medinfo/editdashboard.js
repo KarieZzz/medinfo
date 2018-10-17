@@ -1512,7 +1512,8 @@ let fillCalculatedFields = function () {
     $.get(calculatedcells_url + current_table, function( data ) {
         if (typeof data.errors !== 'undefined') {
             for (i = 0; data.errors.length > i; i++ ) {
-                raiseError(data.errors[i]);
+                //raiseError(data.errors[i]);
+                console.log(data.errors[i]);
             }
         }
         dgrid.jqxGrid('updatebounddata');
