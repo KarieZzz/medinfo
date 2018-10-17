@@ -1463,8 +1463,9 @@ initpopupwindows = function() {
             success: function (data, status, xhr) {
                 let m = '';
                 if (data.message_sent === 1) {
-                    $("#currentInfoMessage").text("Сообщение сохранено");
-                    $("#infoNotification").jqxNotification("open");
+                    raiseInfo("Сообщение сохранено");
+                    //$("#currentInfoMessage").text("Сообщение сохранено");
+                    //$("#infoNotification").jqxNotification("open");
                     dgrid.jqxGrid('selectrow', rowindex);
                 }
             },
