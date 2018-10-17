@@ -83,15 +83,11 @@ class DocumentMessageController extends Controller
     public function testmail()
     {
         $remark = "Тестовое сообщение";
-        $document = Document::find(7011);
-        $form = Form::find($document->form_id);
-        $unit = Unit::find($document->ou_id);
-        $worker = Auth::guard('datainput')->user();
-        $for_mail_body = compact('document', 'remark', 'worker','form', 'unit');
-        $emails = [ 'shameev@miac-io.ru', 'pea@miac-io.ru' ] ;
-        Mail::send('emails.documentmessage', $for_mail_body, function ($m) use ($emails) {
-            $m->from('medinfo@miac-io.ru', 'Email оповещение Мединфо');
-            $m->to($emails)->subject('Сообщение/комментарий к отчетному документу Мединфо');
+        $for_mail_body = compact('remark');
+        $emails = [ 'shameev@miac-io.ru', 'shameev38@gmail.com'] ;
+        Mail::send('emails.test', $for_mail_body, function ($m) use ($emails) {
+            $m->from('noreply@miac-io.ru', 'Тестовое email сообщение Мединфо');
+            $m->to($emails)->subject('Тестовое сообщение');
         });
         if( count(Mail::failures()) > 0 ) {
             foreach (Mail::failures() as $email_address) {
