@@ -131,7 +131,7 @@ class DocumentStateController extends Controller
                 $for_mail_body = compact('document', 'remark', 'worker','form', 'current_unit', 'newlabel');
                 try {
                     Mail::send('emails.changestatemessage', $for_mail_body, function ($m) use ($emails) {
-                        $m->from('medinfo@miac-io.ru', 'Email оповещение Мединфо');
+                        $m->from(config('medinfo.server_email'), 'Email оповещение Мединфо');
                         $m->to($emails)->subject('Изменен статус отчетного документа Мединфо');
                     });
                     $data['sent_to'] = implode(",", $emails);
