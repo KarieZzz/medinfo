@@ -353,7 +353,7 @@ class DashboardController extends Controller
             $query->where('album_id', $album);
         })->with(['section_blocks' => function ($query) use($document) {
             $query->where('document_id', $document);
-        }])->with('section_blocks.worker')->with('tables.table')->get();
+        }])->with('tables.table')->get();
 
 
     }

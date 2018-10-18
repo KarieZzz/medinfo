@@ -1356,8 +1356,13 @@ let inittoolbarbuttons = function () {
                 raiseError(data.error);
                 return false;
             }
-            selector.parent().parent().removeClass('danger').addClass('success');
-            raiseInfo("Смена статуса раздела документа выполнена - принят");
+            let tr = selector.parent().parent();
+            let nextbutton = selector.parent().next().children().first();
+            tr.removeClass('danger').addClass('success');
+            tr.prop('title', 'Раздел принят ' + data.section.updated_at + ' пользователем ' + data.worker.description);
+            selector.prop('disabled', 'disabled');
+            nextbutton.removeAttr('disabled');
+            raiseInfo("Смена статуса раздела документа выполнена - 'принят'");
         });
     });
 
@@ -1369,7 +1374,12 @@ let inittoolbarbuttons = function () {
                 raiseError(data.error);
                 return false;
             }
-            selector.parent().parent().removeClass('success').addClass('danger');
+            let tr = selector.parent().parent();
+            let prevbutton = selector.parent().prev().children().first();
+            tr.removeClass('success').addClass('danger');
+            tr.prop('title', 'Раздел отклонен ' + data.section.updated_at + ' пользователем ' + data.worker.description);
+            selector.prop('disabled', 'disabled');
+            prevbutton.removeAttr('disabled');
             raiseInfo("Смена статуса раздела документа выполнена - отклонен");
         });
     });

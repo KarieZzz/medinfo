@@ -34,7 +34,7 @@ class DocumentSectionController extends Controller
         $newmessage->message = "Раздел документа {$formsection->section_name} принят. ";
         $newmessage->save();
 
-        return $section;
+        return ['section' => $section, 'worker' => $section->worker ] ;
     }
 
 }

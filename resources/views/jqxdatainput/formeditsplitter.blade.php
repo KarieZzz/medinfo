@@ -22,16 +22,17 @@
                             <table class="table table-hover">
                                 @foreach($formsections as $formsection)
                                     <tr @if(isset($formsection->section_blocks[0]))
-                                            title="Раздел {{ $formsection->section_blocks[0]->blocked ? 'принят' : 'отклонен' }} {{ $formsection->section_blocks[0]->created_at }} пользователем {{ $formsection->section_blocks[0]->worker->description }}"
-                                            class=" {{ $formsection->section_blocks[0]->blocked ? 'success' : 'danger' }} "
+                                            title="Раздел {{ $formsection->section_blocks[0]->blocked ? 'принят' : 'отклонен' }} {{ $formsection->section_blocks[0]->updated_at }} пользователем {{ $formsection->section_blocks[0]->worker->description }}"
+                                            class=" {{ $formsection->section_blocks[0]->blocked === true ? 'success' : 'danger' }} "
                                         @else
                                             title="Статус раздела не менялся"
                                         @endif
                                             id="{{ $formsection->id }}"
                                     >
                                         <td>{{ $formsection->section_name }}</td>
-                                        <td><button title="Принять" class="blocksection" id="{{ $formsection->id }}"><span class='glyphicon glyphicon-check'></span></button></td>
-                                        <td><button title="Отклонить" class="unblocksection" id="{{ $formsection->id }}"><span class='glyphicon glyphicon-remove'></span></button></td>
+                                        <td><button title="Принять" class="btn btn-default blocksection" id="{{ $formsection->id }}"><span class='glyphicon glyphicon-check'></span></button></td>
+                                        <td><button title="Отклонить" class="btn btn-default unblocksection" id="{{ $formsection->id }}"
+                                           {{ isset($formsection->section_blocks[0]) ? '' : 'disabled' }} ><span class='glyphicon glyphicon-remove'></span></button></td>
                                     </tr>
                                 @endforeach
                             </table>
