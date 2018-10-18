@@ -9,6 +9,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Lang;
 use App\Worker;
+use App\AccessLog;
+use Carbon\Carbon;
 
 class DatainputAuthController extends Controller
 {
@@ -80,11 +82,18 @@ class DatainputAuthController extends Controller
      */
     protected function handleUserWasAuthenticated(Request $request)
     {
+        $user = Auth::guard('datainput')->user();
+        $this->logAccess($user->id);
         if (method_exists($this, 'authenticated')) {
-            return $this->authenticated($request, Auth::guard('datainput')->user());
+            return $this->authenticated($request, $user);
         }
 
         return redirect()->intended('datainput');
+    }
+
+    protected function logAccess($id)
+    {
+        AccessLog::create(['user_id' => $id, 'occured_at' => Carbon::now()]);
     }
 
     /**

@@ -8,6 +8,7 @@ class AccessLog extends Model
 {
 
     protected $table = 'access_log';
-    protected $primaryKey = 'event_id';
-
+    protected $fillable = ['user_id', 'occured_at'];
+    protected $dates = ['occured_at', ];
+    public $timestamps = false;
 }
