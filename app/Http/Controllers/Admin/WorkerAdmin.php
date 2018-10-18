@@ -179,6 +179,7 @@ class WorkerAdmin extends Controller
         if (in_array('0', $newScope)) {
             $sc = WorkerScope::firstOrNew(['worker_id' => $request->worker]);
             $sc->ou_id = 0;
+            $sc->with_descendants = 1;
             $sc->save();
             $scope_deleted = WorkerScope::Worker($request->worker)->where('ou_id','<>' ,0)->delete();
             $message = 'Установлен доступ ко всем организационным единицам';

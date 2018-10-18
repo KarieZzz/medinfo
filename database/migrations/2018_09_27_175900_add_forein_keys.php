@@ -13,7 +13,7 @@ class AddForeinKeys extends Migration
     public function up()
     {
         //
-/*        DB::statement('ALTER TABLE public.access_log ADD CONSTRAINT "#accessLog" FOREIGN KEY (user_id) REFERENCES public.users (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION');
+/*        DB::statement('ALTER TABLE public.access_log ADD CONSTRAINT "#accessLog" FOREIGN KEY (user_id) REFERENCES public.workers (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION');
         DB::statement('ALTER TABLE public.aggregates ADD CONSTRAINT "#aggregateDocuments" FOREIGN KEY (doc_id) REFERENCES public.documents (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION');
         DB::statement('ALTER TABLE public.album_columns ADD CONSTRAINT "#albumColumn" FOREIGN KEY (album_id) REFERENCES public.albums (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION');
         DB::statement('ALTER TABLE public.album_forms ADD CONSTRAINT "#forms" FOREIGN KEY (form_id) REFERENCES public.forms (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION');

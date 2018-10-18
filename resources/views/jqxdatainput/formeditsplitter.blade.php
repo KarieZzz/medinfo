@@ -16,13 +16,22 @@
                 </div>
                 <button class="btn btn-default navbar-btn" id="FormCheck" title="Контроль формы"><i>К</i><small>формы</small></button>
                 <button class="btn btn-default navbar-btn" id="tableExcelExport" title="Экспорт данных таблицы в MS Excel"> <span class='fa fa-file-excel-o fa-lg' ></span></button>
-                <div class="btn-group">
+                <div class="btn-group" @if (count($formsections) === 0) style="display: none" @endif>
                     <div id="SectionsManager" class="btn btn-default">
                         <div id="FormSections" style="display: none">
-                            <table class="table">
+                            <table class="table table-hover">
                                 @foreach($formsections as $formsection)
-                                    <tr>
-                                        <td>{{ $formsection->section_name }}</td><td><button>Принят</button></td><td><button>Отклонен</button></td>
+                                    <tr @if(isset($formsection->section_blocks[0]))
+                                            title="Раздел {{ $formsection->section_blocks[0]->blocked ? 'принят' : 'отклонен' }} {{ $formsection->section_blocks[0]->created_at }} пользователем {{ $formsection->section_blocks[0]->worker->description }}"
+                                            class=" {{ $formsection->section_blocks[0]->blocked ? 'success' : 'danger' }} "
+                                        @else
+                                            title="Статус раздела не менялся"
+                                        @endif
+                                            id="{{ $formsection->id }}"
+                                    >
+                                        <td>{{ $formsection->section_name }}</td>
+                                        <td><button title="Принять" class="blocksection" id="{{ $formsection->id }}"><span class='glyphicon glyphicon-check'></span></button></td>
+                                        <td><button title="Отклонить" class="unblocksection" id="{{ $formsection->id }}"><span class='glyphicon glyphicon-remove'></span></button></td>
                                     </tr>
                                 @endforeach
                             </table>

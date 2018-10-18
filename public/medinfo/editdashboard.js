@@ -1347,6 +1347,33 @@ let inittoolbarbuttons = function () {
         fsdropdown.hide();
     }
 
+    $(".blocksection").click(function () {
+        console.log(formsections);
+        let selector = $(this);
+        let fs = selector.prop('id');
+        $.get(blocksection_url + fs + '/' + '1', function( data ) {
+            if (typeof data.error !== 'undefined') {
+                raiseError(data.error);
+                return false;
+            }
+            selector.parent().parent().removeClass('danger').addClass('success');
+            raiseInfo("Смена статуса раздела документа выполнена - принят");
+        });
+    });
+
+    $(".unblocksection").click(function () {
+        let selector = $(this);
+        let fs = selector.prop('id');
+        $.get(blocksection_url + fs + '/' + '0', function( data ) {
+            if (typeof data.error !== 'undefined') {
+                raiseError(data.error);
+                return false;
+            }
+            selector.parent().parent().removeClass('success').addClass('danger');
+            raiseInfo("Смена статуса раздела документа выполнена - отклонен");
+        });
+    });
+
     let oldVal = "";
     filterinput.on('keydown', function (event) {
         if (filterinput.val().length >= 2) {

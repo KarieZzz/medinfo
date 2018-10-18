@@ -14,6 +14,11 @@ class FormSectionTable extends Model
         return $this->belongsTo('App\FormSection');
     }
 
+    public function table()
+    {
+        return $this->belongsTo('App\Table');
+    }
+
     public function scopeOfFormSection($query, $section)
     {
         return $query

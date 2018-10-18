@@ -286,6 +286,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::post('datainput/savevalue/{document}/{table}', 'StatDataInput\FormDashboardController@saveValue');
     Route::get('datainput/valuechangelog/{document}', 'StatDataInput\FormDashboardController@fullValueChangeLog');
     Route::get('datainput/calculate/{document}/{table}', 'StatDataInput\CalculateColumnController@calculate');
+    Route::get('/datainput/blocksection/{document}/{formsection}/{blocking}', 'StatDataInput\DocumentSectionController@toggleSection');
 
     // Рабочий стол для сводных/консолидированных документов
     Route::get('datainput/aggregatedashboard/{document}', 'StatDataInput\AggregatesDashboardController@index');

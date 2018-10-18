@@ -2,9 +2,6 @@
 
 namespace App\Http\Controllers\StatDataInput;
 
-use App\FormSection;
-use App\UnitGroup;
-use App\UnitList;
 use Illuminate\Http\Request;
 use Illuminate\Auth\GenericUser;
 use Illuminate\Support\Facades\Auth;
@@ -23,6 +20,10 @@ use App\Row;
 use App\Cell;
 use App\NECellsFetch;
 use App\ValuechangingLog;
+use App\FormSection;
+//use App\DocumentSectionBlock;
+//use App\UnitGroup;
+use App\UnitList;
 //use App\Medinfo\TableControlMM;
 //use App\Medinfo\ControlHelper;
 use App\Medinfo\TableEditing;
@@ -61,7 +62,7 @@ class DashboardController extends Controller
         //dd($noteditablecells );
         $renderingtabledata = $this->composeDataForTablesRendering($form, $editedtables, $album);
         $laststate = $this->getLastState($worker, $document, $form, $album);
-        $formsections = $this->getFormSections($form->id, $album->id);
+        $formsections = $this->getFormSections($form->id, $album->id, $document->id);
         //return $datafortables;
         //return $renderingtabledata;
         \App\RecentDocument::create(['worker_id' => $worker->id, 'document_id' => $document->id, 'occured_at' => Carbon::now(), ]);
@@ -179,26 +180,6 @@ class DashboardController extends Controller
                         default:
                             $row[$col->id] = '#ЧИСЛО!';
                 }
-/*                $contentType = $col->getMedinfoContentType();
-                if ($contentType == 'header') {
-                    if ($col->column_index == 1) {
-                        $row[$col->id] = $r->row_name;
-                    } elseif ($col->column_index == 2) {
-                        $row[$col->id] = $r->row_code;
-                    }
-                } elseif ($contentType == 'data') {
-                    if ($c = Cell::OfDTRC($document, $table->id, $r->id, $col->id)->first()) {
-                        //$row[$col->id] = is_null($c->value) ? '' : number_format($c->value, $col->decimal_count, '.', '') ;
-                        $row[$col->id] = is_null($c->value) ? null : number_format($c->value, $col->decimal_count, '.', '');
-                        //$row[$col->id] = is_null($c->value) ? null : number_format($c->value, $col->decimal_count, ',', '');
-                        //$row[$col->id] = is_null($c->value) ? null : $c->value;
-                    }
-                }
-                //elseif ( $contentType == 'comment') {
-                //  if (isset($r['add_inf'][$col['col_id']])) {
-                //    $row[$col['col_id']] = $r['add_inf'][$col['col_id']]['row_comment'];
-                //}
-                //}*/
             }
             $data[$i] = $row;
             $i++;
@@ -214,6 +195,7 @@ class DashboardController extends Controller
         if ($worker->role === 0 ) {
             $editpermission = true;
         } else {
+
             $editpermission = $this->isEditPermission($worker->permission, $document->state);
         }
         if ($editpermission) {
@@ -365,11 +347,15 @@ class DashboardController extends Controller
         return $laststate;
     }
 
-    public function getFormSections($form, $album)
+    public function getFormSections($form, $album, $document)
     {
         return FormSection::OfForm($form)->whereHas('albums', function ($query) use($album) {
             $query->where('album_id', $album);
-        })->get();
+        })->with(['section_blocks' => function ($query) use($document) {
+            $query->where('document_id', $document);
+        }])->with('section_blocks.worker')->with('tables.table')->get();
+
+
     }
 
 }

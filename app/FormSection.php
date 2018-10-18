@@ -19,6 +19,16 @@ class FormSection extends Model
         return $this->hasMany('App\AlbumFormsection', 'formsection_id');
     }
 
+    public function tables()
+    {
+        return $this->hasMany('App\FormSectionTable', 'formsection_id');
+    }
+
+    public function section_blocks()
+    {
+        return $this->hasMany('App\DocumentSectionBlock', 'formsection_id');
+    }
+
     public function scopeOfForm($query, $form)
     {
         return $query
