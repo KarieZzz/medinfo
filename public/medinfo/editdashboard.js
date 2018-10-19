@@ -872,29 +872,6 @@ let initdatasources = function() {
         id: 'id',
         localdata: form_tables_data
     };
-
-/*
-    let form_table_source =
-        {
-            dataType: "json",
-            dataFields: [
-                { name: 'id', type: 'int' },
-                { name: 'parent_id', type: 'int' },
-                { name: 'code', type: 'string' },
-                { name: 'name', type: 'string' }
-            ],
-            hierarchy:
-                {
-                    keyDataField: { name: 'id' },
-                    parentDataField: { name: 'parent_id' }
-                },
-            id: 'id',
-            root: '',
-            localdata: form_tables_data
-        };
-*/
-
-
     tableListDataAdapter = new $.jqx.dataAdapter(form_table_source);
     tablesource =
     {
@@ -1059,25 +1036,6 @@ let initcheckformtab = function() {
     });
     $("#fc_extrabuttons").append(refresh_protocol);
 
-/*    $("#dataexport").jqxButton({ theme: theme });
-    $("#dataexport").click(function () {
-        var dataExportWindow = window.open(export_data_url);
-    });*/
-    /*if (current_user_role == 3 || current_user_role == 4 ) {
-        var vfk = $("<input id='medstatcontrol' style='float: left' type='button' value='Контроль МC(ВФ)'/>");
-        var mfk = $("<input id='medstatcontrol' style='float: left' type='button' value='Контроль МC(МФ)'/>");
-        $("#formControlToolbar").prepend(vfk);
-        vfk.jqxButton({ theme: theme });
-        vfk.click(function () {
-            var ms_cntrl = window.open(medstat_control_url + '&type=vfk');
-        });
-        $("#formControlToolbar").prepend(mfk);
-        mfk.jqxButton({ theme: theme });
-        mfk.click(function () {
-            var ms_cntrl = window.open(medstat_control_url + '&type=mfk');
-        });
-
-    }*/
 };
 let initfilters = function() {
     row_name_filter = function (needle) {
@@ -1233,19 +1191,18 @@ function simpleSaving(event) {
                 raiseError("Данные не сохранены. Пользователь не авторизован!");
             }
             else if (data.error === 1001) {
-                raiseError("Данные не сохранены. Отсутствуют права на изменение данных в этом документе");
-
+                raiseError(data.comment);
             }
             else {
                 if (data.cell_affected) {
-                    /*                        timestamp = new Date();
-                                            log_str = $("#log").html();
-                                            if (log_str === "Изменений не было") {
-                                                log_str = "";
-                                            }
-                                            $("#log").html(log_str + timestamp.toLocaleString() + " Изменена ячейка т ." + data_for_tables[current_table].tablecode +", с."+ readable_coordinates.row
-                                                + ", г." + readable_coordinates.column + ". (" + oldvalue +
-                                                " >> " + value + ").</br>");*/
+/*              timestamp = new Date();
+                log_str = $("#log").html();
+                if (log_str === "Изменений не было") {
+                    log_str = "";
+                }
+                $("#log").html(log_str + timestamp.toLocaleString() + " Изменена ячейка т ." + data_for_tables[current_table].tablecode +", с."+ readable_coordinates.row
+                    + ", г." + readable_coordinates.column + ". (" + oldvalue +
+                    " >> " + value + ").</br>");*/
                     editedCells.push({ t: current_table, r: rowBoundIndex, c: colid});
                     if (protocol_control_created) {
                         $(".inactual-protocol").show();
@@ -1343,7 +1300,7 @@ let inittoolbarbuttons = function () {
     fsdropdown.jqxDropDownButton({width: 170, height: 22, theme: theme});
     fsdropdown.jqxDropDownButton('setContent', '<div style="margin-top: 3px">Управление разделами</div>');
     $("#FormSections").show();
-    if (current_user_role !== '3' && current_user_role !== '4') {
+    if ((current_user_role !== '3' && current_user_role !== '4') || doc_type === '2') {
         fsdropdown.hide();
     }
 

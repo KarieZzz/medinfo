@@ -12,7 +12,6 @@ let current_table_code = '{{ $laststate['currenttable']->table_code }}';
 let current_table_index = '{{ $laststate['currenttable']->table_index }}';
 let max_table_index = '{!!  $renderingtabledata['max_index'] !!}';
 let formsections = {!! $formsections !!};
-
 console.log(formsections);
 let splitter = $("#formEditLayout");
 let fgrid = $("#FormTables"); // селектор для сетки с перечнем таблиц

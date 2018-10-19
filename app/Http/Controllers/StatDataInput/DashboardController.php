@@ -24,8 +24,6 @@ use App\FormSection;
 //use App\DocumentSectionBlock;
 //use App\UnitGroup;
 use App\UnitList;
-//use App\Medinfo\TableControlMM;
-//use App\Medinfo\ControlHelper;
 use App\Medinfo\TableEditing;
 
 class DashboardController extends Controller
@@ -192,11 +190,21 @@ class DashboardController extends Controller
         //dd($request->value);
         $worker = Auth::guard('datainput')->user();
         $document = Document::find($document);
+        $permissionByState = false;
+        $permissionBySection = false;
+        $supervisor = ($worker->role === 3 || $worker->role === 4) ? true : false;
         if ($worker->role === 0 ) {
             $editpermission = true;
         } else {
-
-            $editpermission = $this->isEditPermission($worker->permission, $document->state);
+            $permissionByState = $this->isEditPermission($worker->permission, $document->state);
+            $permissionBySection = !$this->isTableBlocked($document, $table);
+            // вариант 1: изменения запрещены только при соответствующем статусе документа
+            //$editpermission = $permissionByState && $permissionBySection;
+            // вариант 2: изменения запрещены при соответствующем статусе и во все таблицах принятых разделов для всех пользователей
+            //$editpermission = $permissionByState && $permissionBySection;
+            // вариант 3: изменения запрещены при соответствующем статусе и во все таблицах принятых разделов для исполнителей за исключением сотрудников,
+            // принимающих отчеты
+            $editpermission = $permissionByState && ( $permissionBySection || $supervisor);
         }
         if ($editpermission) {
             $ou = $document->ou_id;
@@ -265,10 +273,16 @@ class DashboardController extends Controller
             }
         }
         else {
-            abort(1001, "Отсутствуют права для изменения данных в этом документе");
-            //$data['cell_affected'] = false;
-            //$data['error'] = 1001;
-            //$data['comment'] = "Отсутствуют права для изменения данных в этом документе";
+            $data['cell_affected'] = false;
+            $data['error'] = 1001;
+            if (!$permissionByState) {
+                $data['comment'] = "Отсутствуют права для изменения данных в этом документе (по статусу документа)";
+            } elseif (!$permissionBySection) {
+                $data['comment'] = "Отсутствуют права для изменения данных в этом документе (раздел документа принят)";
+            } else {
+                $data['comment'] = "Отсутствуют права для изменения данных в этом документе";
+            }
+
         }
         return $data;
     }
@@ -285,43 +299,6 @@ class DashboardController extends Controller
             ->get();
         return view('jqxdatainput.fullvaluelog', compact('values', 'document', 'form', 'current_unit', 'period'));
     }
-
-/*      Устаревшая функция из "старого" пакета
- *     public function tableControl(int $document, int $table)
-    {
-        if (ControlHelper::tableContainsData($document, $table)) {
-            $control = new TableControlMM($document, $table);
-
-            $table_protocol = $control->takeAllBatchControls();
-            $table_protocol['no_data'] = false;
-            return $table_protocol;
-        }
-        $table_protocol['no_data'] = true;
-        return $table_protocol;
-    }
-    // "Старый" контроль из Мединфо. Сейчас не используется.
-    public function formControl(int $document)
-    {
-        $form_protocol = [];
-        $form_protocol['valid'] = true;
-        $form_protocol['no_data'] = true;
-        $form_id = Document::find($document)->form_id;
-        $tables = \DB::table('tables')
-            ->where('form_id', $form_id)
-            ->where('deleted', 0)
-            ->where('medinfo_id', '<>', 0)
-            ->orderBy('table_code')->get();
-        foreach ($tables as $table) {
-            if (ControlHelper::tableContainsData($document, $table->id)) {
-                $offset = $table->table_code;
-                $control = new TableControlMM($document, $table->id);
-                $form_protocol[$offset] = $control->takeAllBatchControls();
-                $form_protocol['valid'] = $form_protocol['valid'] && $form_protocol[$offset]['valid'];
-                $form_protocol['no_data'] = $form_protocol['no_data'] && false;
-            }
-        }
-        return $form_protocol;
-    }*/
 
     // TODO: Доработать сохранение настроек редактирования отчета (таблица, фильтры, ширина колонок и т.д.)
     protected function getLastState($worker, Document $document, Form $form, $album)
@@ -354,8 +331,24 @@ class DashboardController extends Controller
         })->with(['section_blocks' => function ($query) use($document) {
             $query->where('document_id', $document);
         }])->with('tables.table')->get();
+    }
 
-
+    public function isTableBlocked(Document $document, int $table)
+    {
+        $blockedSections = \App\DocumentSectionBlock::OfDocument($document->id)->with('formsection.tables')->get();
+        //dd($blockedSections[0]->formsection->tables[0]->table_id);
+        if ($blockedSections ) {
+            $ids = [];
+            foreach($blockedSections as $blockedSection) {
+                foreach ($blockedSection->formsection->tables as $t) {
+                    $ids[] = $t->table_id;
+                }
+            }
+            if (in_array($table, $ids)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
