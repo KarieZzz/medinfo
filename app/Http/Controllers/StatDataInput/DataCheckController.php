@@ -19,8 +19,6 @@ use App\Medinfo\Control\ControlHelper;
 class DataCheckController extends Controller
 {
     //
-
-
     public function informTableControl(Document $document, Table $table, int $forcereload = 0)
     {
         return DataCheck::inFormtableControl($document, $table, $forcereload);
@@ -67,12 +65,6 @@ class DataCheckController extends Controller
             }
         }
         return $form_protocol;
-    }
-
-    public function selectControlConditions()
-    {
-        $forms = Form::orderBy('form_index')->get(['id', 'form_code']);
-        return view('jqxadmin.selectedcontrolconditions', compact('forms'));
     }
 
     public function selectedControl(Request $request)

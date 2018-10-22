@@ -15,29 +15,55 @@ use App\PeriodPattern;
 
 class ControlFunctionEvaluator
 {
-    public $document;
+    public $document = null;
     public $period;
     public $pattern;
     public $pTree;
     public $properties;
     public $iterations;
     public $caStack = [];
+    public $cellProperties = [];
     public $arguments;
     public $not_in_scope = false;
     public $valid;
     public $comment = [];
 
-    public function __construct(ParseTree $ptree, $properties, Document $document)
+    public function __construct(ParseTree $ptree, $properties, Document $document = null)
     {
         $this->pTree = $ptree;
         $this->properties = $properties;
-        $this->document = $document;
-        $this->period = $this->document->period;
-        //dd($this->period);
-        $this->pattern = $this->period->periodpattern;
-        //dd($this->pattern);
+        if ($document) {
+            $this->document = $document;
+            $this->period = $this->document->period;
+            $this->pattern = $this->period->periodpattern;
+        }
         $this->setIterations();
         $this->setArguments();
+        $this->prepareCAstack();
+        $this->prepareCellProperties();
+    }
+
+    public function setDocument(Document $document)
+    {
+        $this->document = $document;
+        $this->period = $this->document->period;
+        $this->pattern = $this->period->periodpattern;
+    }
+
+    public function setIterations()
+    {
+        $this->iterations = $this->properties['iterations'];
+    }
+
+    public function setArguments() { }
+
+    public function evaluate()
+    {
+        $result['l'] = null;
+        $result['r'] = null;
+        $result['d'] = null;
+        $result['v'] = null;
+        return $result;
     }
 
     public function validateDocumentScope()
@@ -89,22 +115,6 @@ class ControlFunctionEvaluator
         } else {
             return false;
         }
-    }
-
-    public function setIterations()
-    {
-        $this->iterations = $this->properties['iterations'];
-    }
-
-    public function setArguments() { }
-
-    public function evaluate()
-    {
-        $result['l'] = null;
-        $result['r'] = null;
-        $result['d'] = null;
-        $result['v'] = null;
-        return $result;
     }
 
     public function getArgument($index)
@@ -184,6 +194,53 @@ class ControlFunctionEvaluator
                 $this->getCAnode($child, $arg);
             }
         }
+    }
+
+    public function prepareCellProperties()
+    {
+        //dd($this->iterations);
+        //for ($i = 0; $i < count($this->iterations); $i++) {
+        foreach ($this->iterations as $code => $iteration) {
+            $this->cellProperties[$code] = $this->setCellsProp($iteration);
+        }
+    }
+
+    public function setCellsProp(Array $iteration)
+    {
+        $cells = [];
+        property_exists($this, 'markOnlyFirstArg') ? $markOnlyFirstArg = true : $markOnlyFirstArg = false;
+        foreach ($iteration as $cell_label => $props) {
+            if (!array_key_exists($cell_label, $this->caStack)) {
+                throw new \Exception("Ключ " . $cell_label . " не найден в стэке узлов адресов ячеек");
+            }
+            if ($props['arg'] == 0) {
+                $cells[] = ['row' => $props['ids']['r'], 'column' => $props['ids']['c']  ];
+            } elseif ($props['arg'] > 0 && $markOnlyFirstArg === false) {
+                $cells[] = ['row' => $props['ids']['r'], 'column' => $props['ids']['c']  ];
+            }
+        }
+
+        return $cells;
+    }
+
+    public function convertCANodes(Array &$iteration)
+    {
+        //$cells = [];
+        //property_exists($this, 'markOnlyFirstArg') ? $markOnlyFirstArg = true : $markOnlyFirstArg = false;
+        foreach ($iteration as $cell_label => $props) {
+            if (!array_key_exists($cell_label, $this->caStack)) {
+                throw new \Exception("Ключ " . $cell_label . " не найден в стэке узлов адресов ячеек");
+            }
+            $node = $this->caStack[$cell_label];
+            $node->type = ControlFunctionLexer::NUMBER;
+            $node->content = $props['value'];
+/*            if ($props['arg'] == 0) {
+                $cells[] = ['row' => $props['ids']['r'], 'column' => $props['ids']['c']  ];
+            } elseif ($props['arg'] > 0 && $markOnlyFirstArg === false) {
+                $cells[] = ['row' => $props['ids']['r'], 'column' => $props['ids']['c']  ];
+            }*/
+        }
+        //return $cells;
     }
 
     public function getDocumentPeriod($code)
@@ -272,6 +329,9 @@ class ControlFunctionEvaluator
 
     public function makeControl()
     {
+        if (!$this->document) {
+            throw new \Exception("Документ для проведения контроля не определен");
+        }
         $this->not_in_scope = $this->validateDocumentScope();
         $result = [];
         //dd($this->not_in_scope);
@@ -281,13 +341,16 @@ class ControlFunctionEvaluator
             return $result;
         }
         $this->prepareCellValues();
-        $this->prepareCAstack();
         $valid = true;
         $i = 0;
+        //dd($this->arguments[1]);
         //dd($this->iterations);
+        //dd($this->caStack);
         foreach ($this->iterations as $code => $iteration) {
-            $cells = $this->convertCANodes($iteration);
-            $result[$i]['cells'] = $cells;
+            $this->convertCANodes($iteration);
+            //$cells = $this->convertCANodes($iteration);
+            //$result[$i]['cells'] = $cells;
+            $result[$i]['cells'] = $this->cellProperties[$code];
             $result[$i]['code'] = $code !== 0 ? $code : null;
             $r = $this->evaluate();
             $result[$i]['left_part_value'] = $r['l'];
@@ -299,27 +362,6 @@ class ControlFunctionEvaluator
         }
         $this->valid = $valid;
         return $result;
-    }
-
-    public function convertCANodes(Array &$iteration)
-    {
-        $cells = [];
-        property_exists($this, 'markOnlyFirstArg') ? $markOnlyFirstArg = true : $markOnlyFirstArg = false;
-        foreach ($iteration as $cell_label => $props) {
-            if (!array_key_exists($cell_label, $this->caStack)) {
-                throw new \Exception("Ключ " . $cell_label . " не найден в стэке узлов адресов ячеек");
-            }
-            $node = $this->caStack[$cell_label];
-            $node->type = ControlFunctionLexer::NUMBER;
-            $node->content = $props['value'];
-            if ($props['arg'] == 0) {
-                $cells[] = ['row' => $props['ids']['r'], 'column' => $props['ids']['c']  ];
-            } elseif ($props['arg'] > 0 && $markOnlyFirstArg === false) {
-                $cells[] = ['row' => $props['ids']['r'], 'column' => $props['ids']['c']  ];
-            }
-
-        }
-        return $cells;
     }
 
     public function compare($lp, $rp, $boolean)

@@ -68,45 +68,10 @@ class CFunctionAdminController extends Controller
         return $cf;
     }
 
-/*    public function store(Table $table, Request $request)
+    public function store(Table $table, Request $request)
     {
         $this->validate($request, $this->validateRules());
         $cache = $this->compile($request->script, $table);
-        if (!$cache) {
-            return ['error' => 422, 'message' => $this->compile_error];
-        }
-        $newfunction = new CFunction();
-        $newfunction->table_id = $table->id;
-        $newfunction->level = $request->level;
-        $newfunction->script = $request->script;
-        $newfunction->comment = $request->comment;
-        $newfunction->blocked = $request->blocked;
-        $newfunction->function = $this->functionIndex;
-        //$newfunction->compiled_cashe = $cache;
-        $newfunction->compiled_cashe = $cache;
-        $newfunction->save();
-        try {
-            $newfunction->save();
-            $deleted_protocols =  ControlCashe::where('table_id', $table->id)->delete();
-            return ['message' => 'Новая запись создана. Id:' . $newfunction->id . 'Удалено кэшированных протоколов контроля: ' . $deleted_protocols];
-        } catch (\Illuminate\Database\QueryException $e) {
-            $errorCode = $e->errorInfo[0];
-            switch ($errorCode) {
-                case '23505':
-                    $message = 'Запись не сохранена. Дублирующиеся значения.';
-                    break;
-                default:
-                    $message = 'Новая запись не создана. Код ошибки ' . $errorCode . '.';
-                    break;
-            }
-            return ['error' => 422, 'message' => $message];
-        }
-    }*/
-
-    public function store1(Table $table, Request $request)
-    {
-        $this->validate($request, $this->validateRules());
-        $cache = $this->compile1($request->script, $table);
         if (!$cache) {
             return ['error' => 422, 'message' => $this->compile_error];
         }
@@ -140,44 +105,12 @@ class CFunctionAdminController extends Controller
         }
     }
 
-/*    public function update(CFunction $cfunction, Request $request)
-    {
-        $this->validate($request, $this->validateRules());
-        $table = Table::find($cfunction->table_id);
-        $cfunction->level = $request->level;
-        $cache = $this->compile($request->script, $table);
-        if (!$cache) {
-            return ['error' => 422, 'message' => $this->compile_error];
-        }
-        $cfunction->script = $request->script;
-        $cfunction->comment = $request->comment;
-        $cfunction->blocked = $request->blocked;
-        $cfunction->function = $this->functionIndex;
-        $cfunction->compiled_cashe = $cache;
-        try {
-            $cfunction->save();
-            $deleted_protocols =  ControlCashe::where('table_id', $table->id)->delete();
-            return ['message' => 'Запись id ' . $cfunction->id . ' сохранена.' . 'Удалено кэшированных протоколов контроля: ' . $deleted_protocols];
-        } catch (\Illuminate\Database\QueryException $e) {
-            $errorCode = $e->errorInfo[0];
-            switch ($errorCode) {
-                case '23505':
-                    $message = 'Запись не сохранена. Дублирующиеся значения.';
-                    break;
-                default:
-                    $message = 'Запись не сохранена. Код ошибки ' . $errorCode . '.';
-                    break;
-            }
-            return ['error' => 422, 'message' => $message];
-        }
-    }*/
-
-    public function update1(CFunction $cfunction, Request $request)
+    public function update(CFunction $cfunction, Request $request)
     {
         $this->validate($request, $this->validateRules());
         $table = Table::find($cfunction->table_id);
         $cfunction->level = (int)$request->level;
-        $cache = $this->compile1($request->script, $table);
+        $cache = $this->compile($request->script, $table);
         if (!$cache) {
             return ['error' => 422, 'message' => $this->compile_error];
         }
@@ -216,24 +149,6 @@ class CFunctionAdminController extends Controller
             return ['error' => 422, 'message' => $message];
         }
     }
-
-/*    public function compile($script, Table $table)
-    {
-        try {
-            $lexer = new ControlFunctionLexer($script);
-            $parser = new ControlFunctionParser($lexer);
-            $r = $parser->run();
-            $callInterpreter = FunctionDispatcher::INTERPRETERNS . FunctionDispatcher::$interpreterNames[$parser->functionIndex];
-            $interpreter = new $callInterpreter($r, $table, $parser->functionIndex);
-            //dd($interpreter);
-            $compiled_cache = base64_encode(serialize($interpreter));
-            $this->functionIndex = $parser->functionIndex;
-            return $compiled_cache;
-        } catch (\Exception $e) {
-            $this->compile_error = "Ошибка при компилляции функции: " . $e->getMessage();
-            return false;
-        }
-    }*/
 
     public function recompileForm($scopeForm)
     {
@@ -286,7 +201,7 @@ class CFunctionAdminController extends Controller
             $f = [];
             $f['i'] = $i;
             $f['script'] = $function->script;
-            $cache = $this->compile1($function->script, $table);
+            $cache = $this->compile($function->script, $table);
             if ($cache) {
                 //echo $i . ' Компиляция функции: ' . $function->script . '<br/>';
                 $function->type = $cache['properties']['type'];
@@ -308,8 +223,7 @@ class CFunctionAdminController extends Controller
         return $protocol;
     }
 
-
-    public function compile1($script, Table $table)
+    public function compile($script, Table $table)
     {
         //$ns = '\\App\\Medinfo\\DSL\\';
         $properties = [];

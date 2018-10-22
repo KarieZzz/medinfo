@@ -41,6 +41,7 @@
                                 <button type="button" id="save" class="btn btn-primary">Сохранить изменения</button>
                                 <button type="button" id="insert" class="btn btn-success">Вставить новую запись</button>
                                 <button type="button" id="delete" class="btn btn-danger">Удалить запись</button>
+                                <button type="button" id="selectedcheck" class="btn btn-warning" title="Выборочный контроль"> >> </button>
                             </div>
                             <div class="col-sm-3"><span>Перекомпилировать все функции: </span>
                                 <button type="button" id="recompileTable" class="btn btn-default">В таблице</button>
@@ -77,8 +78,8 @@
     <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
     <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js') }}"></script>--}}
-    <script src="{{ asset('/medinfo/admin/tablepicker.js?v=013') }}"></script>
-    <script src="{{ asset('/medinfo/admin/cfunctionadmin.js?v=010') }}"></script>
+    <script src="{{ asset('/medinfo/admin/tablepicker.js?v=014') }}"></script>
+    <script src="{{ asset('/medinfo/admin/cfunctionadmin.js?v=011') }}"></script>
 @endpush
 
 @section('inlinejs')

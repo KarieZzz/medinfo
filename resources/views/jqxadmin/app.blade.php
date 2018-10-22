@@ -7,6 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    {{--<meta name="api-token" content="{{ Auth::guard('api')->user() }}">--}}
     <style>
         html,
         body {
@@ -66,6 +67,7 @@
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                //'Authorization': 'Bearer ' + $('meta[name="api-token"]').attr('content')
             }
         });
         //$("#menu").jqxMenu({ autoSizeMainItems: true, theme: theme, showTopLevelArrows: true, width: '800px' });

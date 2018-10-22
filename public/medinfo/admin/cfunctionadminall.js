@@ -126,6 +126,16 @@ let initFunctionActions = function() {
             }
         });
     });
+    $("#selectedcheck").click(function () {
+        let row = fgrid.jqxGrid('getselectedrowindex');
+        if (row === -1 && typeof row !== 'undefined') {
+            raiseError("Выберите запись для выполнения выборочного контроля данных");
+            return false;
+        }
+        let id = fgrid.jqxGrid('getrowid', row);
+        window.open('/admin/dcheck/selected/' + id);
+        return true;
+    });
 };
 
 let performAction = function() {

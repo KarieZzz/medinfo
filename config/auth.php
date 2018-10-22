@@ -48,14 +48,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
-/*        'api' => [
+        'api' => [
             'driver' => 'token',
             'provider' => 'users',
-        ],*/
-/*        'api' => [
-            'driver' => 'datainput',
-            'provider' => 'workers',
-        ],*/
+        ],
         'datainput' => [
             'driver' => 'session',
             'provider' => 'workers',

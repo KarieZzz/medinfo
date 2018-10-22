@@ -33,6 +33,9 @@
             <div class="form-group">
                  <button type="button" id="save" class="btn btn-primary">Сохранить изменения</button>
             </div>
+            <div class="form-group">
+                <button type="button" id="selectedcheck" class="btn btn-warning" title="Выборочный контроль"> >> </button>
+            </div>
         </form>
 @endsection
 

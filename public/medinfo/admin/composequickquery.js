@@ -33,7 +33,7 @@ initFilterDatasources = function() {
         url: tablefetch_url + current_form
     };
     tablesDataAdapter = new $.jqx.dataAdapter(tablesource);
-    var levelssource =
+    let levelssource =
     {
         datatype: "json",
         datafields: [

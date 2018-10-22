@@ -113,4 +113,13 @@ class ControlHelper
         return $res->sum_of_values > 0 ? true : false;
     }
 
+    public static function getEmptyDocuments(int $monitoring, int $period)
+    {
+        $q = "SELECT SUM(value) sum_of_values FROM statdata v 
+          JOIN documents d ON d.id = v.doc_id 
+          WHERE d.monitoring_id = $monitoring AND d.period_id = $period
+          
+          ";
+    }
+
 }

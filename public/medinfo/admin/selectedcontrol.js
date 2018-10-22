@@ -1,102 +1,139 @@
 initdatasources = function() {
-    var formssource =
-    {
-        datatype: "json",
-        datafields: [
-            { name: 'id' },
-            { name: 'form_code' }
-        ],
-        id: 'id',
-        localdata: forms
-    };
-    formsDataAdapter = new $.jqx.dataAdapter(formssource);
-    functionsource = {
-        datatype: "json",
-        datafields: [
-            { name: 'id', type: 'int' },
-            { name: 'table_id', type: 'int' },
-            { name: 'table_code', map: 'table>table_code', type: 'string' },
-            { name: 'level', type: 'int' },
-            { name: 'script', type: 'string' },
-            { name: 'comment', type: 'string' },
-            { name: 'blocked', type: 'bool' }
-        ],
-        id: 'id',
-        url: functionfetch_url + current_form,
-        root: 'f'
-    };
-    functionsDataAdapter = new $.jqx.dataAdapter(functionsource);
+    let levelssource =
+        {
+            datatype: "json",
+            datafields: [
+                { name: 'id', type: 'int' },
+                { name: 'code', type: 'string' },
+                { name: 'type', type: 'int' },
+                { name: 'name', type: 'string' }
+            ],
+            id: 'id',
+            localdata: levels
+        };
+    levelsDataAdapter = new $.jqx.dataAdapter(levelssource);
 };
 
-initFormFilter = function() {
-    $("#formList").jqxDropDownList({
-        theme: theme,
-        source: formsDataAdapter,
-        displayMember: "form_code",
-        valueMember: "id",
-        placeHolder: "Выберите форму:",
-        //selectedIndex: 2,
-        width: 200,
-        height: 32
-    });
-    $('#formList').on('select', function (event) {
-        var args = event.args;
-        current_form = args.item.value;
-        updateFunctionList();
-    });
-};
-// Таблица функций
-initFunctionList = function() {
-    fgrid.jqxGrid(
+initFilters = function() {
+    llc.jqxDropDownButton({ width: '100%', height: 32, theme: theme });
+    llc.jqxDropDownButton('setContent', '<div style="margin: 6px">Все организации</div>');
+    levellist.jqxGrid(
         {
-            width: '98%',
-            height: '500px',
+            width: '100%',
+            height: '340px',
             theme: theme,
             localization: localize(),
-            source: functionsDataAdapter,
+            source: levelsDataAdapter,
             columnsresize: true,
             showfilterrow: true,
             filterable: true,
             sortable: true,
-            selectionmode: 'checkbox',
             columns: [
-                { text: 'Id', datafield: 'id', width: '50px' },
-                { text: 'Код таблицы', datafield: 'table_code', width: '70px'  },
-                { text: 'Уровень', datafield: 'level', width: '70px'  },
-                { text: 'Функция контроля', datafield: 'script' , width: '50%'},
-                { text: 'Комментарий', datafield: 'comment', width: '30%' },
-                { text: 'Отключена', datafield: 'blocked', columntype: 'checkbox', width: '70px' }
+                { text: 'Код', datafield: 'code', width: '10%'  },
+                { text: 'Тип', datafield: 'type', width: '10%'  },
+                { text: 'Имя', datafield: 'name' , width: '80%'}
             ]
         });
-};
-// Обновление списка строк при выборе таблицы
-updateFunctionList = function() {
-    functionsource.url = functionfetch_url + current_form;
-    fgrid.jqxGrid('clearselection');
-    fgrid.jqxGrid('updatebounddata');
-};
-// Операции с функциями контроля
 
-setquery = function() {
-    return "?form=" + current_form +
-        "&cfunctions=" + getselectedfunctions();
-};
-
-initAction = function() {
-    $("#performControl").click(function () {
-        var data = setquery();
-        var url = output_url + data;
-        //console.log(url);
-        window.open(url);
+    levellist.on('rowselect', function (event) {
+        llc.jqxDropDownButton('close');
+        var args = event.args;
+        if (args.rowindex === -1) {
+            return false;
+        }
+        let r = args.row;
+        current_level = r.id;
+        current_type = r.type;
+        //console.log(current_level);
+        llc.jqxDropDownButton('setContent', '<div style="margin: 6px">Установлено ограничение по: "' + r.code + ' "'+ r.name + '"</div>');
     });
 };
 
-var getselectedfunctions = function () {
-    var rowindexes = fgrid.jqxGrid('getselectedrowindexes');
-    var indexes_length =  rowindexes.length;
-    var row_ids = [];
-    for (i = 0; i < indexes_length; i++) {
-        row_ids.push(fgrid.jqxGrid('getrowid', rowindexes[i]));
-    }
-    return row_ids;
+setquery = function() {
+    return "?script=" + encodeURIComponent($("#script").val()) +
+        "&form=" + form +
+        "&table=" + table +
+        "&monitoring=" + $("#monitoring").val() +
+        "&period=" + $("#period").val() +
+        "&ou=" + current_level +
+        "&type=" + current_type;
 };
+
+initActions = function() {
+    let result = null;
+    $("#performControl").click(function () {
+        let data = setquery();
+        $.ajax({
+            dataType: 'json',
+            url: output_url + data,
+            method: "GET",
+            success: function (data, status, xhr) {
+                $("#ptitle").show();
+                setProtocol(data.protocol);
+            },
+            error: xhrErrorNotificationHandler
+        });
+        $("#checkingProgress").show();
+        $("#progress").html(0).css('width', "0%");
+        let progres_timer = setTimeout(function get_progress(){
+            $.get(progress_url, function(data) {
+                if (data.ended) {
+                    $("#progress").html('100%').css('width', '100%');
+                    $("#ou_intro").html('Проверка закончена');
+                    $("#count").html('');
+/*                    if (!data.result) {
+                        data.result = result;
+                    }
+                    if (!data.result) {
+                        raiseError("Ошибка получения протокола контроля");
+                        return false;
+                    }*/
+                    raiseInfo("Проверка завершена. Загрузка протокола контроля");
+                } else {
+                    let p = data.progress + "%";
+                    $("#progress").html(p).css('width', p);
+                    $("#ou_intro").html('Обработано:');
+                    $("#count").html(data.managed + ' из ' + data.count_of_docs);
+                    progres_timer = setTimeout(get_progress, 2000);
+                }
+            });
+        }, 2000);
+
+    });
+    $("#hideValid").click(function () {
+        $("tr.valid").toggle();
+    });
+};
+
+function setProtocol(result) {
+    p = $("#protocol");
+    p.html('');
+    let count = result.length;
+    let table = $("<table class='table table-bordered'></table>");
+    let theader = $("<th>Код документа</th><th>Медицинская оргнанизация</th><th>Результат</th><th>Строки/графы</th>");
+    table.append(theader);
+    for (let i = 0; i < count; i++) {
+        let valid = result[i].valid;
+        let correct = (valid ? 'верно' : 'не верно');
+        let danger = (valid ? 'valid' : 'bg-danger');
+        let nodata = (result[i].no_data ? '(нет данных)' : '');
+        let muted = (nodata ? 'bg-warning' : '');
+        let checklist = [];
+        if (!nodata && !valid) {
+            let checks = result[i].iterations;
+            for (let j = 0;  j < checks.length; j++) {
+                if (!checks[j].valid ) {
+                    checklist.push(checks[j].code);
+                }
+            }
+        }
+        let row = $('<tr class="' + danger + ' ' + muted + '"></tr>');
+        row.append('<td>' + result[i].doc_id + ' ' + nodata +
+            '</td><td><a href="/datainput/formdashboard/' + result[i].doc_id + '" target="_blank">' + result[i].unit_name +
+            '</a></td><td> ' + correct +
+            '</td><td> ' + checklist + '</td>');
+        table.append(row);
+    }
+    p.append(table)
+}
+

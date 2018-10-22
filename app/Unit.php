@@ -100,7 +100,7 @@ class Unit extends Model
     }
 
     public static function getDescendants($parent) {
-        $units[] = $parent;
+        $units[] = (int)$parent;
         $lev_query = "select id from mo_hierarchy where parent_id = $parent";
         $res = \DB::select($lev_query);
         if (count($res) > 0) {

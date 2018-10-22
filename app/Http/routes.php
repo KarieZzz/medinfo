@@ -21,9 +21,14 @@
 | kernel and includes session state, CSRF protection, and more.
 |
 */
+
+//Route::group(['prefix' => 'admin', 'middleware' => 'auth:api'], function () {
+Route::group(['middleware' => 'auth:api'], function () {
+
+});
+
+
 // Маршруты с авторизацией вынесены за пределы группы web
-
-
 Route::group(['middleware' => ['medinfo']], function () {
     //Route::auth();
     Route::get('login', 'Auth\AdminAuthController@getLogin' );
@@ -171,13 +176,14 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('admin/cfunctions/fetchcf/{table}', 'Admin\CFunctionAdminController@fetchControlFunctions');
     Route::get('admin/cfunctions/fetchofform/{form}', 'Admin\CFunctionAdminController@fetchCFofForm');
     Route::get('admin/cfunctions/fetchall', 'Admin\CFunctionAdminController@fetchCcfunctionsAll');
-    Route::post('admin/cfunctions/create/{table}', 'Admin\CFunctionAdminController@store1');
-    Route::patch('admin/cfunctions/update/{cfunction}', 'Admin\CFunctionAdminController@update1');
+    Route::post('admin/cfunctions/create/{table}', 'Admin\CFunctionAdminController@store');
+    Route::patch('admin/cfunctions/update/{cfunction}', 'Admin\CFunctionAdminController@update');
     Route::delete('admin/cfunctions/delete/{cfunction}', 'Admin\CFunctionAdminController@delete');
     Route::get('admin/cfunctions/recompiletable/{scopeTable}', 'Admin\CFunctionAdminController@recompileTable');
     Route::get('admin/cfunctions/recompileform/{scopeFrom}', 'Admin\CFunctionAdminController@recompileForm');
-    Route::get('admin/dcheck/selected', 'StatDataInput\DataCheckController@selectControlConditions');
-    Route::get('admin/dcheck/selectedcheck', 'StatDataInput\DataCheckController@selectedControl');
+    Route::get('admin/dcheck/selected/perform', 'Analytics\SelectedCFunctionCheckController@performControl');
+    Route::get('admin/dcheck/selected/getprogress', 'Analytics\SelectedCFunctionCheckController@getProgess');
+    Route::get('admin/dcheck/selected/{cf}', 'Analytics\SelectedCFunctionCheckController@index');
     Route::get('admin/cfunctions/excelexport/{form}', 'Admin\CFunctionAdminController@excelExport');
 
     // Менеджер правил рассчета консолидированных таблиц
@@ -254,12 +260,12 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::post('admin/cfunctions/medstatnskimport', 'ImportExport\MedstatNskControlImportController@uploadFileNSMedstatControlCsv');
     Route::post('admin/cfunctions/medstatnskimportmake', 'ImportExport\MedstatNskControlImportController@makeNSMedstatControlImport');
 
-
     // Утилиты для обслуживания системы
     Route::get('admin/system/fixrowindex', 'System\FixRowColumnIndexes@fixRowIndexes');
     Route::get('admin/system/fixcolumnindex', 'System\FixRowColumnIndexes@fixColumnIndexes');
     Route::get('admin/system/fixtableindex', 'System\FixRowColumnIndexes@fixTableIndexes');
     Route::get('admin/system/clearnecells', 'System\ClearNECells@index');
+    Route::get('admin/system/setusertokens', 'System\ManageUsers@setTokens');
     Route::post('admin/system/clearnecells', 'System\ClearNECells@clearNECells');
     Route::get('admin/cfunctions/recompileall', 'Admin\CFunctionAdminController@recompileAll');
 

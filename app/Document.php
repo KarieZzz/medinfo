@@ -106,6 +106,18 @@ class Document extends Model
         return $query->where('monitoring_id', $monitoring);
     }
 
+    public function scopeOfForm($query, $form)
+    {
+        return $query
+            ->where('form_id', $form);
+    }
+
+    public function scopeOfPeriod($query, $period)
+    {
+        return $query
+            ->where('period_id', $period);
+    }
+
     public static function countInUnit(int $unit)
     {
         $q = "SELECT count(id) doc_count FROM documents WHERE ou_id = $unit";

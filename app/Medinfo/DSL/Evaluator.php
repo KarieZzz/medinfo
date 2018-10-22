@@ -13,7 +13,7 @@ class Evaluator
 {
     const NS = 'App\\Medinfo\\DSL\\';
 
-    public static function invoke($ptree, $properties, $document)
+    public static function invoke($ptree, $properties, $document = null)
     {
         $f = $properties['function_id'];
         $e = self::NS . FunctionDispatcher::$evaluators[$f];
