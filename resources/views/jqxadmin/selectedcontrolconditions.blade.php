@@ -83,7 +83,7 @@
 @endsection
 
 @push('loadjsscripts')
-    <script src="{{ asset('/medinfo/admin/selectedcontrol.js?v=030') }}"></script>
+    <script src="{{ asset('/medinfo/admin/selectedcontrol.js?v=031') }}"></script>
 @endpush
 
 @section('inlinejs')

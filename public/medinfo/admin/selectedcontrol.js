@@ -110,7 +110,7 @@ function setProtocol(result) {
     p.html('');
     let count = result.length;
     let table = $("<table class='table table-bordered'></table>");
-    let theader = $("<th>Код документа</th><th>Медицинская оргнанизация</th><th>Результат</th><th>Строки/графы</th>");
+    let theader = $("<th>Код документа</th><th>Медицинская организация</th><th>Результат</th><th>Строки/графы</th>");
     table.append(theader);
     for (let i = 0; i < count; i++) {
         let valid = result[i].valid;
