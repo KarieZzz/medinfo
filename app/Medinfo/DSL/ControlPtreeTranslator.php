@@ -342,7 +342,7 @@ class ControlPtreeTranslator
                     } else {
                         $r = Row::OfTableRowCode($ca['ids']['t'], $row->row_code)->first();
                         if (is_null($r)) {
-                            throw new \Exception("В таблице id:{$ca['ids']['t']} не существует строки с кодом {$row->row_code}");
+                            throw new \Exception("В таблице id:{$ca['ids']['t']} ({$ca['codes']['t']}) формы {$ca['codes']['f']} не существует строки с кодом {$row->row_code}");
                         }
                         $lightweightCAStack[$key]['codes']['r'] = $r->row_code;
                         $lightweightCAStack[$key]['ids']['r'] = $r->id;
@@ -367,7 +367,7 @@ class ControlPtreeTranslator
                     } else {
                         $c = Column::OfTableColumnIndex($ca['ids']['t'], $column->column_index)->first();
                         if (is_null($c)) {
-                            throw new \Exception("В таблице id:{$ca['ids']['t']} не существует графы с кодом {$column->column_code}");
+                            throw new \Exception("В таблице id:{$ca['ids']['t']} ({$ca['codes']['t']}) формы {$ca['codes']['f']} не существует графы с кодом {$column->column_code}");
                         }
                         //$lightweightCAStack[$key]['codes']['r'] = $c->column_index;
                         $lightweightCAStack[$key]['codes']['c'] = $c->column_code;

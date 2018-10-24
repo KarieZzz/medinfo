@@ -334,6 +334,7 @@ Route::group(['middleware' => ['medinfo']], function () {
 
     // Работа с lexer-parser
     Route::get('tests/lexer', 'Tests\LexerParserController@lexerTest');
+    Route::get('tests/sectioncheck', 'Tests\SectionCheckTestController@SectionCheckTest');
     Route::get('tests/ast_w_bool', 'Tests\LexerParserController@test_making_AST_w_bool');
     Route::get('tests/parser', 'Tests\LexerParserController@func_parser');
     Route::get('tests/batchRename', 'Tests\LexerParserController@batchRename');

@@ -2,10 +2,6 @@
 
 namespace App\Http\Controllers\Tests;
 
-use App\Medinfo\DSL\CompareTranslator;
-use App\Medinfo\DSL\ControlFunctionEvaluator;
-use App\Medinfo\DSL\EquationFunctionParser;
-use App\Unit;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -15,7 +11,11 @@ use App\Medinfo\DSL\ControlFunctionParser;
 use App\Medinfo\DSL\ControlPtreeTranslator;
 use App\Medinfo\DSL\Translator;
 use App\Medinfo\DSL\Evaluator;
+use App\Medinfo\DSL\CompareTranslator;
+use App\Medinfo\DSL\ControlFunctionEvaluator;
+use App\Medinfo\DSL\EquationFunctionParser;
 
+use App\Unit;
 use App\Document;
 use App\Table;
 use App\CFunction;
@@ -93,8 +93,8 @@ class LexerParserController extends Controller
         //$i = "сравнение(С1.0Г4+Т2000С1.0Г4, Ф14Т2000С1.0Г22, =)";
         //$i = "сравнение(С1.0, С2.0+С3.0+С4.0+С5.0+С6.0+С7.0+С8.0+С9.0+С10.0+С11.0+С12.0+С13.0+С14.0+С15.0+С17.0+С18.0+С19.0+С20.0, =)";
         //$i = "сравнение(Г8, Г10, =)";
-        $i = "сравнение(С139, С140+С141+С142, =, , графы(9,12-17))";
-        $i = "сравнение(1, 1, >)";
+        //$i = "сравнение(С139, С140+С141+С142, =, , графы(9,12-17))";
+        $i = "сравнение(Ф30Т1100С144Г9, Ф301Т1102С3, =)";
 
         //$cellcount = preg_match_all('/Ф([а-я0-9.-]+)Т([\w.-]+)С([\w.-]+)Г(\d{1,})/u', $i, $matches, PREG_SET_ORDER);
         //$res = preg_match('|(?:\()(.*?),(.*?)\)|usei', $i, $matches);
@@ -140,7 +140,7 @@ class LexerParserController extends Controller
         //$translator->validateVector();
         $translator->prepareIteration();
         //dd($translator);
-        //dd($translator->getProperties());
+        dd($translator->getProperties());
         //dd($translator->parser->root);
         //echo (json_encode($translator->parser->root, JSON_PARTIAL_OUTPUT_ON_ERROR));
         //echo json_last_error();
