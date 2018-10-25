@@ -15,8 +15,8 @@ class ColumnCalculation extends Model
         return $this->belongsTo('App\Column');
     }
 
-    public function scopeOfColumn($query, $column_id)
+    public function scopeOfColumn($query, $column)
     {
-        return $query->where('column_id', $column_id);
+        return $query->where('column_id', $column);
     }
 }

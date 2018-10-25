@@ -16,6 +16,12 @@ class AlbumColumnSet extends Model
             ->where('album_id', $album);
     }
 
+    public function scopeOfColumn($query, $column)
+    {
+        return $query
+            ->where('column_id', $column);
+    }
+
     public static function setColumn($excluded = false, int $column)
     {
         $default_album = Album::Default()->first()->id;

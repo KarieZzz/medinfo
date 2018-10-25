@@ -10,9 +10,11 @@ use App\Album;
 use App\Form;
 use App\Table;
 use App\Row;
-use App\AlbumRowSet;
 use App\Column;
+use App\AlbumRowSet;
 use App\AlbumColumnSet;
+use App\ColumnCalculation;
+use App\NECell;
 use App\Cell;
 use App\DicColumnType;
 
@@ -153,6 +155,8 @@ class RowColumnAdminController extends Controller
         $table_id = $row->table_id;
         $row_index = $row->row_index;
         if ($cell_count == 0) {
+            AlbumRowSet::OfRow($row->id)->delete();
+            NECell::OfRow($row->id)->delete();
             $row->delete();
             $reindexed = Row::OfTable($table_id)->where('row_index','>', $row_index)->orderBy('row_index')->get();
             foreach ($reindexed as $item) {
@@ -268,6 +272,9 @@ class RowColumnAdminController extends Controller
         $table_id = $column->table_id;
         $column_index = $column->column_index;
         if ($cell_count === 0) {
+            AlbumColumnSet::OfColumn($column->id)->delete();
+            NECell::OfColumn($column->id)->delete();
+            ColumnCalculation::OfColumn($column->id)->delete();
             $column->delete();
             $reindexed = Column::OfTable($table_id)->where('column_index','>', $column_index)->orderBy('column_index')->get();
             foreach ($reindexed as $item) {

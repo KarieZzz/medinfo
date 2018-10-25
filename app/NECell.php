@@ -17,6 +17,18 @@ class NECell extends Model
             ->where('column_id', $column);
     }
 
+    public function scopeOfRow($query, $row)
+    {
+        return $query
+            ->where('row_id', $row);
+    }
+
+    public function scopeOfColumn($query, $column)
+    {
+        return $query
+            ->where('column_id', $column);
+    }
+
     public function condition()
     {
         return $this->hasOne('App\NECellCondition', 'id', 'condition_id');

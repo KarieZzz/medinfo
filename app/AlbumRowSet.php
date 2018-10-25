@@ -17,6 +17,12 @@ class AlbumRowSet extends Model
             ->where('album_id', $album);
     }
 
+    public function scopeOfRow($query, $row)
+    {
+        return $query
+            ->where('row_id', $row);
+    }
+
     public static function setRow($excluded = false, int $row)
     {
         $default_album = Album::Default()->first()->id;
