@@ -255,7 +255,7 @@ class CFunctionAdminController extends Controller
     protected function validateRules()
     {
         return [
-            'level'     => 'integer',
+            'level'     => 'required|integer',
             'script'    => 'required|max:512',
             'comment'   => 'max:256',
             'blocked'   => 'required|in:1,0',

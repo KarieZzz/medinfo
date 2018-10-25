@@ -128,7 +128,7 @@ class SectionEvaluator extends ControlFunctionEvaluator
 
     public function compareRelated()
     {
-        
+
     }
 
 }

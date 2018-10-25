@@ -56,11 +56,11 @@ class DashboardController extends Controller
         $editedtables = Table::editedTables($document->id, $album->id);
         //dd($editedtables);
         //$noteditablecells = NECellsFetch::where('f', $form->id)->select('t', 'r', 'c')->get();
-        $noteditablecells = NECellsFetch::byOuId($current_unit->id, $form->id);
+        $noteditablecells = NECellsFetch::byOuId($current_unit->id, $this->getRealForm($form)->id);
         //dd($noteditablecells );
-        $renderingtabledata = $this->composeDataForTablesRendering($form, $editedtables, $album);
+        $renderingtabledata = $this->composeDataForTablesRendering($this->getRealForm($form), $editedtables, $album);
         $laststate = $this->getLastState($worker, $document, $form, $album);
-        $formsections = $this->getFormSections($form->id, $album->id, $document->id);
+        $formsections = $this->getFormSections($this->getRealForm($form)->id, $album->id, $document->id);
         //return $datafortables;
         //return $renderingtabledata;
         \App\RecentDocument::create(['worker_id' => $worker->id, 'document_id' => $document->id, 'occured_at' => Carbon::now(), ]);
@@ -115,15 +115,9 @@ class DashboardController extends Controller
     protected function composeDataForTablesRendering(Form $form, array $editedtables, Album $album)
     {
         //$tables = Table::where('form_id', $form->id)->where('deleted', 0)->orderBy('table_code')->get();
-        $realform = null;
-        if ($form->relation) {
-            $realform = Form::find($form->relation);
-            $form_id = $realform->id;
-        } else {
-            $form_id = $form->id;
-        }
 
-        $tables = Table::OfForm($form_id)->whereDoesntHave('excluded', function ($query) use($album) {
+
+        $tables = Table::OfForm($form->id)->whereDoesntHave('excluded', function ($query) use($album) {
             $query->where('album_id', $album->id);
         })->orderBy('table_index')->get();
         $max_index = $tables->last()->table_index;
@@ -141,6 +135,15 @@ class DashboardController extends Controller
         $composedata['max_index'] = $max_index;
         //$composedata['tablecompose'] = $datafortables;
         return $composedata;
+    }
+
+    public function getRealForm(Form $form)
+    {
+        if ($form->relation) {
+            return Form::find($form->relation);
+        } else {
+            return $form;
+        }
     }
 
     public function fetchValues(int $document, int $album, Table $table)
