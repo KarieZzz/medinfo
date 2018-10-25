@@ -12,7 +12,6 @@ let current_table_code = '{{ $laststate['currenttable']->table_code }}';
 let current_table_index = '{{ $laststate['currenttable']->table_index }}';
 let max_table_index = '{!!  $renderingtabledata['max_index'] !!}';
 let formsections = {!! $formsections !!};
-console.log(formsections);
 let splitter = $("#formEditLayout");
 let fgrid = $("#FormTables"); // селектор для сетки с перечнем таблиц
 let dgrid = $("#DataGrid"); // селектор для сетки с данными таблиц
@@ -102,7 +101,8 @@ let formlabels =
         interannual: 3,
         iadiapazon: 4,
         multiplicity: 5,
-        ipdiapazon: 19
+        ipdiapazon: 19,
+        section: 20
     };
 let initialViewport = $(window).height();
 let topOffset1 = 150;

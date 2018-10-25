@@ -97,14 +97,14 @@ class AggregatesDashboardController extends DashboardController
         $format_mask = 'FM' . str_pad('9', 12, '9') . $decimal;
          if (isset($aggregate->include_docs) && !is_null($aggregate->include_docs)) {
              $lquery ="select h.id, h.unit_code, h.unit_name, v.doc_id, to_char(v.value, '$format_mask') AS value from statdata v
-          join documents d on d.id = v.doc_id
-          join mo_hierarchy h on d.ou_id = h.id
-          where v.doc_id in ({$aggregate->include_docs})
-            and v.row_id = {$row->id}
-            and v.col_id = {$column->id}
-            and h.blocked = 0
-            and v.value is not null
-          order by h.unit_code";
+              join documents d on d.id = v.doc_id
+              join mo_hierarchy h on d.ou_id = h.id
+              where v.doc_id in ({$aggregate->include_docs})
+                and v.row_id = {$row->id}
+                and v.col_id = {$column->id}
+                and h.blocked = 0
+                and v.value is not null
+              order by h.unit_code";
              $result['layers'] = \DB::select($lquery);
          } else {
              $result['layers'] = [];

@@ -155,7 +155,6 @@ class LexerParserController extends Controller
         //dd($translator->iterations);
         //dd(json_decode(json_encode($translator->iterations), TRUE));
         //dd($translator->type);
-        //dd($translator->getProperties());
 // Запуск из десериализованного объекта pTree, сохраненного в БД
         //$cfunc = CFunction::find(2652); // сравнение(С8.0, С8.1+С8.2+С8.3+С8.4+С8.5+С8.6+С8.7+С8.8+С8.9+С8.10+С8.11+С8.12, >=)) ф. 12 т. 2000
         //$cfunc = CFunction::find(3280);

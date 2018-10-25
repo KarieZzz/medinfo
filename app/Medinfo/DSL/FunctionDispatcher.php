@@ -126,6 +126,7 @@ class FunctionDispatcher
         'межгодовой'    => '(a2 - a1)/a2 * 100 > a3',
         'мгдиапазон'    => '(a1p - a1c)/a1p * 100 > a2',
         'кратность'     => 'a1 % a2 == 0',
+        'разрез'     => 'a1 a3 a2',
     ];
 
     public static function getProperties($fname)

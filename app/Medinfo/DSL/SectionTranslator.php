@@ -27,4 +27,12 @@ class SectionTranslator extends ControlPtreeTranslator
         }
         $this->scriptReadable = str_replace(['  ', '( '], [' ', '('], $this->scriptReadable);
     }
+
+    public function getProperties() {
+        $properties = parent::getProperties();
+        $properties['iteration_mode'] = self::MIXED; // Итерация и по строкам и по графам
+        $properties['type'] = 2; // Тип контроля межформенный
+        return $properties;
+    }
+
 }

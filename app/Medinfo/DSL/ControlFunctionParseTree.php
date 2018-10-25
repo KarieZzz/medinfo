@@ -26,7 +26,8 @@ class ControlFunctionParseTree extends ParseTree
                         $range = explode('|', $child->content);
                         $a[] = $this->humanizeCA($range[0]) . ' по ' . $this->humanizeCA($range[1]);
                     } elseif ($child->type === ControlFunctionLexer::CELLADRESS) {
-                        $a[] = $this->humanizeCA($child->content);
+                        list($ca, $arg) = explode('|', $child->content);
+                        $a[] = $this->humanizeCA($ca);
                     }
                     //$s .= 't: ' . $child->type . $child->content;
                 }

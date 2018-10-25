@@ -151,7 +151,7 @@ let renderRowProtocol = function (container, table_id, protocol_by_type, header_
 // Отображение результатов контроля (новый формат) по каждой итерации
 let renderCompareControl = function(result, boolean_sign, mode, level) {
     //console.log(result.cells);
-    let explanation_intro = mode === 1 ? 'По строке' : 'По графе';
+    let explanation_intro = setIntro(mode);
     let error_level_mark = 'invalid';
     switch (level) {
         case 1 :
@@ -163,13 +163,15 @@ let renderCompareControl = function(result, boolean_sign, mode, level) {
     }
     let row = $("<div class='control-row'></div>");
     result.valid ? valid = 'верно' : valid = 'не верно';
-    //if (typeof result.code !== 'undefined') {
-    if (result.code !== null) {
-        //console.log(result.code);
-        let rule = $("<div class='showrule'><span class='text-info'><strong>" + explanation_intro + "</strong></span> <em>" + result.code + "</em>:</div>");
-        row.append(rule);
+    if (typeof result.code === 'object' && result.code !== null) {
+        row.append($("<div class='showrule'><span class='text-info'><strong>" + explanation_intro + "</strong></span> <em>" +
+            " таблице: " + result.code.table_code + ", " +
+            " строке: " + result.code.row_code + ", " +
+            " графе: " + result.code.column_code + "</em>:</div>"));
+    } else if (typeof result.code !== 'object' && result.code !== null) {
+        console.log(result.code);
+        row.append($("<div class='showrule'><span class='text-info'><strong>" + explanation_intro + "</strong></span> <em>" + result.code + "</em>:</div>"));
     }
-
     let t = "<table class='control-result'><tr><td>Значение</td>";
     t += "<td>Знак сравнения</td><td>Контрольная сумма</td><td>Отклонение</td>";
     t += "<td>Результат контроля</td></tr>";
@@ -319,6 +321,24 @@ let renderFoldControl = function(result, level) {
     }
     return row;
 };
+function setIntro(mode) {
+    let intro = '';
+    switch (mode) {
+        case 1 :
+            intro = 'По строке';
+            break;
+        case 2 :
+            intro = 'По графе';
+            break;
+        case 3 :
+            intro = 'По ';
+            break;
+        case null :
+        default :
+            intro = '';
+    }
+    return intro;
+}
 // Отображение результатов контроля (новый формат) по каждой функции контроля
 let renderFunctionProtocol = function (container, table_id, rule) {
     let rule_valid = rule.valid ? 'rule-valid' : 'rule-invalid';
@@ -367,6 +387,9 @@ let renderFunctionProtocol = function (container, table_id, rule) {
                 case formlabels.multiplicity :
                     row = renderFoldControl(result, rule.level);
                     break;
+                case formlabels.section :
+                    row = renderCompareControl(result, rule.boolean_sign, rule.iteration_mode, rule.level);
+                    break;
             }
             content.append(row);
             if (!result.valid) {
@@ -389,10 +412,10 @@ let renderFunctionProtocol = function (container, table_id, rule) {
             r++;
         }
     });
-    let badge = "<span class='badge' title='Всего выполнено / Обнаружены ошибки'> Проверено: " + r + " / Ошибок: " + i + "</span>";
-    header.append(badge);
+    if (r > 1) {
+        header.append("<span class='badge' title='Всего выполнено / Обнаружены ошибки'> Проверено: " + r + " / Ошибок: " + i + "</span>");
+    }
     //content.append(info);
-
     rule_wrapper.append(header);
     rule_wrapper.append(content);
     container.append(rule_wrapper);

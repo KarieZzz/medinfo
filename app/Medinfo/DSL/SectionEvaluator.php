@@ -10,8 +10,13 @@ namespace App\Medinfo\DSL;
 
 
 use App\Album;
+use App\AlbumRowSet;
+use App\AlbumColumnSet;
+use App\Cell;
+use App\Column;
 use App\Document;
 use App\Form;
+use App\Table;
 
 class SectionEvaluator extends ControlFunctionEvaluator
 {
@@ -36,32 +41,94 @@ class SectionEvaluator extends ControlFunctionEvaluator
 
     public function makeControl()
     {
-        $this->compareSection();
+        if (!$this->document) {
+            throw new \Exception("Документ для проведения контроля не определен");
+        }
+        $result = [];
+/*        $this->not_in_scope = $this->validateDocumentScope();
+        dd($this->not_in_scope);
+        if ($this->not_in_scope) {
+            $result[0]['valid'] = true;
+            $this->valid = true;
+            return $result;
+        }*/
+        return $this->compareSection();
     }
 
     public function compareSection()
     {
+        $result = [];
+        $errors = [];
+        $valid = true;
         $album = Album::find($this->document->album_id);
-        $form_left = Form::OfCode($this->arguments[1]->content)->first();
-        $form_right = Form::OfCode($this->arguments[2]->content)->first();
-
+        $exluded_rows = AlbumRowSet::OfAlbum($album->id)->pluck('id')->toArray();
+        $exluded_columns = AlbumColumnSet::OfAlbum($album->id)->pluck('id')->toArray();
+        $form_left = Form::OfCode($this->arguments[1]->content)->with(['tables' => function ($query) use ($album) {
+            $query->whereDoesntHave('excluded', function ($query) use($album) {
+                $query->where('album_id', $album->id);
+            })->orderBy('table_index');
+        }])->first();
+        $form_right = Form::OfCode($this->arguments[2]->content)->with(['tables' => function ($query) use ($album) {
+            $query->whereDoesntHave('excluded', function ($query) use($album) {
+                $query->where('album_id', $album->id);
+            })->orderBy('table_index');
+        }])->first();
+        //dd($form_right);
         $right_of_left = false;
         $left_of_right = false;
-        $not_related = true;
+        $related = false;
         if ($form_right->relation === $form_left->id) {
             $right_of_left = true;
-            $not_related = false;
+            $related = true;
         } elseif ($form_left->relation === $form_right->id) {
             $left_of_right = true;
-            $not_related = false;
+            $related = true;
         }
         $this->second_document = Document::OfTUPF($this->document->dtype, $this->document->ou_id, $this->document->period_id, $form_right->id)->first();
-        foreach($form_left->tables as $table) {
-            foreach ( $table->rows as $row) {
-                dump($row->row_code);
+        if ($related && $right_of_left) {
+            foreach($form_left->tables as $table) {
+                foreach ($table->rows as $row) {
+                    $columns = Column::OfTable($table->id)->OfDataType()->whereDoesntHave('excluded', function ($query) use($album) {
+                        $query->where('album_id', $album->id);
+                    })->get();
+                    //dd($columns);
+                    foreach ($columns as $column) {
+                        if (!in_array($row->id, $exluded_rows)) {
+                            $leftvalue = 0;
+                            $rightvalue = 0;
+                            $left_cell = Cell::OfDRC($this->document->id, $row->id, $column->id)->first();
+                            $right_cell = Cell::OfDRC($this->second_document->id, $row->id, $column->id)->first();
+                            if ($left_cell) {
+                                $leftvalue = (float)$left_cell->value;
+                            }
+                            if ($right_cell) {
+                                $rightvalue = (float)$right_cell->value;
+                            }
+                            $v = $this->compare($leftvalue, $rightvalue, $this->arguments[3]->content);
+                            $result[] = [
+                                'code' => ['table_code' => $table->table_code, 'row_code' => $row->row_code, 'column_code' => $column->column_code],
+                                'cells' => ['table' => $table->id, 'row' => $row->id, 'column' => $column->id],
+                                'left_part_value' => $leftvalue,
+                                'right_part_value' => $rightvalue,
+                                'deviation' => round(abs($leftvalue - $rightvalue),2),
+                                'valid' => $v
+                            ];
+                            //$v ?: $errors[] = ['table_code' => $table->table_code, 'row_code' => $row->row_code, 'column_code' => $column->column_code];
+                            $valid = $valid && $v;
+                        }
+                    }
+
+                }
             }
         }
+        $this->valid = $valid;
+        //dd($errors);
+        return $result;
+    }
 
+    public function compareRelated()
+    {
+        
     }
 
 }

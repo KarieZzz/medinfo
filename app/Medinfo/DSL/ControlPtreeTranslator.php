@@ -36,8 +36,10 @@ class ControlPtreeTranslator
     public $incl_periods = [];
     public $excl_periods = [];
     public $iterations = [];
-    const ROWS = 1;
-    const COLUMNS = 2;
+    // направление итерации
+    const ROWS = 1; // по строкам
+    const COLUMNS = 2; // по графам
+    const MIXED = 3; // по двум направлениям
 
     public function __construct(ControlFunctionParser $parser, Table $table)
     {
@@ -402,8 +404,6 @@ class ControlPtreeTranslator
         $properties['incl_periods'] = $this->incl_periods;
         $properties['excl_periods'] = $this->excl_periods;
         $properties['relations'] = $this->relations;
-
-
         return $properties;
     }
 
