@@ -43,6 +43,35 @@
                                     <button class="btn btn-default btn-sm" id="clearAllStates">Очистить</button>
                                     <button class="btn btn-primary btn-sm" id="applyStatuses">Применить</button>
                                     <div id="statesListbox"></div>
+                                    <div class="row">
+                                        <div class="col-md-offset-1 col-md-11">
+                                            <p class="text-info">Только для первичных документов</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="dataPresenceSelector" style="display: none">
+                                    <div id="presence" style="width: 300px">
+                                        <button class="btn btn-primary btn-sm" id="applyDataPresence">Применить</button>
+                                        <div class="row">
+                                            <div class="col-md-12" style="margin-left: 15px">
+                                                <div class="radio">
+                                                    <label><input type="radio" name="optfilled" id="alldoc">Все документы</label>
+                                                </div>
+                                                <div class="radio">
+                                                    <label><input type="radio" name="optfilled" id="filleddoc">Данные имеются</label>
+                                                </div>
+                                                <div class="radio">
+                                                    <label><input type="radio" name="optfilled" id="emptydoc">Данные отсутствуют</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-offset-1 col-md-11">
+                                                <p class="text-info">Только для первичных документов</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
@@ -151,7 +180,7 @@
 <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>--}}
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/documentdashboard.js?v=110') }}"></script>
+<script src="{{ asset('/medinfo/documentdashboard.js?v=117') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -169,6 +198,7 @@
         let checkedforms = [{!! $form_ids->value or '' !!}];
         let checkedstates = [{!! $state_ids->value or '' !!}];
         let checkedperiods = [{!! $period_ids->value or '' !!}];
+        let checkedfilled = '{{ $filleddocs->value or '-1' }}';
         let disabled_states = [{!! $disabled_states or '' !!}];
         let filter_mode = {!! $filter_mode->value or 1 !!}; // 1 - по территориям; 2 - по группам
         //let current_top_level_node = '{{ is_null($worker_scope) ? 'null' : $worker_scope }}';
@@ -176,7 +206,7 @@
         let current_top_level_node = {{ is_null($last_scope) ? $worker_scope : $last_scope }};
         let current_filter = '&filter_mode=' + filter_mode + '&ou=' + lasstscope + '&states='
             + checkedstates.join() + '&mf=' + checkedmf.join() + '&monitorings=' + checkedmonitorings.join()
-            + '&forms=' + checkedforms.join() + '&periods=' + checkedperiods.join();
+            + '&forms=' + checkedforms.join() + '&periods=' + checkedperiods.join() + '&filled=' + checkedfilled;
         datasources();
         initSplitters();
         initMonitoringTree();
@@ -184,6 +214,7 @@
         initgrouptree();
         initPeriodTree();
         initStatusList();
+        initDataPresens();
         initDropdowns();
         initFilterIcons();
         initDocumentSource();

@@ -33,6 +33,7 @@ let terr = $("#moSelectorByTerritories");
 let groups = $('#moSelectorByGroups');
 let periodDropDown = $('#periodSelector');
 let statusDropDown = $('#statusSelector');
+let dataPresenseDDown = $('#dataPresenceSelector');
 let stateWindow = $('#changeStateWindow');
 let current_document_form_code;
 let current_document_form_name;
@@ -176,7 +177,7 @@ getCheckedMonsForms = function() {
     if (uniquemonitorings.length > 0 || uniqueforms.length > 0 ) {
         mondropdown.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: #337ab7;"></i>Мониторинги</div>');
     } else {
-        mondropdown.jqxDropDownButton('setContent', '<div style="margin: 9px"></i>Мониторинги</div>');
+        mondropdown.jqxDropDownButton('setContent', '<div style="margin: 9px">Мониторинги</div>');
     }
     return {f: uniqueforms, m: uniquemonitorings, mf: mf};
 };
@@ -201,7 +202,7 @@ checkstatefilter = function() {
     if (checkedstates.length > 0) {
         statusDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: #337ab7;"></i>Статусы отчетов</div>');
     } else {
-        statusDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px"></i>Статусы отчетов</div>');
+        statusDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px">Статусы отчетов</div>');
     }
     return checkedstates.join();
 };
@@ -218,11 +219,26 @@ checkPeriodFilter = function() {
     if (checkedperiods.length > 0) {
         periodDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: #337ab7;"></i>Отчетные периоды</div>');
     } else {
-        periodDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px"></i>Отчетные периоды</div>');
+        periodDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px">Отчетные периоды</div>');
     }
     return checkedperiods.join();
+};
+
+checkDataPresenceFilter = function() {
+    switch (true) {
+        case $("#alldoc").prop("checked") :
+            dataPresenseDDown.jqxDropDownButton('setContent', '<div style="margin: 9px">Наличие данных</div>');
+            return '-1';
+        case $("#filleddoc").prop("checked") :
+            dataPresenseDDown.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: #337ab7;"></i>Наличие данных</div>');
+            return '1';
+        case $("#emptydoc").prop("checked") :
+            dataPresenseDDown.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: #337ab7;"></i>Наличие данных</div>');
+            return '0';
+    }
 
 };
+
 // обновление таблиц первичных и сводных документов в зависимости от выделенных форм, периодов, статусов документов
 updatedocumenttable = function() {
     let old_doc_url = docsource.url;
@@ -388,7 +404,7 @@ renderdoctoolbar = function (toolbar) {
     toolbar.append(container);
     container.append(searchField);
     container.append(clearfilters);
-    if (current_user_role !== 2) {
+    if (current_user_role !== '2') {
         container.append(changestatus);
     }
 /*    if (audit_permission) {
@@ -483,7 +499,7 @@ renderdoctoolbar = function (toolbar) {
         }
         if ((current_user_role === '3' || current_user_role === '4') && this_document_state === 'performed') {
             $('#declined').jqxRadioButton('disable');
-        } else if ((current_user_role === 3 || current_user_role === 4) && this_document_state !== 'performed') {
+        } else if ((current_user_role === '3' || current_user_role === '4') && this_document_state !== 'performed') {
             $('#declined').jqxRadioButton('enable');
         }
         stateWindow.jqxWindow('open');
@@ -663,6 +679,11 @@ initDropdowns = function () {
     statusDropDown.on('close', function () {
         updatedocumenttable()
     });
+    dataPresenseDDown.jqxDropDownButton({width: 350, height: 32, theme: theme});
+    dataPresenseDDown.jqxDropDownButton('setContent', '<div style="margin: 9px">Наличие данных</div>');
+    dataPresenseDDown.on('close', function () {
+        updatedocumenttable()
+    });
     $("#clearAllFilters").click( clearAllFilters );
 };
 
@@ -687,6 +708,8 @@ clearAllFilters = function (event) {
     periodDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px">Отчетные периоды</div>');
     stateList.jqxListBox('uncheckAll');
     statusDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px">Статусы отчетов</div>');
+    $("#alldoc").prop('checked', 'checked');
+    dataPresenseDDown.jqxDropDownButton('setContent', '<div style="margin: 9px">Наличие данных</div>');
     updatedocumenttable();
 };
 initMonitoringTree = function () {
@@ -967,6 +990,27 @@ initStatusList = function() {
     });
 
 };
+
+initDataPresens = function() {
+    if (current_user_role === '3' || current_user_role === '4' ) {
+        dataPresenseDDown.show();
+    }
+    $("#applyDataPresence").click( function (event) {
+        dataPresenseDDown.jqxDropDownButton('close');
+    });
+    switch (checkedfilled) {
+        case '-1' :
+            $("#alldoc").prop('checked', 'checked');
+            break;
+        case '1' :
+            $("#filleddoc").prop('checked', 'checked');
+            break;
+        case '0' :
+            $("#emptydoc").prop('checked', 'checked');
+            break;
+    }
+};
+
 // инициализация вкладок с документами
 initdocumentstabs = function() {
     $("#documenttabs").jqxTabs({  height: '100%', width: '100%', theme: theme });
@@ -1112,7 +1156,6 @@ initConsolidates = function () {
                 { name: 'period', type: 'string' }
             ],
             id: 'id',
-            ///url: docsource_url + filtersource(),
             url: consolsource_url + current_filter,
             root: 'data'
         };
@@ -1491,9 +1534,8 @@ initpopupwindows = function() {
 filtersource = function() {
     let forms;
     let monitorings;
-    //let states = checkedstates.join();
-    //let states = checkedstates.join();
     let states = checkstatefilter();
+    let filled = checkDataPresenceFilter();
     let mon_forms = getCheckedMonsForms();
     let mf = mon_forms.mf.join();
     let periods = checkPeriodFilter();
@@ -1503,7 +1545,7 @@ filtersource = function() {
 
     //periods = checkedperiods.join();
     return '&filter_mode=' + filter_mode + '&ou=' +current_top_level_node +'&states='+states+
-        '&monitorings='+monitorings+'&forms='+forms +'&periods=' + periods + '&mf=' + mf;
+        '&monitorings='+monitorings+'&forms='+forms +'&periods=' + periods + '&mf=' + mf + '&filled=' + filled;
 };
 // Источники данных для
 initDocumentSource = function () {
@@ -1574,6 +1616,9 @@ initFilterIcons = function () {
     }
     if (checkedperiods.length > 0) {
         statusDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: #337ab7;"></i>Статусы отчетов</div>');
+    }
+    if (checkedfilled !== '-1') {
+        dataPresenseDDown.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: #337ab7;"></i>Наличие данных</div>');
     }
 };
 

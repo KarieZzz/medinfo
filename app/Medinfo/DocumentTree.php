@@ -12,16 +12,17 @@ use DB;
 class DocumentTree
 {
     private $top_node;
-    private $filter_mode = 1;
+    private $filter_mode = 1; // Режим выбора документов 1 - по территориям, 2 - группам
     private $worker_scope;
     private $o_units = [];
-    private $states = array();
-    private $monitorings = array();
-    private $forms = array();
-    private $periods = array();
-    private $dtypes = array();
-    private $scopes = array();
-    private $documents = array();
+    private $states = [];
+    private $monitorings = [];
+    private $forms = [];
+    private $periods = [];
+    private $dtypes = [];
+    private $filled = null; // Либо true, либо false, либо null
+    private $scopes = [];
+    private $documents = [];
 
     public function __construct($scopes = null)
     {
@@ -51,6 +52,9 @@ class DocumentTree
             if (isset($scopes['dtypes'])) {
                 $this->dtypes = $scopes['dtypes'];
             }
+            if (isset($scopes['filled'])) {
+                $this->filled = $scopes['filled'];
+            }
         }
         else {
             echo("Не определены условия выборки документов");
@@ -75,6 +79,13 @@ class DocumentTree
         }
         if (count($this->periods) > 0 ) {
             $this->scopes['p'] = !empty(implode(",", $this->periods)) ?  ' AND d.period_id in (' . implode(",", $this->periods) . ')' : ' AND d.period_id = 0 ';
+        }
+        if ($this->filled === true) {
+            $this->scopes['e'] = ' HAVING (SELECT sum(v.value) FROM statdata v where d.id = v.doc_id) > 0 ';
+        } elseif ($this->filled === false) {
+            $this->scopes['e'] = ' HAVING (SELECT sum(v.value) FROM statdata v where d.id = v.doc_id) IS NULL ';
+        } else {
+            $this->scopes['e'] = ' ';
         }
     }
 
@@ -142,8 +153,10 @@ class DocumentTree
     public function get_documents()
     {
         //dd($this->scopes);
+
         if (count($this->scopes) > 0 ) {
-            $scopes = implode(" ", $this->scopes);
+            //$scopes = implode(" ", $this->scopes);
+            $scopes = " {$this->scopes['t']} {$this->scopes['m']} {$this->scopes['f']} {$this->scopes['p']} {$this->scopes['s']} ";
             $doc_query = "SELECT d.id, d.ou_id, u.unit_code, u.unit_name, f.form_code,
               f.form_name, s.name state, m.name monitoring, p.name period, t.name doctype, a.protected,
               CASE WHEN (SELECT sum(v.value) FROM statdata v where d.id = v.doc_id) > 0 THEN 1 ELSE 0 END filled
@@ -157,6 +170,7 @@ class DocumentTree
                 LEFT JOIN aggregates a ON a.doc_id = d.id
               WHERE 1=1 $scopes
               GROUP BY d.id, u.unit_code, u.unit_name, f.form_code, f.form_name, m.name, p.name, s.name, t.name, a.protected
+              {$this->scopes['e']}
               ORDER BY u.unit_code, f.form_code, p.name";
             //echo $doc_query;
             $this->documents = DB::select($doc_query);
@@ -172,8 +186,9 @@ class DocumentTree
                     JOIN monitorings m ON d.monitoring_id = m.id
                     JOIN periods p on d.period_id = p.id
                     LEFT JOIN aggregates a ON a.doc_id = d.id
-                  WHERE d.ou_id = {$this->top_node} {$this->scopes['t']} {$this->scopes['m']} {$this->scopes['f']} {$this->scopes['p']} {$this->scopes['s']}
+                  WHERE d.ou_id = {$this->top_node} $scopes
                   GROUP BY d.id, u.slug, u.name, f.form_code, f.form_name, m.name, p.name, s.name, t.name, a.protected
+                  {$this->scopes['e']}
                   ORDER BY f.form_code, p.name";
                 //echo $group_doc_query;
                 $documents_by_groups = DB::select($group_doc_query);
@@ -193,7 +208,7 @@ class DocumentTree
         //dd($this->scopes);
         //$aggregates = array();
         if (count($this->scopes) > 0 ) {
-            $scopes = implode(" ", $this->scopes);
+            $scopes = " {$this->scopes['t']} {$this->scopes['m']} {$this->scopes['f']} {$this->scopes['p']} ";
             $doc_query = "SELECT d.id, u.unit_code, u.unit_name,  m.name monitoring, f.form_code, f.form_name, p.name period, a.aggregated_at,
                 CASE WHEN (SELECT sum(v.value) FROM statdata v WHERE d.id = v.doc_id) > 0 THEN 1 ELSE 0 END filled
               FROM documents d
@@ -205,7 +220,6 @@ class DocumentTree
               WHERE 1=1 $scopes ORDER BY u.unit_code, f.form_code, p.name";
             //dd($doc_query);
             $res = DB::select($doc_query);
-
             if ($this->filter_mode == 2 ) {
                 $group_doc_query = "SELECT d.id, u.slug AS unit_code, u.name AS unit_name,  m.name monitoring, f.form_code, f.form_name, p.name period, a.aggregated_at,
                     CASE WHEN (SELECT sum(v.value) FROM statdata v WHERE d.id = v.doc_id) > 0 THEN 1 ELSE 0 END filled
@@ -233,7 +247,7 @@ class DocumentTree
     public function get_consolidates()
     {
         if (count($this->scopes) > 0 ) {
-            $scopes = implode(" ", $this->scopes);
+            $scopes = " {$this->scopes['t']} {$this->scopes['m']} {$this->scopes['f']} {$this->scopes['p']} ";
             $doc_query = "SELECT d.id, u.unit_code, u.unit_name,  m.name monitoring, f.form_code, f.form_name, p.name period, 
                 CASE WHEN (SELECT sum(v.value) FROM statdata v WHERE d.id = v.doc_id) > 0 THEN 1 ELSE 0 END filled
               FROM documents d
@@ -244,7 +258,6 @@ class DocumentTree
               WHERE 1=1 $scopes ORDER BY u.unit_code, f.form_code, p.name";
             //dd($doc_query);
             $res = DB::select($doc_query);
-
             if ($this->filter_mode == 2 ) {
                 $group_doc_query = "SELECT d.id, u.slug AS unit_code, u.name AS unit_name, m.name monitoring, f.form_code, f.form_name, p.name period,
                     CASE WHEN (SELECT sum(v.value) FROM statdata v WHERE d.id = v.doc_id) > 0 THEN 1 ELSE 0 END filled

@@ -55,8 +55,9 @@ class DocumentDashboardController extends Controller
         // Периоды отображаемые по умолчанию (поставил последний и предпоследний по датам убывания)
         //$period_ids = $periods[0]->id . ',' . $periods[1]->id;
         $period_ids = WorkerSetting::where('worker_id', $worker->id)->where('name','periods')->first(['value']);
+        $filleddocs = WorkerSetting::where('worker_id', $worker->id)->where('name','filleddocs')->first(['value']);
         return view('jqxdatainput.documentdashboard', compact( 'worker', 'worker_scope', 'last_scope', 'filter_mode', 'periods', 'period_ids',
-            'disabled_states', 'audit_permission', 'mf', 'mon_ids', 'form_ids', 'states', 'state_ids'));
+            'disabled_states', 'audit_permission', 'mf', 'mon_ids', 'form_ids', 'states', 'state_ids', 'filleddocs'));
     }
 
     public function fetch_monitorings()
@@ -92,7 +93,14 @@ class DocumentDashboardController extends Controller
         $monitorings = explode(",", $request->monitorings);
         $forms = explode(",", $request->forms);
         $periods = explode(",", $request->periods);
-        $scopes = compact('worker_scope', 'filter_mode', 'top_node', 'dtypes', 'states', 'monitorings', 'forms', 'periods');
+        if ($request->filled === '-1') {
+            $filled = null;
+        } elseif ($request->filled === '1') {
+            $filled = true;
+        } elseif ($request->filled === '0') {
+            $filled = false;
+        }
+        $scopes = compact('worker_scope', 'filter_mode', 'top_node', 'dtypes', 'states', 'monitorings', 'forms', 'periods', 'filled');
         $this->saveLastState($request, $worker);
         $d = new DocumentTree($scopes);
         $data = $d->get_documents();
@@ -164,6 +172,9 @@ class DocumentDashboardController extends Controller
         $last_periods->save();
         $last_states = WorkerSetting::firstOrCreate(['worker_id' => $worker->id, 'name' => 'states']);
         $last_states->value = $request->states;
+        $last_states->save();
+        $last_states = WorkerSetting::firstOrCreate(['worker_id' => $worker->id, 'name' => 'filleddocs']);
+        $last_states->value = $request->filled;
         $last_states->save();
     }
 
