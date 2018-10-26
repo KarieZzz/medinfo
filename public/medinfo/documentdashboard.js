@@ -283,7 +283,6 @@ aggregatedata = function() {
         //data: data,
         success: function (data, status, xhr) {
             if (typeof data.affected_cells !== 'undefined') {
-                console.log(data);
                 if (data.affected_cells > 0) {
                     raiseInfo("Сведение данных завершено");
                     rowdata.aggregated_at = data.aggregated_at;
@@ -354,7 +353,7 @@ mo_name_aggrfilter = function (needle) {
 renderdoctoolbar = function (toolbar) {
     let me = this;
     let container = $("<div style='margin: 5px;'></div>");
-    let searchField = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='searchField' type='text' style='height: 23px; float: left; width: 150px;' />");
+    let searchField = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='searchField' type='text' style='height: 27px; float: left; width: 150px;' />");
     let clearfilters = $("<input id='clearfilters' type='button' value='Очистить фильтр'/>");
     //let audit = $("<input id='ChangeAudutStatus' type='button' value='Проверка отчета' />");
     let statewindow = $("#changeAuditStateWindow");
@@ -400,6 +399,7 @@ renderdoctoolbar = function (toolbar) {
     let message_input = $("<i style='margin-left: 2px;height: 14px' class='fa fa-commenting-o fa-lg' title='Сообщение/комментарий к документу'></i>");
     let refresh_list = $("<i style='margin-left: 2px;height: 14px' class='fa fa-refresh fa-lg' title='Обновить список'></i>");
     let changestatus = $("<input id='ChangeStatus' type='button' value='Статус отчета' />");
+    let records = $('<span class="text-info pull-right" style="margin: 5px"> документов: <span id="totalrecords">'+ dgridDataAdapter.totalrecords +'</span></span>');
 
     toolbar.append(container);
     container.append(searchField);
@@ -416,9 +416,10 @@ renderdoctoolbar = function (toolbar) {
     container.append(word_export);
     container.append(excel_export);
     container.append(refresh_list);
+    container.append(records);
     searchField.addClass('jqx-widget-content-' + theme);
     searchField.addClass('jqx-rc-all-' + theme);
-    searchField.jqxInput({ width: 200, placeHolder: "Медицинская организация" });
+    searchField.jqxInput({ width: '200px', height: '26px', placeHolder: "Медицинская организация" });
     clearfilters.jqxButton({ theme: theme });
     editform.jqxButton({ theme: theme });
     changestatus.jqxButton({ theme: theme });
@@ -1017,13 +1018,15 @@ initdocumentstabs = function() {
     let bc = makeMOBreadcrumb(current_top_level_node);
     primary_mo_bc.html(bc);
     dgrid.on("bindingcomplete", function (event) {
+        console.log(dgridDataAdapter.totalrecords);
+        $("#totalrecords").html(dgridDataAdapter.totalrecords);
         dgrid.jqxGrid('selectrow', 0);
     });
     dgrid.jqxGrid(
         {
             width: '100%',
             height: '100%',
-            source: dataAdapter,
+            source: dgridDataAdapter,
             localization: localize(),
             theme: theme,
             columnsresize: true,
@@ -1590,7 +1593,7 @@ initDocumentSource = function () {
             url: aggrsource_url + current_filter,
             root: 'data'
         };
-    dataAdapter = new $.jqx.dataAdapter(docsource, {
+    dgridDataAdapter = new $.jqx.dataAdapter(docsource, {
         loadError: function(jqXHR, status, error) {
             if (jqXHR.status === 401) {
                 raiseError('Пользователь не авторизован', jqXHR);

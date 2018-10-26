@@ -180,7 +180,7 @@
 <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
 <script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>--}}
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/documentdashboard.js?v=117') }}"></script>
+<script src="{{ asset('/medinfo/documentdashboard.js?v=121') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -207,6 +207,7 @@
         let current_filter = '&filter_mode=' + filter_mode + '&ou=' + lasstscope + '&states='
             + checkedstates.join() + '&mf=' + checkedmf.join() + '&monitorings=' + checkedmonitorings.join()
             + '&forms=' + checkedforms.join() + '&periods=' + checkedperiods.join() + '&filled=' + checkedfilled;
+        let dgridDataAdapter;
         datasources();
         initSplitters();
         initMonitoringTree();
