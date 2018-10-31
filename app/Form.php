@@ -25,14 +25,14 @@ class Form extends Model
         return $this->hasMany('App\AlbumFormSet');
     }
 
-    public function inheritFrom()
-    {
-        return $this->belongsTo('App\Form', 'relation' , 'id');
-    }
-
     public function hasRelations()
     {
         return $this->hasMany('App\Form', 'relation' , 'id');
+    }
+
+    public function inheritFrom()
+    {
+        return $this->belongsTo('App\Form', 'relation' , 'id');
     }
 
     public function scopeOfCode($query, $code)

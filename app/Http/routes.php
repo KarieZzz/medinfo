@@ -42,6 +42,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('workerlogout', 'Auth\DatainputAuthController@logout' );
 
     // Shared Resources
+    Route::get('/fetchforms', 'Shared\FormTablePickerController@fecthForms');
     Route::get('/fetchtables/{form}', 'Shared\FormTablePickerController@fetchTables');
 
     // Маршрут по умолчанию - ввод данных

@@ -16,6 +16,7 @@ class CreateCfunctionsTable extends Migration
             //
             $table->increments('id');
             $table->integer('table_id')->index();
+            $table->integer('form_id')->nullable()->index();
             $table->smallInteger('level')->index();
             $table->smallInteger('type')->index();
             $table->smallInteger('function')->index();
@@ -24,7 +25,6 @@ class CreateCfunctionsTable extends Migration
             $table->boolean('blocked')->default(false);
             $table->text('ptree')->nullable();
             $table->jsonb('properties')->nullable();
-            //$table->text('compiled_cashe')->nullable();
             $table->timestamps();
         });
     }

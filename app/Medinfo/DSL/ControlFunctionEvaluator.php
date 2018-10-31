@@ -18,6 +18,7 @@ class ControlFunctionEvaluator
     public $document = null;
     public $period;
     public $pattern;
+    public $form;
     public $pTree;
     public $properties;
     public $iterations;
@@ -27,15 +28,17 @@ class ControlFunctionEvaluator
     public $not_in_scope = false;
     public $valid;
     public $comment = [];
+    public $related = false; // Является ли форма разрезом?
 
     public function __construct(ParseTree $ptree, $properties, Document $document = null)
     {
         $this->pTree = $ptree;
         $this->properties = $properties;
         if ($document) {
-            $this->document = $document;
-            $this->period = $this->document->period;
-            $this->pattern = $this->period->periodpattern;
+            $this->setDocument($document);
+            //$this->document = $document;
+            //$this->period = $this->document->period;
+            //$this->pattern = $this->period->periodpattern;
         }
         $this->setIterations();
         $this->setArguments();
@@ -48,6 +51,9 @@ class ControlFunctionEvaluator
         $this->document = $document;
         $this->period = $this->document->period;
         $this->pattern = $this->period->periodpattern;
+        $this->form = $this->document->form;
+        $this->related = $this->form->relation ?  true : false ;
+        //$this->form_code = $this->related ? $this->document->form->form_code : null ;
     }
 
     public function setIterations()
@@ -69,7 +75,6 @@ class ControlFunctionEvaluator
     public function validateDocumentScope()
     {
         $exclude = [];
-
         if ($this->properties['scope_documents']) {
             if ($this->document->dtype === $this->properties['documents'][0]) {
                 $exclude[] = 0;
@@ -104,11 +109,19 @@ class ControlFunctionEvaluator
                 $exclude[] = 0;
             }
         }
+        if ($this->properties['scope_section']) {
+            if ($this->document->form_id === $this->properties['section'] ) {
+                $exclude[] = 0;
+            } else {
+                $exclude[] = 1;
+                $this->comment[] = "Данный контроль не применяется к этому разрезу формы";
+            }
+        }
         // Для форм-разрезов межформенный контроль не выполняем
-        if (in_array($this->document->form_id, $this->properties['relations']) && ($this->properties['type'] === 2)) {
+/*        if (in_array($this->document->form_id, $this->properties['relations']) && ($this->properties['type'] === 2)) {
             $exclude[] = 1;
             $this->comment[] = "Межформенные контроли не применяются к документам в разрезе форм";
-        }
+        }*/
         //dd($exclude);
         if (array_sum($exclude) > 0) {
             return true;
@@ -149,20 +162,28 @@ class ControlFunctionEvaluator
     {
         $dtype = $this->document->dtype;
         $ou_id = $this->document->ou_id;
-        $period_id = $this->document->period_id;
-        $form_id = $this->document->form_id;
+        //$period_id = $this->document->period_id;
+        //$form_id = $this->document->form_id;
+
         foreach ($this->iterations as &$cell_adresses) {
             foreach ($cell_adresses as &$cell_adress) {
-                //if ($cell_adress['ids']['f'] === $form_id && !isset($cell_adress['codes']['p'])) {
-                if (in_array($cell_adress['ids']['f'], $this->properties['relations']) && !isset($cell_adress['codes']['p'])) {
+                //dd($cell_adress);
+                if ($cell_adress['ids']['f'] === $this->form->id && !isset($cell_adress['codes']['p'])) {
+                    $cell = Cell::OfDRC($this->document->id, $cell_adress['ids']['r'], $cell_adress['ids']['c'])->first(['value']);
+                } elseif (in_array($cell_adress['ids']['f'], $this->properties['relations']) && !isset($cell_adress['codes']['p'])) {
+                    $cell = Cell::OfDRC($this->document->id, $cell_adress['ids']['r'], $cell_adress['ids']['c'])->first(['value']);
+                }
+                elseif ( $cell_adress['this'] && !isset($cell_adress['codes']['p']) ) {
                     $cell = Cell::OfDRC($this->document->id, $cell_adress['ids']['r'], $cell_adress['ids']['c'])->first(['value']);
                 } else {
+                    //dd($form_id);
                     if (isset($cell_adress['codes']['p'])) {
                         $period = $this->getDocumentPeriod($cell_adress['codes']['p']);
                         //dd($period);
                         $period ? $document = Document::OfTUPF($dtype, $ou_id, $period->id, $cell_adress['ids']['f'])->first() : $document = null;
                     } else {
-                        $document = Document::OfTUPF($dtype, $ou_id, $period_id, $cell_adress['ids']['f'])->first();
+                        $document = Document::OfTUPF($dtype, $ou_id, $this->period->id, $cell_adress['ids']['f'])->first();
+                        //dd($document);
                     }
                     if ($document) {
                         $cell_adress['doc_exists'] = true;

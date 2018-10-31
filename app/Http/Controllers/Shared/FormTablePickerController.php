@@ -6,13 +6,27 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\Form;
 
 class FormTablePickerController extends Controller
 {
     //
+
+    public function fecthForms()
+    {
+        return Form::with('hasRelations', 'inheritFrom')->orderBy('form_code')->get();
+    }
+
     public function fetchTables(int $form)
     {
-        return \App\Table::OfForm($form)->orderBy('table_index')->with('form')->get();
+        if (!$form) {
+            return [];
+        }
+        $fo = Form::find($form);
+        if (!is_null($fo->relation)) {
+            $fo = Form::find($fo->relation);
+        }
+        return \App\Table::OfForm($fo->id)->orderBy('table_index')->with('form')->get();
     }
 
     public function fetchActualRows(int $table)

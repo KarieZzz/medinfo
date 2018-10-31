@@ -1018,7 +1018,6 @@ initdocumentstabs = function() {
     let bc = makeMOBreadcrumb(current_top_level_node);
     primary_mo_bc.html(bc);
     dgrid.on("bindingcomplete", function (event) {
-        console.log(dgridDataAdapter.totalrecords);
         $("#totalrecords").html(dgridDataAdapter.totalrecords);
         dgrid.jqxGrid('selectrow', 0);
     });

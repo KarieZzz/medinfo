@@ -189,27 +189,10 @@ class DataCheck
         }
         $table_protocol['valid'] = $valid;
         $table_protocol['no_alerts'] = $do_not_alerted;
-        ControlHelper::cashProtocol($table_protocol, $document->id, $table->id);
+        if (config('medinfo.cash_control_protocol')) {
+            ControlHelper::cashProtocol($table_protocol, $document->id, $table->id);
+        }
         return $table_protocol;
     }
-
-/*    public static function cacheOrCompile(CFunction $function, Table $table)
-    {
-        //$fo = unserialize(base64_decode($function->compiled_cashe));
-        //if (!$fo) {
-            $lexer = new ControlFunctionLexer($function->script);
-            $parser = new ControlFunctionParser($lexer);
-            $r = $parser->run();
-            $callInterpreter = FunctionDispatcher::INTERPRETERNS . FunctionDispatcher::$interpreterNames[$parser->functionIndex];
-            $interpreter = new $callInterpreter($r, $table, $parser->functionIndex);
-            //$function->compiled_cashe = base64_encode(serialize($interpreter));
-            //$function->save();
-            return $interpreter;
-        //} else {
-            //dd($fo);
-            //return $fo;
-        //}
-
-    }*/
 
 }

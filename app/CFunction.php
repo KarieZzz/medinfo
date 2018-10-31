@@ -8,12 +8,17 @@ class CFunction extends Model
 {
     //
     protected $table = 'cfunctions';
-    protected $fillable = ['table_id', 'level', 'type', 'function', 'script', 'comment', 'blocked', ];
+    protected $fillable = ['table_id', 'form_id', 'level', 'type', 'function', 'script', 'comment', 'blocked', ];
     protected $hidden = ['ptree', 'properties', ];
 
     public function table()
     {
         return $this->belongsTo('App\Table');
+    }
+
+    public function form()
+    {
+        return $this->belongsTo('App\Form');
     }
 
     public function level()
@@ -59,6 +64,16 @@ class CFunction extends Model
     public function scopeActive($query)
     {
         return $query->where('blocked', 0);
+    }
+
+    public function scopeMain($query)
+    {
+        return $query->whereNull('form_id');
+    }
+
+    public function scopeScoped($query)
+    {
+        return $query->whereNotNull('form_id');
     }
 
 }

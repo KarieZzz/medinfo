@@ -11,6 +11,8 @@ let initdatasources = function() {
             { name: 'id', type: 'int' },
             { name: 'table_id', type: 'int' },
             { name: 'table_code', map: 'table>table_code', type: 'string' },
+            { name: 'form_id', type: 'int' },
+            { name: 'fcode', map: 'form>form_code', type: 'string' },
             { name: 'level', type: 'int' },
             { name: 'levelname', map: 'level>name', type: 'string' },
             { name: 'type', type: 'int' },
@@ -22,7 +24,7 @@ let initdatasources = function() {
             { name: 'updated_at', type: 'string' }
         ],
         id: 'id',
-        url: functionfetch_url + current_table,
+        url: functionfetch_url + picked_table,
         root: 'f'
     };
     functionsDataAdapter = new $.jqx.dataAdapter(functionsource);
@@ -44,27 +46,32 @@ let initFunctionList = function() {
                 { text: 'Id', datafield: 'id', width: '50px' },
                 //{ text: 'Код таблицы', datafield: 'table_code', width: '70px'  },
                 { text: 'Уровень', datafield: 'levelname', width: '120px'  },
-                { text: 'Тип', datafield: 'typename', width: '120px'  },
-                { text: 'Функция контроля', datafield: 'script' , width: '45%'},
-                { text: 'Комментарий', datafield: 'comment', width: '400px' },
+                { text: 'Тип', datafield: 'typename', width: '110px'  },
+                { text: 'Функция контроля', datafield: 'script' , width: '40%'},
+                { text: 'Комментарий', datafield: 'comment', width: '380px' },
                 { text: 'Отключена', datafield: 'blocked', columntype: 'checkbox', width: '70px' },
+                { text: 'Разрез', datafield: 'fcode', width: '100px' },
                 { text: 'Создана', datafield: 'created_at', width: '130px' },
                 { text: 'Обновлена', datafield: 'updated_at', width: '130px' }
             ]
         });
     fgrid.on('rowselect', function (event) {
         let row = event.args.row;
-        $("#level").val(row.level.code);
-        $("#script").val(row.script);
-        $("#comment").val(row.comment);
-        $("#blocked").val(row.blocked);
+        console.log(row);
+        if (row) {
+            $("#level").val(row.level.code);
+            $("#script").val(row.script);
+            $("#comment").val(row.comment);
+            $("#blocked").val(row.blocked);
+        }
     });
 };
 // Обновление списка строк при выборе таблицы
 let updateFunctionList = function() {
-    functionsource.url = functionfetch_url + current_table;
+    functionsource.url = functionfetch_url + picked_table;
     fgrid.jqxGrid('clearselection');
     fgrid.jqxGrid('updatebounddata');
+    (isrelated || hasrelations ) ? sc.show() : sc.hide();
 };
 // Операции с функциями контроля
 
@@ -101,19 +108,23 @@ let setquerystring = function() {
     return "&level=" + $("#level").val() +
         "&script=" + encodeURIComponent($("#script").val()) +
         "&comment=" + $("#comment").val() +
-        "&blocked=" + ($("#blocked").val() ? 1 :0);
+        "&form=" + picked_form +
+        "&scope=" + $("#scope").val() +
+        "&blocked=" + ($("#blocked").val() ? 1 :0) +
+        "&isrelated=" + (isrelated ? 1 :0) +
+        "&hasrelations=" + (hasrelations ? 1 :0);
 };
 
 let initFunctionActions = function() {
     $("#insert").click(function () {
-        if (current_table === 0 ) {
+        if (picked_table === 0 ) {
             raiseError('Выберите форму и таблицу для которых будет применяться функция');
             return;
         }
         let data = setquerystring();
         $.ajax({
             dataType: 'json',
-            url: '/admin/cfunctions/create/' + current_table ,
+            url: '/admin/cfunctions/create/' + picked_table ,
             method: "POST",
             data: data,
             success: function (data, status, xhr) {
@@ -129,11 +140,7 @@ let initFunctionActions = function() {
                     fgrid.jqxGrid('ensurerowvisible', newindex);
                 });
             },
-            error: function (xhr, status, errorThrown) {
-                $.each(xhr.responseJSON, function(field, errorText) {
-                    raiseError(errorText);
-                });
-            }
+            error: xhrErrorNotificationHandler
         });
     });
     $("#save").click(function () {
@@ -162,11 +169,7 @@ let initFunctionActions = function() {
                     });
                 }
             },
-            error: function (xhr, status, errorThrown) {
-                $.each(xhr.responseJSON, function(field, errorText) {
-                    raiseError(errorText);
-                });
-            }
+            error: xhrErrorNotificationHandler
         });
     });
     $("#delete").click(function () {
@@ -189,25 +192,25 @@ let initFunctionActions = function() {
         return true;
     });
     $("#recompileTable").click(function () {
-        if (current_table === 0) {
+        if (picked_table === 0) {
             raiseError("Не выбрана таблица в которой будут перекомпилированы функции");
             return false;
         }
-        window.open(recompileTable_url + current_table);
+        window.open(recompileTable_url + picked_table);
     });
     $("#recompileForm").click(function () {
-        if (current_form === 0) {
+        if (picked_form === 0) {
             raiseError("Не выбрана форма в которой будут перекомпилированы функции");
             return false;
         }
-        window.open(recompileForm_url + current_form);
+        window.open(recompileForm_url + picked_form);
     });
     $("#excelExport").click(function () {
-        if (current_form === 0) {
+        if (picked_form === 0) {
             raiseError("Не выбрана форма из которой экспортируются функции");
             return false;
         }
-        window.open(excelExport_url + current_form);
+        window.open(excelExport_url + picked_form);
     });
 };
 
@@ -226,8 +229,6 @@ let performAction = function() {
             fgrid.jqxGrid('updatebounddata', 'data');
             fgrid.jqxGrid('clearselection');
         },
-        error: function (xhr, status, errorThrown) {
-            raiseError('Ошибка удаления записи', xhr);
-        }
+        error: xhrErrorNotificationHandler
     });
 };

@@ -15,6 +15,7 @@ use App\Row;
 use App\Column;
 use App\Unit;
 use App\UnitList;
+use Mockery\Exception;
 
 class ControlPtreeTranslator
 {
@@ -31,6 +32,8 @@ class ControlPtreeTranslator
     public $scopeOfUnits = false;
     public $units = [];
     public $scopeOfDocuments = false;
+    public $scopeOfSection = false; // Ограничение выполнение функции по определенному разрезу
+    public $section;
     public $documents = []; // контроля ограничения по первичным или сводным документам
     public $scopeOfPeriods = false;
     public $incl_periods = [];
@@ -46,15 +49,24 @@ class ControlPtreeTranslator
         $this->parser = $parser;
         $this->table = $table;
         $this->setForm();
-        //dd($this->parser->cellrangeStack);
-        //dd($this->parser->celladressStack);
     }
 
     public function setForm()
     {
         $this->form = Form::find($this->table->form_id);
         $this->relations = $this->form->hasRelations()->pluck('id')->toArray();
-        //$this->relations[] = $this->table->form_id;
+    }
+
+    public function setSection($section)
+    {
+        if (count($this->relations) === 0) {
+            throw new \Exception("У формы нет разрезов по которым можно установить ограничение выполнения функции");
+        }
+        if ($section !== $this->form->id && !in_array($section, $this->relations)) {
+            throw new \Exception("У формы {$this->form->form_code} нет разрезов с id:$section");
+        }
+        $this->scopeOfSection = true;
+        $this->section = $section;
     }
 
     public function makeReadable() {  }
@@ -86,13 +98,8 @@ class ControlPtreeTranslator
             $lprops['node'] = $last;
             $lprops['arg'] = $range['arg'];
             $lprops['last'] = true;
-
             $cellrange_vector = $this->validateRange($fprops, $lprops);
-            //dd($cellrange_vector);
             $range = $this->inflateRangeMatrix($fprops, $lprops, $cellrange_vector);
-            //dd($range);
-            //unset($range['node']->children[0]);
-            //unset($range['node']->children[1]);
         }
     }
 
@@ -325,6 +332,7 @@ class ControlPtreeTranslator
             $lightweightCAStack[$caLabel]['ids'] = $caProps['ids'];
             //$lightweightCAStack[$caLabel]['rowindex'] = $caProps['rowindex'];
             $lightweightCAStack[$caLabel]['incomplete'] = $caProps['incomplete'];
+            $lightweightCAStack[$caLabel]['this'] = $caProps['this'];
         }
         if (count($this->vector)=== 0) {
             $this->iterations[] = $lightweightCAStack;
@@ -404,6 +412,8 @@ class ControlPtreeTranslator
         $properties['incl_periods'] = $this->incl_periods;
         $properties['excl_periods'] = $this->excl_periods;
         $properties['relations'] = $this->relations;
+        $properties['scope_section'] = $this->scopeOfSection;
+        $properties['section'] = $this->section;
         return $properties;
     }
 
@@ -493,6 +503,7 @@ class ControlPtreeTranslator
                     $this->parser->celladressStack[$key]['codes'] = $range[$j]['codes'];
                     $this->parser->celladressStack[$key]['ids'] = $range[$j]['ids'];
                     $this->parser->celladressStack[$key]['incomplete'] = true;
+                    $this->parser->celladressStack[$key]['this'] = empty($f) ? true : false ;
                 }
                 break;
             case 2: // по графам (контроль строк)
@@ -529,6 +540,7 @@ class ControlPtreeTranslator
                     $this->parser->celladressStack[$key]['ids'] = $range[$j]['ids'];
                     $this->parser->celladressStack[$key]['rowindex'] = $range[$j]['rowindex'];
                     $this->parser->celladressStack[$key]['incomplete'] = true;
+                    $this->parser->celladressStack[$key]['this'] = empty($f) ? true : false ;
                 }
                 break;
             case null:
@@ -563,7 +575,6 @@ class ControlPtreeTranslator
                         $range[$j]['codes']['t'] = $t;
                         $range[$j]['codes']['r'] = $rowcode;
                         $range[$j]['codes']['c'] = $colcode;
-
                         $range[$j]['ids']['f'] = $fprops['ids']['f'];
                         $range[$j]['ids']['t'] = $fprops['ids']['t'];
                         $range[$j]['ids']['r'] = $rowid;
@@ -578,77 +589,12 @@ class ControlPtreeTranslator
                         $this->parser->celladressStack[$key]['ids'] = $range[$j]['ids'];
                         $this->parser->celladressStack[$key]['rowindex'] = $range[$j]['rowindex'];
                         $this->parser->celladressStack[$key]['incomplete'] = false;
+                        $this->parser->celladressStack[$key]['this'] = empty($f) ? true : false ;
                         $j++;
                     }
                 }
                 break;
         }
-/*        $r = $fprops['rowindex'];
-        //dd($r);
-        //dd( $lprops['rowindex']);
-        $j = 0;
-        do {
-            $incomplete = false;
-            if ($r) {
-                $row = Row::OfTableRowIndex($fprops['ids']['t'], $r)->first();
-                $rowid = $row->id;
-                $rowindex = $row->row_index;
-                $rowcode = $row->row_code;
-                $radrr = 'С' . $rowcode;
-            } else {
-                $rowid = null;
-                $rowindex = null;
-                $rowcode = '';
-                $radrr = '';
-                $incomplete = true;
-            }
-            $c = (int)$fprops['codes']['c'];
-            do {
-                $column = Column::OfTableColumnIndex($fprops['ids']['t'], $c)->first();
-                if (is_null($column)) {
-                    $c++;
-                    continue;
-                }
-                if ($c !== 0) {
-                    $column = Column::OfTableColumnIndex($fprops['ids']['t'], $c)->first();
-                    $colid = $column->id;
-                    $colindex = $column->column_index;
-                    $cadrr = 'Г' . $colindex;
-                } else {
-                    $colid = null;
-                    $colindex = '';
-                    $cadrr = '';
-                    $incomplete = true;
-                }
-                $f = $fprops['codes']['f'];
-                $t = $fprops['codes']['t'];
-                $f === '' ? $faddr = '' : $faddr = 'Ф' . $f;
-                $t === '' ? $taddr = '' : $taddr = 'Т' . $t;
-                $new_ptnode = new ControlFunctionParseTree(ControlFunctionLexer::CELLADRESS, $faddr . $taddr . $radrr . $cadrr);
-                $range[$j]['node'] = $new_ptnode;
-                $range[$j]['codes']['f'] = $f;
-                $range[$j]['codes']['t'] = $t;
-                $range[$j]['codes']['r'] = $rowcode;
-                $range[$j]['codes']['c'] = $colindex;
-                $range[$j]['ids']['f'] = $fprops['ids']['f'];
-                $range[$j]['ids']['t'] = $fprops['ids']['t'];
-                $range[$j]['ids']['r'] = $rowid;
-                $range[$j]['ids']['c'] = $colid;
-                $range[$j]['rowindex'] = $rowindex;
-                $new_ptnode->parent = $fprops['node']->parent->parent;
-                //$range->parent->addCild();
-                $fprops['node']->parent->parent->addChild($range[$j]['node']);
-                $this->parser->celladressStack[$faddr . $taddr . $radrr . $cadrr]['node'] = $new_ptnode;
-                $this->parser->celladressStack[$faddr . $taddr . $radrr . $cadrr]['codes'] = $range[$j]['codes'];
-                $this->parser->celladressStack[$faddr . $taddr . $radrr . $cadrr]['ids'] = $range[$j]['ids'];
-                $this->parser->celladressStack[$faddr . $taddr . $radrr . $cadrr]['rowindex'] = $range[$j]['rowindex'];
-                $this->parser->celladressStack[$faddr . $taddr . $radrr . $cadrr]['incomplete'] = $incomplete;
-                $c++;
-                $j++;
-            } while($c <= (int)$lprops['codes']['c']);
-            $r++;
-        } while ($r <= $lprops['rowindex']);*/
-        //dd($range);
         return $range;
     }
 
@@ -661,10 +607,11 @@ class ControlPtreeTranslator
         $props['rowindex'] = null;
         $props['columnindex'] = null;
         $props['incomplete'] = false;
-
+        $props['this'] = false;
         //dump($props);
         $props['ids']['f'] = $this->identifyControlType($props['codes']);
-        $props['ids']['t'] = $this->identifyTable($props['codes']['t'], $props['ids']['f']);
+        //$props['ids']['t'] = $this->identifyTable($props['codes']['t'], $props['ids']['f']);
+        $props['ids']['t'] = $this->identifyTable($props['codes']['t'], $this->currentForm->id);
         $row = $this->identifyRow($props['codes']['r'], $props['ids']['t']);
         if ($row) {
             $props['ids']['r'] = $row->id;
@@ -676,10 +623,11 @@ class ControlPtreeTranslator
             $props['ids']['c'] = $column->id;
             $props['columnindex'] = $column->column_index;
         }
-
+        $props['this'] = empty($props['codes']['f']) ? true : false;
         if ($props['ids']['r'] == null || $props['ids']['c'] == null) {
             $props['incomplete'] = true;
         }
+
 /*        isset($props['codes']['p']) ?: $props['codes']['p'] = '';
         $this->identifyPeriod($props['codes']['p']);*/
         return $props;
@@ -698,7 +646,28 @@ class ControlPtreeTranslator
 
     public function identifyControlType($codes)
     {
-        if ($this->findex == 3 || $this->findex == 4 || $this->findex == 19) {
+        $form = null;
+        switch (true) {
+            case $this->findex == 3 || $this->findex == 4 || $this->findex == 19 :
+                $this->type[] = (int)\App\DicCfunctionType::InterPeriod()->first(['code'])->code;
+                $form = $this->form;
+                break;
+            case ($codes['f'] == $this->form->form_code || empty($codes['f'])) && !isset($codes['p']) :
+                $this->type[] = (int)\App\DicCfunctionType::InForm()->first(['code'])->code;
+                $form = $this->form;
+                break;
+            case ($codes['f'] == $this->form->form_code || empty($codes['f'])) && isset($codes['p']) :
+                $this->type[] = (int)\App\DicCfunctionType::InterForm()->first(['code'])->code;
+                $form = $this->form;
+                break;
+            default :
+                $form = Form::OfCode($codes['f'])->first();
+                if (is_null($form)) {
+                    throw new \Exception("Формы с кодом {$codes['f']} не существует");
+                }
+                $this->type[] = (int)\App\DicCfunctionType::InterForm()->first(['code'])->code;
+        }
+/*        if ($this->findex == 3 || $this->findex == 4 || $this->findex == 19) {
             $this->type[] = (int)\App\DicCfunctionType::InterPeriod()->first(['code'])->code;
             return $this->form->id;
         } elseif (($codes['f'] == $this->form->form_code || empty($codes['f'])) && !isset($codes['p'])) {
@@ -713,11 +682,20 @@ class ControlPtreeTranslator
             if (is_null($form)) {
                 throw new \Exception("Формы с кодом {$codes['f']} не существует");
             }
-            $this->currentForm = $form;
+            if (!$form->relation) {
+                $this->currentForm = $form;
+            } else {
+                $this->currentForm = Form::find($form->relation);
+            }
             $this->type[] = (int)\App\DicCfunctionType::InterForm()->first(['code'])->code;
-
-            return $form->id;
+            return $this->currentForm->id;
+        }*/
+        if (!$form->relation) {
+            $this->currentForm = $form;
+        } else {
+            $this->currentForm = Form::find($form->relation);
         }
+        return $form->id;
     }
 
     public function identifyTable($code, $form)

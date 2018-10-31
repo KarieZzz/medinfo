@@ -32,9 +32,9 @@ class CFunctionAdminController extends Controller
 
     public function index()
     {
-        $forms = Form::orderBy('form_code')->get(['id', 'form_code', 'form_name']);
+        //$forms = Form::orderBy('form_code')->get(['id', 'form_code', 'form_name']);
         $error_levels = DicErrorLevel::all(['code', 'name']);
-        return view('jqxadmin.cfunctions', compact('forms', 'error_levels'));
+        return view('jqxadmin.cfunctions', compact( 'error_levels'));
     }
 
     public function cfunctionsAll()
@@ -50,7 +50,10 @@ class CFunctionAdminController extends Controller
 
     public function fetchControlFunctions(int $table)
     {
-        return CFunction::OfTable($table)->orderBy('created_at', 'desc')->orderBy('updated_at', 'desc')->with('table')->with('level')->with('type')->get();
+        return CFunction::OfTable($table)->orderBy('created_at', 'desc')
+            ->with('table')->with('form')
+            ->with('level')->with('type')
+            ->orderBy('updated_at', 'desc')->get();
     }
 
     public function fetchCFofForm(int $form)
@@ -71,11 +74,12 @@ class CFunctionAdminController extends Controller
     public function store(Table $table, Request $request)
     {
         $this->validate($request, $this->validateRules());
-        $cache = $this->compile($request->script, $table);
+        $newfunction = new CFunction();
+        $request->scope === '2' ? $newfunction->form_id = $request->form : $newfunction->form_id = null;
+        $cache = $this->compile($request->script, $table, $newfunction->form_id);
         if (!$cache) {
             return ['error' => 422, 'message' => $this->compile_error];
         }
-        $newfunction = new CFunction();
         $newfunction->table_id = $table->id;
         $newfunction->level = $request->level;
         $newfunction->script = $request->script;
@@ -109,8 +113,13 @@ class CFunctionAdminController extends Controller
     {
         $this->validate($request, $this->validateRules());
         $table = Table::find($cfunction->table_id);
+        if ($request->scope === '2') {
+            $cfunction->form_id = $request->form;
+        } elseif ($request->scope === '1') {
+            $cfunction->form_id = null;
+        }
         $cfunction->level = (int)$request->level;
-        $cache = $this->compile($request->script, $table);
+        $cache = $this->compile($request->script, $table, $cfunction->form_id);
         if (!$cache) {
             return ['error' => 422, 'message' => $this->compile_error];
         }
@@ -133,9 +142,11 @@ class CFunctionAdminController extends Controller
             $typename = DicCfunctionType::find((string)$cfunction->type)->name;
             $function = $cfunction->function;
             $blocked = $cfunction->blocked;
+            $form = $cfunction->form_id;
             $created_at = $cfunction->created_at->toDateTimeString();
             $updated_at = $cfunction->updated_at->toDateTimeString();
-            return compact('message', 'script', 'comment', 'blocked', 'typename', 'function', 'levelname', 'levelcode', 'created_at', 'updated_at' );
+            return compact('message', 'script', 'comment', 'blocked', 'typename', 'function', 'levelname', 'levelcode', 'form',
+                'created_at', 'updated_at' );
         } catch (\Illuminate\Database\QueryException $e) {
             $errorCode = $e->errorInfo[0];
             switch ($errorCode) {
@@ -201,7 +212,7 @@ class CFunctionAdminController extends Controller
             $f = [];
             $f['i'] = $i;
             $f['script'] = $function->script;
-            $cache = $this->compile($function->script, $table);
+            $cache = $this->compile($function->script, $table, $function->form_id);
             if ($cache) {
                 //echo $i . ' Компиляция функции: ' . $function->script . '<br/>';
                 $function->type = $cache['properties']['type'];
@@ -223,7 +234,7 @@ class CFunctionAdminController extends Controller
         return $protocol;
     }
 
-    public function compile($script, Table $table)
+    public function compile($script, Table $table, $section = null)
     {
         //$ns = '\\App\\Medinfo\\DSL\\';
         $properties = [];
@@ -235,6 +246,9 @@ class CFunctionAdminController extends Controller
             $parser->func();
             //$translator = new \App\Medinfo\DSL\ControlPtreeTranslator($parser, $table);
             $translator = \App\Medinfo\DSL\Translator::invoke($parser, $table);
+            if ($section) {
+                $translator->setSection($section);
+            }
             $translator->prepareIteration();
             $compiled_cache['ptree'] = base64_encode(serialize($translator->parser->root));
             $compiled_cache['properties'] = $translator->getProperties();
@@ -255,6 +269,7 @@ class CFunctionAdminController extends Controller
     protected function validateRules()
     {
         return [
+            'form'   => 'integer',
             'level'     => 'required|integer',
             'script'    => 'required|max:512',
             'comment'   => 'max:256',

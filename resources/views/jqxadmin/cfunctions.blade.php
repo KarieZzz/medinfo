@@ -29,14 +29,22 @@
                             <input type="text" class="form-control" id="comment">
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="control-label col-sm-3" for="blocked">Функция отключена:</label>
-                        <div class="col-sm-2">
-                            <div id="blocked"></div>
+                    <div class="form-inline col-md-offset-2">
+                        <div class="form-group  col-md-2 " >
+                            <label class="control-label" for="blocked">Функция отключена:</label>
+                        </div>
+                        <div class="col-md-1" style="margin-right: 50px"><div id="blocked"></div></div>
+                        <div class="form-group col-md-6" id="scopeContainer" style="display: none">
+                            <label class="control-label" for="scope">Область выполнения функции:</label>
+                            <select class="form-control" id="scope">
+                                <option value="0">По умолчанию</option>
+                                <option value="1">Все разрезы формы</option>
+                                <option value="2">Текущий разрез формы</option>
+                            </select>
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="row">
+                        <div class="row" style="margin-top: 50px">
                             <div class="col-sm-offset-1 col-sm-4">
                                 <button type="button" id="save" class="btn btn-primary">Сохранить изменения</button>
                                 <button type="button" id="insert" class="btn btn-success">Вставить новую запись</button>
@@ -59,52 +67,28 @@
 @endsection
 
 @push('loadjsscripts')
-{{--    <script src="{{ asset('/jqwidgets/jqxsplitter.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxdata.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxpanel.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxscrollbar.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxinput.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxbuttons.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxdropdownbutton.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxcheckbox.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxswitchbutton.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxlistbox.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxdropdownlist.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxgrid.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxgrid.filter.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxgrid.columnsresize.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxgrid.selection.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxgrid.sort.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/localization.js') }}"></script>--}}
-    <script src="{{ asset('/medinfo/admin/tablepicker.js?v=014') }}"></script>
-    <script src="{{ asset('/medinfo/admin/cfunctionadmin.js?v=011') }}"></script>
+    <script src="{{ asset('/medinfo/admin/cfunctionadmin.js?v=018') }}"></script>
 @endpush
 
 @section('inlinejs')
     @parent
+    @include('jqxadmin.table_pickerjs')
     <script type="text/javascript">
-        let tableDataAdapter;
-        let formsDataAdapter;
         let functionsDataAdapter;
-        let tablesource;
         let rowsource;
         let columnsource;
         let functionfetch_url = '/admin/cfunctions/fetchcf/';
         let recompileTable_url = '/admin/cfunctions/recompiletable/';
         let recompileForm_url = '/admin/cfunctions/recompileform/';
         let excelExport_url = '/admin/cfunctions/excelexport/';
-        let forms = {!! $forms  !!};
         let errorLevels = {!! $error_levels !!};
         let fgrid = $("#functionList");
-        let current_form = 0;
-        let current_table = 0;
+        let sc = $("#scopeContainer");
+        //let current_form = 0;
+        //let current_table = 0;
         let current_function = 0;
-        initFilterDatasources();
         initdatasources();
         initFunctionList();
-        initFormTableFilter();
         initButtons();
         initFunctionActions();
     </script>

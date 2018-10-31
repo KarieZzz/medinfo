@@ -123,9 +123,9 @@ class DocumentTree
         //dd($units);
         if (count($units) > 0) {
             $strigified = $units->implode(',');
-            $this->scopes['g'] = " AND d.ou_id in ($strigified) ";
+            $this->scopes['u'] = " AND d.ou_id in ($strigified) ";
         } else {
-            $this->scopes['g'] = " AND 1=0 ";
+            $this->scopes['u'] = " AND 1=0 ";
         }
     }
 
@@ -249,7 +249,8 @@ class DocumentTree
     public function get_consolidates()
     {
         if (count($this->scopes) > 0 ) {
-            $scopes = " {$this->scopes['t']} {$this->scopes['m']} {$this->scopes['f']} {$this->scopes['p']} ";
+            $scopes = isset($this->scopes['u']) ? $this->scopes['u'] : '' ;
+            $scopes .= " {$this->scopes['t']} {$this->scopes['m']} {$this->scopes['f']} {$this->scopes['p']} ";
             $doc_query = "SELECT d.id, u.unit_code, u.unit_name,  m.name monitoring, f.form_code, f.form_name, p.name period, 
                 CASE WHEN (SELECT sum(v.value) FROM statdata v WHERE d.id = v.doc_id) > 0 THEN 1 ELSE 0 END filled
               FROM documents d

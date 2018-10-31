@@ -1,8 +1,12 @@
 <script type="text/javascript">
-    let formspick = {!! $forms  !!};
+    let formpickfetch_url = '/fetchforms/';
     let tablepickfetch_url = '/fetchtables/';
+    let tpicklist = $("#tableList");
+    let tablesource;
     let picked_form = 0;
     let picked_table = 0;
+    let isrelated = false;
+    let hasrelations = false;
     let initTablePickerDatasources = function() {
         let formssource =
             {
@@ -10,10 +14,12 @@
                 datafields: [
                     { name: 'id', type: 'int' },
                     { name: 'form_code', type: 'string' },
-                    { name: 'form_name', type: 'string' }
+                    { name: 'form_name', type: 'string' },
+                    { name: 'has_relations' },
+                    { name: 'inherit_from' }
                 ],
                 id: 'id',
-                localdata: formspick
+                url: formpickfetch_url
             };
         formspickDataAdapter = new $.jqx.dataAdapter(formssource);
         tablesource =
@@ -33,26 +39,10 @@
     // Инициализация списков-фильтров форма -> таблица
     let initFormTableFilter = function() {
         let flist = $("#formList");
-        let tlist = $("#tableList");
         let fc = $("#formListContainer");
         let tc = $("#tableListContainer");
         fc.jqxDropDownButton({ width: 300, height: 32, theme: theme });
         fc.jqxDropDownButton('setContent', '<div style="margin-top: 9px">Выберите форму</div>');
-        /*    flist.jqxDropDownList({
-                theme: theme,
-                source: formsDataAdapter,
-                displayMember: "form_code",
-                valueMember: "id",
-                placeHolder: "Выберите форму:",
-                //selectedIndex: 2,
-                width: 200,
-                height: 32
-            });
-            flist.on('select', function (event) {
-                let args = event.args;
-                current_form = args.item.value;
-                updateTableDropdownList(args.item);
-            });*/
         flist.jqxGrid(
             {
                 width: '450px',
@@ -72,42 +62,43 @@
             });
         flist.on('rowselect', function (event) {
             fc.jqxDropDownButton('close');
-            let args = event.args;
-            if (args.rowindex === -1) {
+            let row = event.args.row;
+            let relations = [];
+            isrelated = false;
+            hasrelations = false;
+            if (event.args.rowindex === -1) {
                 return false;
             }
-            picked_form = args.row.id;
-            updateTableDropdownList(args.row);
+            picked_form = row.id;
+            switch (true) {
+                case row.inherit_from === null && row.has_relations.length === 0:
+                    fc.jqxDropDownButton('setContent', '<div style="margin-top: 9px"><span class="text-info">Форма: ' + row.form_code + '</span></div>');
+                    break;
+                case row.has_relations.length > 0 :
+                    hasrelations = true;
+                    for (let i = 0; i < row.has_relations.length; i++) {
+                        relations.push(row.has_relations[i].form_code);
+                    }
+                    fc.jqxDropDownButton('setContent', '<div style="margin-top: 9px"><span class="text-success">Форма: ' + row.form_code +
+                        ' (имеет разрезы: ' + relations +')</span></div>');
+                    break;
+                case row.inherit_from !== null :
+                    isrelated = true;
+                    fc.jqxDropDownButton('setContent', '<div style="margin-top: 9px"><span class="text-danger">Форма: '+ row.form_code +
+                        ' (разрез формы '+ row.inherit_from.form_code +')</span></div>');
+                    break;
+
+            }
+            updateTableDropdownList(row);
         });
 
         tc.jqxDropDownButton({ width: 250, height: 32, theme: theme });
-        /*    tlist.jqxDataTable({
-                theme: theme,
-                source: tablesDataAdapter,
-                width: 420,
-                height: 400,
-                columns: [{
-                        text: 'Код',
-                        dataField: 'table_code',
-                        width: 100
-                    },
-                    {
-                        text: 'Наименование',
-                        dataField: 'table_name',
-                        width: 300
-                    }
-                ]
-            });
-            tlist.on('rowSelect', function (event) {
-                $("#tableListContainer").jqxDropDownButton('close');
-                let args = event.args;
-                let r = args.row;
-                current_table = args.key;
-                $("#tableProperties").html('<div class="text-bold text-info" style="margin-left: -30px">Таблица: (' + r.table_code + ') ' + r.table_name + '</div>');
-                updateRelated();
-            });*/
-
-        tlist.jqxGrid(
+        tpicklist.on('bindingcomplete', function() {
+            if (picked_form !== 0) {
+                tpicklist.jqxGrid('selectrow', 0);
+            }
+        });
+        tpicklist.jqxGrid(
             {
                 width: '450px',
                 height: '500px',
@@ -124,7 +115,7 @@
                     { text: 'Имя', datafield: 'table_name' , width: '380px'}
                 ]
             });
-        tlist.on('rowselect', function (event) {
+        tpicklist.on('rowselect', function (event) {
             tc.jqxDropDownButton('close');
             let args = event.args;
             if (args.rowindex === -1) {
@@ -138,11 +129,10 @@
     };
 
     // Обновление списка таблиц при выборе формы
-    // Обновление списка таблиц при выборе формы
     let updateTableDropdownList = function(form) {
         tablesource.url = tablepickfetch_url + form.id;
         $("#tableListContainer").jqxDropDownButton('setContent', '<div style="margin-top: 9px">Выберите таблицу из формы ' + form.form_code + '</div>');
-        $("#tableList").jqxGrid('updateBoundData');
+        tpicklist.jqxGrid('updateBoundData');
     };
     initTablePickerDatasources();
     initFormTableFilter();
