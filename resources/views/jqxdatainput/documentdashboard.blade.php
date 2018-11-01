@@ -157,30 +157,8 @@
 
 @push('loadjsscripts')
 <script src="{{ asset('/jqwidgets/jqx-all.js') }}"></script>
-{{--<script src="{{ asset('/jqwidgets/jqxtabs.js') }}"></script>
-<script src="{{ asset('/jqwidgets/jqxsplitter.js') }}"></script>
-<script src="{{ asset('/jqwidgets/jqxdata.js') }}"></script>
-<script src="{{ asset('/jqwidgets/jqxpanel.js') }}"></script>
-<script src="{{ asset('/jqwidgets/jqxexpander.js') }}"></script>
-<script src="{{ asset('/jqwidgets/jqxscrollbar.js') }}"></script>
-<script src="{{ asset('/jqwidgets/jqxbuttons.js') }}"></script>
-<script src="{{ asset('/jqwidgets/jqxdropdownbutton.js') }}"></script>
-<script src="{{ asset('/jqwidgets/jqxinput.js') }}"></script>
-<script src="{{ asset('/jqwidgets/jqxtextarea.js?v=001') }}"></script>
-<script src="{{ asset('/jqwidgets/jqxcheckbox.js') }}"></script>
-<script src="{{ asset('/jqwidgets/jqxradiobutton.js?v=001') }}"></script>
-<script src="{{ asset('/jqwidgets/jqxlistbox.js') }}"></script>
-<script src="{{ asset('/jqwidgets/jqxdropdownlist.js') }}"></script>
-<script src="{{ asset('/jqwidgets/jqxgrid.js') }}"></script>
-<script src="{{ asset('/jqwidgets/jqxgrid.filter.js') }}"></script>
-<script src="{{ asset('/jqwidgets/jqxgrid.columnsresize.js') }}"></script>
-<script src="{{ asset('/jqwidgets/jqxgrid.selection.js') }}"></script>
-<script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
-<script src="{{ asset('/jqwidgets/jqxtree.js') }}"></script>
-<script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
-<script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>--}}
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/documentdashboard.js?v=121') }}"></script>
+<script src="{{ asset('/medinfo/documentdashboard.js?v=123') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -225,6 +203,7 @@
         initConsolidates();
         initRecentDocuments();
         initpopupwindows();
+        initdocinfowindow();
         initnotifications();
     </script>
 @endsection

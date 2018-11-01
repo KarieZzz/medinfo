@@ -4,6 +4,7 @@ let group_tree_url = 'datainput/fetch_ugroups';
 let docsource_url = 'datainput/fetchdocuments?';
 let recentdocs_url = 'datainput/fetchrecent?';
 let docmessages_url = 'datainput/fetchmessages?';
+let docinfo_url = 'datainput/fetchdocinfo/';
 let changestate_url = 'datainput/changestate';
 let changeaudition_url = 'datainput/changeaudition';
 let docmessagesend_url = 'datainput/sendmessage';
@@ -35,6 +36,7 @@ let periodDropDown = $('#periodSelector');
 let statusDropDown = $('#statusSelector');
 let dataPresenseDDown = $('#dataPresenceSelector');
 let stateWindow = $('#changeStateWindow');
+let docinfoWindow = $('#DocumentInfoWindow');
 let current_document_form_code;
 let current_document_form_name;
 let current_document_ou_name;
@@ -397,6 +399,7 @@ renderdoctoolbar = function (toolbar) {
     let word_export = $("<i style='margin-left: 2px;height: 14px' class='fa fa-file-word-o fa-lg' title='Экспортировать документ в MS Word'></i>");
     let excel_export = $("<i style='margin-left: 2px;height: 14px' class='fa fa-file-excel-o fa-lg' title='Экспортировать данные документа в MS Excel'></i>");
     let message_input = $("<i style='margin-left: 2px;height: 14px' class='fa fa-commenting-o fa-lg' title='Сообщение/комментарий к документу'></i>");
+    let doc_info = $("<i style='margin-left: 2px;height: 14px' class='fa fa-info fa-lg' title='Информация о документе'></i>");
     let refresh_list = $("<i style='margin-left: 2px;height: 14px' class='fa fa-refresh fa-lg' title='Обновить список'></i>");
     let changestatus = $("<input id='ChangeStatus' type='button' value='Статус отчета' />");
     let records = $('<span class="text-info pull-right" style="margin: 5px"> документов: <span id="totalrecords">'+ dgridDataAdapter.totalrecords +'</span></span>');
@@ -415,6 +418,9 @@ renderdoctoolbar = function (toolbar) {
     container.append(message_input);
     container.append(word_export);
     container.append(excel_export);
+    if (current_user_role === '3' || current_user_role === '4') {
+        container.append(doc_info);
+    }
     container.append(refresh_list);
     container.append(records);
     searchField.addClass('jqx-widget-content-' + theme);
@@ -426,6 +432,7 @@ renderdoctoolbar = function (toolbar) {
     word_export.jqxButton({ theme: theme });
     excel_export.jqxButton({ theme: theme });
     message_input.jqxButton({ theme: theme });
+    doc_info.jqxButton({ theme: theme });
     refresh_list.jqxButton({ theme: theme });
     let oldVal = "";
     searchField.on('keydown', function (event) {
@@ -529,6 +536,9 @@ renderdoctoolbar = function (toolbar) {
         if (rowindex !== -1) {
             location.replace(export_form_url + document_id);
         }
+    });
+    doc_info.click(function () {
+        docinfoWindow.jqxWindow('open');
     });
     refresh_list.click(function () {
         docsource.url = docsource_url + filtersource();
@@ -1078,6 +1088,9 @@ initdocumentstabs = function() {
                 $("#DocumentMessages").html("<table class='table table-bordered table-condensed table-hover table-striped' style='width: 100%'>" + items.join( "" ) + "</table>");
             }
         });
+        if (docinfoWindow.jqxWindow('isOpen')) {
+            setDocInfo(event.args.rowindex);
+        }
 /*        let aurl = docauditions_url + 'document=' + row.id;
         current_document_audits = [];
         $.getJSON( aurl, function( data ) {
@@ -1532,6 +1545,51 @@ initpopupwindows = function() {
         theme: theme
     });
 };
+// Инициализация окна с информацией о документе
+initdocinfowindow = function() {
+    let cl = $("#CloseDocInfoWindow");
+    docinfoWindow.jqxWindow({
+        width: 900,
+        height: 700,
+        position: 'center',
+        resizable: true,
+        isModal: false,
+        autoOpen: false,
+        cancelButton: cl,
+        theme: theme
+    });
+    docinfoWindow.on('open', function () {
+        let rowindex = dgrid.jqxGrid('getselectedrowindex');
+        setDocInfo(rowindex);
+    });
+};
+function setDocInfo(rowindex) {
+    let row_id = dgrid.jqxGrid('getrowid', rowindex);
+    let rowdata = dgrid.jqxGrid('getrowdata', rowindex);
+    if (rowindex === -1) {
+        rec_tbody.html('');
+        return false;
+    }
+    docinfoWindow.jqxWindow('setTitle', 'Сводная информация по документу №' + row_id);
+    $.getJSON( docinfo_url + row_id, function( data ) {
+        let rec = data.records;
+        let rec_tbody = $("#valueChangingRecords");
+        let rec_rows = '';
+        for (let i = 0; i < rec.length; i++ ) {
+            rec_rows += '<tr>';
+            rec_rows += '<td>'+ rec[i].occured_at +'</td>';
+            rec_rows += '<td>'+ rec[i].worker.description +'</td>';
+            rec_rows += '<td>'+ rec[i].table.table_code +'</td>';
+            rec_rows += '<td>'+ rec[i].row.row_code +'</td>';
+            rec_rows += '<td>'+ rec[i].column.column_code +'</td>';
+            rec_rows += '<td>'+ rec[i].oldvalue +'</td>';
+            rec_rows += '<td>'+ rec[i].newvalue +'</td>' + '</tr>';
+            rec_rows += '</tr>';
+        }
+        rec_tbody.html(rec_rows);
+    });
+}
+
 // Формирование строки запроса к серверу
 filtersource = function() {
     let forms;

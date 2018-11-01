@@ -282,6 +282,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('datainput/fetchconsolidates', 'StatDataInput\DocumentDashboardController@fetchconsolidates');
     Route::get('datainput/fetchmessages', 'StatDataInput\DocumentMessageController@fetchMessages');
     Route::get('datainput/fetchauditions', 'StatDataInput\DocumentAuditionController@fetchAuditions');
+    Route::get('datainput/fetchdocinfo/{document}', 'StatDataInput\DocInfoController@getDocInfo');
     Route::post('datainput/sendmessage', 'StatDataInput\DocumentMessageController@sendMessage');
     Route::post('datainput/changestate', 'StatDataInput\DocumentStateController@changeState');
     Route::post('datainput/changeaudition', 'StatDataInput\DocumentAuditionController@changeAudition');

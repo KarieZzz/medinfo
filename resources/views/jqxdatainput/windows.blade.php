@@ -50,3 +50,35 @@
         <input id="CancelMessage" type="button" value="Отменить" /></td>
     </div>
 </div>
+<div id="DocumentInfoWindow">
+    <div>Сводная информация по документу</div>
+    <div style="overflow: hidden">
+        <div class="panel" id="DocInfo">
+            <div class="row" data-toggle="collapse" data-target="#valChangingTable">
+                <div class="col-md-12">
+                    <h4>Последние изменения</h4>
+                </div>
+            </div>
+            <div class="row collapse in" style="max-height:330px;overflow: auto;margin-right:-3px" id="valChangingTable">
+                <div class="col-md-12">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Дата и время</th>
+                            <th>Сотрудник</th>
+                            <th>Таблица</th>
+                            <th>Строка</th>
+                            <th>Графа</th>
+                            <th>Старое значение</th>
+                            <th>Новое значение</th>
+                        </tr>
+                        </thead>
+                        <tbody id="valueChangingRecords"></tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+        <input id="CloseDocInfoWindow" type="button" value="Закрыть" /></td>
+    </div>
+</div>

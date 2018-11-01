@@ -12,21 +12,10 @@ class ValuechangingLog extends Model
     public $timestamps = false;
     protected $dates = ['occured_at'];
 
-    public function scopeOfDocument($query, $document)
-    {
-        return $query
-            ->where('d', $document);
-    }
-
-    public function scopeOfWorker($query, $worker)
-    {
-        return $query->where('worker_id', $worker);
-    }
-
-    public function document()
-    {
-        return $this->belongsTo('App\Document');
-    }
+    protected $casts = [
+        'oldvalue' => 'float',
+        'newvalue' => 'float',
+    ];
 
     public function worker()
     {
@@ -52,4 +41,22 @@ class ValuechangingLog extends Model
     {
         return $this->belongsTo('App\Column', 'c');
     }
+
+    public function scopeOfDocument($query, $document)
+    {
+        return $query
+            ->where('d', $document);
+    }
+
+    public function scopeOfWorker($query, $worker)
+    {
+        return $query->where('worker_id', $worker);
+    }
+
+    public function document()
+    {
+        return $this->belongsTo('App\Document');
+    }
+
+
 }
