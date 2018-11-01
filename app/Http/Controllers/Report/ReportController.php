@@ -33,5 +33,4 @@ class ReportController extends Controller
         return view('reports.analytic_report_by_patterns', compact('patterns', 'periods', 'last_year'));
     }
 
-
 }

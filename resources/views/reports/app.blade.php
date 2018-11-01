@@ -11,20 +11,16 @@
         html,
         body {
             height: 100%;
-            overflow: hidden;
         }
-        #widgets-content-wrap {
-            position: absolute;
-            margin-top: 50px;
-            width:100%;
-            height: 100%;
+        #content {
+            height: calc(100vh - 80px);
         }
     </style>
     <title id="Description">@yield('title')</title>
     <!-- Bootstrap core CSS -->
     <link href="{{ asset('/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
     <!-- jQWidgets CSS -->
-    <link href="{{ asset('/jqwidgets/styles/jqx.base.css?v=002') }}" rel="stylesheet">
+    <link href="{{ asset('/jqwidgets/styles/jqx.base.css?v=003') }}" rel="stylesheet">
     <link href="{{ asset('/jqwidgets/styles/jqx.bootstrap.css') }}" rel="stylesheet">
     <link href="{{ asset('/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
 </head>
@@ -33,12 +29,13 @@
 {{--<div id="alertmessage" class="col-md-4 "></div>--}}
 
 <div class="container-fluid" >
-    @include('jqxdatainput.notifications')
-    @include('jqxdatainput.confirmpopup')
     @include('reports.navbar')
-    <div id="widgets-content-wrap">
+    <div id="content">
         @yield('content')
     </div>
+    <div id="popups" style="display: none"></div>
+    @include('jqxdatainput.notifications')
+    @include('jqxdatainput.confirmpopup')
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="{{ asset('/jqwidgets/jqx-all.js?v=001') }}"></script>
@@ -58,8 +55,8 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-        //$("#menu").jqxMenu({ autoSizeMainItems: true, theme: theme, showTopLevelArrows: true, width: '800px' });
-        $("#wrap").show();
+        $("#content").show();
+        $("#popups").show();
     });
 
 </script>

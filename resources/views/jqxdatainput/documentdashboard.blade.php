@@ -158,7 +158,7 @@
 @push('loadjsscripts')
 <script src="{{ asset('/jqwidgets/jqx-all.js') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/documentdashboard.js?v=123') }}"></script>
+<script src="{{ asset('/medinfo/documentdashboard.js?v=124') }}"></script>
 @endpush
 
 @section('inlinejs')

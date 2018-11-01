@@ -1573,20 +1573,41 @@ function setDocInfo(rowindex) {
     docinfoWindow.jqxWindow('setTitle', 'Сводная информация по документу №' + row_id);
     $.getJSON( docinfo_url + row_id, function( data ) {
         let rec = data.records;
+        let st = data.states;
         let rec_tbody = $("#valueChangingRecords");
+        let st_tbody = $("#stateChangingRecords");
         let rec_rows = '';
-        for (let i = 0; i < rec.length; i++ ) {
-            rec_rows += '<tr>';
-            rec_rows += '<td>'+ rec[i].occured_at +'</td>';
-            rec_rows += '<td>'+ rec[i].worker.description +'</td>';
-            rec_rows += '<td>'+ rec[i].table.table_code +'</td>';
-            rec_rows += '<td>'+ rec[i].row.row_code +'</td>';
-            rec_rows += '<td>'+ rec[i].column.column_code +'</td>';
-            rec_rows += '<td>'+ rec[i].oldvalue +'</td>';
-            rec_rows += '<td>'+ rec[i].newvalue +'</td>' + '</tr>';
-            rec_rows += '</tr>';
+        let st_rows = '';
+
+        if (rec.length === 0) {
+            rec_rows = '<tr><td colspan="7"><p class="text-danger text-center">Нет данных</p></td></tr>';
+        } else {
+            for (let i = 0; i < rec.length; i++ ) {
+                rec_rows += '<tr>';
+                rec_rows += '<td>'+ rec[i].occured_at +'</td>';
+                rec_rows += '<td>'+ rec[i].worker.description +'</td>';
+                rec_rows += '<td>'+ rec[i].table.table_code +'</td>';
+                rec_rows += '<td>'+ rec[i].row.row_code +'</td>';
+                rec_rows += '<td>'+ rec[i].column.column_code +'</td>';
+                rec_rows += '<td>'+ rec[i].oldvalue +'</td>';
+                rec_rows += '<td>'+ rec[i].newvalue +'</td>' + '</tr>';
+                rec_rows += '</tr>';
+            }
         }
         rec_tbody.html(rec_rows);
+        if (st.length === 0) {
+            st_rows = '<tr><td colspan="4"><p class="text-danger text-center">Нет данных</p></td></tr>';
+        } else {
+            for (let i = 0; i < st.length; i++ ) {
+                st_rows += '<tr>';
+                st_rows += '<td>'+ st[i].occured_at +'</td>';
+                st_rows += '<td>'+ st[i].worker.description +'</td>';
+                st_rows += '<td>'+ st[i].oldstate.name +'</td>';
+                st_rows += '<td>'+ st[i].newstate.name +'</td>';
+                st_rows += '</tr>';
+            }
+        }
+        st_tbody.html(st_rows);
     });
 }
 

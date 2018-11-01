@@ -37,7 +37,6 @@
 
 <div class="container-fluid" >
     @include('jqxadmin.navbar')
-    {{--<div id="widgets-content-wrap">--}}
     <div id="content" style="display: none">
         @yield('content')
     </div>

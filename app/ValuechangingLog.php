@@ -22,6 +22,11 @@ class ValuechangingLog extends Model
         return $this->belongsTo('App\Worker');
     }
 
+    public function document()
+    {
+        return $this->belongsTo('App\Document', 'd');
+    }
+
     public function form()
     {
         return $this->belongsTo('App\Form', 'f');
@@ -51,11 +56,6 @@ class ValuechangingLog extends Model
     public function scopeOfWorker($query, $worker)
     {
         return $query->where('worker_id', $worker);
-    }
-
-    public function document()
-    {
-        return $this->belongsTo('App\Document');
     }
 
 

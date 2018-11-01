@@ -14,7 +14,9 @@ use App\Document;
 use App\DocumentMessage;
 use App\Form;
 use Mail;
-use PhpParser\Node\Stmt\TryCatch;
+use Carbon\Carbon;
+use App\StatechangingLog;
+//use PhpParser\Node\Stmt\TryCatch;
 
 class DocumentStateController extends Controller
 {
@@ -117,8 +119,8 @@ class DocumentStateController extends Controller
                     break;
             }
             if ($data['status_changed']) {
-                // TODO: Записать событие об изменении статуса в журнал
-                //Log::storeFormStateChangeEvent($doc_id, $user->user_id, $old_state, $new_state);
+                StatechangingLog::create(['worker_id' => $worker->id, 'document_id' => $document->id,
+                    'oldstate' => $old_state, 'newstate' => $new_state, 'occured_at' => Carbon::now()]);
                 $newmessage = new DocumentMessage();
                 $newmessage->doc_id = $document->id;
                 $newmessage->user_id = $worker->id;

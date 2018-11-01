@@ -9,7 +9,7 @@
         <div style='margin-top: 10px;' class="stateradio" id='approved'>Утвержден</div>
         <textarea id="statusChangeMessage" style="margin: 10px"></textarea>
         <input style="margin-right: 5px;" type="button" id="SaveState" value="Сохранить" />
-        <input id="CancelStateChanging" type="button" value="Отменить" /></td>
+        <input id="CancelStateChanging" type="button" value="Отменить" />
         <div id="changeStateAlertMessage" style="margin-top: 5px; display: none"></div>
     </div>
 </div>
@@ -39,7 +39,7 @@
             <span>Проверен, имеются замечания</span></div>
         <textarea id="AuditBatchChangeMessage" style="margin: 10px"></textarea>
         <input style="margin-right: 5px;" type="button" id="SaveBatchAuditState" value="Изменить статус проверки документов" />
-        <input id="CancelBatchAuditStateChanging" type="button" value="Отменить" /></td>
+        <input id="CancelBatchAuditStateChanging" type="button" value="Отменить" />
     </div>
 </div>--}}
 <div id="sendMessageWindow">
@@ -47,7 +47,7 @@
     <div style="overflow: hidden;">
         <textarea id="message" style="margin: 10px"></textarea>
         <input style="margin-right: 5px;" type="button" id="SendMessage" value="Отправить" />
-        <input id="CancelMessage" type="button" value="Отменить" /></td>
+        <input id="CancelMessage" type="button" value="Отменить" />
     </div>
 </div>
 <div id="DocumentInfoWindow">
@@ -56,10 +56,10 @@
         <div class="panel" id="DocInfo">
             <div class="row" data-toggle="collapse" data-target="#valChangingTable">
                 <div class="col-md-12">
-                    <h4>Последние изменения</h4>
+                    <h4>Последние изменения данных</h4>
                 </div>
             </div>
-            <div class="row collapse in" style="max-height:330px;overflow: auto;margin-right:-3px" id="valChangingTable">
+            <div class="row collapse in" style="max-height:330px;overflow:auto;margin-right:-3px" id="valChangingTable">
                 <div class="col-md-12">
                     <table class="table">
                         <thead>
@@ -76,9 +76,28 @@
                         <tbody id="valueChangingRecords"></tbody>
                     </table>
                 </div>
-
+            </div>
+            <div class="row" data-toggle="collapse" data-target="#stateChangingTable">
+                <div class="col-md-12">
+                    <h4>Изменения статуса документа</h4>
+                </div>
+            </div>
+            <div class="row collapse in" style="max-height:330px;overflow:auto;margin-right:-3px" id="stateChangingTable">
+                <div class="col-md-12">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Дата и время</th>
+                            <th>Сотрудник</th>
+                            <th>Прежний статус</th>
+                            <th>Новый статус</th>
+                        </tr>
+                        </thead>
+                        <tbody id="stateChangingRecords"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
-        <input id="CloseDocInfoWindow" type="button" value="Закрыть" /></td>
+        <input id="CloseDocInfoWindow" type="button" value="Закрыть" />
     </div>
 </div>
