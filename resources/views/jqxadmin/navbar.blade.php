@@ -45,7 +45,6 @@
                 <ul class="dropdown-menu">
                     <li><a href="/admin/cfunctions">Функции контроля</a></li>
                     <li><a href="/admin/cfunctions/all">Функции контроля (полный перечень)</a></li>
-                    <li><a href="/admin/dcheck/selected">Выборочный контроль</a></li>
                     <li><a href="/admin/consolidation">Функции рассчета</a></li>
                     <li><a href="/admin/cons">Функции рассчета (new)</a></li>
                     <li><a href="/reports/patterns">Отчеты</a></li>
