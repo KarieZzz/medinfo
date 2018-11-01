@@ -57,8 +57,7 @@
 @endsection
 
 @push('loadjsscripts')
-    <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-    <script src="{{ asset('/medinfo/admin/composereportpattern.js?v=004') }}"></script>
+    <script src="{{ asset('/medinfo/admin/composereportpattern.js?v=005') }}"></script>
 @endpush
 
 @section('inlinejs')
