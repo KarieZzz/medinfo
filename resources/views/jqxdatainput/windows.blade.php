@@ -97,6 +97,25 @@
                     </table>
                 </div>
             </div>
+            <div class="row" data-toggle="collapse" data-target="#sectionChangingTable">
+                <div class="col-md-12">
+                    <h4>Прием/отклонение разделов документа</h4>
+                </div>
+            </div>
+            <div class="row collapse in" style="max-height:330px;overflow:auto;margin-right:-3px" id="sectionChangingTable">
+                <div class="col-md-12">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Дата и время</th>
+                            <th>Сотрудник</th>
+                            <th>Действие</th>
+                        </tr>
+                        </thead>
+                        <tbody id="sectionChangingRecords"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
         <input id="CloseDocInfoWindow" type="button" value="Закрыть" />
     </div>

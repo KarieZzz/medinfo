@@ -28,6 +28,10 @@ class DocInfoController extends Controller
             ->with('oldstate')
             ->with('newstate')
             ->get();
-        return compact('records', 'states');
+        $sections = \App\SectionchangingLog::OfDocument($document)->orderBy('occured_at', 'desc')
+            ->with('worker')
+            ->with('section')
+            ->get();
+        return compact('records', 'states', 'sections');
     }
 }

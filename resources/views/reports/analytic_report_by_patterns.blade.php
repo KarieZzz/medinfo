@@ -37,13 +37,13 @@
                         </div>
                         <div class="form-group">
                             <div class="col-sm-offset-2 col-sm-10">
-                                <button type="button" id="perform" class="btn btn-success">Выполнить отчет</button>
+                                <button type="button" id="perform" class="btn btn-success"  data-toggle="modal" data-target="#repProgress">Выполнить отчет</button>
                             </div>
                         </div>
                     </form>
                     <div class="panel panel-default" style="height: 100%">
                         <div class="panel-heading">Перечень показателей в альбоме</div>
-                        <div class="panel-body" id="indexes" style="max-height:460px;overflow: auto;">Выберите шаблон отчета</div>
+                        <div class="panel-body" id="indexes" style="max-height:400px;overflow: auto;">Выберите шаблон отчета</div>
                     </div>
                     <div class="panel panel-default">
                         <div class="panel-body" id="indexes">
@@ -56,10 +56,40 @@
             </div>
         </div>
     </div>
+    <!-- Modal -->
+    <div id="repProgress" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Выполнение отчета</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
+                                     data-keyboard="false" style="width:0%" id="progress">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <p>Обрабатывается:</p>
+                        </div>
+                        <div class="col-sm-8">
+                            <p id="ou"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('loadjsscripts')
-<script src="{{ asset('/medinfo/admin/reportpatternsadmin.js?v=016') }}"></script>
+<script src="{{ asset('/medinfo/admin/reportpatternsadmin.js?v=028') }}"></script>
 @endpush
 
 @section('inlinejs')

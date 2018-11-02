@@ -11,6 +11,8 @@ use App\Document;
 use App\DocumentSectionBlock;
 use App\FormSection;
 use App\DocumentMessage;
+use App\SectionchangingLog;
+use Carbon\Carbon;
 
 class DocumentSectionController extends Controller
 {
@@ -27,6 +29,8 @@ class DocumentSectionController extends Controller
         $section = DocumentSectionBlock::firstOrCreate(['formsection_id' => $formsection->id , 'document_id' => $document->id, 'worker_id' => $worker->id]);
         $section->blocked = $blocking === '1' ? true : false;
         $section->save();
+        SectionchangingLog::create(['worker_id' => $worker->id, 'document_id' => $document->id,
+            'blocked' => $section->blocked, 'occured_at' => Carbon::now()]);
 
         $newmessage = new DocumentMessage();
         $newmessage->doc_id = $document->id;

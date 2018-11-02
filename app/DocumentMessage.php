@@ -18,6 +18,6 @@ class DocumentMessage extends Model
 
     public function worker()
     {
-        return $this->hasOne('App\Worker', 'id', 'user_id');
+        return $this->belongsTo('App\Worker', 'user_id', 'id');
     }
 }
