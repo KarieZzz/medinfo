@@ -29,7 +29,7 @@ class DocumentSectionController extends Controller
         $section = DocumentSectionBlock::firstOrCreate(['formsection_id' => $formsection->id , 'document_id' => $document->id, 'worker_id' => $worker->id]);
         $section->blocked = $blocking === '1' ? true : false;
         $section->save();
-        SectionchangingLog::create(['worker_id' => $worker->id, 'document_id' => $document->id,
+        SectionchangingLog::create(['worker_id' => $worker->id, 'document_id' => $document->id, 'formsection_id' => $formsection->id,
             'blocked' => $section->blocked, 'occured_at' => Carbon::now()]);
 
         $newmessage = new DocumentMessage();

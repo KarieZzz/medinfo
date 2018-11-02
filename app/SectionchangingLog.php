@@ -8,7 +8,7 @@ class SectionchangingLog extends Model
 {
     //
     protected $table = 'sectionchanging_log';
-    protected $fillable = [ 'worker_id', 'document_id', 'blocked', 'occured_at' ];
+    protected $fillable = [ 'worker_id', 'document_id', 'formsection_id', 'blocked', 'occured_at' ];
     public $timestamps = false;
     protected $dates = ['occured_at'];
 
@@ -22,6 +22,11 @@ class SectionchangingLog extends Model
         return $this->belongsTo('App\Document');
     }
 
+    public function section()
+    {
+        return $this->belongsTo('App\FormSection', 'formsection_id', 'id');
+    }
+
     public function scopeOfDocument($query, $document)
     {
         return $query
@@ -31,5 +36,10 @@ class SectionchangingLog extends Model
     public function scopeOfWorker($query, $worker)
     {
         return $query->where('worker_id', $worker);
+    }
+
+    public function scopeOfSection($query, $section)
+    {
+        return $query->where('section_id', $section);
     }
 }

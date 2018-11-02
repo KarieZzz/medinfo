@@ -17,7 +17,7 @@ class CreateSectionchangingLogTable extends Migration
             $table->increments('id');
             $table->integer('worker_id')->index();
             $table->integer('document_id')->index();
-            $table->integer('section_id')->index();
+            $table->integer('formsection_id')->index();
             $table->boolean('blocked')->index();
             $table->timestamp('occured_at');
         });

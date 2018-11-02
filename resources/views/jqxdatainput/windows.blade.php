@@ -52,16 +52,16 @@
 </div>
 <div id="DocumentInfoWindow">
     <div>Сводная информация по документу</div>
-    <div style="overflow: hidden">
+    <div style="overflow: auto">
         <div class="panel" id="DocInfo">
-            <div class="row" data-toggle="collapse" data-target="#valChangingTable">
+            <div class="row" data-toggle="collapse" data-target="#valChangingTable" style="margin-right:-6px">
                 <div class="col-md-12">
                     <h4>Последние изменения данных</h4>
                 </div>
             </div>
-            <div class="row collapse in" style="max-height:330px;overflow:auto;margin-right:-3px" id="valChangingTable">
+            <div class="row collapse in" style="max-height:330px;overflow:auto;margin-right:-6px" id="valChangingTable">
                 <div class="col-md-12">
-                    <table class="table">
+                    <table class="table table-condensed">
                         <thead>
                         <tr>
                             <th>Дата и время</th>
@@ -77,14 +77,14 @@
                     </table>
                 </div>
             </div>
-            <div class="row" data-toggle="collapse" data-target="#stateChangingTable">
+            <div class="row" data-toggle="collapse" data-target="#stateChangingTable" style="margin-right:-6px">
                 <div class="col-md-12">
                     <h4>Изменения статуса документа</h4>
                 </div>
             </div>
-            <div class="row collapse in" style="max-height:330px;overflow:auto;margin-right:-3px" id="stateChangingTable">
+            <div class="row collapse in" style="max-height:330px;overflow:auto;margin-right:-6px" id="stateChangingTable">
                 <div class="col-md-12">
-                    <table class="table">
+                    <table class="table table-condensed">
                         <thead>
                         <tr>
                             <th>Дата и время</th>
@@ -97,18 +97,19 @@
                     </table>
                 </div>
             </div>
-            <div class="row" data-toggle="collapse" data-target="#sectionChangingTable">
+            <div class="row" data-toggle="collapse" data-target="#sectionChangingTable" style="margin-right:-6px">
                 <div class="col-md-12">
                     <h4>Прием/отклонение разделов документа</h4>
                 </div>
             </div>
-            <div class="row collapse in" style="max-height:330px;overflow:auto;margin-right:-3px" id="sectionChangingTable">
+            <div class="row collapse in" style="max-height:330px;overflow:auto;margin-right:-6px" id="sectionChangingTable">
                 <div class="col-md-12">
-                    <table class="table">
+                    <table class="table table-condensed">
                         <thead>
                         <tr>
                             <th>Дата и время</th>
                             <th>Сотрудник</th>
+                            <th>Раздел</th>
                             <th>Действие</th>
                         </tr>
                         </thead>
