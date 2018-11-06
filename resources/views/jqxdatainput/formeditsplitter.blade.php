@@ -15,7 +15,15 @@
                     <button class="btn btn-default navbar-btn" id="IPTableCheck" title="Контроль таблицы межпериодный"><i>К</i><small>мп</small></button>
                 </div>
                 <button class="btn btn-default navbar-btn" id="FormCheck" title="Контроль формы"><i>К</i><small>формы</small></button>
-                <button class="btn btn-default navbar-btn" id="tableExcelExport" title="Экспорт данных таблицы в MS Excel"> <span class='fa fa-file-excel-o fa-lg' ></span></button>
+                <button class="btn btn-default navbar-btn" id="tableExcelExport" title="Экспорт данных таблицы в MS Excel">
+                    <span class='fa fa-download fa-lg' ></span>
+                    <span class='fa fa-file-excel-o fa-lg' ></span>
+                </button>
+                <button class="btn btn-default navbar-btn" id="tableExcelImport" title="Импорт данных таблицы из MS Excel">
+                    <span class='fa fa-upload fa-lg' ></span>
+                    <span class='fa fa-file-excel-o fa-lg' ></span>
+
+                </button>
                 <div class="btn-group" @if (count($formsections) === 0) style="display: none" @endif>
                     <div id="SectionsManager" class="btn btn-default">
                         <div id="FormSections" style="display: none">

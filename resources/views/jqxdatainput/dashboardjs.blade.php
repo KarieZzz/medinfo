@@ -28,6 +28,8 @@ let idtcheck = $("#IDTableCheck");
 let iptcheck = $("#IPTableCheck");
 let formcheck = $("#FormCheck");
 let fsdropdown = $('#SectionsManager');
+let excelUploadWindow = $('#uploadExcelFile');
+let flUpload = $('#ExcelFileUpload');
 
 let localizednumber = new Intl.NumberFormat('ru-RU');
 let edited_tables = [{!! implode(',', $editedtables) !!}];
@@ -94,6 +96,7 @@ let cell_layer_url = "/datainput/fetchcelllayers/" + doc_id + "/";
 let calculatedcells_url = "/datainput/calculate/" + doc_id + "/";
 let cons_protocol_url = "/datainput/fetchconsprotocol/" + doc_id + "/";
 let blocksection_url = "/datainput/blocksection/" + doc_id + "/";
+let excelupload_url = '/datainput/excelupload/' + doc_id + '/';
 let formlabels =
     {
         compare: 1,
@@ -124,5 +127,6 @@ initdatagrid();
 //$('#formEditLayout').jqxLayout({ theme: theme, width: '99%', height: '98%', layout: layout });
 init_fc_extarbuttons();
 initextarbuttons();
+initExcelUpload();
 //firefullscreenevent();
 </script>

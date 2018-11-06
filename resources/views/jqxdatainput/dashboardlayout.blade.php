@@ -47,6 +47,7 @@
         @yield('content')
     </div>
     @include('jqxdatainput.notifications')
+    @include('jqxdatainput.dashboardwindows')
 
 <!-- Bootstrap core JavaScript -->
 {{--<script src="{{ asset('/plugins/jQuery/jquery-1.12.4.min.js') }}" type="text/javascript" ></script>--}}

@@ -1319,6 +1319,12 @@ let inittoolbarbuttons = function () {
         let url = tableexport_url + current_table ;
         location.replace(url);
     });
+    $("#tableExcelImport").click(function () {
+        let url = excelupload_url + current_table ;
+        flUpload.jqxFileUpload({ uploadUrl: url });
+        $("#UploadResult").html('');
+        excelUploadWindow.jqxWindow('open');
+    });
 
     fsdropdown.jqxDropDownButton({width: 170, height: 22, theme: theme});
     fsdropdown.jqxDropDownButton('setContent', '<div style="margin-top: 3px">Управление разделами</div>');
@@ -1544,4 +1550,40 @@ let fillCalculatedFields = function () {
                     }
                 }*/
     });
+};
+let initExcelUpload = function () {
+    excelUploadWindow.jqxWindow({
+        width: 500,
+        height: 300,
+        position: 'center',
+        resizable: true,
+        isModal: true,
+        autoOpen: false,
+        theme: theme
+    });
+    flUpload.on('uploadEnd', function (event) {
+        let args = event.args;
+        let fileName = args.file;
+        let serverResponce = $.parseJSON(args.response);
+        console.log(serverResponce);
+        let m = '';
+        serverResponce.forEach(function(item, i) {
+             m += i + ": Импортировано ячеек: " + item .saved + " Очищено ячеек: " + serverResponce.deleted;
+        });
+        //$("#UploadResult").html('<p style="margin-top: 25px">Импортировано ячеек: '+ serverResponce.saved + '</p>' + '<p>Очищено ячеек: '+ serverResponce.deleted + '</p>');
+        $("#UploadResult").html(m);
+    });
+    flUpload.jqxFileUpload({
+        width: 450,
+        uploadUrl: excelupload_url + current_table,
+        multipleFilesUpload: false,
+        fileInputName: 'fileToUpload'
+    });
+    flUpload.jqxFileUpload({
+        localization: {
+            browseButton: 'Выбрать файл',
+            uploadButton: 'Загрузить',
+            cancelButton: 'Отменить',
+            uploadFileTooltip: 'загрузить',
+            cancelFileTooltip: 'отменить' } });
 };

@@ -156,7 +156,7 @@ class TableEditing
             $contentType = $col->getMedinfoContentType();
             if ($contentType == 'data') {
                 $columns_arr[] = array(
-                    'text'  => $col->column_index,
+                    'text'  => $col->column_code,
                     'dataField' => $col->id,
                     'width' => $width,
                     //'cellsalign' => 'right',
