@@ -25,13 +25,25 @@ class DocumentSectionController extends Controller
     public function toggleSection(Document $document, FormSection $formsection, $blocking = '1')
     {
         $worker = Auth::guard('datainput')->user();
-        //dd($formsection);
-        $section = DocumentSectionBlock::firstOrCreate(['formsection_id' => $formsection->id , 'document_id' => $document->id, 'worker_id' => $worker->id]);
-        $section->blocked = $blocking === '1' ? true : false;
-        $section->save();
+        $blocked = $blocking === '1' ? true : false;
+        $section = DocumentSectionBlock::SD($formsection->id, $document->id)->first();
+        if (!$section) {
+            $section = DocumentSectionBlock::create(
+                [
+                    'formsection_id' => $formsection->id ,
+                    'document_id' => $document->id,
+                    'worker_id' => $worker->id,
+                    'blocked' =>$blocked
+                ]
+            );
+        } else {
+            $section->worker_id = $worker->id;
+            $section->blocked = $blocked;
+            $section->save();
+        }
+
         SectionchangingLog::create(['worker_id' => $worker->id, 'document_id' => $document->id, 'formsection_id' => $formsection->id,
             'blocked' => $section->blocked, 'occured_at' => Carbon::now()]);
-
         $newmessage = new DocumentMessage();
         $newmessage->doc_id = $document->id;
         $newmessage->user_id = $worker->id;

@@ -20,6 +20,7 @@ class CreateDocumentSectionBlocksTable extends Migration
             $table->integer('worker_id')->index();
             $table->boolean('blocked')->nullable()->index();
             $table->timestamps();
+            $table->unique(['formsection_id', 'document_id']);
         });
     }
 

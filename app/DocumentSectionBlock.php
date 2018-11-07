@@ -36,6 +36,13 @@ class DocumentSectionBlock extends Model
             ->where('document_id', $document);
     }
 
+    public function scopeSD($query, $section, $document)
+    {
+        return $query
+            ->where('formsection_id', $section)
+            ->where('document_id', $document);
+    }
+
     public function scopeOfWorker($query, $worker)
     {
         return $query

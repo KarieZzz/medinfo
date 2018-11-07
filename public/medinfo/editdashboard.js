@@ -1334,7 +1334,6 @@ let inittoolbarbuttons = function () {
     }
 
     $(".blocksection").click(function () {
-        console.log(formsections);
         let selector = $(this);
         let fs = selector.prop('id');
         $.get(blocksection_url + fs + '/' + '1', function( data ) {
@@ -1565,12 +1564,11 @@ let initExcelUpload = function () {
         let args = event.args;
         let fileName = args.file;
         let serverResponce = $.parseJSON(args.response);
-        console.log(serverResponce);
-        let m = '';
-        serverResponce.forEach(function(item, i) {
-             m += i + ": Импортировано ячеек: " + item .saved + " Очищено ячеек: " + serverResponce.deleted;
-        });
-        //$("#UploadResult").html('<p style="margin-top: 25px">Импортировано ячеек: '+ serverResponce.saved + '</p>' + '<p>Очищено ячеек: '+ serverResponce.deleted + '</p>');
+        let m = '<div style="margin-top: 25px">';
+        for (let tcode in serverResponce) {
+            m += "<p class='text-info'>" +tcode + ": Импортировано ячеек: " + serverResponce[tcode].saved + " Очищено ячеек: " + serverResponce[tcode].deleted + "</p>";
+        }
+        m += '</div>';
         $("#UploadResult").html(m);
     });
     flUpload.jqxFileUpload({

@@ -281,7 +281,7 @@ class DashboardController extends Controller
             if (!$permissionByState) {
                 $data['comment'] = "Отсутствуют права для изменения данных в этом документе (по статусу документа)";
             } elseif (!$permissionBySection) {
-                $data['comment'] = "Отсутствуют права для изменения данных в этом документе (раздел документа принят)";
+                $data['comment'] = "Отсутствуют права для изменения данных в этой таблице (раздел документа принят)";
             } else {
                 $data['comment'] = "Отсутствуют права для изменения данных в этом документе";
             }
@@ -338,9 +338,9 @@ class DashboardController extends Controller
 
     public function isTableBlocked(Document $document, int $table)
     {
-        $blockedSections = \App\DocumentSectionBlock::OfDocument($document->id)->with('formsection.tables')->get();
+        $blockedSections = \App\DocumentSectionBlock::OfDocument($document->id)->Blocked()->with('formsection.tables')->get();
         //dd($blockedSections[0]->formsection->tables[0]->table_id);
-        if ($blockedSections ) {
+        if ($blockedSections) {
             $ids = [];
             foreach($blockedSections as $blockedSection) {
                 foreach ($blockedSection->formsection->tables as $t) {

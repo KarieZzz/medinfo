@@ -19,7 +19,7 @@
                     <span class='fa fa-download fa-lg' ></span>
                     <span class='fa fa-file-excel-o fa-lg' ></span>
                 </button>
-                <button class="btn btn-default navbar-btn" id="tableExcelImport" title="Импорт данных таблицы из MS Excel">
+                <button class="btn btn-default navbar-btn" id="tableExcelImport" title="Импорт данных таблицы из MS Excel" style="display: none">
                     <span class='fa fa-upload fa-lg' ></span>
                     <span class='fa fa-file-excel-o fa-lg' ></span>
 
@@ -38,9 +38,29 @@
                                             id="{{ $formsection->id }}"
                                     >
                                         <td>{{ $formsection->section_name }}</td>
-                                        <td><button title="Принять" class="btn btn-default blocksection" id="{{ $formsection->id }}"><span class='glyphicon glyphicon-check'></span></button></td>
-                                        <td><button title="Отклонить" class="btn btn-default unblocksection" id="{{ $formsection->id }}"
-                                           {{ isset($formsection->section_blocks[0]) ? '' : 'disabled' }} ><span class='glyphicon glyphicon-remove'></span></button></td>
+                                        @if(isset($formsection->section_blocks[0]))
+                                            <td>
+                                                <button title="Принять" class="btn btn-default blocksection" id="{{ $formsection->id }}" {{ $formsection->section_blocks[0]->blocked ? 'disabled' : '' }}>
+                                                    <span class='glyphicon glyphicon-check'></span>
+                                                </button>
+                                            </td>
+                                            <td>
+                                                <button title="Отклонить" class="btn btn-default unblocksection" id="{{ $formsection->id }}" {{ $formsection->section_blocks[0]->blocked ? '' : 'disabled' }} >
+                                                    <span class='glyphicon glyphicon-remove'></span>
+                                                </button>
+                                            </td>
+                                        @else
+                                            <td>
+                                                <button title="Принять" class="btn btn-default blocksection" id="{{ $formsection->id }}">
+                                                    <span class='glyphicon glyphicon-check'></span>
+                                                </button>
+                                            </td>
+                                            <td>
+                                                <button title="Отклонить" class="btn btn-default unblocksection" id="{{ $formsection->id }}" disabled >
+                                                    <span class='glyphicon glyphicon-remove'></span>
+                                                </button>
+                                            </td>
+                                        @endif
                                     </tr>
                                 @endforeach
                             </table>
