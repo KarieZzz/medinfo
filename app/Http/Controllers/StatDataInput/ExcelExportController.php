@@ -30,12 +30,13 @@ class ExcelExportController extends Controller
 
     public function dataTableExport(Document $document, Table $table)
     {
+        $form = Form::find($document->form_id);
         $ret = ExcelExport::getTableDataForExport($document, $table);
         $data = $ret['data'];
         $cols = $ret['cols'];
         //dd($data);
         $excel = Excel::create('Table' . $table->table_code);
-        $excel->sheet("Таблица {$table->table_code}" , function($sheet) use ($table, $cols, $data) {
+        $excel->sheet($form->form_code . '_' . $table->table_code , function($sheet) use ($table, $cols, $data) {
             $sheet->loadView('reports.datatable_excel', compact('table', 'cols', 'data'));
 /*            $sheet->setColumnFormat(array(
                 'A:B' => '@',
@@ -90,7 +91,7 @@ class ExcelExportController extends Controller
             $ret = ExcelExport::getTableDataForExport($document, $table);
             $data = $ret['data'];
             $cols = $ret['cols'];
-            $excel->sheet($table->table_code , function($sheet) use ($table, $cols, $data) {
+            $excel->sheet($form->form_code . '_' . $table->table_code , function($sheet) use ($table, $cols, $data) {
                 $sheet->loadView('reports.datatable_excel', compact('table', 'cols', 'data'));
                 $sheet->getStyle(ExcelExport::getCellByRC(4, 1) . ':' . ExcelExport::getCellByRC(4, count($cols)))->getAlignment()->setWrapText(true);
                 $sheet->getStyle(ExcelExport::getCellByRC(4, 1) . ':' . ExcelExport::getCellByRC(count($data)+5, count($cols)))->getBorders()

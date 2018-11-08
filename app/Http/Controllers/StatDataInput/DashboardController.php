@@ -21,8 +21,6 @@ use App\Cell;
 use App\NECellsFetch;
 use App\ValuechangingLog;
 use App\FormSection;
-//use App\DocumentSectionBlock;
-//use App\UnitGroup;
 use App\UnitList;
 use App\Medinfo\TableEditing;
 
@@ -49,20 +47,17 @@ class DashboardController extends Controller
         if ($worker->role === 0 ) {
             $editpermission = true;
         } else {
-            $editpermission = $this->isEditPermission($worker->permission, $document->state);
+            //$editpermission = $this->isEditPermission($worker->permission, $document->state);
+            $editpermission = TableEditing::isEditPermission($worker->permission, $document->state);
         }
         $editpermission ? $editmode = 'Редактирование' : $editmode = 'Только чтение';
         $period = Period::find($document->period_id);
         $editedtables = Table::editedTables($document->id, $album->id);
-        //dd($editedtables);
         //$noteditablecells = NECellsFetch::where('f', $form->id)->select('t', 'r', 'c')->get();
         $noteditablecells = NECellsFetch::byOuId($current_unit->id, $this->getRealForm($form)->id);
-        //dd($noteditablecells );
         $renderingtabledata = $this->composeDataForTablesRendering($this->getRealForm($form), $editedtables, $album);
         $laststate = $this->getLastState($worker, $document, $form, $album);
         $formsections = $this->getFormSections($this->getRealForm($form)->id, $album->id, $document->id);
-        //return $datafortables;
-        //return $renderingtabledata;
         \App\RecentDocument::create(['worker_id' => $worker->id, 'document_id' => $document->id, 'occured_at' => Carbon::now(), ]);
         return view($this->dashboardView(), compact(
             'current_unit', 'document', 'worker', 'album', 'statelabel', 'editpermission', 'editmode', 'monitoring',
@@ -76,12 +71,7 @@ class DashboardController extends Controller
         return property_exists($this, 'dashboardView') ? $this->dashboardView : 'jqxdatainput.formdashboard';
     }
 
-    /**
-     * @param int $permission
-     * @param int $document_state
-     * @return bool
-     */
-    protected function isEditPermission(int $permission, int $document_state)
+/*    protected function isEditPermission(int $permission, int $document_state)
     {
         switch (true) {
             case (($permission & config('medinfo.permission.permission_edit_report')) && ($document_state == 2 || $document_state == 16)) :
@@ -103,20 +93,12 @@ class DashboardController extends Controller
                 $edit_permission = false;
         }
         return $edit_permission;
-    }
+    }*/
 
     //Описательная информация для построения гридов динамически
     // возвращается json объект в формате для jqxgrid
-    /**
-     * @param Form $form
-     * @param array $editedtables
-     * @return mixed
-     */
     protected function composeDataForTablesRendering(Form $form, array $editedtables, Album $album)
     {
-        //$tables = Table::where('form_id', $form->id)->where('deleted', 0)->orderBy('table_code')->get();
-
-
         $tables = Table::OfForm($form->id)->whereDoesntHave('excluded', function ($query) use($album) {
             $query->where('album_id', $album->id);
         })->orderBy('table_index')->get();
@@ -190,7 +172,6 @@ class DashboardController extends Controller
 
     public function saveValue(Request $request, $document, $table)
     {
-        //dd($request->value);
         $worker = Auth::guard('datainput')->user();
         $document = Document::find($document);
         $permissionByState = false;
@@ -199,8 +180,10 @@ class DashboardController extends Controller
         if ($worker->role === 0 ) {
             $editpermission = true;
         } else {
-            $permissionByState = $this->isEditPermission($worker->permission, $document->state);
-            $permissionBySection = !$this->isTableBlocked($document, $table);
+            //$permissionByState = $this->isEditPermission($worker->permission, $document->state);
+            $permissionByState = TableEditing::isEditPermission($worker->permission, $document->state);
+            //$permissionBySection = !$this->isTableBlocked($document, $table);
+            $permissionBySection = !TableEditing::isTableBlocked($document->id, $table);
             // вариант 1: изменения запрещены только при соответствующем статусе документа
             //$editpermission = $permissionByState && $permissionBySection;
             // вариант 2: изменения запрещены при соответствующем статусе и во все таблицах принятых разделов для всех пользователей
@@ -261,13 +244,6 @@ class DashboardController extends Controller
                     ];
                     $event = ValuechangingLog::create($log);
                     $data['event_id'] = $event->id;
-                    // TODO: Решить нужно ли контролировать значения по мере изменения ячеек
-                    //$v = new ValidateCellByMi($cell_adr);
-                    //$cell_check_res = $v->checkoutCell();
-                    //if ($cell_check_res !== null) {
-                    //$data['protocol'] = $v->getProtocol();
-                    //$data['valid'] = $cell_check_res;
-                    //}
                 }
                 else {
                     $data['cell_affected'] = false;
@@ -314,15 +290,9 @@ class DashboardController extends Controller
             $form_id = $form->id;
         }
         $laststate = array();
-/*        $current_table = Table::OfForm($form->id)->whereDoesntHave('excluded', function ($query) use($default_album) {
-            $query->where('album_id', $default_album->id)->orderBy('table_code');
-        })->first();*/
-
         $current_table = Table::OfForm($form_id)->whereDoesntHave('excluded', function ($query) use($album) {
             $query->where('album_id', $album->id);
         })->orderBy('table_index')->first();
-
-        //$current_table = $form->tables->where('deleted', 0)->sortBy('table_code')->first();
         $laststate['currenttable'] = $current_table;
         return $laststate;
     }
@@ -333,10 +303,12 @@ class DashboardController extends Controller
             $query->where('album_id', $album);
         })->with(['section_blocks' => function ($query) use($document) {
             $query->where('document_id', $document);
-        }])->with('tables.table')->get();
+        }])->with('tables.table')
+            ->orderBy('section_name')
+            ->get();
     }
 
-    public function isTableBlocked(Document $document, int $table)
+/*    public function isTableBlocked(Document $document, int $table)
     {
         $blockedSections = \App\DocumentSectionBlock::OfDocument($document->id)->Blocked()->with('formsection.tables')->get();
         //dd($blockedSections[0]->formsection->tables[0]->table_id);
@@ -352,6 +324,6 @@ class DashboardController extends Controller
             }
         }
         return false;
-    }
+    }*/
 
 }

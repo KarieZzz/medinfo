@@ -59,7 +59,7 @@
                     <h4>Последние изменения данных</h4>
                 </div>
             </div>
-            <div class="row collapse in" style="max-height:300px;overflow:auto;margin-right:-6px" id="valChangingTable">
+            <div class="row collapse in" style="max-height:280px;overflow:auto;margin-right:-6px" id="valChangingTable">
                 <div class="col-md-12">
                     <table class="table table-condensed">
                         <thead>
@@ -82,7 +82,7 @@
                     <h4>Изменения статуса документа</h4>
                 </div>
             </div>
-            <div class="row collapse in" style="max-height:250px;overflow:auto;margin-right:-6px" id="stateChangingTable">
+            <div class="row collapse in" style="max-height:170px;overflow:auto;margin-right:-6px" id="stateChangingTable">
                 <div class="col-md-12">
                     <table class="table table-condensed">
                         <thead>
@@ -102,7 +102,7 @@
                     <h4>Прием/отклонение разделов документа</h4>
                 </div>
             </div>
-            <div class="row collapse in" style="max-height:250px;overflow:auto;margin-right:-6px" id="sectionChangingTable">
+            <div class="row collapse in" style="max-height:170px;overflow:auto;margin-right:-6px" id="sectionChangingTable">
                 <div class="col-md-12">
                     <table class="table table-condensed">
                         <thead>
@@ -118,6 +118,6 @@
                 </div>
             </div>
         </div>
-        <input id="CloseDocInfoWindow" type="button" value="Закрыть" />
+        {{--<input id="CloseDocInfoWindow" type="button" value="Закрыть" />--}}
     </div>
 </div>

@@ -1549,13 +1549,13 @@ initpopupwindows = function() {
 initdocinfowindow = function() {
     let cl = $("#CloseDocInfoWindow");
     docinfoWindow.jqxWindow({
-        width: 800,
+        width: 850,
         height: 800,
         position: 'center',
         resizable: true,
         isModal: false,
         autoOpen: false,
-        cancelButton: cl,
+        //cancelButton: cl,
         theme: theme
     });
     docinfoWindow.on('open', function () {

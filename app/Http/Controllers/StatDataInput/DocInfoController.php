@@ -27,7 +27,7 @@ class DocInfoController extends Controller
             ->with('worker')
             ->with('oldstate')
             ->with('newstate')
-            ->get();
+            ->take(5)->get();
         $sections = \App\SectionchangingLog::OfDocument($document)->orderBy('occured_at', 'desc')
             ->with('worker')
             ->with('section')

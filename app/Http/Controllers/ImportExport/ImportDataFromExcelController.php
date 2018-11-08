@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\ImportExport;
 
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Document;
@@ -13,11 +13,11 @@ use App\Table;
 use App\Row;
 use App\Column;
 use App\Cell;
-use Mockery\Exception;
 use Storage;
 use Carbon\Carbon;
 use PHPExcel_IOFactory;
 use PHPExcel_Cell;
+use App\Medinfo\TableEditing;
 
 class ImportDataFromExcelController extends Controller
 {
@@ -34,6 +34,10 @@ class ImportDataFromExcelController extends Controller
 
     public function importData(Document $document, Table $table, Request $request)
     {
+        $worker = Auth::guard('datainput')->user();
+        if (!TableEditing::isEditPermission($worker->permission, $document->state)) {
+            return response(['error' => 'Отсутствуют права для изменения данных в этом документе (по статусу документа)'])->header('Content-Type', 'text/html');
+        }
         $this->document = $document;
         $this->album = Album::find($document->album_id);
         $this->form = Form::find($document->form_id);
@@ -42,7 +46,11 @@ class ImportDataFromExcelController extends Controller
             'imports/data/excel/' . $excel_file,
             file_get_contents($request->file('fileToUpload')->getRealPath())
         );
-        $this->eo = $this->openDataFile($excel_file);
+        try {
+            $this->eo = $this->openDataFile($excel_file);
+        } catch (\Exception $e) {
+            return response(['error' => $e->getMessage()])->header('Content-Type', 'text/html');
+        }
         $lists = $this->eo->getAllSheets();
         $active_sheet = null;
         $result = [];
@@ -52,9 +60,15 @@ class ImportDataFromExcelController extends Controller
             if ($codes[0] == $this->form->form_code) {
                 if (isset($codes[1])) {
                     $t = Table::OfFormTableCode($this->form->id, $codes[1])->first();
-                    $result[$codes[1]] = $this->getDataFromSheet($lists[$i], $t);
+                    if (TableEditing::isTableBlocked($document->id, $t->id)) {
+                        $result[$codes[1]] = ['saved' => 'Данные в таблице не изменены (раздел документа принят)', 'deleted' => 0];
+                    } else {
+                        $result[$codes[1]] = $this->getDataFromSheet($lists[$i], $t);
+                    }
+
                 } else {
-                    throw new \Exception("Таблица с кодом {$codes[1]} не найдена в форме {$this->form->form_code}");
+                    $result[$codes[1]] = ['saved' => 'Данные в таблице не изменены (раздел документа принят)', 'deleted' => 0];
+                    //throw new \Exception("Таблица с кодом {$codes[1]} не найдена в форме {$this->form->form_code}");
                 }
             }
         }

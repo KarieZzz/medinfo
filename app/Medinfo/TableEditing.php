@@ -194,4 +194,36 @@ class TableEditing
         $fortable['columngroups'] = $column_groups_arr;
         return $fortable;
     }
+
+    public static function isEditPermission(int $permission, int $document_state)
+    {
+        switch (true) {
+            case (($permission & config('medinfo.permission.permission_edit_report')) && ($document_state == 2 || $document_state == 16)) :
+            case (($permission & config('medinfo.permission.permission_edit_prepared_report')) && $document_state == 4) :
+            case (($permission & config('medinfo.permission.permission_edit_accepted_report')) && $document_state == 8) :
+            case (($permission & config('medinfo.permission.permission_edit_approved_report')) && $document_state == 32) :
+            case (($permission & config('medinfo.permission.permission_edit_aggregated_report')) && $document_state == 0) :
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public static function isTableBlocked(int $document, int $table)
+    {
+        $blockedSections = \App\DocumentSectionBlock::OfDocument($document)->Blocked()->with('formsection.tables')->get();
+        //dd($blockedSections[0]->formsection->tables[0]->table_id);
+        if ($blockedSections) {
+            $ids = [];
+            foreach($blockedSections as $blockedSection) {
+                foreach ($blockedSection->formsection->tables as $t) {
+                    $ids[] = $t->table_id;
+                }
+            }
+            if (in_array($table, $ids)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -1315,14 +1315,16 @@ let inittoolbarbuttons = function () {
         checkform();
     });
 
-    $("#tableExcelExport").click(function () {
+    excelexport.click(function () {
         let url = tableexport_url + current_table ;
         location.replace(url);
     });
-    $("#tableExcelImport").click(function () {
+    edit_permission ? excelimport.show() : excelimport.hide();
+    excelimport.click(function () {
         let url = excelupload_url + current_table ;
         flUpload.jqxFileUpload({ uploadUrl: url });
         $("#UploadResult").html('');
+        $("#ExcelUploadComment").show();
         excelUploadWindow.jqxWindow('open');
     });
 
@@ -1564,9 +1566,17 @@ let initExcelUpload = function () {
         let args = event.args;
         let fileName = args.file;
         let serverResponce = $.parseJSON(args.response);
+        console.log(serverResponce.length);
         let m = '<div style="margin-top: 25px">';
-        for (let tcode in serverResponce) {
-            m += "<p class='text-info'>" +tcode + ": Импортировано ячеек: " + serverResponce[tcode].saved + " Очищено ячеек: " + serverResponce[tcode].deleted + "</p>";
+        if (typeof serverResponce.error !== 'undefined') {
+            m += "<p class='text-danger'> Ошибка загрузки данных. Проверьте формат файла.</p>";
+        } else if (serverResponce.length === 0) {
+            m += "<p class='text-danger'>В предоставленном файле не обнаружены данные подходящие для загрузки. Проверьте формат файла.</p>";
+        } else {
+            $("#ExcelUploadComment").hide();
+            for (let tcode in serverResponce) {
+                m += "<p class='text-info'>" +tcode + ": Импортировано ячеек: " + serverResponce[tcode].saved + " Очищено ячеек: " + serverResponce[tcode].deleted + "</p>";
+            }
         }
         m += '</div>';
         $("#UploadResult").html(m);
