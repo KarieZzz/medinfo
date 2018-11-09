@@ -852,7 +852,7 @@ initGroupTree = function() {
             columnsResize: true,
             ready: function()
             {
-                //rendergrouptreetoolbar();
+                rendergrouptreetoolbar();
                 grouptree.jqxTreeGrid('expandRow', 0);
             },
             columns: [
