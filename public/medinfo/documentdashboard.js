@@ -238,7 +238,6 @@ checkDataPresenceFilter = function() {
             dataPresenseDDown.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: #337ab7;"></i>Наличие данных</div>');
             return '0';
     }
-
 };
 
 // обновление таблиц первичных и сводных документов в зависимости от выделенных форм, периодов, статусов документов

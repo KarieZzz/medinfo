@@ -15,51 +15,79 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="well well-sm">
+                            <div id="monitoringSelector">
+                                <button type="button" id="moncollapseAll" class="btn btn-default btn-sm">Свернуть все</button>
+                                <button type="button" id="monexpandAll" class="btn btn-default btn-sm">Развернуть все</button>
+                                <button type="button" id="monfilterApply" class="btn btn-primary btn-sm">Применить фильтр</button>
+                                <div id="monTree"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="well well-sm">
                             <div id="moSelectorByTerritories"><div id="moTree"></div></div>
                             <div id="moSelectorByGroups"><div id="groupTree" style="height: 300px"></div></div>
                         </div>
                     </div>
                 </div>
-            </div>
-{{--                <div class="jqx-hideborder jqx-hidescrollbars" id="motabs">
-                    <ul>
-                        <li style="margin-left: 30px;">Медицинские организации по территориям</li>
-                        <li>По группам</li>
-                    </ul>
-                    <div>
-                        <div class="jqx-hideborder" id="moTree"></div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="well well-sm">
+                            <div id="periodSelector">
+                                <button class="btn btn-default btn-sm" id="clearAllPeriods">Очистить</button>
+                                <button class="btn btn-primary btn-sm" id="applyPeriods">Применить</button>
+                                <div id="periodTree"></div>
+                            </div>
+                            <div id="statusSelector">
+                                <button class="btn btn-default btn-sm" id="checkAllStates">Выбрать все</button>
+                                <button class="btn btn-default btn-sm" id="clearAllStates">Очистить</button>
+                                <button class="btn btn-primary btn-sm" id="applyStates">Применить</button>
+                                <div id="statesListbox"></div>
+                                <div class="row">
+                                    <div class="col-md-offset-1 col-md-11">
+                                        <p class="text-info">Только для первичных документов</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="dtypeSelector">
+                                <button class="btn btn-default btn-sm" id="checkAllTypes">Выбрать все</button>
+                                <button class="btn btn-default btn-sm" id="clearAllTypes">Очистить</button>
+                                <button class="btn btn-primary btn-sm" id="applyTypes">Применить</button>
+                                <div id="dtypesListbox"></div>
+                            </div>
+                            <div id="dataPresenceSelector">
+                                <div id="presence" style="width: 300px">
+                                    <button class="btn btn-primary btn-sm" id="applyDataPresence">Применить</button>
+                                    <div class="row">
+                                        <div class="col-md-12" style="margin-left: 15px">
+                                            <div class="radio">
+                                                <label><input type="radio" name="optfilled" id="alldoc">Все документы</label>
+                                            </div>
+                                            <div class="radio">
+                                                <label><input type="radio" name="optfilled" id="filleddoc">Данные имеются</label>
+                                            </div>
+                                            <div class="radio">
+                                                <label><input type="radio" name="optfilled" id="emptydoc">Данные отсутствуют</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-offset-1 col-md-11">
+                                            <p class="text-info">Только для первичных документов</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
-                    <div>
-                        <div class="jqx-hideborder" id="groupTree"></div>
+                    <div class="row">
+                        <div class="col-sm-offset-1 col-sm-12">
+                            <button class="btn btn-primary" id="clearAllFilters">Очистить фильтры</button>
+                        </div>
                     </div>
-                </div>
-            </div>--}}
-            <div id="filtertabs">
-                <ul>
-                    <li style="margin-left: 30px;" class="header-name">Мониторинги/формы</li>
-                    <li>Статусы</li>
-                    <li>Периоды</li>
-                    <li>Типы</li>
-                </ul>
-                <div>
-                    <h4>Мониторинги/Формы</h4>
-                    <div id="monTree" style="float: left; margin-right: 30px"></div>
-{{--                    <div id="selectedFormBox">
-                        <div id="checkAllForms"><span>Выбрать все формы</span></div>
-                    </div>--}}
-                </div>
-                <div>
-                    <h4>Статусы</h4>
-                    <div id="statesListbox" style="float: left; margin-right: 30px"></div>
-                    <div id="checkAllStates"><span>Выбрать все статусы</span></div>
-                </div>
-                <div>
-                    <h4>Периоды</h4>
-                    <div id="periodsListbox" style="margin: 10px"></div>
-                </div>
-                <div>
-                    <h4>Типы документов</h4>
-                    <div id="dtypesListbox" style="margin: 10px"></div>
                 </div>
             </div>
         </div>
@@ -70,7 +98,6 @@
                 <div class="col-sm-4"><h4 style="margin-left: 10px">Документы</h4></div>
                 <div style="padding-top: 7px" class="col-sm-6" id="checkedDocumentsToolbar">
                     <div style='float: left; margin-right: 4px;' id='statesDropdownList'></div>
-                    {{--<input class='jqx-input jqx-widget-content jqx-rc-all' id='changeStates' type='text' value='Сменить статус' style='height: 25px; float: left; width: 150px; margin-left: 10px;' />--}}
                     <i style='height: 14px' class="fa fa-eraser fa-lg" id='eraseData' title="Очистить данные"></i>
                     <i style='height: 14px' class="fa fa-trash-o fa-lg" id='deleteDocuments' title="Удалить документы"></i>
                     <i style='height: 14px' class="fa fa-product-hunt fa-lg" id='protectAggregates' title="Защитить сводный документ"></i>
@@ -173,7 +200,7 @@
                 </div>
             </div>
             <div class="row">
-                <p class="text-info">В новом периоде будет созданы документы в соответствии с выбранными в текущем периоде с теми же основными параметрами:
+                <p class="text-info">В новом периоде будут созданы документы в соответствии с выбранными в текущем периоде с теми же основными параметрами:
                     учреждение, тип документа, мониторинг
                 </p>
             </div>
@@ -183,32 +210,13 @@
 @endsection
 
 @push('loadjsscripts')
-{{--    <script src="{{ asset('/jqwidgets/jqxsplitter.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxtabs.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxdata.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxpanel.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxscrollbar.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxinput.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxbuttons.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxdropdownbutton.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxcheckbox.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxlistbox.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxdropdownlist.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxgrid.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxgrid.filter.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxgrid.columnsresize.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxgrid.selection.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/localization.js') }}"></script>--}}
-    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=032') }}"></script>
+    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=043') }}"></script>
 @endpush
 
 @section('inlinejs')
     @parent
     <script type="text/javascript">
         let checkeddtypes = {!! $dtype_ids !!};
-        let monitorings = {!! $monitorings  !!};
         let albums = {!! $albums  !!};
         let forms = {!! $forms  !!};
         let states = {!! $states !!};
@@ -216,17 +224,20 @@
         let dtypes = {!! $dtypes !!};
         let checkedstates = {!! $state_ids !!};
         let checkedperiods = [{!! $period_ids !!}];
+        let checkedfilled = '{{ $filleddocs->value or '-1' }}';
         datasources();
         initfilterdatasources();
         initDropdowns();
-        initnewdocumentwindow();
-        //initmotabs();
         initsplitters();
-        initmotree();
-        initgrouptree();
-        initfiltertabs();
         initMonitoringTree();
+        initPeriodTree();
+        initStatusList();
+        initDTypesList();
+        initDataPresens();
+        initMoTree();
+        initGroupTree();
         initdocumentslist();
         initdocumentactions();
+        initnewdocumentwindow();
     </script>
 @endsection

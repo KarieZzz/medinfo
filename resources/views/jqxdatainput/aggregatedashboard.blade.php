@@ -38,7 +38,7 @@
 @endpush('loadcss')
 
 @push('loadjsscripts')
-    <script src="{{ asset('/medinfo/editdashboard.js?v=155') }}"></script>
+    <script src="{{ asset('/medinfo/editdashboard.js?v=160') }}"></script>
 @endpush('loadjsscripts')
 
 @section('inlinejs')

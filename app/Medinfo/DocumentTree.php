@@ -66,7 +66,7 @@ class DocumentTree
 
     public function setScopes() {
         if (count($this->dtypes) > 0 ) {
-            $this->scopes['t'] = !empty(implode(",", $this->dtypes)) ?  ' AND d.dtype in (' . implode(",", $this->dtypes) . ')' : ' AND d.type = 0 ';
+            $this->scopes['t'] = !empty(implode(",", $this->dtypes)) ?  ' AND d.dtype in (' . implode(",", $this->dtypes) . ')' : ' AND d.dtype = 0 ';
         }
         if (count($this->states) > 0 ) {
             $this->scopes['s'] = !empty(implode(",", $this->states)) ? ' AND d.state in (' . implode(",", $this->states) . ')' : ' AND d.state = 0';

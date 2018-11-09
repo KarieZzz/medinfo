@@ -46,14 +46,10 @@
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-{{--<script src="{{ asset('/plugins/jQuery/jquery-1.12.4.min.js') }}" type="text/javascript" ></script>
-<script src="{{ asset('/jqwidgets/jqxcore.js') }}"></script>
-<script src="{{ asset('/jqwidgets/jqxmenu.js') }}"></script>
-<script src="{{ asset('/jqwidgets/jqxnotification.js') }}"></script>
-<script src="{{ asset('/jqwidgets/jqxwindow.js') }}"></script>--}}
-<script src="{{ asset('/jqwidgets/jqx-all.js?v=001') }}"></script>
+{{--<script src="{{ asset('/plugins/jQuery/jquery-1.12.4.min.js') }}" type="text/javascript" ></script>--}}
+<script src="{{ asset('/jqwidgets/jqx-all.js?v=002') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/admin/admin.js?v=002') }}"></script>
+<script src="{{ asset('/medinfo/admin/admin.js?v=003') }}"></script>
 <script src="{{ asset('/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
 @stack('loadjsscripts')
 <script type="text/javascript">
@@ -63,13 +59,12 @@
     initnotifications();
     initConfirmWindow();
     $(document).ready(function () {
-        $.ajaxSetup({
+/*        $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 //'Authorization': 'Bearer ' + $('meta[name="api-token"]').attr('content')
             }
-        });
-        //$("#menu").jqxMenu({ autoSizeMainItems: true, theme: theme, showTopLevelArrows: true, width: '800px' });
+        });*/
         $("#content").show();
         $("#popups").show();
     });

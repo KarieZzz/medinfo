@@ -30,7 +30,7 @@ class DocumentAdminController extends Controller
 
     public function index()
     {
-        $monitorings = \App\Monitoring::orderBy('name')->get();
+        //$monitorings = \App\Monitoring::orderBy('name')->get();
         $albums = \App\Album::orderBy('album_name')->get();
         $forms = Form::orderBy('form_index')->get(['id', 'form_code']);
         $states = DicDocumentState::all(['code', 'name']);
@@ -40,7 +40,8 @@ class DocumentAdminController extends Controller
         $state_ids = $states->pluck('code');
         $period_ids = $periods[0]->id;
         $dtype_ids = $dtypes->pluck('code');
-        return view('jqxadmin.documents', compact('monitorings', 'albums', 'forms', 'form_ids', 'states', 'state_ids', 'periods', 'period_ids', 'dtypes', 'dtype_ids'));
+        //return view('jqxadmin.documents', compact('monitorings', 'albums', 'forms', 'form_ids', 'states', 'state_ids', 'periods', 'period_ids', 'dtypes', 'dtype_ids'));
+        return view('jqxadmin.documents', compact('albums', 'forms', 'form_ids', 'states', 'state_ids', 'periods', 'period_ids', 'dtypes', 'dtype_ids'));
     }
 
     public function fetch_mo_hierarchy(int $parent = 0)
@@ -70,7 +71,14 @@ class DocumentAdminController extends Controller
         $monitorings = explode(",", $request->monitorings);
         $forms = explode(",", $request->forms);
         $periods = explode(",", $request->periods);
-        $scopes = compact('worker_scope',  'filter_mode', 'top_node', 'dtypes', 'states', 'monitorings', 'forms', 'periods');
+        if ($request->filled === '-1') {
+            $filled = null;
+        } elseif ($request->filled === '1') {
+            $filled = true;
+        } elseif ($request->filled === '0') {
+            $filled = false;
+        }
+        $scopes = compact('worker_scope',  'filter_mode', 'top_node', 'dtypes', 'states', 'monitorings', 'forms', 'periods', 'filled');
         $d = new DocumentTree($scopes);
         $data = $d->get_documents();
         return $data;
