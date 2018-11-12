@@ -27,7 +27,9 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="well well-sm">
-                            <div id="moSelectorByTerritories"><div id="moTree"></div></div>
+                            <div id="moSelectorByTerritories">
+                                <div id="moTree"></div>
+                            </div>
                             <div id="moSelectorByGroups"><div id="groupTree" style="height: 300px"></div></div>
                         </div>
                     </div>
@@ -95,8 +97,8 @@
     <div>
         <div id="rightPanel" style="height: 100%">
             <div class="row">
-                <div class="col-sm-4"><h4 style="margin-left: 10px">Документы</h4></div>
-                <div style="padding-top: 7px" class="col-sm-6" id="checkedDocumentsToolbar">
+                <div class="col-md-2"><h4 style="margin-left: 10px">Документы</h4></div>
+                <div style="padding-top: 7px" class="col-md-10" id="checkedDocumentsToolbar">
                     <div style='float: left; margin-right: 4px;' id='statesDropdownList'></div>
                     <i style='height: 14px' class="fa fa-eraser fa-lg" id='eraseData' title="Очистить данные"></i>
                     <i style='height: 14px' class="fa fa-trash-o fa-lg" id='deleteDocuments' title="Удалить документы"></i>
@@ -210,7 +212,7 @@
 @endsection
 
 @push('loadjsscripts')
-    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=043') }}"></script>
+    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=052') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -222,22 +224,28 @@
         let states = {!! $states !!};
         let periods = {!! $periods !!};
         let dtypes = {!! $dtypes !!};
-        let checkedstates = {!! $state_ids !!};
-        let checkedperiods = [{!! $period_ids !!}];
-        let checkedfilled = '{{ $filleddocs->value or '-1' }}';
-        datasources();
+        let lasstscope = '{{ $settings['ou'] or 0 }}';
+        let checkedmf = [{{ $settings['mf'] or '' }}];
+        let checkedmonitorings = [{{ $settings['monitorings'] or '' }}];
+        let checkedforms = [{{ $settings['forms'] or '' }}];
+        let checkedtypes = [{{ $settings['dtypes'] or '' }}];
+        let checkedstates = [{{ $settings['states'] or '' }}];
+        let checkedperiods = [{{ $settings['periods'] or '' }}];
+        let checkedfilled = '{{  $settings['filleddocs'] or '-1' }}';
         initfilterdatasources();
         initDropdowns();
         initsplitters();
         initMonitoringTree();
         initPeriodTree();
-        initStatusList();
+        initStateList();
         initDTypesList();
         initDataPresens();
         initMoTree();
         initGroupTree();
-        initdocumentslist();
         initdocumentactions();
         initnewdocumentwindow();
+        initFilterIcons();
+        datasources();
+        initdocumentslist();
     </script>
 @endsection

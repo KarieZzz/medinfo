@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
@@ -19,6 +19,7 @@ use App\DicDocumentType;
 use App\DocumentMessage;
 use App\Form;
 use App\Cell;
+use App\Medinfo\StateHelper;
 
 class DocumentAdminController extends Controller
 {
@@ -30,7 +31,7 @@ class DocumentAdminController extends Controller
 
     public function index()
     {
-        //$monitorings = \App\Monitoring::orderBy('name')->get();
+        $settings = StateHelper::getUserLastState(Auth::guard('admins')->id());
         $albums = \App\Album::orderBy('album_name')->get();
         $forms = Form::orderBy('form_index')->get(['id', 'form_code']);
         $states = DicDocumentState::all(['code', 'name']);
@@ -40,8 +41,10 @@ class DocumentAdminController extends Controller
         $state_ids = $states->pluck('code');
         $period_ids = $periods[0]->id;
         $dtype_ids = $dtypes->pluck('code');
-        //return view('jqxadmin.documents', compact('monitorings', 'albums', 'forms', 'form_ids', 'states', 'state_ids', 'periods', 'period_ids', 'dtypes', 'dtype_ids'));
-        return view('jqxadmin.documents', compact('albums', 'forms', 'form_ids', 'states', 'state_ids', 'periods', 'period_ids', 'dtypes', 'dtype_ids'));
+        return view('jqxadmin.documents', compact('albums', 'forms',
+            'form_ids', 'states', 'state_ids',
+            'periods', 'period_ids', 'dtypes',
+            'dtype_ids', 'settings'));
     }
 
     public function fetch_mo_hierarchy(int $parent = 0)
@@ -63,6 +66,7 @@ class DocumentAdminController extends Controller
 
     public function fetchDocuments(Request $request)
     {
+        $user = Auth::guard('admins')->user();
         $top_node = $request->ou;
         $worker_scope = 0;
         $filter_mode = $request->filter_mode;
@@ -81,6 +85,7 @@ class DocumentAdminController extends Controller
         $scopes = compact('worker_scope',  'filter_mode', 'top_node', 'dtypes', 'states', 'monitorings', 'forms', 'periods', 'filled');
         $d = new DocumentTree($scopes);
         $data = $d->get_documents();
+        StateHelper::saveUserDocListState($request, $user);
         return $data;
     }
 

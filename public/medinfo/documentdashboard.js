@@ -1710,7 +1710,7 @@ initFilterIcons = function () {
     if (checkedperiods.length > 0) {
         periodDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: #337ab7;"></i>Отчетные периоды</div>');
     }
-    if (checkedperiods.length > 0) {
+    if (checkedstates.length > 0) {
         statusDropDown.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: #337ab7;"></i>Статусы отчетов</div>');
     }
     if (checkedfilled !== '-1') {

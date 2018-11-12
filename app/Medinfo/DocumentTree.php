@@ -160,7 +160,7 @@ class DocumentTree
             $scopes .= isset($this->scopes['m']) ? $this->scopes['m'] : '' ;
             $scopes .= " {$this->scopes['t']} {$this->scopes['f']} {$this->scopes['p']} {$this->scopes['s']} ";
             $doc_query = "SELECT d.id, d.ou_id, u.unit_code, u.unit_name, f.form_code,
-              f.form_name, s.name state, m.name monitoring, p.name period, t.name doctype, a.protected,
+              f.form_name, s.name state, m.name monitoring, p.name period, al.album_name album, t.name doctype, a.protected,
               CASE WHEN (SELECT sum(v.value) FROM statdata v where d.id = v.doc_id) > 0 THEN 1 ELSE 0 END filled
               FROM documents d
                 JOIN forms f on d.form_id = f.id
@@ -169,16 +169,17 @@ class DocumentTree
                 JOIN dic_document_types t ON d.dtype = CAST(t.code AS numeric)
                 JOIN monitorings m ON d.monitoring_id = m.id
                 JOIN periods p ON d.period_id = p.id
+                JOIN albums al ON d.album_id = al.id
                 LEFT JOIN aggregates a ON a.doc_id = d.id
               WHERE 1=1 $scopes
-              GROUP BY d.id, u.unit_code, u.unit_name, f.form_code, f.form_name, m.name, p.name, s.name, t.name, a.protected
+              GROUP BY d.id, u.unit_code, u.unit_name, f.form_code, f.form_name, m.name, p.name, al.album_name, s.name, t.name, a.protected
               {$this->scopes['e']}
               ORDER BY u.unit_code, f.form_code, p.name";
             //echo $doc_query;
             $this->documents = DB::select($doc_query);
             if ($this->filter_mode == 2 ) {
                 $group_doc_query = "SELECT d.id, d.ou_id, u.slug unit_code, u.name unit_name, f.form_code,
-                  f.form_name, s.name state, m.name monitoring, p.name period, t.name doctype, a.protected,
+                  f.form_name, s.name state, m.name monitoring, p.name period, al.album_name album, t.name doctype, a.protected,
                   CASE WHEN (SELECT sum(v.value) FROM statdata v where d.id = v.doc_id) > 0 THEN 1 ELSE 0 END filled
                   FROM documents d
                     JOIN forms f on d.form_id = f.id
@@ -187,9 +188,10 @@ class DocumentTree
                     JOIN dic_document_types t on d.dtype = CAST(t.code AS numeric)
                     JOIN monitorings m ON d.monitoring_id = m.id
                     JOIN periods p on d.period_id = p.id
+                    JOIN albums al ON d.album_id = al.id
                     LEFT JOIN aggregates a ON a.doc_id = d.id
                   WHERE d.ou_id = {$this->top_node} $scopes
-                  GROUP BY d.id, u.slug, u.name, f.form_code, f.form_name, m.name, p.name, s.name, t.name, a.protected
+                  GROUP BY d.id, u.slug, u.name, f.form_code, f.form_name, m.name, p.name, al.album_name s.name, t.name, a.protected
                   {$this->scopes['e']}
                   ORDER BY f.form_code, p.name";
                 //echo $group_doc_query;

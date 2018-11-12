@@ -40,9 +40,10 @@
     <div id="content" style="display: none">
         @yield('content')
     </div>
-    <div id="popups" style="display: none"></div>
-    @include('jqxdatainput.notifications')
-    @include('jqxdatainput.confirmpopup')
+    <div id="popups" style="display: none">
+        @include('jqxdatainput.notifications')
+        @include('jqxdatainput.confirmpopup')
+    </div>
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>

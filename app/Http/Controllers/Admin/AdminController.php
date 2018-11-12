@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -17,7 +18,18 @@ class AdminController extends Controller
 
     public function index()
     {
-
-        return view('jqxadmin.home');
+        $now = Carbon::now();
+        $yesterday = Carbon::yesterday();
+        $week = $now->subWeek(1);
+        $lastDayAccess = \App\AccessLog::Where('occured_at', '>', $yesterday)->count();
+        $lastWeekAccess = \App\AccessLog::Where('occured_at', '>', $week)->count();
+        $lastDayCellEditing = \App\ValuechangingLog::Where('occured_at', '>', $yesterday)->count();
+        $lastWeekCellEditing = \App\ValuechangingLog::Where('occured_at', '>', $week)->count();
+        $lastDayStateChanging = \App\StatechangingLog::Where('occured_at', '>', $yesterday)->count();
+        $lastWeekStateChanging = \App\StatechangingLog::Where('occured_at', '>', $week)->count();
+        //dd($lastDayAccess);
+        return view('jqxadmin.home', compact('lastDayAccess', 'lastWeekAccess',
+        'lastDayCellEditing', 'lastWeekCellEditing' , 'lastDayStateChanging', 'lastWeekStateChanging'
+        ));
     }
 }

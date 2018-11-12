@@ -1,7 +1,7 @@
 <nav class="navbar navbar-default" role="navigation">
     <div class="container-fluid" style="z-index: 1">
         <div class="navbar-header">
-            <a class="navbar-brand" href="#">Адмнистрирование Мединфо</a>
+            <a class="navbar-brand" href="/admin">Адмнистрирование Мединфо</a>
         </div>
         <ul class="nav navbar-nav">
 {{--            <li><a href="/admin">К началу</a></li>
