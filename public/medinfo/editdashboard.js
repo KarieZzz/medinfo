@@ -4,10 +4,10 @@
 let initDgridSize = function () {
     return initialViewport - topOffset1;
 };
-let initSpplitterSize = function () {
+let initSplitterSize = function () {
     return initialViewport - topOffset2;
 };
-let initProtSize = function () {
+/*let initProtSize = function () {
     $("#tableprotocol").height(initialViewport - topOffset3);
     $("#formprotocol").height(initialViewport - topOffset3);
     $("#CellAnalysisTable").height(initialViewport - topOffset4);
@@ -15,20 +15,22 @@ let initProtSize = function () {
 let initCellProtSize = function () {
     $("#cellprotocol").height(initialViewport - topOffset3);
 };
+*/
 let onResizeEventLitener = function () {
-    $( window ).resize(function() {
-        dgrid.jqxGrid({ height: $(window).height()-topOffset1 });
+    $(window).resize(function() {
+        dgrid.jqxGrid({ height: $(window).height()-topOffset1-20 });
         $('#formEditLayout').jqxSplitter({ height: $(window).height()-topOffset2});
-        $("#tableprotocol").height($(window).height()-topOffset3);
-        $("#formprotocol").height($(window).height()-topOffset3);
-        $("#cellprotocol").height($(window).height()-topOffset3);
-        $("#CellAnalysisTable").height(initialViewport - topOffset4);
+        //$("#tableprotocol").height($(window).height()-topOffset3);
+        //$("#formprotocol").height($(window).height()-topOffset3);
+        //$("#cellprotocol").height($(window).height()-topOffset3);
+        //$("#CellAnalysisTable").height(initialViewport - topOffset4);
     });
 };
 let initSplitter = function () {
     $('#formEditLayout').jqxSplitter({
         width: '100%',
-        height: initSpplitterSize(),
+        height: initSplitterSize(),
+        //height: '100%',
         theme: theme,
         splitBarSize: 10,
         panels: [
@@ -474,20 +476,15 @@ let initextarbuttons = function () {
         $(".rule-valid").show();
         $(".control-valid").show();
     });
-    $("#togglecontrolscreen").jqxToggleButton({ theme: theme });
+/*    $("#togglecontrolscreen").jqxToggleButton({ theme: theme });
     $("#togglecontrolscreen").on('click', function () {
         let toggled = $("#togglecontrolscreen").jqxToggleButton('toggled');
         if (toggled) {
             splitter.jqxSplitter({panels: [{ size: 100, collapsible: false }, { size: '50%'}]})
         } else {
             splitter.jqxSplitter({panels: [ { size: '60%', min: 100, collapsible: false }, {collapsed:true} ]});
-        };
-
-
-
-
-
-    });
+        }
+    });*/
     $('#printtableprotocol').jqxButton({ theme: theme });
     //$("#expandprotocolrow").jqxToggleButton({ theme: theme });
 };
@@ -1020,13 +1017,12 @@ function renderDgrid(rowid) {
         tablesource.url = source_url + current_table;
         data_for_tables[current_table].calcfields.length > 0 ? there_is_calculated = true : there_is_calculated = false;
         there_is_calculated ? calculate.prop('disabled', false ) : calculate.attr('disabled', true );
+
         dgrid.jqxGrid( { columns: data_for_tables[current_table].columns } );
         dgrid.jqxGrid( { columngroups: data_for_tables[current_table].columngroups } );
         dgrid.jqxGrid('updatebounddata');
     dgrid.jqxGrid('endupdate');
-    //layout[0].items[1].items[0].items[0].title = "Таблица " + data_for_tables[current_table].tablecode + ', "' + data_for_tables[current_table].tablename + '"';
     $("#TableTitle").html("Таблица " + data_for_tables[current_table].tablecode + ', "' + data_for_tables[current_table].tablename + '"');
-    //$('#formEditLayout').jqxLayout('refresh');
     $("#tableprotocol").html('');
     $("#extrabuttons").hide();
     tdropdown.jqxDropDownButton('close');
@@ -1093,6 +1089,7 @@ let initdatagrid = function() {
         {
             width: '100%',
             height: initDgridSize(),
+            //height: '100%',
             source: dataAdapter,
             localization: localize(),
             selectionmode: 'singlecell',
@@ -1400,7 +1397,6 @@ let inittoolbarbuttons = function () {
 /*let firefullscreenevent = function() {
     $(document).bind('fscreenchange', function(e, state, elem) {
         let fsel1 =  $('#togglefullscreen');
-        let fsel2 =  $('#togglecontrolscreen');
         let fsel3 =  $('#toggle_formcontrolscreen');
         if ($.fullscreen.isFullScreen()) {
             fsel1.jqxToggleButton('check');

@@ -7,7 +7,6 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    {{--<meta name="api-token" content="{{ Auth::guard('api')->user() }}">--}}
     <style>
         html,
         body {
@@ -16,12 +15,6 @@
         #content {
             height: calc(100vh - 80px);
         }
-/*        #widgets-content-wrap {
-            position: absolute;
-            margin-top: 53px;
-            width:100%;
-            height: 100%;
-        }*/
     </style>
     <title id="Description">@yield('headertitle')</title>
     <!-- Bootstrap core CSS -->
@@ -67,9 +60,7 @@
             }
         });*/
         $("#content").show();
-        $("#popups").show();
     });
-
 </script>
 @yield('inlinejs')
 </body>

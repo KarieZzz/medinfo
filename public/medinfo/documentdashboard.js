@@ -37,6 +37,7 @@ let statusDropDown = $('#statusSelector');
 let dataPresenseDDown = $('#dataPresenceSelector');
 let stateWindow = $('#changeStateWindow');
 let docinfoWindow = $('#DocumentInfoWindow');
+let userProfileWindow = $('#UserProfileWindow');
 let current_document_form_code;
 let current_document_form_name;
 let current_document_ou_name;
@@ -72,7 +73,7 @@ initSplitters = function () {
     $("#mainSplitter").jqxSplitter(
         {
             width: '100%',
-            height: '95%',
+            height: '100%',
             theme: theme,
             panels:
                 [
@@ -83,7 +84,7 @@ initSplitters = function () {
     );
     $('#DocumentPanelSplitter').jqxSplitter({
         width: '100%',
-        height: '93%',
+        height: '95%',
         theme: theme,
         orientation: 'horizontal',
         panels: [{ size: '65%', min: 100, collapsible: false }, { min: '100px', collapsible: true}]
@@ -696,7 +697,6 @@ initDropdowns = function () {
     });
     $("#clearAllFilters").click( clearAllFilters );
 };
-
 clearAllFilters = function (event) {
     let checkedMonitorings = montree.jqxTreeGrid('getCheckedRows');
     if (typeof checkedMonitorings !== 'undefined') {
@@ -1000,7 +1000,6 @@ initStatusList = function() {
     });
 
 };
-
 initDataPresens = function() {
     if (current_user_role === '3' || current_user_role === '4' ) {
         dataPresenseDDown.show();
@@ -1020,7 +1019,6 @@ initDataPresens = function() {
             break;
     }
 };
-
 // инициализация вкладок с документами
 initdocumentstabs = function() {
     $("#documenttabs").jqxTabs({  height: '100%', width: '100%', theme: theme });
@@ -1129,7 +1127,7 @@ initdocumentstabs = function() {
     agrid.jqxGrid(
         {
             width: '100%',
-            height: '85%',
+            height: '94%',
             theme: theme,
             source: aggregate_report_table,
             columnsresize: true,
@@ -1546,7 +1544,6 @@ initpopupwindows = function() {
 };
 // Инициализация окна с информацией о документе
 initdocinfowindow = function() {
-    let cl = $("#CloseDocInfoWindow");
     docinfoWindow.jqxWindow({
         width: 850,
         height: 800,
@@ -1554,7 +1551,6 @@ initdocinfowindow = function() {
         resizable: true,
         isModal: false,
         autoOpen: false,
-        //cancelButton: cl,
         theme: theme
     });
     docinfoWindow.on('open', function () {
@@ -1626,6 +1622,22 @@ function setDocInfo(rowindex) {
     });
 }
 
+inituserprofilewindow = function() {
+    //let cl = $("#CloseDocInfoWindow");
+    userProfileWindow.jqxWindow({
+        width: 850,
+        height: 500,
+        position: 'center',
+        resizable: true,
+        isModal: false,
+        autoOpen: false,
+        //cancelButton: cl,
+        theme: theme
+    });
+    $("#openProfileEditor").click( function () {
+        userProfileWindow.jqxWindow('open');
+    });
+};
 // Формирование строки запроса к серверу
 filtersource = function() {
     let forms;

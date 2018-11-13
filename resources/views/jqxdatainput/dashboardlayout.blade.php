@@ -11,20 +11,12 @@
         html,
         body {
             height: 100%;
-            overflow: hidden;
         }
-        /* Wrapper for page content to push down footer */
-/*        #wrap {
-            min-height: 100%;
-            height: auto;
+        #content {
+            height: calc(100vh - 60px);
+            margin-top: -20px;
+            margin-right: 5px;
         }
-        #widgets-content-wrap {
-            position: absolute;
-            width:100%;
-            height: 100%;
-            !* Pad bottom by footer height *!
-            padding: 40px 0 0 0;
-        }*/
     </style>
     <title id="Description">@yield('headertitle')</title>
     <!-- Bootstrap core CSS -->
@@ -38,23 +30,17 @@
 </head>
 
 <body>
-
-<!-- Wrap all page content here -->
-
-    @include('jqxdatainput.top')
-    <!-- Begin page content -->
-    <div class="container-fluid" style="height: 100%; overflow: hidden">
-        @yield('content')
+    <div class="container-fluid">
+        @include('jqxdatainput.top')
+        <div id="content" style="display: none">
+            @yield('content')
+        </div>
+        <div id="popups" style="display: none">
+            @include('jqxdatainput.notifications')
+            @include('jqxdatainput.dashboardwindows')
+        </div>
     </div>
-    @include('jqxdatainput.notifications')
-    @include('jqxdatainput.dashboardwindows')
-
-<!-- Bootstrap core JavaScript -->
-{{--<script src="{{ asset('/plugins/jQuery/jquery-1.12.4.min.js') }}" type="text/javascript" ></script>--}}
-{{--<script src="{{ asset('/plugins/jQuery/jquery-1.11.1.min.js') }}" type="text/javascript" ></script>--}}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-{{--<script src="{{ asset('/jqwidgets/jqxcore.js') }}"></script>--}}
-{{--<script src="{{ asset('/jqwidgets/jqxnotification.js') }}"></script>--}}
 <script src="{{ asset('/jqwidgets/jqx-all.js?v=001') }}"></script>
 <script src="{{ asset('/medinfo/dashboard.js?v=013') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js?v=001') }}"></script>
@@ -67,15 +53,9 @@
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            statusCode: {
-                401: function(err){
-                    console.log('Login Failed.', err.responseJSON);
-
-                }
             }
         });
-        //$("#widgets-content-wrap").css("visibility", "visible");
+        $("#content").show();
     });
 </script>
 @yield('inlinejs')

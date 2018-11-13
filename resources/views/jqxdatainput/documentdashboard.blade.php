@@ -1,12 +1,12 @@
 @extends('jqxdatainput.dashboardlayout')
 
-@section('title', '<h4>Статистические отчетные документы - ввод и корректировка</h4>')
+@section('title', 'Статистические отчетные документы')
 @section('headertitle', 'Статистические отчетные документы')
 
 @section('content')
-    <div id="mainSplitter" style="padding-top: 50px">
+    <div id="mainSplitter">
         <div>
-            <div id="filterPanelSplitter" style="padding-top: 50px; margin-bottom: 20px">
+            <div id="filterPanelSplitter" style="padding-top: 10px; margin-bottom: 20px">
                 <div>
                     <div class="row">
                         <div class="col-sm-12">
@@ -84,7 +84,7 @@
             </div>
         </div>
         <div id="ContentPanel">
-            <div class="jqx-hideborder jqx-hidescrollbars" id="documenttabs" style="margin-top: 48px">
+            <div class="jqx-hideborder jqx-hidescrollbars" id="documenttabs">
                 <ul>
                     <li style="margin-left: 30px;">Отчеты субъектов</li>
                     <li>Сводные отчеты</li>
@@ -155,9 +155,7 @@
 @endpush
 
 @push('loadjsscripts')
-<script src="{{ asset('/jqwidgets/jqx-all.js') }}"></script>
-<script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/documentdashboard.js?v=126') }}"></script>
+<script src="{{ asset('/medinfo/documentdashboard.js?v=128') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -203,6 +201,7 @@
         initRecentDocuments();
         initpopupwindows();
         initdocinfowindow();
+        inituserprofilewindow();
         initnotifications();
     </script>
 @endsection
