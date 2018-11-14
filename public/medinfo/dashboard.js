@@ -49,3 +49,21 @@ formatDate = function (dateObject) {
     }
     return day + '.' + month + '.' + year + ' '+ d.getHours() + ':' + d.getMinutes();
 };
+
+inituserprofilewindow = function() {
+    //let cl = $("#CloseDocInfoWindow");
+    let up = $("#UserProfileWindow");
+    up.jqxWindow({
+        width: 850,
+        height: 500,
+        position: 'center',
+        resizable: true,
+        isModal: false,
+        autoOpen: false,
+        //cancelButton: cl,
+        theme: theme
+    });
+    $("#openProfileEditor").click( function () {
+        up.jqxWindow('open');
+    });
+};

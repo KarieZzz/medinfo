@@ -70,4 +70,14 @@ class Form extends Model
         return $query->where('medstatnsk_id', $id);
     }
 
+    public static function getRealForm($form_id)
+    {
+        $form = Form::find($form_id);
+        if ($form->relation) {
+            return Form::find($form->relation);
+        } else {
+            return $form;
+        }
+    }
+
 }

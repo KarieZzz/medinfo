@@ -98,9 +98,9 @@
                                 <h3 style="margin-left: 30px">Первичные отчеты</h3>
                             </div>
                             <div class="col-md-9">
-                                <h3 class="pull-right" style="padding-right: 10px" title="Выделенная организационная единица входит в состав">
+                                <h4 class="pull-right" style="padding-right: 10px" title="Выделенная организационная единица входит в состав">
                                     <small class="text-info" id="mo_parents_breadcrumb">...</small>
-                                </h3>
+                                </h4>
                             </div>
                         </div>
 
@@ -155,7 +155,7 @@
 @endpush
 
 @push('loadjsscripts')
-<script src="{{ asset('/medinfo/documentdashboard.js?v=128') }}"></script>
+<script src="{{ asset('/medinfo/documentdashboard.js?v=129') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -201,7 +201,5 @@
         initRecentDocuments();
         initpopupwindows();
         initdocinfowindow();
-        inituserprofilewindow();
-        initnotifications();
     </script>
 @endsection

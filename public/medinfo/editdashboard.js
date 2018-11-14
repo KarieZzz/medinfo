@@ -171,7 +171,6 @@ let renderCompareControl = function(result, boolean_sign, mode, level) {
             " строке: " + result.code.row_code + ", " +
             " графе: " + result.code.column_code + "</em>:</div>"));
     } else if (typeof result.code !== 'object' && result.code !== null) {
-        console.log(result.code);
         row.append($("<div class='showrule'><span class='text-info'><strong>" + explanation_intro + "</strong></span> <em>" + result.code + "</em>:</div>"));
     }
     let t = "<table class='control-result'><tr><td>Значение</td>";
@@ -1562,7 +1561,6 @@ let initExcelUpload = function () {
         let args = event.args;
         let fileName = args.file;
         let serverResponce = $.parseJSON(args.response);
-        console.log(serverResponce.length);
         let m = '<div style="margin-top: 25px">';
         if (typeof serverResponce.error !== 'undefined') {
             m += "<p class='text-danger'> Ошибка загрузки данных. Проверьте формат файла.</p>";
@@ -1576,6 +1574,7 @@ let initExcelUpload = function () {
         }
         m += '</div>';
         $("#UploadResult").html(m);
+        dgrid.jqxGrid('updatebounddata');
     });
     flUpload.jqxFileUpload({
         width: 450,

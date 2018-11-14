@@ -25,6 +25,7 @@ class ImportDataFromExcelController extends Controller
     public $eo; // Объект эксель
     public $document;
     public $form;
+    public $realform;
     public $album;
 
     public function __construct()
@@ -41,6 +42,8 @@ class ImportDataFromExcelController extends Controller
         $this->document = $document;
         $this->album = Album::find($document->album_id);
         $this->form = Form::find($document->form_id);
+        $this->realform = Form::getRealForm($document->form_id);
+
         $excel_file = 'import_' . str_random(8) . '.xlsx';
         \Storage::put(
             'imports/data/excel/' . $excel_file,
@@ -59,7 +62,7 @@ class ImportDataFromExcelController extends Controller
             $codes = explode("_", $title);
             if ($codes[0] == $this->form->form_code) {
                 if (isset($codes[1])) {
-                    $t = Table::OfFormTableCode($this->form->id, $codes[1])->first();
+                    $t = Table::OfFormTableCode($this->realform->id, $codes[1])->first();
                     if (TableEditing::isTableBlocked($document->id, $t->id)) {
                         $result[$codes[1]] = ['saved' => 'Данные в таблице не изменены (раздел документа принят)', 'deleted' => 0];
                     } else {

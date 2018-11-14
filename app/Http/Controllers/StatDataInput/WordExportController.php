@@ -35,7 +35,7 @@ class WordExportController extends Controller
     {
         $this->document = $document;
         $this->unit = UnitsView::find($document->ou_id);
-        $this->form = Form::find($document->form_id);
+        $this->form = Form::getRealForm($document->form_id);
         $this->period = Period::find($document->period_id);
         $this->openTemplate();
         $this->modifyDOM();
@@ -105,7 +105,7 @@ class WordExportController extends Controller
                         $column_medstatcode = $cell_arguments[2];
                         $column_index = (int)ltrim($cell_arguments[2], '0');
                         try {
-                            $table = Table::OfFormTableCode($this->document->form_id, $table_code)->first();
+                            $table = Table::OfFormTableCode($this->form->id, $table_code)->first();
                             if (!$table->transposed ) {
                                 $row = Row::OfTableRowMedstatcode($table->id, $row_medstatcode)->first();
                                 $column = Column::OfTableMedstatCode($table->id, $cell_arguments[2])->first();

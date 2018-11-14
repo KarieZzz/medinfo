@@ -19,6 +19,7 @@
 
 @section('content')
     @include('jqxdatainput.formeditsplitter')
+    @include('jqxdatainput.dashboardwindows')
 @endsection
 
 @push('loadcss')
@@ -26,7 +27,7 @@
 @endpush('loadcss')
 
 @push('loadjsscripts')
-    <script src="{{ asset('/medinfo/editdashboard.js?v=170') }}"></script>
+    <script src="{{ asset('/medinfo/editdashboard.js?v=171') }}"></script>
 @endpush('loadjsscripts')
 
 @section('inlinejs')

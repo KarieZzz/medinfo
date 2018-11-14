@@ -37,12 +37,12 @@
         </div>
         <div id="popups" style="display: none">
             @include('jqxdatainput.notifications')
-            @include('jqxdatainput.dashboardwindows')
+            @include('jqxdatainput.userprofileedit')
         </div>
     </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="{{ asset('/jqwidgets/jqx-all.js?v=001') }}"></script>
-<script src="{{ asset('/medinfo/dashboard.js?v=013') }}"></script>
+<script src="{{ asset('/medinfo/dashboard.js?v=015') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js?v=001') }}"></script>
 <script src="{{ asset('/plugins/fullscreen/jquery.fullscreen.js?v=001') }}"></script>
 <script src="{{ asset('/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
@@ -56,6 +56,8 @@
             }
         });
         $("#content").show();
+        inituserprofilewindow();
+        initnotifications();
     });
 </script>
 @yield('inlinejs')

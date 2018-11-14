@@ -37,7 +37,6 @@ let statusDropDown = $('#statusSelector');
 let dataPresenseDDown = $('#dataPresenceSelector');
 let stateWindow = $('#changeStateWindow');
 let docinfoWindow = $('#DocumentInfoWindow');
-let userProfileWindow = $('#UserProfileWindow');
 let current_document_form_code;
 let current_document_form_name;
 let current_document_ou_name;
@@ -1622,22 +1621,6 @@ function setDocInfo(rowindex) {
     });
 }
 
-inituserprofilewindow = function() {
-    //let cl = $("#CloseDocInfoWindow");
-    userProfileWindow.jqxWindow({
-        width: 850,
-        height: 500,
-        position: 'center',
-        resizable: true,
-        isModal: false,
-        autoOpen: false,
-        //cancelButton: cl,
-        theme: theme
-    });
-    $("#openProfileEditor").click( function () {
-        userProfileWindow.jqxWindow('open');
-    });
-};
 // Формирование строки запроса к серверу
 filtersource = function() {
     let forms;

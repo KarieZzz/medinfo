@@ -61,10 +61,11 @@ class ExcelExportController extends Controller
     public function dataFormExport(Document $document)
     {
         $form = Form::find($document->form_id);
+        $realform = Form::getRealForm($document->form_id);
         $ou = Unit::find($document->ou_id);
         $period = Period::find($document->period_id);
         $album = $document->album_id;
-        $tables = Table::OfForm($form->id)->whereDoesntHave('excluded', function ($query) use($album) {
+        $tables = Table::OfForm($realform->id)->whereDoesntHave('excluded', function ($query) use($album) {
             $query->where('album_id', $album);
         })->orderBy('table_index')->get();
         $excel = Excel::create('Form' . $form->form_code);

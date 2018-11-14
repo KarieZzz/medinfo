@@ -120,7 +120,6 @@ let topOffset2 = 105;
 //initCellProtSize();
 onResizeEventLitener();
 initdatasources();
-initnotifications();
 inittoolbarbuttons();
 inittablelist();
 initSplitter();
