@@ -321,6 +321,9 @@ Route::group(['middleware' => ['medinfo']], function () {
     // Импорт данных
     Route::get('datainput/excelimport', 'ImportExport\ImportDataFromExcelController@importData');
 
+    // Профиль пользователя
+    Route::resource('userprofiles', 'StatDataInput\UserProfileController');
+
     // Аналитика: консолидированные отчеты, справки
     Route::get('reports/br/querycomposer', 'Admin\BriefReferenceController@index');
     Route::get('reports/br/output', 'Admin\BriefReferenceMaker@makeBriefReport');

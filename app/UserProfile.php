@@ -13,4 +13,9 @@ class UserProfile extends Model
     {
         return $query->where('user_id', $user);
     }
+
+    public function user()
+    {
+        return $this->belongsTo('App\User', 'id' , 'user_id');
+    }
 }

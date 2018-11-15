@@ -191,7 +191,7 @@ class DocumentTree
                     JOIN albums al ON d.album_id = al.id
                     LEFT JOIN aggregates a ON a.doc_id = d.id
                   WHERE d.ou_id = {$this->top_node} $scopes
-                  GROUP BY d.id, u.slug, u.name, f.form_code, f.form_name, m.name, p.name, al.album_name s.name, t.name, a.protected
+                  GROUP BY d.id, u.slug, u.name, f.form_code, f.form_name, m.name, p.name, al.album_name, s.name, t.name, a.protected
                   {$this->scopes['e']}
                   ORDER BY f.form_code, p.name";
                 //echo $group_doc_query;
