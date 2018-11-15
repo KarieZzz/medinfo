@@ -10,7 +10,11 @@
 @endsection
 
 @section('rp-open')
-    <span class="text-right pull-right" id="rp-open" title="Открыть боковую панель"><i style="font-size: 1.5em" class="fa fa-align-justify"></i></span>
+    <li class="pull-right">
+        <a href="#">
+            <span class="text-right text-info pull-right" id="rp-open" title="Открыть боковую панель"><i style="font-size: 1.5em" class="fa fa-align-justify"></i></span>
+        </a>
+    </li>
 @endsection
 
 @section('headertitle', 'Просмотр/редактирование сводного отчетного документа')

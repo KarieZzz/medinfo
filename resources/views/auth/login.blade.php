@@ -34,7 +34,7 @@
 									<input type="checkbox" name="remember"> Запомнить меня
 								</label>
 							</div>
-                            <a class="btn btn-link" href="{{ url('/password/reset') }}">Забыли Ваш пароль?</a>
+                            {{--<a class="btn btn-link" href="{{ url('/password/reset') }}">Забыли Ваш пароль?</a>--}}
 						</div>
 						<!-- /.col -->
 						<div class="col-xs-4">
