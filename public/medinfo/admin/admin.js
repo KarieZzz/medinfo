@@ -81,5 +81,4 @@ xhrErrorNotificationHandler = function (xhr, status, errorThrown) {
     $.each(xhr.responseJSON, function(field, errorText) {
         raiseError(errorText);
     });
-
 };

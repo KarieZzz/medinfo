@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateUserProfilesTable extends Migration
+class CreateWorkerProfilesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,14 @@ class CreateUserProfilesTable extends Migration
     public function up()
     {
         //
-        Schema::create('user_profiles', function (Blueprint $table) {
+        Schema::create('worker_profiles', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('user_id')->index();
+            $table->integer('worker_id')->index();
             $table->string('tag', 256);
             $table->string('attribute', 256)->nullable();
             $table->text('value')->nullable();
             $table->timestamps();
-            $table->unique(['user_id', 'tag']);
+            $table->unique(['worker_id', 'tag', 'attribute']);
         });
     }
 
@@ -32,6 +32,6 @@ class CreateUserProfilesTable extends Migration
     public function down()
     {
         //
-        Schema::drop('user_profiles');
+        Schema::drop('worker_profiles');
     }
 }

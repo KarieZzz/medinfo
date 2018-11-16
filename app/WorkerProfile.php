@@ -4,10 +4,10 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class WorkerSetting extends Model
+class WorkerProfile extends Model
 {
     //
-    protected $fillable = ['worker_id', 'name', 'value'];
+    protected $fillable = ['worker_id', 'tag', 'attribute', 'value'];
 
     public function worker()
     {

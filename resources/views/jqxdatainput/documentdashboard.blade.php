@@ -155,14 +155,12 @@
 @endpush
 
 @push('loadjsscripts')
-<script src="{{ asset('/medinfo/documentdashboard.js?v=129') }}"></script>
+<script src="{{ asset('/medinfo/documentdashboard.js?v=130') }}"></script>
 @endpush
 
 @section('inlinejs')
     @parent
     <script type="text/javascript">
-        let current_user_id = '{{ $worker->id }}';
-        let current_user_role = '{{ $worker->role }}';
         let current_user_scope = '{{ $worker_scope }}';
         let audit_permission = {{ $audit_permission ? 'true' : 'false' }};
         let periods = {!! $periods !!};

@@ -15,6 +15,16 @@ class Worker extends Model
         return $this->hasMany('App\WorkerScope');
     }
 
+    public function settings()
+    {
+        return $this->hasMany('App\WorkerSetting');
+    }
+
+    public function profiles()
+    {
+        return $this->hasMany('App\WorkerProfile');
+    }
+
     public function scopeOfRole($query, $type)
     {
         return $query->where('role', $type);

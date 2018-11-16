@@ -50,20 +50,93 @@ formatDate = function (dateObject) {
     return day + '.' + month + '.' + year + ' '+ d.getHours() + ':' + d.getMinutes();
 };
 
-inituserprofilewindow = function() {
-    //let cl = $("#CloseDocInfoWindow");
-    let up = $("#UserProfileWindow");
-    up.jqxWindow({
-        width: 850,
-        height: 500,
-        position: 'center',
-        resizable: true,
-        isModal: false,
-        autoOpen: false,
-        //cancelButton: cl,
-        theme: theme
-    });
-    $("#openProfileEditor").click( function () {
-        up.jqxWindow('open');
+xhrErrorNotificationHandler = function (xhr, status, errorThrown) {
+    if (xhr.status === 401) {
+        raiseError('Пользователь не авторизован.', xhr );
+        return false;
+    }
+    $.each(xhr.responseJSON, function(field, errorText) {
+        raiseError(errorText);
     });
 };
+
+inituserprofilewindow = function() {
+    let cl = $("#cancelProfileSaving");
+    let up = $("#UserProfileWindow");
+    let form = $('#userProfileForm');
+    up.jqxWindow({
+        width: 850,
+        height: 530,
+        position: 'center',
+        resizable: true,
+        isModal: true,
+        autoOpen: false,
+        cancelButton: cl,
+        theme: theme
+    });
+    $("#saveProfile").click(function () {
+        if (form[0].checkValidity()) {
+            $.ajax({
+                url: '/userprofiles/' + current_user_id,
+                data: setUserPfofile(),
+                method: 'PATCH',
+                success: function (data, status, xhr) {
+                    if (data.saved) {
+                        raiseInfo('Изменения в профиле пользователя сохранены');
+                        up.jqxWindow('close');
+                    } else {
+                        raiseError('Изменения в профиле пользователя не сохранены');
+                    }
+                },
+                error: xhrErrorNotificationHandler
+            })
+        } else {
+            form[0].reportValidity();
+            raiseError("Не все данные заполнены корректно");
+        }
+    });
+    $("#openProfileEditor").click( function () {
+        up.jqxWindow('setTitle', 'Профиль пользователя id ' + current_user_id);
+        form[0].reset();
+        up.jqxWindow('open');
+    });
+    up.on('open', function (event) {
+        getUserProfile();
+    });
+};
+
+function getUserProfile() {
+    $.ajax({
+        dataType: 'json',
+        url: '/userprofiles/' + current_user_id + '/edit',
+        method: "GET",
+        beforeSend: function( xhr ) {
+            $("#formloader").show();
+        },
+        success: function (data, status, xhr) {
+            $("#formloader").hide();
+            $("#lastname").val(data.lastname);
+            $("#firstname").val(data.firstname);
+            $("#patronym").val(data.patronym);
+            $("#wtel").val(data.wtel);
+            $("#ctel").val(data.ctel);
+            $("#email").val(data.email);
+            $("#ou").val(data.ou);
+            $("#post").val(data.post);
+            $("#description").val(data.description);
+        },
+        error: xhrErrorNotificationHandler
+    });
+}
+
+function setUserPfofile() {
+    return 'lastname=' + $("#lastname").val() +
+        '&firstname=' + $("#firstname").val() +
+        '&patronym=' + $("#patronym").val() +
+        '&wtel=' + encodeURIComponent($("#wtel").val()) +
+        '&ctel=' + encodeURIComponent($("#ctel").val()) +
+        '&email=' + $("#email").val() +
+        '&ou=' + encodeURIComponent($("#ou").val()) +
+        '&post=' + encodeURIComponent($("#post").val()) +
+        '&description=' + encodeURIComponent($("#description").val());
+}
