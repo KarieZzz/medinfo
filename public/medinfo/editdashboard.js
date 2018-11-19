@@ -1550,12 +1550,19 @@ let fillCalculatedFields = function () {
 let initExcelUpload = function () {
     excelUploadWindow.jqxWindow({
         width: 500,
-        height: 300,
+        height: 350,
         position: 'center',
         resizable: true,
         isModal: true,
         autoOpen: false,
         theme: theme
+    });
+    flUpload.on('uploadStart', function (event) {
+        $("#UploadResult").html('');
+        let only = onlyOneTable.prop('checked') ? '1' : '0';
+        flUpload.jqxFileUpload({
+            uploadUrl: excelupload_url + current_table + '/' + only,
+        });
     });
     flUpload.on('uploadEnd', function (event) {
         let args = event.args;
@@ -1569,7 +1576,11 @@ let initExcelUpload = function () {
         } else {
             $("#ExcelUploadComment").hide();
             for (let tcode in serverResponce) {
-                m += "<p class='text-info'>" +tcode + ": Импортировано ячеек: " + serverResponce[tcode].saved + " Очищено ячеек: " + serverResponce[tcode].deleted + "</p>";
+                m += "<p class='text-info'>т. " + tcode +
+                    ": Импортировано ячеек: " + serverResponce[tcode].saved + "," +
+                    " Очищено ячеек: " + serverResponce[tcode].deleted + "," +
+                    " Пропущено закрещенных ячеек: " + serverResponce[tcode].noteditable + "." +
+                    "</p>";
             }
         }
         m += '</div>';
@@ -1577,16 +1588,18 @@ let initExcelUpload = function () {
         dgrid.jqxGrid('updatebounddata');
     });
     flUpload.jqxFileUpload({
-        width: 450,
+        width: 470,
         uploadUrl: excelupload_url + current_table,
         multipleFilesUpload: false,
         fileInputName: 'fileToUpload'
     });
+
     flUpload.jqxFileUpload({
         localization: {
             browseButton: 'Выбрать файл',
             uploadButton: 'Загрузить',
             cancelButton: 'Отменить',
             uploadFileTooltip: 'загрузить',
-            cancelFileTooltip: 'отменить' } });
+            cancelFileTooltip: 'отменить'
+        } });
 };

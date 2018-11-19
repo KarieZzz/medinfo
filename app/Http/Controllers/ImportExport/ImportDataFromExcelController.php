@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\ImportExport;
 
+use App\NECell;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests;
@@ -33,7 +34,7 @@ class ImportDataFromExcelController extends Controller
         $this->middleware('datainputauth');
     }
 
-    public function importData(Document $document, Table $table, Request $request)
+    public function importData(Document $document, Table $table, $only, Request $request)
     {
         $worker = Auth::guard('datainput')->user();
         if (!TableEditing::isEditPermission($worker->permission, $document->state)) {
@@ -62,13 +63,24 @@ class ImportDataFromExcelController extends Controller
             $codes = explode("_", $title);
             if ($codes[0] == $this->form->form_code) {
                 if (isset($codes[1])) {
-                    $t = Table::OfFormTableCode($this->realform->id, $codes[1])->first();
-                    if (TableEditing::isTableBlocked($document->id, $t->id)) {
-                        $result[$codes[1]] = ['saved' => 'Данные в таблице не изменены (раздел документа принят)', 'deleted' => 0];
-                    } else {
-                        $result[$codes[1]] = $this->getDataFromSheet($lists[$i], $t);
+                    if ($only === '1') {
+                        //var_dump($codes[1] === $table->table_code);
+                        //dd($codes[1]);
+                        if ($table->table_code === $codes[1]) {
+                            if (TableEditing::isTableBlocked($document->id, $table->id)) {
+                                $result[$codes[1]] = ['saved' => 'Данные в таблице не изменены (раздел документа принят)', 'deleted' => 0];
+                            } else {
+                                $result[$codes[1]] = $this->getDataFromSheet($lists[$i], $table);
+                            }
+                        }
+                    } elseif ($only === '0') {
+                        $t = Table::OfFormTableCode($this->realform->id, $codes[1])->first();
+                        if (TableEditing::isTableBlocked($document->id, $t->id)) {
+                            $result[$codes[1]] = ['saved' => 'Данные в таблице не изменены (раздел документа принят)', 'deleted' => 0];
+                        } else {
+                            $result[$codes[1]] = $this->getDataFromSheet($lists[$i], $t);
+                        }
                     }
-
                 } else {
                     $result[$codes[1]] = ['saved' => 'Данные в таблице не изменены (раздел документа принят)', 'deleted' => 0];
                     //throw new \Exception("Таблица с кодом {$codes[1]} не найдена в форме {$this->form->form_code}");
@@ -101,6 +113,7 @@ class ImportDataFromExcelController extends Controller
         })->orderBy('column_index')->get();
         $deleted = 0;
         $saved = 0;
+        $noteditable = 0;
         for ($i = 0; $i < count($rows); $i++) {
             for ($j = 0; $j < count($cols); $j++) {
                 if ($sheet->getCellByColumnAndRow($j + 2,$i + 6)->isFormula()) {
@@ -114,14 +127,19 @@ class ImportDataFromExcelController extends Controller
                         $deleted++;
                     }
                 } else {
-                    $cell = Cell::firstOrCreate(['doc_id' => $this->document->id, 'table_id' => $table->id, 'row_id' => $rows[$i]->id, 'col_id' => $cols[$j]->id]);
-                    $cell->value = $v;
-                    $cell->save();
-                    $saved++;
+                    $ne = NECell::OfRC($rows[$i]->id, $cols[$j]->id)->first();
+                    if (!$ne) {
+                        $cell = Cell::firstOrCreate(['doc_id' => $this->document->id, 'table_id' => $table->id, 'row_id' => $rows[$i]->id, 'col_id' => $cols[$j]->id]);
+                        $cell->value = $v;
+                        $cell->save();
+                        $saved++;
+                    } else {
+                        $noteditable++;
+                    }
                 }
                 //dump($v);
             }
         }
-        return compact('saved', 'deleted');
+        return compact('saved', 'deleted', 'noteditable');
     }
 }

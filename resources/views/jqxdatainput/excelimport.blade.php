@@ -1,8 +1,16 @@
 <div id="uploadExcelFile">
     <div>Импорт данных из формата MS Excel</div>
     <div style="overflow: hidden;">
-        <div id="ExcelFileUpload"></div>
-        <div class="row" style="max-height:160px;overflow:auto;margin-right:-6px" >
+        <div id="ExcelFileUpload">
+        </div>
+        <div class="row" style="overflow:hidden;margin-right:-10px">
+            <div class="col-md-10">
+                <div class="checkbox">
+                    <label><input type="checkbox" value="1" name="onlyOneTable" id="onlyOneTable" checked>Импортировать данные только в текущую таблицу</label>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="max-height:200px;overflow:auto;margin-right:-6px" >
             <div class="col-md-12" id="UploadResult"></div>
         </div>
         <div class="row" id="ExcelUploadComment">

@@ -31,6 +31,7 @@ let excelimport = $("#tableExcelImport");
 let fsdropdown = $('#SectionsManager');
 let excelUploadWindow = $('#uploadExcelFile');
 let flUpload = $('#ExcelFileUpload');
+let onlyOneTable = $('#onlyOneTable');
 let localizednumber = new Intl.NumberFormat('ru-RU');
 let edited_tables = [{!! implode(',', $editedtables) !!}];
 let not_editable_cells = {!! json_encode($noteditablecells) !!};

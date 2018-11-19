@@ -23,7 +23,7 @@
 
 @section('content')
     @include('jqxdatainput.formeditsplitter')
-    @include('jqxdatainput.dashboardwindows')
+    @include('jqxdatainput.excelimport')
 @endsection
 
 @push('loadcss')
@@ -31,7 +31,7 @@
 @endpush('loadcss')
 
 @push('loadjsscripts')
-    <script src="{{ asset('/medinfo/editdashboard.js?v=174') }}"></script>
+    <script src="{{ asset('/medinfo/editdashboard.js?v=179') }}"></script>
 @endpush('loadjsscripts')
 
 @section('inlinejs')

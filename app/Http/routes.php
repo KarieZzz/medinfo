@@ -292,7 +292,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('datainput/formdashboard/{document}', 'StatDataInput\FormDashboardController@index');
     Route::get('datainput/fetchvalues/{document}/{album}/{table}', 'StatDataInput\FormDashboardController@fetchValues');
     Route::post('datainput/savevalue/{document}/{table}', 'StatDataInput\FormDashboardController@saveValue');
-    Route::post('datainput/excelupload/{document}/{table}', 'ImportExport\ImportDataFromExcelController@importData');
+    Route::post('datainput/excelupload/{document}/{table}/{only}', 'ImportExport\ImportDataFromExcelController@importData');
     Route::get('datainput/valuechangelog/{document}', 'StatDataInput\FormDashboardController@fullValueChangeLog');
     Route::get('datainput/calculate/{document}/{table}', 'StatDataInput\CalculateColumnController@calculate');
     Route::get('datainput/blocksection/{document}/{formsection}/{blocking}', 'StatDataInput\DocumentSectionController@toggleSection');
