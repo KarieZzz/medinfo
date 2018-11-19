@@ -25,7 +25,10 @@ class DocumentMessageController extends Controller
 
     public function fetchMessages(Request $request)
     {
-        $messages = DocumentMessage::where('doc_id', $request->document)->orderBy('created_at', 'desc')->with('worker')->get();
+        $messages = DocumentMessage::where('doc_id', $request->document)->orderBy('created_at', 'desc')
+            //->with('worker')
+            ->with('worker.profiles')
+            ->get();
         return $messages;
     }
 

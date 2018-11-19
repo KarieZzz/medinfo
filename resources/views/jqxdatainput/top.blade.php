@@ -6,7 +6,9 @@
         <ul class="nav navbar-nav pull-right">
             @yield('rp-open')
             <li class="dropdown pull-right">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="fa fa-user fa-lg text-info"></i> <span class="caret"></span></a>
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" title="Пользователь: {{ Auth::guard('datainput')->user()->description }} ">
+                    <i class="fa fa-user fa-lg text-info"></i> <span class="caret"></span>
+                </a>
                 <ul class="dropdown-menu">
                     <li><a><strong class="text-info">{{ Auth::guard('datainput')->user()->description }}</strong></a></li>
                     <li><a href="#" id="openProfileEditor"><span class="fa fa-user"></span> Профиль</a></li>

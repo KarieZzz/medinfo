@@ -1071,17 +1071,46 @@ initdocumentstabs = function() {
                 let items = [];
                 $.each( data, function( key, val ) {
                     let worker = 'н/д';
+                    let description;
+                    let wtel = 'н/д';
+                    let ctel = 'н/д';
                     if (val.worker !== null) {
-                        worker = val.worker.description;
+                        description = val.worker.description;
+                        let pr = val.worker.profiles;
+                        for (let i = 0; i < pr.length; i++) {
+                            console.log(pr[i].tag);
+                            switch (true) {
+                                case (pr[i].tag === 'tel' && pr[i].attribute === 'working') :
+                                    wtel = pr[i].value;
+                                    break;
+                                case (pr[i].tag === 'tel' && pr[i].attribute === 'cell') :
+                                    ctel = pr[i].value;
+                                    break;
+                            }
+                        }
                     }
                     let m = "<tr>";
                     m += "<td style='width: 120px'>" + formatDate(val.created_at) + "</td>";
-                    m += "<td style='width: 20%'>" + worker + "</td>";
+                    m += '<td style="width: 20%">' +
+                        '<div class="dropdown">' +
+                        '  <button class="btn btn-link dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">' + description +
+                        '  <span class="caret"></span></button>' +
+                        '  <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">' +
+                        '    <li role="presentation"><a role="menuitem" href="mailto:' + val.worker.email + '?subject=Воспрос по заполнению формы ' + current_document_form_code +'">' +
+                        '       e-mail: ' + val.worker.email + '</a></li>' +
+                        '    <li role="presentation" class="divider"></li>' +
+                        '    <li role="presentation"><a role="menuitem" href="tel:'+ wtel +'">Рабочий телефон: '+ wtel +'</a></li>' +
+                        '    <li role="presentation"><a role="menuitem" href="tel:'+ ctel +'">Сотовый телефон: '+ ctel +'</a></li>' +
+                        '  </ul>' +
+                        '</div>' +
+                        '</td>';
                     m += "<td>" + val.message + "</td>";
+                    //m += "<td style='width: 50px'><span class='fa fa-lg fa-ellipsis-h'></span></td>";
                     m +="</tr>";
                     items.push(m);
                 });
-                $("#DocumentMessages").html("<table class='table table-bordered table-condensed table-hover table-striped' style='width: 100%'>" + items.join( "" ) + "</table>");
+                $("#DocumentMessages").html("<table class='table table-bordered table-condens\n" +
+                    "                        'ed table-hover table-striped' style='width: 100%'>" + items.join( "" ) + "</table>");
             }
         });
         if (docinfoWindow.jqxWindow('isOpen')) {

@@ -18,7 +18,7 @@ let initCellProtSize = function () {
 */
 let onResizeEventLitener = function () {
     $(window).resize(function() {
-        dgrid.jqxGrid({ height: $(window).height()-topOffset1-20 });
+        dgrid.jqxGrid({ height: $(window).height()-topOffset1 });
         $('#formEditLayout').jqxSplitter({ height: $(window).height()-topOffset2});
         //$("#tableprotocol").height($(window).height()-topOffset3);
         //$("#formprotocol").height($(window).height()-topOffset3);
