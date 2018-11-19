@@ -35,7 +35,7 @@ class ExcelExportController extends Controller
         $data = $ret['data'];
         $cols = $ret['cols'];
         //dd($data);
-        $excel = Excel::create('Table' . $table->table_code);
+        $excel = Excel::create('Table' . $form->form_code . '_' . $table->table_code);
         $excel->sheet($form->form_code . '_' . $table->table_code , function($sheet) use ($table, $cols, $data) {
             $sheet->loadView('reports.datatable_excel', compact('table', 'cols', 'data'));
 /*            $sheet->setColumnFormat(array(
