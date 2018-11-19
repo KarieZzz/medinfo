@@ -1096,7 +1096,7 @@ initdocumentstabs = function() {
                         '  <button class="btn btn-link dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">' + description +
                         '  <span class="caret"></span></button>' +
                         '  <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">' +
-                        '    <li role="presentation"><a role="menuitem" href="mailto:' + val.worker.email + '?subject=Воспрос по заполнению формы ' + current_document_form_code +'">' +
+                        '    <li role="presentation"><a role="menuitem" href="mailto:' + val.worker.email + '?subject=Вопрос по заполнению формы ' + current_document_form_code +'">' +
                         '       e-mail: ' + val.worker.email + '</a></li>' +
                         '    <li role="presentation" class="divider"></li>' +
                         '    <li role="presentation"><a role="menuitem" href="tel:'+ wtel +'">Рабочий телефон: '+ wtel +'</a></li>' +
