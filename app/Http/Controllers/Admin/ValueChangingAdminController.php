@@ -22,9 +22,8 @@ class ValueChangingAdminController extends Controller
         $form = $document->form()->first();
         $unit = $document->unit()->first();
         $period = $document->period()->first();
-
+        //dd($records[0]->column);
         //return $form->id;
         return view('reports.valuechangelog',  compact('form', 'unit', 'period', 'records') );
     }
-
 }

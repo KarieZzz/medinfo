@@ -20,8 +20,8 @@
                         <td>{{ $record->occured_at }}</td>
                         <td>({{ $record->worker->name }}) {{ $record->worker->description }}</td>
                         <td>{{ $record->table->table_code }}</td>
-                        <td>{{ $record->row->row_code }}</td>
-                        <td>{{ $record->column->column_code }}</td>
+                        <td>{{ $record->row ? $record->row->row_code : 'Строка не найдена (' . $record->r . ')' }}</td>
+                        <td>{{ $record->column ? $record->column->column_code : 'Графа не найдена (' . $record->c . ')' }}</td>
                         <td>{{ $record->oldvalue }}</td>
                         <td>{{ $record->newvalue }}</td>
                     </tr>
