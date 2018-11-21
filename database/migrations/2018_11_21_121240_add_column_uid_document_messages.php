@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateDocumentMessagesTable extends Migration
+class AddColumnUidDocumentMessages extends Migration
 {
     /**
      * Run the migrations.
@@ -12,13 +12,9 @@ class CreateDocumentMessagesTable extends Migration
      */
     public function up()
     {
-        Schema::create('document_messages', function (Blueprint $table) {
-            $table->increments('id');
+        //
+        Schema::table('document_messages', function (Blueprint $table) {
             $table->uuid('uid')->default(DB::raw('uuid_generate_v4()'))->index();
-            $table->integer('doc_id')->index();
-            $table->integer('user_id')->index();
-            $table->text('message');
-            $table->timestamps();
         });
     }
 
@@ -29,6 +25,9 @@ class CreateDocumentMessagesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('document_messages');
+        //
+        Schema::table('document_messages', function (Blueprint $table) {
+            $table->dropColumn('uid');
+        });
     }
 }

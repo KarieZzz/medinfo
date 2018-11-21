@@ -16,6 +16,13 @@ raiseInfo = function(comment) {
     $("#currentInfoMessage").text(comment);
     $("#infoNotification").jqxNotification("open");
 };
+raiseEventMessage = function(comment) {
+    if (typeof comment === 'undefined') {
+        comment = 'Неизвестное событие';
+    }
+    $("#eventMessage").html(comment);
+    $("#eventNotification").jqxNotification("open");
+};
 localize = function() {
     let localizationobj = {};
     localizationobj.thousandsseparator = " ";
@@ -35,6 +42,13 @@ initnotifications = function() {
         width: 250, position: "top-right", opacity: 0.9,
         autoOpen: false, animationOpenDelay: 800, autoClose: true, autoCloseDelay: 3000, template: "info"
     });
+    $("#eventNotification").jqxNotification({
+        width: "450px",
+        position: "bottom-right",
+        opacity: 1,
+        autoClose: true,
+        autoCloseDelay: 12000,
+        template: null });
 };
 formatDate = function (dateObject) {
     let d = new Date(dateObject);
@@ -139,4 +153,24 @@ function setUserPfofile() {
         '&ou=' + encodeURIComponent($("#ou").val()) +
         '&post=' + encodeURIComponent($("#post").val()) +
         '&description=' + encodeURIComponent($("#description").val());
+}
+
+function initPusher() {
+    Pusher.logToConsole = true;
+    pusher = new Pusher(pkey, {
+        cluster: 'eu',
+        forceTLS: true
+    });
+    channel = pusher.subscribe('event-brodcasting-channel');
+}
+
+function initStateChangeChannel() {
+    channel.bind('state-change-event', function(data) {
+        if (String(data.worker_id) !== current_user_id) {
+            raiseEventMessage(data.message + data.worker + data.form + data.unit + data.period );
+        } else {
+            console.log("Сообщение скрыто от текущего пользователя - он автор события");
+        }
+
+    });
 }

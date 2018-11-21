@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers\StatDataInput;
 
+use App\Events\DocumentStateChanging;
+use Illuminate\Broadcasting\Broadcasters\PusherBroadcaster;
+use Illuminate\Broadcasting\BroadcastEvent;
+use Illuminate\Contracts\Broadcasting\Broadcaster;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -11,16 +15,16 @@ use App\Worker;
 use App\Unit;
 use App\Medinfo\UnitTree;
 use App\Document;
-use App\DocumentMessage;
-use App\Form;
-use Mail;
-use Carbon\Carbon;
-use App\StatechangingLog;
-//use PhpParser\Node\Stmt\TryCatch;
+//use App\Form;
 
 class DocumentStateController extends Controller
 {
     //
+    public function __construct()
+    {
+        $this->middleware('datainputauth');
+    }
+
     public function changeState(Request $request)
     {
         $this->validate($request, [
@@ -49,7 +53,7 @@ class DocumentStateController extends Controller
                 return $data;
             }
         }
-        $form = Form::find($document->form_id);
+        //$form = Form::find($document->form_id);
         $current_unit = Unit::find($document->ou_id);
         $worker = Auth::guard('datainput')->user();
         $miac_emails = explode(",", config('medinfo.miac_emails'));
@@ -119,28 +123,9 @@ class DocumentStateController extends Controller
                     break;
             }
             if ($data['status_changed']) {
-                StatechangingLog::create(['worker_id' => $worker->id, 'document_id' => $document->id,
-                    'oldstate' => $old_state, 'newstate' => $new_state, 'occured_at' => Carbon::now()]);
-                $newmessage = new DocumentMessage();
-                $newmessage->doc_id = $document->id;
-                $newmessage->user_id = $worker->id;
-                $newlabel = Document::$state_labels[$document->state];
                 $newalias = Document::$state_aliases[$document->state];
                 $data['new_status'] = $newalias;
-                $newmessage->message = "Статус документа изменен на \"". $newlabel . "\". " .  $remark;
-                $newmessage->save();
-                //dd(config('medinfo.permission'));
-                $for_mail_body = compact('document', 'remark', 'worker','form', 'current_unit', 'newlabel');
-                try {
-                    Mail::send('emails.changestatemessage', $for_mail_body, function ($m) use ($emails) {
-                        $m->from(config('medinfo.server_email'), 'Email оповещение Мединфо');
-                        $m->to($emails)->subject('Изменен статус отчетного документа Мединфо');
-                    });
-                    $data['sent_to'] = implode(",", $emails);
-                } catch (\Exception $e) {
-                    $data['sent_to'] = 'Почтовое сообщение о смене статуса документа не доставлено адресатам ' . implode(",", $emails);
-                    $data['sent_error'] = $e->getMessage();
-                }
+                event(new DocumentStateChanging(compact('worker', 'document','old_state','new_state', 'emails', 'remark')));
             }
         }
         return $data;

@@ -1078,7 +1078,6 @@ initdocumentstabs = function() {
                         description = val.worker.description;
                         let pr = val.worker.profiles;
                         for (let i = 0; i < pr.length; i++) {
-                            console.log(pr[i].tag);
                             switch (true) {
                                 case (pr[i].tag === 'tel' && pr[i].attribute === 'working') :
                                     wtel = pr[i].value;
@@ -1515,7 +1514,8 @@ initpopupwindows = function() {
                 stateWindow.jqxWindow('hide');
             },
             error: function (xhr, status, errorThrown) {
-                raiseError('Ошибка сохранения данных на сервере', xhr);
+                xhrErrorNotificationHandler(xhr, status, errorThrown);
+                //raiseError('Ошибка сохранения данных на сервере', xhr);
                 $("#changeStateAlertMessage").html('');
                 $("#SaveState").jqxButton({disabled: false });
                 $("#CancelStateChanging").jqxButton({disabled: false });

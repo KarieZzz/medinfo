@@ -4,7 +4,9 @@
     "gulp": "^3.8.8"
   },
   "dependencies": {
+    "bootstrap-sass": "^3.0.0",
+    "laravel-echo": "^1.4.1",
     "laravel-elixir": "*",
-    "bootstrap-sass": "^3.0.0"
+    "pusher-js": "^4.3.1"
   }
 }
