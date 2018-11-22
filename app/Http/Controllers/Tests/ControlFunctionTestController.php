@@ -2,10 +2,6 @@
 
 namespace App\Http\Controllers\Tests;
 
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
 use App\Medinfo\DSL\ControlFunctionLexer;
 use App\Medinfo\DSL\ControlFunctionParser;
 use App\Medinfo\DSL\ControlPtreeTranslator;
@@ -14,27 +10,22 @@ use App\Medinfo\DSL\Evaluator;
 use App\Document;
 use App\Table;
 
-class SectionCheckTestController extends Controller
+use Illuminate\Http\Request;
+
+use App\Http\Requests;
+use App\Http\Controllers\Controller;
+
+class ControlFunctionTestController extends Controller
 {
-    // Тестирование функции контроля разрезов форм
-    public function SectionCheckTest()
+    //
+    public function fold()
     {
-        //$table = Table::find(111);     // Ф12 Т1000
-        //$table = Table::find(384);     // Ф19 Т1000
-        $table = Table::find(958);     // Ф54 Т2310
+        $table = Table::find(10);     // Ф30 Т1100
 
-        $section = 107;  // разрез 01 формы 54
-        //$document = Document::find(4965); // 30 ф Все организации 3 кв. МСК
-        //$document = Document::find(47884); // 12 ф Все организации 3 кв. МСК
-        //$document = Document::find(48275); // 19 ф Салтыковский детский дом 3 кв. МСК
-        $document = Document::find(48273); // 5401 ф Салтыковский детский дом 3 кв. МСК
-        //$i = "разрез(12, 1201, >)";
-        //$i = "разрез(301, 30, <=)";
-        //$i = "разрез(30, 301, >=)";
-        //$i = "сравнение(С09Г12+С10Г12, Ф5401Т2310С3Г3, =)";
-        $i = "сравнение(сумма(С2Г3:С3Г3), Ф19Т1000С09Г11+Ф19Т1000С10Г11, =)";
+        $document = Document::find(4519); // 30 ф Салтыковский детский дом 3 кв. МСК
+        $function = "кратность(диапазон(С1Г3:С224Г8, С1Г33:С224Г34, С1Г43:С224Г44, С1Г53:С224Г54), 0.25 )";
 
-        $lexer = new ControlFunctionLexer($i);
+        $lexer = new ControlFunctionLexer($function);
         $tockenstack = $lexer->getTokenStack();
         //dd($tockenstack);
         //dd($lexer->normalizeInput());
@@ -50,12 +41,12 @@ class SectionCheckTestController extends Controller
         //dd($parser->argStack);
 
         $translator = Translator::invoke($parser, $table);
-        $translator->setSection($section);
         //dd($translator);
         $translator->prepareIteration();
         //dd($translator->getProperties());
         //dd($translator->parser->root);
-
+        $prop = $translator->getProperties();
+        //dd($prop['iterations'][0]['С1Г3|0']);
         $evaluator = Evaluator::invoke($translator->parser->root, $translator->getProperties(), $document);
         //$evaluator = new ControlFunctionEvaluator($translator->parser->root, $translator->getProperties(), $document);
         //$evaluator = new ControlFunctionEvaluator($pTree, $props, $document);
@@ -73,5 +64,6 @@ class SectionCheckTestController extends Controller
         //return ($evaluator->iterations);
         //return ($evaluator->properties);
         return $evaluator->makeControl();
+
     }
 }

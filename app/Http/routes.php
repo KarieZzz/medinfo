@@ -343,15 +343,18 @@ Route::group(['middleware' => ['medinfo']], function () {
 
     // Работа с lexer-parser
     Route::get('tests/lexer', 'Tests\LexerParserController@lexerTest');
-    Route::get('tests/sectioncheck', 'Tests\SectionCheckTestController@SectionCheckTest');
     Route::get('tests/ast_w_bool', 'Tests\LexerParserController@test_making_AST_w_bool');
     Route::get('tests/parser', 'Tests\LexerParserController@func_parser');
     Route::get('tests/batchRename', 'Tests\LexerParserController@batchRename');
     Route::get('tests/calculation', 'Tests\LexerParserController@testCalculation');
     Route::get('tests/vector', 'Tests\VectorTestController@index');
-
+    // тестирование функций контроля
+    Route::get('tests/sectioncheck', 'Tests\SectionCheckTestController@SectionCheckTest');
+    Route::get('tests/foldcheck', 'Tests\ControlFunctionTestController@fold');
     // mail test
     Route::get('mailtest', 'StatDataInput\DocumentMessageController@testmail');
+    // websocket test
+    Route::get('tests/websocket', 'Tests\WebsocketTestController@websocket');
 
     // Аналитика - отдельный модуль для стастиков и экспертов. Только отчеты, справки, выборочный контроль данных
     Route::get('/analytics', 'Report\ReportController@compose_query');

@@ -42,9 +42,12 @@
         </div>
     </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+@if(config('medinfo.websocket'))
 @if($worker->role !==1 )
     <script src="https://js.pusher.com/4.3/pusher.min.js"></script>
 @endif
+@endif
+
 <script src="{{ asset('/jqwidgets/jqx-all.js?v=001') }}"></script>
 <script src="{{ asset('/medinfo/dashboard.js?v=032') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js?v=002') }}"></script>
@@ -59,9 +62,11 @@
     var pusher;
     var channel;
     initnotifications();
+@if(config('medinfo.websocket'))
 @if($worker->role !==1 )
     initPusher();
     initStateChangeChannel();
+@endif
 @endif
     inituserprofilewindow();
     $(document).ready(function () {

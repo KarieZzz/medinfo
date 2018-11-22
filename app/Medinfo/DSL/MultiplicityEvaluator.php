@@ -12,6 +12,17 @@ namespace App\Medinfo\DSL;
 class MultiplicityEvaluator extends ControlFunctionEvaluator
 {
 
+    public function __construct(ParseTree $ptree, $properties, \App\Document $document = null)
+    {
+        $this->pTree = $ptree;
+        $this->properties = $properties;
+        if ($document) {
+            $this->setDocument($document);
+        }
+        $this->setIterations();
+        $this->setArguments();
+    }
+
     public function setIterations()
     {
         $this->iterations = $this->properties['iterations'][0];

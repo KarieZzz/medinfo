@@ -221,6 +221,8 @@ class ControlFunctionEvaluator
     {
         //dd($this->iterations);
         //for ($i = 0; $i < count($this->iterations); $i++) {
+        //dd($this->iterations);
+        //dd($this->caStack['С1Г3|0']);
         foreach ($this->iterations as $code => $iteration) {
             $this->cellProperties[$code] = $this->setCellsProp($iteration);
         }
