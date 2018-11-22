@@ -1063,55 +1063,76 @@ initdocumentstabs = function() {
         current_document_state = row.state;
         bc = makeMOBreadcrumb(row.ou_id);
         primary_mo_bc.html(bc);
-        $.getJSON( murl, function( data ) {
-            if (data.responce === 0) {
-                $("#DocumentMessages").html("Нет сообщений для данного документа");
-            }
-            else {
-                let items = [];
-                $.each( data, function( key, val ) {
-                    let worker = 'н/д';
-                    let description;
-                    let wtel = 'н/д';
-                    let ctel = 'н/д';
-                    if (val.worker !== null) {
-                        description = val.worker.description;
-                        let pr = val.worker.profiles;
-                        for (let i = 0; i < pr.length; i++) {
-                            switch (true) {
-                                case (pr[i].tag === 'tel' && pr[i].attribute === 'working') :
-                                    wtel = pr[i].value;
-                                    break;
-                                case (pr[i].tag === 'tel' && pr[i].attribute === 'cell') :
-                                    ctel = pr[i].value;
-                                    break;
+        $.ajax({
+            dataType: 'json',
+            url: murl,
+            method: 'GET',
+            beforeSend: function (xhr) {
+                let loadmessage = "<div class='row' style='margin: 0 0 -15px -15px'>" +
+                    "   <div class='col-md-12' style='padding: 20px'>" +
+                    "       <h5>Загрузка сообщений <img src='/jqwidgets/styles/images/loader-small.gif' /></h5>" +
+                    "   </div>" +
+                    "</div>";
+                $("#DocumentMessages").html(loadmessage);
+            },
+            success: function (data, status, xhr) {
+                if (data.length === 0) {
+                    let message = "<div class='row' style='margin: 0 0 -15px -15px'>" +
+                        "   <div class='col-md-12' style='padding: 20px'>" +
+                        "       <p class='text text-info'>Нет сообщений для данного документа</p>" +
+                        "   </div>" +
+                        "</div>";
+                    $("#DocumentMessages").html(message);
+                }
+                else {
+                    let items = [];
+                    $.each( data, function( key, val ) {
+                        let worker = 'н/д';
+                        let description;
+                        let wtel = 'н/д';
+                        let ctel = 'н/д';
+                        if (val.worker !== null) {
+                            description = val.worker.description;
+                            let pr = val.worker.profiles;
+                            for (let i = 0; i < pr.length; i++) {
+                                switch (true) {
+                                    case (pr[i].tag === 'tel' && pr[i].attribute === 'working') :
+                                        wtel = pr[i].value;
+                                        break;
+                                    case (pr[i].tag === 'tel' && pr[i].attribute === 'cell') :
+                                        ctel = pr[i].value;
+                                        break;
+                                }
                             }
                         }
-                    }
-                    let m = "<tr>";
-                    m += "<td style='width: 120px'>" + formatDate(val.created_at) + "</td>";
-                    m += '<td style="width: 20%">' +
-                        '<div class="dropdown">' +
-                        '  <button class="btn btn-link dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">' + description +
-                        '  <span class="caret"></span></button>' +
-                        '  <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">' +
-                        '    <li role="presentation"><a role="menuitem" href="mailto:' + val.worker.email + '?subject=Вопрос по заполнению формы ' + current_document_form_code +'">' +
-                        '       e-mail: ' + val.worker.email + '</a></li>' +
-                        '    <li role="presentation" class="divider"></li>' +
-                        '    <li role="presentation"><a role="menuitem" href="tel:'+ wtel +'">Рабочий телефон: '+ wtel +'</a></li>' +
-                        '    <li role="presentation"><a role="menuitem" href="tel:'+ ctel +'">Сотовый телефон: '+ ctel +'</a></li>' +
-                        '  </ul>' +
-                        '</div>' +
-                        '</td>';
-                    m += "<td>" + val.message + "</td>";
-                    //m += "<td style='width: 50px'><span class='fa fa-lg fa-ellipsis-h'></span></td>";
-                    m +="</tr>";
-                    items.push(m);
-                });
-                $("#DocumentMessages").html("<table class='table table-bordered table-condens\n" +
-                    "                        'ed table-hover table-striped' style='width: 100%'>" + items.join( "" ) + "</table>");
-            }
+                        let m = "<tr>";
+                        m += "<td style='width: 120px'><p class='text-info'>" + formatDate(val.created_at) + "</p></td>";
+                        m += '<td style="width: 20%">' +
+                            '<div class="dropdown">' +
+                            '  <button class="btn btn-sm btn-link dropdown-toggle" style="padding: 0" type="button" id="menu1" data-toggle="dropdown">' + description +
+                            '  <span class="caret"></span></button>' +
+                            '  <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">' +
+                            '    <li role="presentation"><a role="menuitem" href="mailto:' + val.worker.email + '?subject=Вопрос по заполнению формы ' + current_document_form_code +'">' +
+                            '       e-mail: ' + val.worker.email + '</a></li>' +
+                            '    <li role="presentation" class="divider"></li>' +
+                            '    <li role="presentation"><a role="menuitem" href="tel:'+ wtel +'">Рабочий телефон: '+ wtel +'</a></li>' +
+                            '    <li role="presentation"><a role="menuitem" href="tel:'+ ctel +'">Сотовый телефон: '+ ctel +'</a></li>' +
+                            '  </ul>' +
+                            '</div>' +
+                            '</td>';
+                        m += "<td><p class='text-info'>" + val.message + "</p></td>";
+                        m +="</tr>";
+                        items.push(m);
+                    });
+                    $("#DocumentMessages").html("<table class='table table-bordered table-condensed table-hover table-striped' style='width: 100%'>" + items.join( "" ) + "</table>");
+                }
+            },
+            error: xhrErrorNotificationHandler
         });
+
+/*        $.getJSON( murl, function( data ) {
+
+        });*/
         if (docinfoWindow.jqxWindow('isOpen')) {
             setDocInfo(event.args.rowindex);
         }

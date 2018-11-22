@@ -155,7 +155,7 @@
 @endpush
 
 @push('loadjsscripts')
-<script src="{{ asset('/medinfo/documentdashboard.js?v=134') }}"></script>
+<script src="{{ asset('/medinfo/documentdashboard.js?v=139') }}"></script>
 @endpush
 
 @section('inlinejs')

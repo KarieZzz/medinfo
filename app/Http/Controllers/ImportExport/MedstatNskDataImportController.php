@@ -134,9 +134,9 @@ class MedstatNskDataImportController extends Controller
             if (!$res) {
                 abort(500, "Данные из файла $file не загружены");
             }
-            $find_duplicates = "SELECT hospital, \"table\", \"column\", \"row\", count(*) FROM medstat_nsk_data 
-          group by hospital, \"table\", \"column\", \"row\" 
-          having count(*) > 1;";
+            $find_duplicates = 'SELECT hospital, "table", "column", "row", count(*) FROM medstat_nsk_data 
+          group by hospital, "table", "column", "row" 
+          having count(*) > 1;';
             $duplicates = \DB::select($find_duplicates);
             $dubs = count($duplicates);
             if ($dubs > 0) {

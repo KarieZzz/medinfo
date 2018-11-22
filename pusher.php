@@ -18,5 +18,9 @@ $pusher = new Pusher\Pusher(
     $options
 );
 
-$data['message'] = 'hello world';
+$data['message'] = "<p class='text-warning'><strong>Изменен статус отчетного документа (Id fake)</strong></p>";
+$data['worker'] =  "<p class='text-info small'>Исполнитель: fake</p>";
+$data['form'] =  "<p class='text-info small'>Отчетная форма: (fake) fake</p>";
+$data['unit'] =  "<p class='text-info small'>Медицинская организация: fake</p>";
+$data['period'] =  "<p class='text-info small'>Отчетный период: fake</p>";
 $pusher->trigger('event-brodcasting-channel', 'state-change-event', $data);
