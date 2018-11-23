@@ -962,7 +962,7 @@ initPeriodTree = function () {
     });
 };
 // инициализация списка статусов отчетного документа
-initStatusList = function() {
+initStateList = function() {
     let checkAll = $("#checkAllStates");
     let uncheckAll = $("#clearAllStates");
     let states_source =
@@ -1105,18 +1105,17 @@ initdocumentstabs = function() {
                                 }
                             }
                         }
-                        let m = "<tr>";
+                        let mark_as_unread = val.is_read_count === 1 ? "" : "info";
+                        let m = "<tr class='"+ mark_as_unread + "'>";
                         m += "<td style='width: 120px'><p class='text-info'>" + formatDate(val.created_at) + "</p></td>";
                         m += '<td style="width: 20%">' +
                             '<div class="dropdown">' +
-                            '  <button class="btn btn-sm btn-link dropdown-toggle" style="padding: 0" type="button" id="menu1" data-toggle="dropdown">' + description +
-                            '  <span class="caret"></span></button>' +
+                            '  <button class="btn btn-sm btn-link dropdown-toggle" style="padding: 0" type="button" id="menu1" data-toggle="dropdown">' + description + '</button>' +
                             '  <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">' +
                             '    <li role="presentation"><a role="menuitem" href="mailto:' + val.worker.email + '?subject=Вопрос по заполнению формы ' + current_document_form_code +'">' +
-                            '       e-mail: ' + val.worker.email + '</a></li>' +
-                            '    <li role="presentation" class="divider"></li>' +
-                            '    <li role="presentation"><a role="menuitem" href="tel:'+ wtel +'">Рабочий телефон: '+ wtel +'</a></li>' +
-                            '    <li role="presentation"><a role="menuitem" href="tel:'+ ctel +'">Сотовый телефон: '+ ctel +'</a></li>' +
+                            '       <small>e-mail: ' + val.worker.email + '</small></a></li>' +
+                            '    <li role="presentation"><a role="menuitem" href="tel:'+ wtel +'"><small>Рабочий телефон: '+ wtel +'</small></a></li>' +
+                            '    <li role="presentation"><a role="menuitem" href="tel:'+ ctel +'"><small>Сотовый телефон: '+ ctel +'</small></a></li>' +
                             '  </ul>' +
                             '</div>' +
                             '</td>';
@@ -1566,18 +1565,12 @@ initpopupwindows = function() {
             data: data,
             success: function (data, status, xhr) {
                 let m = '';
-                if (data.message_sent === 1) {
-                    raiseInfo("Сообщение сохранено");
-                    //$("#currentInfoMessage").text("Сообщение сохранено");
-                    //$("#infoNotification").jqxNotification("open");
+                if (data.message_sent === true) {
+                    raiseInfo("Сообщение отправлено");
                     dgrid.jqxGrid('selectrow', rowindex);
                 }
             },
-            error: function (xhr, status, errorThrown) {
-                $("#currentError").text("Ошибка сохранения данных на сервере. " + xhr.status + ' (' + xhr.statusText + ') - '
-                    + status + ". Обратитесь к администратору.");
-                $("#serverErrorNotification").jqxNotification("open");
-            }
+            error: xhrErrorNotificationHandler
         });
         $("#sendMessageWindow").jqxWindow('hide');
     });

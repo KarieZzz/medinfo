@@ -174,3 +174,14 @@ function initStateChangeChannel() {
 
     });
 }
+
+function initMessageSentChannel() {
+    channel.bind('message-sent-event', function(data) {
+        if (String(data.worker_id) !== current_user_id) {
+            raiseEventMessage(data.message_header + data.message_body );
+        } else {
+            console.log("Сообщение скрыто от текущего пользователя - он автор события");
+        }
+
+    });
+}

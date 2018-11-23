@@ -155,7 +155,7 @@
 @endpush
 
 @push('loadjsscripts')
-<script src="{{ asset('/medinfo/documentdashboard.js?v=139') }}"></script>
+<script src="{{ asset('/medinfo/documentdashboard.js?v=145') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -187,7 +187,7 @@
         initmotree();
         initgrouptree();
         initPeriodTree();
-        initStatusList();
+        initStateList();
         initDataPresens();
         initDropdowns();
         initFilterIcons();

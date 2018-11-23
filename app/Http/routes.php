@@ -268,7 +268,9 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('admin/system/clearnecells', 'System\ClearNECells@index');
     Route::get('admin/system/setusertokens', 'System\ManageUsers@setTokens');
     Route::post('admin/system/clearnecells', 'System\ClearNECells@clearNECells');
+    Route::get('admin/system/messages/markread', 'System\ManageNotifications@markMessagesAsRead');
     Route::get('admin/cfunctions/recompileall', 'Admin\CFunctionAdminController@recompileAll');
+
 
     // Ввод и корректировка статданных
     // Рабочий стол - Первичные и сводные отчеты, сообщения, проверки и экспорт в эксель
@@ -352,7 +354,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('tests/sectioncheck', 'Tests\SectionCheckTestController@SectionCheckTest');
     Route::get('tests/foldcheck', 'Tests\ControlFunctionTestController@fold');
     // mail test
-    Route::get('mailtest', 'StatDataInput\DocumentMessageController@testmail');
+    Route::get('mailtest', 'Tests\MailerTestController@testmail');
     // websocket test
     Route::get('tests/websocket', 'Tests\WebsocketTestController@websocket');
 

@@ -14,10 +14,12 @@ class CreateWorkerReadNotificationTable extends Migration
     {
         //
         Schema::create('worker_read_notifications', function (Blueprint $table) {
-            $table->uuid('uid')->primary();
+            $table->increments('id');
             $table->integer('worker_id')->index();
-            $table->integer('event_type')->index();
+            $table->uuid('event_uid')->index();
+            $table->integer('event_type')->default(1)->index();
             $table->timestamp('occured_at');
+            $table->unique(['worker_id', 'event_uid']);
         });
     }
 

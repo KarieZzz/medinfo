@@ -45,7 +45,7 @@ class ControlFunctionTestController extends Controller
         $translator->prepareIteration();
         //dd($translator->getProperties());
         //dd($translator->parser->root);
-        $prop = $translator->getProperties();
+        //$prop = $translator->getProperties();
         //dd($prop['iterations'][0]['С1Г3|0']);
         $evaluator = Evaluator::invoke($translator->parser->root, $translator->getProperties(), $document);
         //$evaluator = new ControlFunctionEvaluator($translator->parser->root, $translator->getProperties(), $document);
