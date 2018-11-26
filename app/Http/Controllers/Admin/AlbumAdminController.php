@@ -22,7 +22,8 @@ class AlbumAdminController extends Controller
 
     public function index()
     {
-        return view('jqxadmin.albums');
+        $default_album = ($d = Album::Default()->first()) ? $d->id : config('medinfo.default_album');
+        return view('jqxadmin.albums', compact('default_album'));
     }
 
     public function fetchAlbums()
@@ -39,14 +40,25 @@ class AlbumAdminController extends Controller
     {
         $this->validate($request, [
                 'album_name' => 'required|unique:albums',
+                'migrate'   => 'in:1,0',
             ]
         );
+        $default = ($d = Album::Default()->first()) ? $d->id : config('medinfo.default_album');
+        $migrated = [];
         try {
             $newalbum = new Album;
             $newalbum->album_name = $request->album_name;
-            $newalbum->default = ($request->default == 0 ? null : true);
+            if ($request->default === '1' ) {
+                $newalbum->default = true;
+                $old_default = Album::Default()->first();
+                $old_default->default = null;
+                $old_default->save();
+            }
             $newalbum->save();
-            return ['message' => 'Новая запись создана. Id:' . $newalbum->id];
+            if ($request->migrate === '1') {
+                $migrated = $this->migrateAlbumSets($newalbum->id, $default);
+            }
+            return ['message' => 'Новая запись создана. Id:' . $newalbum->id, 'migrated' => $migrated, 'id' => $newalbum->id];
         } catch (\Illuminate\Database\QueryException $e) {
             return($this->error_message($e->errorInfo[0]));
         }
@@ -60,6 +72,14 @@ class AlbumAdminController extends Controller
         );
         try {
             $album->album_name = $request->album_name;
+            if ($request->default === '1' ) {
+                $album->default = true;
+                $old_default = Album::Default()->first();
+                if (!is_null($old_default)) {
+                    $old_default->default = null;
+                    $old_default->save();
+                }
+            }
             $album->default = ($request->default == 0 ? null : true);
             $album->save();
             return ['message' => 'Изменения в альбоме сохранены. Id:' . $album->id];
@@ -112,4 +132,24 @@ class AlbumAdminController extends Controller
         return ['error' => 422, 'message' => $message];
     }
 
+    public function migrateAlbumSets(int $toalbum, int $fromalbum)
+    {
+        $f = "INSERT INTO album_forms (id, album_id, form_id, created_at) 
+          SELECT nextval('album_forms_id_seq'), $toalbum, form_id, current_timestamp 
+          FROM album_forms af WHERE af.album_id = $fromalbum";
+        $t = "INSERT INTO album_tables (id, album_id, table_id, created_at) 
+          SELECT nextval('album_tables_id_seq'), $toalbum, table_id, current_timestamp 
+          FROM album_tables at WHERE at.album_id = $fromalbum";
+        $r = "INSERT INTO album_rows (id, album_id, row_id, created_at) 
+          SELECT nextval('album_rows_id_seq'), $toalbum, row_id, current_timestamp 
+          FROM album_rows ar WHERE ar.album_id = $fromalbum";
+        $c = "INSERT INTO album_columns (id, album_id, column_id, created_at) 
+          SELECT nextval('album_columns_id_seq'), $toalbum, column_id, current_timestamp 
+          FROM album_columns ac WHERE ac.album_id = $fromalbum";
+       $if = \DB::insert($f);
+       $it = \DB::insert($t);
+       $ir = \DB::insert($r);
+       $ic = \DB::insert($c);
+       return compact($if, $it, $ir, $ic);
+    }
 }

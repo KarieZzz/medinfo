@@ -47,11 +47,11 @@ localize = function() {
 initnotifications = function() {
     $("#serverErrorNotification").jqxNotification({
         width: 250, position: "top-right", opacity: 0.9,
-        autoOpen: false, animationOpenDelay: 600, autoClose: true, autoCloseDelay: 8000, template: "error"
+        autoOpen: false, animationOpenDelay: 0, autoClose: true, autoCloseDelay: 8000, template: "error"
     });
     $("#infoNotification").jqxNotification({
         width: 250, position: "top-right", opacity: 0.9,
-        autoOpen: false, animationOpenDelay: 600, autoClose: true, autoCloseDelay: 5000, template: "info"
+        autoOpen: false, animationOpenDelay: 0, autoClose: true, autoCloseDelay: 5000, template: "info"
     });
 };
 

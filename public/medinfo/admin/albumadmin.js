@@ -63,10 +63,15 @@ inittablelist = function() {
                 { text: 'По умолчанию', datafield: 'default', columntype: 'checkbox', width: '70px' }
             ]
         });
+    agrid.on("bindingcomplete", function (event) {
+        let index = agrid.jqxGrid('getrowboundindexbyid', currentalbum);
+        agrid.jqxGrid('selectrow', index);
+        agrid.jqxGrid('ensurerowvisible', index);
+    });
     agrid.on('rowselect', function (event) {
         let row = event.args.row;
         currentalbum = row.id;
-        membersource.url = member_url + currentalbum;
+        membersource.url = member_url + row.id;
         mlist.jqxGrid('updatebounddata');
         $("#album_name").val(row.album_name);
         $("#default").val(row.default != null);
@@ -98,7 +103,8 @@ inittablelist = function() {
 };
 setquerystring = function() {
     return "&album_name=" + $("#album_name").val() +
-        "&default=" + ($("#default").val() ? 1 : 0);
+        "&default=" + ($("#default").val() ? 1 : 0) +
+        "&migrate=" + ($("#migrate").prop('checked') ? 1 : 0);
 };
 initalbumactions = function() {
     $("#insert").click(function () {
@@ -114,21 +120,22 @@ initalbumactions = function() {
                     raiseInfo(data.message);
                 }
                 agrid.jqxGrid('updatebounddata', 'data');
-            },
-            error: function (xhr, status, errorThrown) {
-                $.each(xhr.responseJSON, function(field, errorText) {
-                    raiseError(errorText);
+                agrid.on("bindingcomplete", function (event) {
+                    let newindex = fgrid.jqxGrid('getrowboundindexbyid', data.id);
+                    agrid.jqxGrid('selectrow', newindex);
+                    agrid.jqxGrid('ensurerowvisible', newindex);
                 });
-            }
+            },
+            error: xhrErrorNotificationHandler
         });
     });
-    $("#save").click(function () {
-        var row = agrid.jqxGrid('getselectedrowindex');
+    $("#update").click(function () {
+        let row = agrid.jqxGrid('getselectedrowindex');
         if (row === -1) {
             raiseError("Выберите запись для изменения/сохранения данных");
             return false;
         }
-        var rowid = agrid.jqxGrid('getrowid', row);
+        let rowid = agrid.jqxGrid('getrowid', row);
         $.ajax({
             dataType: 'json',
             url: albumupdate_url + rowid,
@@ -142,46 +149,43 @@ initalbumactions = function() {
                 }
                 agrid.jqxGrid('updatebounddata', 'data');
                 agrid.on("bindingcomplete", function (event) {
-                    var newindex = agrid.jqxGrid('getrowboundindexbyid', rowid);
+                    let newindex = agrid.jqxGrid('getrowboundindexbyid', rowid);
                     agrid.jqxGrid('selectrow', newindex);
-
+                    agrid.jqxGrid('ensurerowvisible', newindex);
                 });
             },
-            error: function (xhr, status, errorThrown) {
-                $.each(xhr.responseJSON, function(field, errorText) {
-                    raiseError(errorText);
-                });
-            }
+            error: xhrErrorNotificationHandler
         });
     });
     $("#delete").click(function () {
-        var row = agrid.jqxGrid('getselectedrowindex');
+        let row = agrid.jqxGrid('getselectedrowindex');
         if (row === -1) {
             raiseError("Выберите запись для удаления");
             return false;
         }
-        var rowid = agrid.jqxGrid('getrowid', row);
+        //let rowid = agrid.jqxGrid('getrowid', row);
         raiseConfirm("<strong>Внимание!</strong> Выбранный альбом будет удален вместе со всеми входящими в состав элементами.");
     });
 };
 
 getcheckedforms = function() {
-    var ids = [];
-    var selected = $('#Forms').jqxGrid('getselectedrowindexes');
+    let ids = [];
+    let f = $('#Forms');
+    var selected = f.jqxGrid('getselectedrowindexes');
     for (i = 0; i < selected.length; i++) {
-        ids[i] =   $('#Forms').jqxGrid('getrowid', selected[i]);
+        ids[i] =   f.jqxGrid('getrowid', selected[i]);
     }
     return ids;
 };
 
 initmemberactions = function() {
     $("#insertmembers").click(function() {
-        if (agrid.jqxGrid('getselectedrowindex') == -1) {
+        if (agrid.jqxGrid('getselectedrowindex') === -1) {
             raiseError("Выберите альбом для добавления форм");
             return false;
         }
-        var selectedforms = getcheckedforms();
-        var data = "&forms=" + selectedforms;
+        let selectedforms = getcheckedforms();
+        let data = "&forms=" + selectedforms;
         $.ajax({
             dataType: 'json',
             url: addmembers_url + currentalbum,
@@ -197,18 +201,16 @@ initmemberactions = function() {
                     raiseError("Формы не добавлены");
                 }
             },
-            error: function (xhr, status, errorThrown) {
-                raiseError('Ошибка сохранения данных на сервере', xhr);
-            }
+            error: xhrErrorNotificationHandler
         });
     });
     $("#removemember").click(function() {
-        var row = mlist.jqxGrid('getselectedrowindex');
-        if (row == -1) {
+        let row = mlist.jqxGrid('getselectedrowindex');
+        if (row === -1) {
             raiseError("Выберите запись для удаления из списка форм, входящих в текущий альбом");
             return false;
         }
-        var rowid = mlist.jqxGrid('getrowid', row);
+        let rowid = mlist.jqxGrid('getrowid', row);
         $.ajax({
             dataType: 'json',
             url: removemember_url + rowid,
@@ -223,12 +225,10 @@ initmemberactions = function() {
                     raiseError("Форма из альбома не удалена");
                 }
             },
-            error: function (xhr, status, errorThrown) {
-                raiseError('Ошибка сохранения данных на сервере', xhr);
-            }
+            error: xhrErrorNotificationHandler
         });
     });
-}
+};
 
 initformlist = function() {
     var form_source =
@@ -273,7 +273,6 @@ initButtons = function() {
         offLabel: 'Нет',
         checked: false
     });
-
 };
 
 performAction = function() {
@@ -282,7 +281,7 @@ performAction = function() {
         url: albumdelete_url + currentalbum,
         method: "DELETE",
         success: function (data, status, xhr) {
-            if (typeof data.error != 'undefined') {
+            if (typeof data.error !== 'undefined') {
                 raiseError(data.message);
             } else {
                 raiseInfo(data.message);
@@ -291,8 +290,6 @@ performAction = function() {
             agrid.jqxGrid('updatebounddata', 'data');
             agrid.jqxGrid('clearselection');
         },
-        error: function (xhr, status, errorThrown) {
-            raiseError('Ошибка удаления записи', xhr);
-        }
+        error: xhrErrorNotificationHandler
     });
 };

@@ -43,7 +43,7 @@
 {{--<script src="{{ asset('/plugins/jQuery/jquery-1.12.4.min.js') }}" type="text/javascript" ></script>--}}
 <script src="{{ asset('/jqwidgets/jqx-all.js?v=002') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/admin/admin.js?v=003') }}"></script>
+<script src="{{ asset('/medinfo/admin/admin.js?v=004') }}"></script>
 <script src="{{ asset('/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
 @stack('loadjsscripts')
 <script type="text/javascript">

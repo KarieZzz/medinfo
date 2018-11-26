@@ -28,7 +28,7 @@
                             <textarea rows="3" class="form-control" id="album_name"></textarea>
                         </div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" title="Альбом будет использоваться при редактировании состава мониторингов, структуры форм и таблиц">
                         <label class="control-label col-sm-3" for="default">По умолчанию:</label>
                         <div class="col-sm-8">
                             <div id="default"></div>
@@ -36,9 +36,19 @@
                     </div>
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-7">
-                            <button type="button" id="save" class="btn btn-default">Сохранить изменения</button>
-                            <button type="button" id="insert" class="btn btn-default">Вставить новую запись</button>
+                            <button type="button" id="update" class="btn btn-info">Сохранить изменения</button>
+                            <button type="button" id="insert" class="btn btn-success">Вставить новую запись</button>
                             <button type="button" id="delete" class="btn btn-danger">Удалить запись</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-9">
+                            <div class="checkbox">
+                                <label title="">
+                                    <input type="checkbox" value="1" id="migrate">При создании нового альбома скопировать состав мониторингов, структуру форм,
+                                    таблиц из текущего альбома по умолчанию
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -54,7 +64,7 @@
                 </div>
                 <div class="form-group">
                     <div class="col-sm-7">
-                        <button type="button" id="insertmembers" class="btn btn-default">Добавить формы в альбом</button>
+                        <button type="button" id="insertmembers" class="btn btn-success">Добавить формы в альбом</button>
                     </div>
                 </div>
             </div>
@@ -64,32 +74,13 @@
 @endsection
 
 @push('loadjsscripts')
-{{--    <script src="{{ asset('/jqwidgets/jqxsplitter.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxdata.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxpanel.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxscrollbar.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxinput.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxbuttons.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxdropdownbutton.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxcheckbox.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxswitchbutton.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxlistbox.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxdropdownlist.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxgrid.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxgrid.filter.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxgrid.columnsresize.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxgrid.selection.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxgrid.sort.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>--}}
-
-    <script src="{{ asset('/medinfo/admin/albumadmin.js?v=002') }}"></script>
+    <script src="{{ asset('/medinfo/admin/albumadmin.js?v=009') }}"></script>
 @endpush
 
 @section('inlinejs')
     @parent
     <script type="text/javascript">
-        let currentalbum = 0;
+        let currentalbum = '{{ $default_album }}';
         let membersource;
         let album_url ='/admin/fetchalbums';
         let form_url ='/admin/fetchforms/';
