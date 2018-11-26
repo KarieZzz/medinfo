@@ -44,7 +44,7 @@
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-9">
                             <div class="checkbox">
-                                <label title="">
+                                <label>
                                     <input type="checkbox" value="1" id="migrate">При создании нового альбома скопировать состав мониторингов, структуру форм,
                                     таблиц из текущего альбома по умолчанию
                                 </label>

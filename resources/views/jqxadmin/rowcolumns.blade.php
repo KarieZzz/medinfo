@@ -43,13 +43,19 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-md-3" for="excludedRow">
-                            Исключена из текущего альбома <a href="albums" target="_blank" class="text-primary album-name" title="Изменить текущий альбом">("{{ $album->album_name }}")</a>:
-                        </label>
-                        <div class="col-md-2">
-                            <div id="excludedRow"></div>
+                        <div class="col-sm-offset-1 col-sm-11">
+                            <div class="checkbox">
+                                <label for="excludedRow">
+                                    <input type="checkbox" id="excludedRow" name="excludedRow" value="1" style="zoom: 1.7">
+                                    <p style="margin-top: 8px">
+                                        <strong>
+                                            Исключена из текущего альбома
+                                            <a href="albums" target="_blank" class="text-primary album-name" title="Изменить текущий альбом">("{{ $album->album_name }}")</a>
+                                        </strong>
+                                    </p>
+                                </label>
+                            </div>
                         </div>
-                        <div class="col-md-7 text-primary"> </div>
                     </div>
                     <div class="form-group">
                         <div class="col-md-offset-2 col-md-10">
@@ -98,7 +104,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-md-3" for="size">Размер поля (px):</label>
+                        <label class="control-label col-md-3" for="field_size">Размер поля (px):</label>
                         <div class="col-md-2">
                             <input type="text" class="form-control input-sm" id="field_size" name="field_size">
                         </div>
@@ -118,11 +124,18 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-md-3" for="excludedColumn">
-                            Исключена из текущего альбома <a href="albums" target="_blank" class="text-primary album-name" title="Изменить текущий альбом">("{{ $album->album_name }}")</a>:
-                        </label>
-                        <div class="col-md-8">
-                            <div id="excludedColumn"></div>
+                        <div class="col-sm-offset-1 col-sm-11">
+                            <div class="checkbox">
+                                <label for="excludedColumn">
+                                    <input type="checkbox" id="excludedColumn" name="excludedColumn" value="1" style="zoom: 1.7">
+                                    <p style="margin-top: 8px">
+                                        <strong>
+                                            Исключена из текущего альбома
+                                            <a href="albums" target="_blank" class="text-primary album-name" title="Изменить текущий альбом">("{{ $album->album_name }}")</a>
+                                        </strong>
+                                    </p>
+                                </label>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -169,27 +182,8 @@
 @endsection
 
 @push('loadjsscripts')
-{{--    <script src="{{ asset('/jqwidgets/jqxsplitter.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxdata.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxpanel.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxscrollbar.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxinput.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxbuttons.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxdropdownbutton.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxcheckbox.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxswitchbutton.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxlistbox.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxdropdownlist.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxgrid.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxgrid.filter.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxgrid.columnsresize.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxgrid.selection.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxgrid.sort.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxtreegrid.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/localization.js') }}"></script>--}}
     <script src="{{ asset('/medinfo/admin/tablepicker.js?v=016') }}"></script>
-    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=048') }}"></script>
+    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=051') }}"></script>
 @endpush
 
 @section('inlinejs')

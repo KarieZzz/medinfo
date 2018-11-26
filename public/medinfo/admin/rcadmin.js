@@ -103,7 +103,8 @@ initRowList = function() {
             $("#row_code").val(row.row_code);
             $("#row_medstat_code").val(row.medstat_code);
             $("#row_medstatnsk_id").val(row.medstatnsk_id);
-            row.excluded > 0 ? $("#excludedRow").val(true) : $("#excludedRow").val(false);
+            //row.excluded > 0 ? $("#excludedRow").prop('checked', true) : $("#excludedRow").val(false);
+            row.excluded > 0 ? $("#excludedRow").prop('checked', true) : $("#excludedRow").prop('checked', false);
         }
     });
 };
@@ -145,7 +146,8 @@ initColumnList = function() {
             $("#decimal_count").val(row.decimal_count);
             $("#column_medstat_code").val(row.medstat_code);
             $("#column_medstatnsk_id").val(row.medstatnsk_id);
-            row.excluded > 0 ? $("#excludedColumn").val(true) : $("#excludedColumn").val(false);
+            //row.excluded > 0 ? $("#excludedColumn").val(true) : $("#excludedColumn").val(false);
+            row.excluded > 0 ? $("#excludedColumn").prop('checked', true) : $("#excludedColumn").prop('checked', false);
         }
     });
 };
@@ -177,7 +179,8 @@ setrowquery = function() {
         "&row_name=" + $("#row_name").val() +
         "&medstat_code=" + $("#row_medstat_code").val() +
         "&medstatnsk_id=" + $("#row_medstatnsk_id").val() +
-        "&excluded=" + ($("#excludedRow").val() ? 1 : 0);
+        //"&excluded=" + ($("#excludedRow").val() ? 1 : 0);
+        "&excluded=" + ($("#excludedRow").prop('checked') ? 1 : 0);
 };
 
 setcolumnquery = function() {
@@ -190,7 +193,8 @@ setcolumnquery = function() {
         "&decimal_count=" + $("#decimal_count").val() +
         "&medstat_code=" + $("#column_medstat_code").val() +
         "&medstatnsk_id=" + $("#column_medstatnsk_id").val() +
-        "&excluded=" + ($("#excludedColumn").val() ? 1 : 0);
+        //"&excluded=" + ($("#excludedColumn").val() ? 1 : 0);
+        "&excluded=" + ($("#excludedColumn").prop('checked') ? 1 : 0);
 };
 
 initButtons = function() {
@@ -220,18 +224,18 @@ initButtons = function() {
             }
         }
     });
-    $('#excludedRow').jqxSwitchButton({
+/*    $('#excludedRow').jqxSwitchButton({
         height: 31,
         width: 120,
         onLabel: 'Да',
         offLabel: 'Нет',
-        checked: false });
-    $('#excludedColumn').jqxSwitchButton({
+        checked: false });*/
+/*    $('#excludedColumn').jqxSwitchButton({
         height: 31,
         width: 120,
         onLabel: 'Да',
         offLabel: 'Нет',
-        checked: false });
+        checked: false });*/
 };
 
 // Операции со строками
