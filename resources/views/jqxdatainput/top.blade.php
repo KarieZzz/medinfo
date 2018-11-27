@@ -16,7 +16,7 @@
                     <li><a href="/workerlogout"><span class="glyphicon glyphicon-log-out"></span> Выход</a></li>
                 </ul>
             </li>
-            <li class="dropdown pull-right">
+            {{--<li class="dropdown pull-right">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#" title="Сообщения">
                     <i class="fa fa-comments fa-lg text-info"></i> <span class="badge" style="background-color: #ca0909">5</span> <span class="caret"></span>
                 </a>
@@ -122,7 +122,7 @@
                         </div>
                     </div>
                 </div>
-            </li>
+            </li>--}}
         </ul>
     </div>
 </nav>

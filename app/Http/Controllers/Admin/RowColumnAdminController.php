@@ -102,7 +102,7 @@ class RowColumnAdminController extends Controller
     {
         $this->validate($request, [
                 'table_id' => 'required|exists:tables,id',
-                'row_index' => 'required|integer|min:1|max:999',
+                'row_index' => 'integer|min:1|max:999',
                 'row_name' => 'required|max:256',
                 'row_code' => 'required|max:16',
                 'medstat_code' => 'digits:3',
@@ -114,17 +114,24 @@ class RowColumnAdminController extends Controller
         if ($code_exists) {
             return ['error' => 422, 'message' => 'Запись с таким же кодом строки уже существует в этой таблице'];
         }
-        $index_exists = Row::OfTableRowIndex($request->table_id, $request->row_index)->exists();
-        if ($index_exists) {
-            $reindexed = Row::OfTable($request->table_id)->where('row_index','>=', $request->row_index)->orderBy('row_index', 'desc')->get();
-            foreach ($reindexed as $item) {
-                $item->row_index++;
-                $item->save();
+
+        $rcount = Row::OfTable($request->table_id)->count();
+        if (empty($request->row_index)) {
+            $row_index = $rcount + 1;
+        } else {
+            $index_exists = Row::OfTableRowIndex($request->table_id, $request->row_index)->exists();
+            if ($index_exists) {
+                $reindexed = Row::OfTable($request->table_id)->where('row_index','>=', $request->row_index)->orderBy('row_index', 'desc')->get();
+                foreach ($reindexed as $item) {
+                    $item->row_index++;
+                    $item->save();
+                }
             }
+            $row_index = (int)$request->row_index;
         }
         $newrow = new Row;
         $newrow->table_id = $request->table_id;
-        $newrow->row_index = $request->row_index;
+        $newrow->row_index = $row_index;
         $newrow->row_code = $request->row_code;
         $newrow->row_name = $request->row_name;
         $newrow->medstat_code = empty($request->medstat_code) ? null : $request->medstat_code;
