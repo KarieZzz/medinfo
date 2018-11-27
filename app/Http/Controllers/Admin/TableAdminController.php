@@ -63,15 +63,26 @@ class TableAdminController extends Controller
             ]
         );
         $tcount = Table::OfForm($request->form_id)->count();
-        if (empty($request->table_index)) {
+
+        $index_exists = Table::OfFormTableIndex($request->form_id, $request->table_index)->exists();
+        if ($index_exists) {
+            $reindexed = Table::OfForm($request->form_id)->where('table_index','>=', $request->table_index)->orderBy('table_index', 'desc')->get();
+            foreach ($reindexed as $item) {
+                $item->table_index++;
+                $item->save();
+            }
+        }
+
+/*        if (empty($request->table_index)) {
             $table_index = ($tcount + 1);
         } else {
             $table_index = (int)$request->table_index;
             $this->reorderTables($request->form_id, $table_index);
-        }
+        }*/
+
         $newtable = new Table;
         $newtable->form_id = $request->form_id;
-        $newtable->table_index = $table_index;
+        $newtable->table_index = $request->table_index;
         $newtable->table_code = $request->table_code;
         $newtable->table_name = $request->table_name;
         $newtable->medstat_code = empty($request->medstat_code) ? null : $request->medstat_code;

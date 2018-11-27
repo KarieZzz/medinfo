@@ -55,6 +55,13 @@ class Table extends Model
             ->where('table_code', $table_code);
     }
 
+    public function scopeOfFormTableIndex($query, $form, $tableindex)
+    {
+        return $query
+            ->where('form_id', $form)
+            ->where('table_index', $tableindex);
+    }
+
     public function scopeOfMedstat($query)
     {
         return $query->whereNotNull('medstat_code');
