@@ -16,113 +16,21 @@
                     <li><a href="/workerlogout"><span class="glyphicon glyphicon-log-out"></span> Выход</a></li>
                 </ul>
             </li>
-            {{--<li class="dropdown pull-right">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#" title="Сообщения">
-                    <i class="fa fa-comments fa-lg text-info"></i> <span class="badge" style="background-color: #ca0909">5</span> <span class="caret"></span>
+            <li class="dropdown pull-right">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" title="Сообщения" id="messageFeedToggle">
+                    <i class="fa fa-comments fa-lg text-info"></i> <span class="badge" style="background-color: #ca0909" id="newMessagesBadge"></span> <span class="caret"></span>
                 </a>
-                <div class="dropdown-menu panel-group" id="messageFeed" style="width: 500px; height: 400px; padding-top: 0; overflow-x: hidden; overflow-y:auto ;">
-                    <div class="panel panel-default" style="height: 30px">
-                        <div class="panel-heading" style="padding: 5px">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p class="text"><strong>Новые</strong></p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p class="text"><a>Пометить все как прочтенные</a></p>
-                                </div>
-                            </div>
+                <div class="dropdown-menu" id="messageFeed" style="width: 500px; height: 400px; padding-top: 0; overflow-x: hidden; overflow-y:auto ;">
+                    <div class="row" style="margin: 0" >
+                        <div class="col-md-offset-1 col-md-4">
+                            <h6 class="text">Сообщения</h6>
                         </div>
-                    </div>
-                    <div class="panel panel-danger">
-                        <div class="panel-heading" style="padding: 5px">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    <p><i class="fa fa-comment-o fa-lg text-info"></i></p>
-                                </div>
-                                <div class="col-md-4">
-                                    <p class="text">Автор сообщения</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p class="text"> Тип события </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="panel-body" style="padding: 5px">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <p class="text">Текст Текст Текст Текст Текст Текст Текст Текст Текст Текст Текст Текст </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="panel panel-success">
-                        <div class="panel-heading">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    <p><i class="fa fa-comment-o fa-lg text-info"></i></p>
-                                </div>
-                                <div class="col-md-4">
-                                    <p class="text">Автор сообщения</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p class="text"> Тип события </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <p class="text">Текст Текст Текст Текст Текст Текст Текст Текст Текст Текст Текст Текст </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="panel panel-success">
-                        <div class="panel-heading">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    <p><i class="fa fa-comment-o fa-lg text-info"></i></p>
-                                </div>
-                                <div class="col-md-4">
-                                    <p class="text">Автор сообщения</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p class="text"> Тип события </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <p class="text">Текст Текст Текст Текст Текст Текст Текст Текст Текст Текст Текст Текст </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    <p><i class="fa fa-comment-o fa-lg text-info"></i></p>
-                                </div>
-                                <div class="col-md-4">
-                                    <p class="text">Автор сообщения</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p class="text"> Тип события </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <p class="text">Текст Текст Текст Текст Текст Текст Текст Текст Текст Текст Текст Текст </p>
-                                </div>
-                            </div>
+                        <div class="col-md-7">
+                            <h6 class="text-info">Пометить все как прочтенные</h6>
                         </div>
                     </div>
                 </div>
-            </li>--}}
+            </li>
         </ul>
     </div>
 </nav>

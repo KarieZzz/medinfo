@@ -185,3 +185,74 @@ function initMessageSentChannel() {
 
     });
 }
+
+function initMessageFeed() {
+    $("#messageFeedToggle").on('click', function () {
+        if (messagefeed.is(':hidden')) {
+            setTimeout(function () {
+                if (messagefeed.is(':visible')) {
+                    messagefeed_readts = Date.now()/1000;
+                    $.ajax({
+                        dataType: 'json',
+                        url: '/message/setlastreadtimestamp/' + messagefeed_readts,
+                        method: 'POST',
+                        success: function (data, status, xhr) {
+                            $("#newMessagesBadge").text('');
+                        },
+                        error: xhrErrorNotificationHandler
+                    });
+                }
+            }, 2000);
+        }
+    });
+    getLatestMessages();
+}
+
+function getLatestMessages() {
+    $.ajax({
+        dataType: 'json',
+        url: '/fetchlatestmessages',
+        method: "GET",
+        beforeSend: function( xhr ) {
+            $("#formloader").show();
+        },
+        success: function (data, status, xhr) {
+            let newsection = $('<div></div>');
+            let newheader = $('<div class="row" style="margin:0; background-color:#f5f5f5"><div class="col-md-12"><h6 class="text">НОВОЕ</h6></div></div>');
+            newsection.append(newheader);
+            let oldsection = $('<div></div>');
+            let oldheader = $('<div class="row" style="margin:0; background-color:#f5f5f5"><div class="col-md-12"><h6 class="text">РАНЬШЕ</h6></div></div>');
+            oldsection.append(oldheader);
+            let badge_count = 0;
+
+            let m =  data.messages;
+            for(let i=0; i < m.length; i++) {
+                let mark = 'bg-info';
+                let mpanel = $('<div class="row '+ mark +'" style="margin:0"></div>');
+                let mcontent = '<div class="col-md-1"><p class="text text-center"><i class="fa fa-comment-o fa-lg"></i></p></div>' +
+                    '<div class="col-md-11"><p class="text"><strong>' + m[i].worker.description + ': </strong>' + m[i].message +'</p></div>';
+                let dpanel = $('<div class="row '+ mark + '" style="margin:0; border-bottom-color:#00a7d0; border-bottom-style:dotted; border-bottom-width: 1px"></div>');
+                let dcontent = '<div class="col-md-1"></div>' +
+                    '<div class="col-md-7"><p class="text small"><i class="fa fa-map-o"></i> Форма ' + m[i].document.form.form_code + ' ' + m[i].document.unit.unit_name +'</p></div>' +
+                    '<div class="col-md-4"><p class="text small"><i class="fa fa-clock-o"></i> ' + formatDate(m[i].created_at) + '</p></div>';
+                mpanel.append(mcontent);
+                dpanel.append(dcontent);
+                if (data.ts < m[i].CreatedTS) {
+                    newsection.append(mpanel);
+                    newsection.append(dpanel);
+                    badge_count++;
+                } else {
+                    oldsection.append(mpanel);
+                    oldsection.append(dpanel);
+                }
+            }
+            if (badge_count > 0) {
+                messagefeed.append(newsection);
+                $("#newMessagesBadge").text(badge_count);
+            }
+            messagefeed.append(oldsection);
+
+        },
+        error: xhrErrorNotificationHandler
+    });
+}

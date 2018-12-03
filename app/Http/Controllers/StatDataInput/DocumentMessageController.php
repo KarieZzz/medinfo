@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\StatDataInput;
 
 use App\Events\DocumentSendMessage;
+use App\WorkerProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -39,6 +40,18 @@ class DocumentMessageController extends Controller
         return $messages;
     }
 
+    public function fetchRecentMessages()
+    {
+        $worker = Auth::guard('datainput')->user();
+        $tag = 'messageFeedLastRead';
+        $ts = WorkerProfile::WorkerTag($worker->id, $tag)->first();
+        return [
+            'ts' => is_null($ts) ? 0 : (float)$ts->value ,
+            'messages' => \App\DocumentMessage::orderBy('created_at','desc')
+            ->with('document.unit', 'document.form','worker.profiles','is_read')->take(50)->get()];
+    }
+
+
     public function sendMessage(Request $request)
     {
         $this->validate($request, [
@@ -63,4 +76,12 @@ class DocumentMessageController extends Controller
         return $data;
     }
 
+    public function setLastReadTimestamp($timestamp)
+    {
+        $worker = Auth::guard('datainput')->user();
+        $tag = \App\WorkerProfile::firstOrCreate(['worker_id' => $worker->id, 'tag' => 'messageFeedLastRead', 'attribute' => '']);
+        $tag->value = $timestamp;
+        $tag->save();
+        return ['saved' => true];
+    }
 }

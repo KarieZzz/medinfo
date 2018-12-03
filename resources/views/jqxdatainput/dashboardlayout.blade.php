@@ -49,7 +49,7 @@
 @endif
 
 <script src="{{ asset('/jqwidgets/jqx-all.js?v=003') }}"></script>
-<script src="{{ asset('/medinfo/dashboard.js?v=033') }}"></script>
+<script src="{{ asset('/medinfo/dashboard.js?v=047') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js?v=002') }}"></script>
 <script src="{{ asset('/plugins/fullscreen/jquery.fullscreen.js?v=003') }}"></script>
 <script src="{{ asset('/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
@@ -58,8 +58,10 @@
     var theme = 'bootstrap';
     var current_user_id = '{{ $worker->id }}';
     var current_user_role = '{{ $worker->role }}';
+    var messagefeed = $("#messageFeed");
+    var messagefeed_readts = 0;
     var pkey = '{{ config('broadcasting.connections.pusher.key') }}';
-    var pusher;
+     var pusher;
     var channel;
     initnotifications();
 @if(config('medinfo.websocket'))
@@ -67,6 +69,7 @@
     initPusher();
     initStateChangeChannel();
     initMessageSentChannel();
+    initMessageFeed();
 @endif
 @endif
     inituserprofilewindow();

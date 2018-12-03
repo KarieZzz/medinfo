@@ -41,12 +41,15 @@ class DocumentStateChangingListener
 
         StatechangingLog::create(['worker_id' => $worker->id, 'document_id' => $document->id,
             'oldstate' => $old_state, 'newstate' => $new_state, 'occured_at' => Carbon::now()]);
-        $newmessage = new DocumentMessage();
-        $newmessage->doc_id = $document->id;
-        $newmessage->user_id = $worker->id;
         $newlabel = Document::$state_labels[$document->state];
-        $newmessage->message = "Статус документа изменен на \"". $newlabel . "\". " .  $remark;
-        $newmessage->save();
+        //$newmessage = new DocumentMessage();
+        $newmessage = DocumentMessage::create(['doc_id' => $document->id, 'user_id' =>  $worker->id,
+            'message' => "Статус документа изменен на \"". $newlabel . "\". " .  $remark
+        ]);
+        //$newmessage->doc_id = $document->id;
+        //$newmessage->user_id = $worker->id;
+        //$newmessage->message = "Статус документа изменен на \"". $newlabel . "\". " .  $remark;
+        //$newmessage->save();
         //dd(config('medinfo.permission'));
         $for_mail_body = compact('document', 'remark', 'worker','form', 'current_unit', 'newlabel');
         try {

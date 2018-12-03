@@ -1379,11 +1379,7 @@ initauditionproperties = function() {
                         $("#serverErrorNotification").jqxNotification("open");
                     }
                 },
-                error: function (xhr, status, errorThrown) {
-                    $("#currentError").text("Ошибка сохранения данных на сервере. " + xhr.status + ' (' + xhr.statusText + ') - '
-                        + status + ". Обратитесь к администратору.");
-                    $("#serverErrorNotification").jqxNotification("open");
-                }
+                error: xhrErrorNotificationHandler
             });
         }
         $("#changeAuditStateWindow").jqxWindow('hide');

@@ -8,8 +8,6 @@ class WorkerProfile extends Model
 {
     //
     protected $fillable = ['worker_id', 'tag', 'attribute', 'value'];
-    public $timestamps = false;
-    protected $dates = ['occured_at'];
 
     public function worker()
     {
@@ -19,5 +17,12 @@ class WorkerProfile extends Model
     public function scopeOfWorker($query, $worker)
     {
         return $query->where('worker_id', $worker);
+    }
+
+    public function scopeWorkerTag($query, $worker, $tag)
+    {
+        return $query
+            ->where('worker_id', $worker)
+            ->where('tag', $tag);
     }
 }

@@ -283,6 +283,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('datainput/fetchaggregates', 'StatDataInput\DocumentDashboardController@fetchaggregates');
     Route::get('datainput/fetchconsolidates', 'StatDataInput\DocumentDashboardController@fetchconsolidates');
     Route::get('datainput/fetchmessages', 'StatDataInput\DocumentMessageController@fetchMessages');
+
     Route::get('datainput/fetchauditions', 'StatDataInput\DocumentAuditionController@fetchAuditions');
     Route::get('datainput/fetchdocinfo/{document}', 'StatDataInput\DocInfoController@getDocInfo');
     Route::post('datainput/sendmessage', 'StatDataInput\DocumentMessageController@sendMessage');
@@ -325,6 +326,9 @@ Route::group(['middleware' => ['medinfo']], function () {
 
     // Профиль пользователя
     Route::resource('userprofiles', 'StatDataInput\UserProfileController');
+    // Лента сообщений
+    Route::get('fetchlatestmessages', 'StatDataInput\DocumentMessageController@fetchRecentMessages');
+    Route::post('message/setlastreadtimestamp/{timestamp}', 'StatDataInput\DocumentMessageController@setLastReadTimestamp');
 
     // Аналитика: консолидированные отчеты, справки
     Route::get('reports/br/querycomposer', 'Admin\BriefReferenceController@index');
