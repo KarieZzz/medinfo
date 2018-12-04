@@ -49,7 +49,7 @@
 @endif
 
 <script src="{{ asset('/jqwidgets/jqx-all.js?v=003') }}"></script>
-<script src="{{ asset('/medinfo/dashboard.js?v=063') }}"></script>
+<script src="{{ asset('/medinfo/dashboard.js?v=064') }}"></script>
 <script src="{{ asset('/jqwidgets/localization.js?v=002') }}"></script>
 <script src="{{ asset('/plugins/fullscreen/jquery.fullscreen.js?v=003') }}"></script>
 <script src="{{ asset('/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
