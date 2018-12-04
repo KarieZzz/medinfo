@@ -156,7 +156,7 @@ function setUserPfofile() {
 }
 
 function initPusher() {
-    Pusher.logToConsole = false;
+    Pusher.logToConsole = true;
     pusher = new Pusher(pkey, {
         cluster: 'eu',
         forceTLS: true
