@@ -32,6 +32,7 @@ class DocumentAdminController extends Controller
     public function index()
     {
         $settings = StateHelper::getUserLastState(Auth::guard('admins')->id());
+        $monitorings = \App\Monitoring::all();
         $albums = \App\Album::orderBy('album_name')->get();
         $forms = Form::orderBy('form_index')->get(['id', 'form_code']);
         $states = DicDocumentState::all(['code', 'name']);
@@ -41,7 +42,7 @@ class DocumentAdminController extends Controller
         $state_ids = $states->pluck('code');
         $period_ids = $periods[0]->id;
         $dtype_ids = $dtypes->pluck('code');
-        return view('jqxadmin.documents', compact('albums', 'forms',
+        return view('jqxadmin.documents', compact('monitorings', 'albums', 'forms',
             'form_ids', 'states', 'state_ids',
             'periods', 'period_ids', 'dtypes',
             'dtype_ids', 'settings'));

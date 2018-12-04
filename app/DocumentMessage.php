@@ -15,17 +15,17 @@ class DocumentMessage extends Model
 
     public function getCreatedTSAttribute()
     {
-        //$now = Carbon::now();
-        //return $now->diffForHumans($this->attributes['created_at']);
-        //$now = Carbon::createFromTimestamp(1543818274059/1000);
-
         return $this->created_at->timestamp;
-        //return $now->timestamp;
     }
 
     public function scopeOfWorker($query, $worker)
     {
         return $query->where('user_id', $worker);
+    }
+
+    public function scopeOfDocument($query, $document)
+    {
+        return $query->where('doc_id', $document);
     }
 
     public function worker()

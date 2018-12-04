@@ -4,6 +4,8 @@ namespace App\Http\Controllers\StatDataInput;
 
 use App\Events\DocumentSendMessage;
 use App\WorkerProfile;
+use App\WorkerReadNotification;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -28,7 +30,7 @@ class DocumentMessageController extends Controller
     public function fetchMessages(Request $request)
     {
         $worker = Auth::guard('datainput')->user();
-        $messages = DocumentMessage::where('doc_id', $request->document)->orderBy('created_at', 'desc')
+        $messages = DocumentMessage::OfDocument($request->document)->orderBy('created_at', 'desc')
             ->with('worker.profiles')
             ->with('is_read')
             ->withCount([
@@ -47,8 +49,15 @@ class DocumentMessageController extends Controller
         $ts = WorkerProfile::WorkerTag($worker->id, $tag)->first();
         return [
             'ts' => is_null($ts) ? 0 : (float)$ts->value ,
-            'messages' => \App\DocumentMessage::orderBy('created_at','desc')
-            ->with('document.unit', 'document.form','worker.profiles','is_read')->take(50)->get()];
+            'messages' => DocumentMessage::orderBy('created_at','desc')
+            ->with('document.unit', 'document.form','worker.profiles','is_read')
+                ->withCount([
+                    'is_read' => function ($query) use ($worker) {
+                        $query->where('worker_id', $worker->id);
+                    }
+                ])
+                ->take(50)
+                ->get()];
     }
 
 
@@ -83,5 +92,24 @@ class DocumentMessageController extends Controller
         $tag->value = $timestamp;
         $tag->save();
         return ['saved' => true];
+    }
+
+    public function markAllAsRead()
+    {
+        $worker = Auth::guard('datainput')->user();
+        $tag = 'messageFeedLastRead';
+        $ts = WorkerProfile::WorkerTag($worker->id, $tag)->first();
+        $ts_value = is_null($ts) ? time() : (float)$ts->value;
+        $latest_read =  \Carbon\Carbon::createFromTimestamp($ts_value);
+
+        $latest_messages = DocumentMessage::where('created_at', '<', $latest_read)
+            ->orderBy('created_at','desc')
+            ->take(60)
+            ->get();
+        WorkerReadNotification::OfWorker($worker->id)->delete();
+        foreach ($latest_messages as $latest_message) {
+            WorkerReadNotification::create(['worker_id' => $worker->id, 'event_uid' => $latest_message->uid, 'event_type' => 1, 'occured_at' => $latest_message->created_at ]);
+        }
+        return ['result' => true];
     }
 }

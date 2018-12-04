@@ -156,7 +156,7 @@ function setUserPfofile() {
 }
 
 function initPusher() {
-    Pusher.logToConsole = true;
+    Pusher.logToConsole = false;
     pusher = new Pusher(pkey, {
         cluster: 'eu',
         forceTLS: true
@@ -171,7 +171,7 @@ function initStateChangeChannel() {
         } else {
             console.log("Сообщение скрыто от текущего пользователя - он автор события");
         }
-
+        getLatestMessages();
     });
 }
 
@@ -182,12 +182,12 @@ function initMessageSentChannel() {
         } else {
             console.log("Сообщение скрыто от текущего пользователя - он автор события");
         }
-
+        getLatestMessages();
     });
 }
 
 function initMessageFeed() {
-    $("#messageFeedToggle").on('click', function () {
+    messagefeedtoggle.on('click', function () {
         if (messagefeed.is(':hidden')) {
             setTimeout(function () {
                 if (messagefeed.is(':visible')) {
@@ -204,6 +204,30 @@ function initMessageFeed() {
                 }
             }, 2000);
         }
+        if (messagefeed.is(':visible')) {
+            setTimeout(function () {
+                if (messagefeed.is(':hidden')) {
+                    getLatestMessages();
+                }
+            }, 4000);
+        }
+    });
+    messagefeedtoggle.on("hidden.bs.dropdown", function(event){
+        setTimeout(function () {
+            if (messagefeed.is(':hidden')) {
+                getLatestMessages();
+            }
+        }, 2000);
+    });
+    $("#refreshMessageFeed").on('click', function (e) {
+        getLatestMessages();
+        e.stopPropagation();
+        e.preventDefault();
+    });
+    $("#markAllAsRead").on('click', function (e) {
+        markAllAsRead();
+        e.stopPropagation();
+        e.preventDefault();
     });
     getLatestMessages();
 }
@@ -215,8 +239,10 @@ function getLatestMessages() {
         method: "GET",
         beforeSend: function( xhr ) {
             $("#formloader").show();
+            messagefeed.text('');
         },
         success: function (data, status, xhr) {
+            $("#formloader").hide();
             let newsection = $('<div></div>');
             let newheader = $('<div class="row" style="margin:0; background-color:#f5f5f5"><div class="col-md-12"><h6 class="text">НОВОЕ</h6></div></div>');
             newsection.append(newheader);
@@ -224,13 +250,13 @@ function getLatestMessages() {
             let oldheader = $('<div class="row" style="margin:0; background-color:#f5f5f5"><div class="col-md-12"><h6 class="text">РАНЬШЕ</h6></div></div>');
             oldsection.append(oldheader);
             let badge_count = 0;
-
             let m =  data.messages;
             for(let i=0; i < m.length; i++) {
-                let mark = 'bg-info';
+                //let mark = 'bg-info';
+                let mark = m[i].is_read_count === 1 ? "" : "bg-info";
                 let mpanel = $('<div class="row '+ mark +'" style="margin:0"></div>');
                 let mcontent = '<div class="col-md-1"><p class="text text-center"><i class="fa fa-comment-o fa-lg"></i></p></div>' +
-                    '<div class="col-md-11"><p class="text"><strong>' + m[i].worker.description + ': </strong>' + m[i].message +'</p></div>';
+                    '<div class="col-md-11"><p class="text text-info small" style="margin: 0"><strong>' + m[i].worker.description + ': </strong>' + m[i].message +'</p></div>';
                 let dpanel = $('<div class="row '+ mark + '" style="margin:0; border-bottom-color:#00a7d0; border-bottom-style:dotted; border-bottom-width: 1px"></div>');
                 let dcontent = '<div class="col-md-1"></div>' +
                     '<div class="col-md-7"><p class="text small"><i class="fa fa-map-o"></i> Форма ' + m[i].document.form.form_code + ' ' + m[i].document.unit.unit_name +'</p></div>' +
@@ -249,9 +275,25 @@ function getLatestMessages() {
             if (badge_count > 0) {
                 messagefeed.append(newsection);
                 $("#newMessagesBadge").text(badge_count);
+            } else if (badge_count === 50) {
+                $("#newMessagesBadge").text('50+');
             }
             messagefeed.append(oldsection);
+        },
+        error: xhrErrorNotificationHandler
+    });
+}
 
+function markAllAsRead() {
+    $.ajax({
+        url: '/message/setlastreadtimestamp',
+        method: 'PATCH',
+        beforeSend: function( xhr ) {
+            $("#formloader").show();
+            messagefeed.text('');
+        },
+        success: function (data, status, xhr) {
+            getLatestMessages();
         },
         error: xhrErrorNotificationHandler
     });

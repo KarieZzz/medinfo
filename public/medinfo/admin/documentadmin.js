@@ -467,9 +467,9 @@ noselected_error = function(message) {
     }
     return row_ids;
 };
-// Ининциализация списка мониторингов
+// Ининциализация списка мониторингов и отчетных форм в виде дерева
 initMonitoringTree = function () {
-    let mon_source =
+    let mon_form_source =
         {
             dataType: "json",
             dataFields: [
@@ -486,9 +486,19 @@ initMonitoringTree = function () {
             root: '',
             url: mon_tree_url
         };
-    mon_dataAdapter = new $.jqx.dataAdapter(mon_source);
-    monclone_dataAdapter = new $.jqx.dataAdapter(mon_source);
-    selectmon_dataAdapter = new $.jqx.dataAdapter(mon_source);
+    let monitorings_source =
+        {
+            datatype: "json",
+            datafields: [
+                { name: 'id' },
+                { name: 'name' }
+            ],
+            id: 'id',
+            localdata: monitorings
+        };
+    mon_dataAdapter = new $.jqx.dataAdapter(mon_form_source);
+    monclone_dataAdapter = new $.jqx.dataAdapter(monitorings_source);
+    selectmon_dataAdapter = new $.jqx.dataAdapter(monitorings_source);
     montree.jqxTreeGrid(
         {
             width: '900px',

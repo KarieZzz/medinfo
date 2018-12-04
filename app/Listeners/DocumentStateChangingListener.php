@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\WorkerReadNotification;
 use App\Document;
 use Mail;
 use App\DocumentMessage;
@@ -38,7 +39,6 @@ class DocumentStateChangingListener
         $new_state = $event->happening['new_state'];
         $remark = $event->happening['remark'];
         $emails = $event->happening['emails'];
-
         StatechangingLog::create(['worker_id' => $worker->id, 'document_id' => $document->id,
             'oldstate' => $old_state, 'newstate' => $new_state, 'occured_at' => Carbon::now()]);
         $newlabel = Document::$state_labels[$document->state];
@@ -46,11 +46,8 @@ class DocumentStateChangingListener
         $newmessage = DocumentMessage::create(['doc_id' => $document->id, 'user_id' =>  $worker->id,
             'message' => "Статус документа изменен на \"". $newlabel . "\". " .  $remark
         ]);
-        //$newmessage->doc_id = $document->id;
-        //$newmessage->user_id = $worker->id;
-        //$newmessage->message = "Статус документа изменен на \"". $newlabel . "\". " .  $remark;
-        //$newmessage->save();
-        //dd(config('medinfo.permission'));
+        $freshed = $newmessage->fresh();
+        WorkerReadNotification::create(['worker_id' => $worker->id, 'event_uid' => $freshed->uid, 'event_type' => 2, 'occured_at' => $freshed->created_at ]);
         $for_mail_body = compact('document', 'remark', 'worker','form', 'current_unit', 'newlabel');
         try {
             Mail::send('emails.changestatemessage', $for_mail_body, function ($m) use ($emails) {

@@ -1106,7 +1106,8 @@ initdocumentstabs = function() {
                             }
                         }
                         let mark_as_unread = val.is_read_count === 1 ? "" : "info";
-                        let m = "<tr class='"+ mark_as_unread + "'>";
+                        //let m = "<tr class='"+ mark_as_unread + "'>";
+                        let m = "<tr class='"+ "'>";
                         m += "<td style='width: 120px'><p class='text-info'>" + formatDate(val.created_at) + "</p></td>";
                         m += '<td style="width: 20%">' +
                             '<div class="dropdown">' +
@@ -1580,7 +1581,7 @@ initpopupwindows = function() {
         theme: theme
     });
 };
-// Инициализация окна с информацией о документе
+// Инициализация окна с информацией о документе (последние исправления, смены статуса, принятие разделов документа)
 initdocinfowindow = function() {
     docinfoWindow.jqxWindow({
         width: 850,

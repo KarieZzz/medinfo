@@ -329,6 +329,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     // Лента сообщений
     Route::get('fetchlatestmessages', 'StatDataInput\DocumentMessageController@fetchRecentMessages');
     Route::post('message/setlastreadtimestamp/{timestamp}', 'StatDataInput\DocumentMessageController@setLastReadTimestamp');
+    Route::patch('message/setlastreadtimestamp', 'StatDataInput\DocumentMessageController@markAllAsRead');
 
     // Аналитика: консолидированные отчеты, справки
     Route::get('reports/br/querycomposer', 'Admin\BriefReferenceController@index');

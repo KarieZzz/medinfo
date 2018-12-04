@@ -212,12 +212,13 @@
 @endsection
 
 @push('loadjsscripts')
-    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=052') }}"></script>
+    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=053') }}"></script>
 @endpush
 
 @section('inlinejs')
     @parent
     <script type="text/javascript">
+        let monitorings = {!! $monitorings !!};
         let checkeddtypes = {!! $dtype_ids !!};
         let albums = {!! $albums  !!};
         let forms = {!! $forms  !!};
