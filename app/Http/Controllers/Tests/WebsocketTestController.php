@@ -17,9 +17,9 @@ class WebsocketTestController extends Controller
             'useTLS' => true
         );
         $pusher = new \Pusher\Pusher(
-            'e595312f9b7d75b388bb',
-            '2ce0b5fe700ec4cf28d7',
-            '652822',
+            config('broadcasting.connections.pusher.key'),
+            config('broadcasting.connections.pusher.secret'),
+            config('broadcasting.connections.pusher.app_id'),
             $options
         );
         $channel = 'event-brodcasting-channel';
