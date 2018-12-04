@@ -21,6 +21,10 @@ class EventServiceProvider extends ServiceProvider
             'App\Listeners\DocumentSendMessageListener',
             'App\Listeners\MessageSendPusherListener',
         ],
+        'App\Events\DocumentSectionChanging' => [
+            'App\Listeners\DocumentSectionChangingListener',
+            'App\Listeners\SectionChangingPusherListener',
+        ],
     ];
 
     /**

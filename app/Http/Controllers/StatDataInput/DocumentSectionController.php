@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\StatDataInput;
 
+use App\Events\DocumentSectionChanging;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -41,16 +42,7 @@ class DocumentSectionController extends Controller
             $section->blocked = $blocked;
             $section->save();
         }
-
-        SectionchangingLog::create(['worker_id' => $worker->id, 'document_id' => $document->id, 'formsection_id' => $formsection->id,
-            'blocked' => $section->blocked, 'occured_at' => Carbon::now()]);
-        $action = $section->blocked ? 'принят' : 'отклонен';
-        $newmessage = new DocumentMessage();
-        $newmessage->doc_id = $document->id;
-        $newmessage->user_id = $worker->id;
-        $newmessage->message = "Раздел документа {$formsection->section_name} $action. ";
-        $newmessage->save();
-
+        event(new DocumentSectionChanging($section));
         return ['section' => $section, 'worker' => $section->worker ] ;
     }
 

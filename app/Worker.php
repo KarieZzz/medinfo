@@ -8,7 +8,7 @@ class Worker extends Model
 {
     //
     protected $fillable = ['name', 'password', 'email', 'description', 'role', 'permission', 'blocked'];
-    protected $hidden = ['password'];
+    protected $hidden = ['password', 'remember_token'];
 
     public function worker_scopes()
     {
