@@ -5,7 +5,7 @@
         Форма №<span class="text-info">{{ $form->form_code  }} </span>
         <i class="fa fa-hospital-o fa-lg"></i>
         <span class="text-info" title="{{ $current_unit->unit_name ? $current_unit->unit_name : $current_unit->group_name }}">
-            {{ str_limit($current_unit->unit_name ? $current_unit->unit_name : $current_unit->group_name, 80) }}
+            {{ str_limit($current_unit->unit_name ? $current_unit->unit_name : $current_unit->group_name, 60) }}
         </span>
         <i class="fa fa-map-o fa-lg"></i> <span class="text-info">{{ $monitoring->name }} </span>
         <i class="fa fa-calendar-o fa-lg"></i> <span class="text-info">{{ $period->name }} </span>
