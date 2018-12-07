@@ -24,6 +24,7 @@ class MailerTestController extends Controller
             dd($e);
         }
         echo '<p>' . $remark . '</p>';
+        echo '<p> От' . config('medinfo.server_email') . '</p>';
         if( count(\Mail::failures()) > 0 ) {
             foreach (\Mail::failures() as $email_address) {
                 echo '<p>Не доставлено ' . $email_address . '</p> ';
