@@ -48,7 +48,7 @@ class DocumentStateChangingListener
         ]);
         $freshed = $newmessage->fresh();
         WorkerReadNotification::create(['worker_id' => $worker->id, 'event_uid' => $freshed->uid, 'event_type' => 2, 'occured_at' => $freshed->created_at ]);
-        $for_mail_body = compact('document', 'remark', 'worker','form', 'current_unit', 'newlabel');
+        $for_mail_body = compact('document', 'remark', 'worker', 'newlabel');
         try {
             Mail::send('emails.changestatemessage', $for_mail_body, function ($m) use ($emails) {
                 $m->from(config('medinfo.server_email'), 'Email оповещение Мединфо');
