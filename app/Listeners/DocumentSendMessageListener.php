@@ -51,7 +51,6 @@ class DocumentSendMessageListener
         $emails = array_unique($emails);
         $for_mail_body = compact('document', 'doc_message', 'worker', 'form', 'unit');
         $from = config('medinfo.server_email');
-        dd($from);
         try {
             Mail::send('emails.documentmessage', $for_mail_body, function ($m) use ($emails, $from) {
                 $m->from($from, 'Email оповещение Мединфо');
