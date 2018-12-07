@@ -58,6 +58,7 @@ class DocumentStateChangingListener
         } catch (\Exception $e) {
             $data['sent_to'] = 'Почтовое сообщение о смене статуса документа не доставлено адресатам ' . implode(",", $emails);
             $data['sent_error'] = $e->getMessage();
+            dd($data);
         }
     }
 }
