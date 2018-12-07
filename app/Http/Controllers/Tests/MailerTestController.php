@@ -17,7 +17,7 @@ class MailerTestController extends Controller
         $emails = [ 'shameev@miac-io.ru', 'shameev38@gmail.com'] ;
         try {
             \Mail::send('emails.test', $for_mail_body, function ($m) use ($emails) {
-                $m->from('noreply@miacmo.ru', 'Тестовое email сообщение Мединфо');
+                $m->from(config('medinfo.server_email'), 'Тестовое email сообщение Мединфо');
                 $m->to($emails)->subject('Тестовое сообщение');
             });
         } catch(\Exception $e){
