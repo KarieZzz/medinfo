@@ -50,7 +50,7 @@ class DocumentMessageController extends Controller
         return [
             'ts' => is_null($ts) ? 0 : (float)$ts->value ,
             'messages' => DocumentMessage::orderBy('created_at','desc')
-            ->with('document.unit', 'document.form','worker.profiles','is_read')
+                ->with('document.unit', 'document.form','worker.profiles','is_read')
                 ->withCount([
                     'is_read' => function ($query) use ($worker) {
                         $query->where('worker_id', $worker->id);
