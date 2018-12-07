@@ -14,7 +14,7 @@ class MailerTestController extends Controller
     {
         $remark = "Тестовое сообщение";
         $for_mail_body = compact('remark');
-        $emails = [ 'shameev@miac-io.ru', 'im@miacmo.ru'] ;
+        $emails = [ 'shameev@miac-io.ru', 'shameev38@gmail.com'] ;
         try {
             \Mail::send('emails.test', $for_mail_body, function ($m) use ($emails) {
                 $m->from('noreply@miacmo.ru', 'Тестовое email сообщение Мединфо');
