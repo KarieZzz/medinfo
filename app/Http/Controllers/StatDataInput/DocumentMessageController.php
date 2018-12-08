@@ -3,21 +3,15 @@
 namespace App\Http\Controllers\StatDataInput;
 
 use App\Events\DocumentSendMessage;
+use App\Medinfo\DocumentTreeByOU;
 use App\WorkerProfile;
 use App\WorkerReadNotification;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Worker;
-use App\Unit;
-//use App\Medinfo\UnitTree;
-use App\Document;
 use App\DocumentMessage;
-use App\Form;
-use Mail;
 
 class DocumentMessageController extends Controller
 {
@@ -44,20 +38,36 @@ class DocumentMessageController extends Controller
 
     public function fetchRecentMessages()
     {
-        $worker = Auth::guard('datainput')->user();
+        $worker = Worker::find(Auth::guard('datainput')->id());
         $tag = 'messageFeedLastRead';
         $ts = WorkerProfile::WorkerTag($worker->id, $tag)->first();
-        return [
-            'ts' => is_null($ts) ? 0 : (float)$ts->value ,
-            'messages' => DocumentMessage::orderBy('created_at','desc')
-                ->with('document.unit', 'document.form','worker.profiles','is_read')
-                ->withCount([
-                    'is_read' => function ($query) use ($worker) {
-                        $query->where('worker_id', $worker->id);
-                    }
-                ])
-                ->take(50)
-                ->get()];
+        if ($worker->worker_scopes[0]->ou_id === 0) {
+            return [
+                'ts' => is_null($ts) ? 0 : (float)$ts->value ,
+                'messages' => DocumentMessage::orderBy('created_at','desc')
+                    ->with('document.unit', 'document.form','worker.profiles','is_read')
+                    ->withCount([
+                        'is_read' => function ($query) use ($worker) {
+                            $query->where('worker_id', $worker->id);
+                        }
+                    ])
+                    ->take(50)
+                    ->get()];
+        } else {
+            $documents = DocumentTreeByOU::get($worker->worker_scopes[0]->ou_id);
+            return [
+                'ts' => is_null($ts) ? 0 : (float)$ts->value ,
+                'messages' => DocumentMessage::orderBy('created_at','desc')
+                    ->whereIn('doc_id', $documents)
+                    ->with('document.unit', 'document.form','worker.profiles','is_read')
+                    ->withCount([
+                        'is_read' => function ($query) use ($worker) {
+                            $query->where('worker_id', $worker->id);
+                        }
+                    ])
+                    ->take(50)
+                    ->get()];
+        }
     }
 
 

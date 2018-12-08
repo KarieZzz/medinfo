@@ -153,7 +153,8 @@ class DocumentAdminController extends Controller
         $data['state_changed'] = 1;
         $data['affected_documents'] = $affected;
         // Сообщения пока записываем от имени Администратора - TODO: Записывать сообщения от реального пользователя
-        $this->bulkDocumentMessage($documents, 1, 'Изменен статус документа.');
+        // Отключена отправка сообщения - засоряет ленту большим количеством сообщений
+        //$this->bulkDocumentMessage($documents, 1, 'Изменен статус документа.');
         return $data;
     }
 
