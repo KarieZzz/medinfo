@@ -17,7 +17,7 @@
                     <li><a href="/workerlogout"><span class="glyphicon glyphicon-log-out"></span> Выход</a></li>
                 </ul>
             </li>
-            @if($worker->role !==1 )
+
             <li class="dropdown pull-right" id="messageFeedToggle">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#" title="Сообщения">
                     <i class="fa fa-comments fa-lg text-info"></i> <span class="badge" style="background-color: #ca0909" id="newMessagesBadge"></span> <span class="caret"></span>
@@ -42,7 +42,7 @@
                     <div id="messageFeed"></div>
                 </div>
             </li>
-            @endif
+
         </ul>
     </div>
 </nav>

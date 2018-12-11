@@ -54,7 +54,14 @@ class DocumentMessageController extends Controller
                     ->take(50)
                     ->get()];
         } else {
-            $documents = DocumentTreeByOU::get($worker->worker_scopes[0]->ou_id);
+            $documents = collect();
+            foreach ($worker->worker_scopes as $scope) {
+                //dd(DocumentTreeByOU::get($scope->ou_id));
+                //$documents = array_merge($documents, DocumentTreeByOU::get($scope->ou_id) );
+                $documents = $documents->merge(DocumentTreeByOU::get($scope->ou_id));
+            }
+            //dd($documents);
+            //dd($worker);
             return [
                 'ts' => is_null($ts) ? 0 : (float)$ts->value ,
                 'messages' => DocumentMessage::orderBy('created_at','desc')
@@ -106,19 +113,33 @@ class DocumentMessageController extends Controller
 
     public function markAllAsRead()
     {
-        $worker = Auth::guard('datainput')->user();
+        $worker = Worker::find(Auth::guard('datainput')->id());
         $tag = 'messageFeedLastRead';
         $ts = WorkerProfile::WorkerTag($worker->id, $tag)->first();
         $ts_value = is_null($ts) ? time() : (float)$ts->value;
         $latest_read =  \Carbon\Carbon::createFromTimestamp($ts_value);
-
-        $latest_messages = DocumentMessage::where('created_at', '<', $latest_read)
-            ->orderBy('created_at','desc')
-            ->take(60)
-            ->get();
         WorkerReadNotification::OfWorker($worker->id)->delete();
-        foreach ($latest_messages as $latest_message) {
-            WorkerReadNotification::create(['worker_id' => $worker->id, 'event_uid' => $latest_message->uid, 'event_type' => 1, 'occured_at' => $latest_message->created_at ]);
+        if ($worker->worker_scopes[0]->ou_id === 0) {
+            $latest_messages = DocumentMessage::where('created_at', '<', $latest_read)
+                ->orderBy('created_at','desc')
+                ->take(60)
+                ->get();
+            foreach ($latest_messages as $latest_message) {
+                WorkerReadNotification::create(['worker_id' => $worker->id, 'event_uid' => $latest_message->uid, 'event_type' => 1, 'occured_at' => $latest_message->created_at ]);
+            }
+        } else {
+            $documents = collect();
+            foreach ($worker->worker_scopes as $scope) {
+                $documents = $documents->merge(DocumentTreeByOU::get($scope->ou_id));
+            }
+            $latest_messages = DocumentMessage::where('created_at', '<', $latest_read)
+                ->whereIn('doc_id', $documents)
+                ->orderBy('created_at','desc')
+                ->take(60)
+                ->get();
+            foreach ($latest_messages as $latest_message) {
+                WorkerReadNotification::create(['worker_id' => $worker->id, 'event_uid' => $latest_message->uid, 'event_type' => 1, 'occured_at' => $latest_message->created_at ]);
+            }
         }
         return ['result' => true];
     }
