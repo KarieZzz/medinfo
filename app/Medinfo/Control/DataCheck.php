@@ -118,9 +118,11 @@ class DataCheck
         }
         $table_protocol = [];
         //if (ControlHelper::CashedProtocolActual($document->id, $table->id) && !$forcereload) {
-        if (ControlHelper::CashedProtocolActual($document->id, $table->id) && config('medinfo.use_cashed_protocol')) {
-            $table_protocol = ControlHelper::loadProtocol($document->id, $table->id);
-            return $table_protocol;
+        if (config('medinfo.use_cashed_protocol')) {
+            if (ControlHelper::CashedProtocolActual($document->id, $table->id)) {
+                $table_protocol = ControlHelper::loadProtocol($document->id, $table->id);
+                return $table_protocol;
+            }
         }
         if (ControlHelper::tableContainsData($document->id, $table->id)) {
             $table_protocol['no_data'] = false;

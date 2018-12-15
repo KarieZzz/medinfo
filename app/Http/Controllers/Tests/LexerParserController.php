@@ -94,7 +94,9 @@ class LexerParserController extends Controller
         //$i = "сравнение(С1.0, С2.0+С3.0+С4.0+С5.0+С6.0+С7.0+С8.0+С9.0+С10.0+С11.0+С12.0+С13.0+С14.0+С15.0+С17.0+С18.0+С19.0+С20.0, =)";
         //$i = "сравнение(Г8, Г10, =)";
         //$i = "сравнение(С139, С140+С141+С142, =, , графы(9,12-17))";
-        $i = "сравнение(Ф30Т1100С144Г9, Ф301Т1102С3, =)";
+        //$i = "сравнение(Ф30Т1100С144Г9, Ф301Т1102С3, =)";
+        $i = "сравнение(С1.1+С1.2+С1.3,  С4+С5+С6, =)";
+
 
         //$cellcount = preg_match_all('/Ф([а-я0-9.-]+)Т([\w.-]+)С([\w.-]+)Г(\d{1,})/u', $i, $matches, PREG_SET_ORDER);
         //$res = preg_match('|(?:\()(.*?),(.*?)\)|usei', $i, $matches);
@@ -117,7 +119,8 @@ class LexerParserController extends Controller
         //dd($parser->cellrangeStack);
         //dd($parser->argStack);
 
-        $table = Table::find(10);     // Ф30 Т1100
+        $table = Table::find(22);     // Ф30 Т2512
+        //$table = Table::find(10);     // Ф30 Т1100
         //$table = Table::find(15);     // Ф30 Т2100
         //$table = Table::find(50);     // Ф30 Т5117
         //$table = Table::find(252);    // Ф30 Т5301
@@ -140,7 +143,7 @@ class LexerParserController extends Controller
         //$translator->validateVector();
         $translator->prepareIteration();
         //dd($translator);
-        dd($translator->getProperties());
+        //dd($translator->getProperties());
         //dd($translator->parser->root);
         //echo (json_encode($translator->parser->root, JSON_PARTIAL_OUTPUT_ON_ERROR));
         //echo json_last_error();
