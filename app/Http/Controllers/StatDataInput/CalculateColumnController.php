@@ -35,7 +35,7 @@ class CalculateColumnController extends Controller
             try {
                 $input = $c->calculation->formula;
             } catch (\Exception $e) {
-                $result['errors'][] = 'Для рассчитываемой графы ' . $c->column_index . ' не задана формула расчета';
+                $result['errors'][] = 'Для рассчитываемой графы ' . $c->column_code . ' не задана формула расчета';
                 break;
             }
             $lexer = new CalculationFunctionLexer($input);

@@ -116,7 +116,6 @@ class CalculatedColumnAdminController extends Controller
     public function compileExpression(Column $column)
     {
         $stack = $this->lexer->celladressStack;
-
         $compiled = [];
         $compiled['vector'] = 'rows';
         $compiled['cellstack'] = [];
@@ -127,8 +126,8 @@ class CalculatedColumnAdminController extends Controller
             $compiled['cellstack']['el' . $i] = [];
             while ($stack->valid()) {
                 $label = $stack->current();
-                $columnindex = mb_substr($label,1);
-                $c = Column::OfTableColumnIndex($column->table_id, $columnindex)->first();
+                $columncode = mb_substr($label,1);
+                $c = Column::OfTableColumnCode($column->table_id, $columncode)->first();
                 $compiled['cellstack']['el' . $i][] = ['r' => $row->id, 'c' => $c->id];
                 $stack->next();
             }
