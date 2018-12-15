@@ -118,4 +118,12 @@ class Column extends Model
         return $query
             ->whereNotNull('medstat_code');
     }
+
+    public function scopeControlled($query)
+    {
+        return $query
+            ->where('content_type', self::DATA)
+            ->orWhere('content_type', self::CALCULATED);
+    }
+
 }

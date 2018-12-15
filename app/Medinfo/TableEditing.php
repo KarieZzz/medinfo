@@ -85,7 +85,7 @@ class TableEditing
             } elseif ($col->content_type === Column::CALCULATED) {
                 $calculated_fields[] = $col->id;
                 $columns_arr[] = array(
-                    'text' => $col->column_index,
+                    'text' => $col->column_code,
                     'dataField' => $col->id,
                     'width' => $width,
                     'cellsalign' => 'right',
@@ -125,10 +125,6 @@ class TableEditing
         $fortable['calcfields'] = $calculated_fields;
         $fortable['columns'] = $columns_arr;
         $fortable['columngroups'] = $column_groups_arr;
-        //if ($table->id === 31) {
-          //  dd($columns_arr);
-        //}
-
         return $fortable;
     }
 
@@ -212,7 +208,6 @@ class TableEditing
     public static function isTableBlocked(int $document, int $table)
     {
         $blockedSections = \App\DocumentSectionBlock::OfDocument($document)->Blocked()->with('formsection.tables')->get();
-        //dd($blockedSections[0]->formsection->tables[0]->table_id);
         if ($blockedSections) {
             $ids = [];
             foreach($blockedSections as $blockedSection) {

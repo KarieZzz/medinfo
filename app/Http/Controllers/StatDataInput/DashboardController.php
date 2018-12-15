@@ -71,30 +71,6 @@ class DashboardController extends Controller
         return property_exists($this, 'dashboardView') ? $this->dashboardView : 'jqxdatainput.formdashboard';
     }
 
-/*    protected function isEditPermission(int $permission, int $document_state)
-    {
-        switch (true) {
-            case (($permission & config('medinfo.permission.permission_edit_report')) && ($document_state == 2 || $document_state == 16)) :
-                $edit_permission = true;
-                break;
-            case (($permission & config('medinfo.permission.permission_edit_prepared_report')) && $document_state == 4) :
-                $edit_permission = true;
-                break;
-            case (($permission & config('medinfo.permission.permission_edit_accepted_report')) && $document_state == 8) :
-                $edit_permission = true;
-                break;
-            case (($permission & config('medinfo.permission.permission_edit_approved_report')) && $document_state == 32) :
-                $edit_permission = true;
-                break;
-            case (($permission & config('medinfo.permission.permission_edit_aggregated_report')) && $document_state == 0) :
-                $edit_permission = true;
-                break;
-            default:
-                $edit_permission = false;
-        }
-        return $edit_permission;
-    }*/
-
     //Описательная информация для построения гридов динамически
     // возвращается json объект в формате для jqxgrid
     protected function composeDataForTablesRendering(Form $form, array $editedtables, Album $album)

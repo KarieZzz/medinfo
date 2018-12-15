@@ -47,6 +47,6 @@ class ControlFunctionParseTree extends ParseTree
 
     public function humanizeCA($cadress)
     {
-        return str_replace(['Ф', 'Т', 'С', 'Г', 'П0'] , [' ф.', ' т.', ' с.', ' г.', ' прошл.'], $cadress);
+        return str_replace(['Ф', 'Т', 'С', 'Г', 'П0', 'П-1'] , [' ф.', ' т.', ' с.', ' г.', ' прошлог.', 'пред.период'], $cadress);
     }
 }

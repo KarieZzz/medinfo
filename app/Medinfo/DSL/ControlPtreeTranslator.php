@@ -371,7 +371,6 @@ class ControlPtreeTranslator
                 //$iterations = $this->parser->argStack;
                 foreach ($lightweightCAStack as $key => $ca) {
                     if ($ca['ids']['t'] === $this->table->id) {
-                        //$lightweightCAStack[$key]['codes']['c'] = $column->column_index;
                         $lightweightCAStack[$key]['codes']['c'] = $column->column_code;
                         $lightweightCAStack[$key]['ids']['c'] = $column->id;
                     } else {
@@ -472,7 +471,6 @@ class ControlPtreeTranslator
             case 1: // по строкам (контроль граф)
                 //for ($j = 0, $first = (int)$fprops['codes']['c'], $last = (int)$lprops['codes']['c']; $j++, $first <= $last; $first++) {
                 for ($j = 0, $first = $fprops['columnindex'], $last = $lprops['columnindex']; $j++, $first <= $last; $first++) {
-                    //$column = Column::OfTableColumnIndex($fprops['ids']['t'], $first)->first();
                     $column = Column::OfTableColumnIndex($fprops['ids']['t'], $first)->first();
                     if (is_null($column)) {
                         continue;
@@ -736,7 +734,8 @@ class ControlPtreeTranslator
             $this->vector[] = self::COLUMNS;
             return null;
         }
-        $column = Column::OfDataType()->OfTableColumnCode($table_id, $code)->first();
+        //$column = Column::OfDataType()->OfTableColumnCode($table_id, $code)->first();
+        $column = Column::Controlled()->OfTableColumnCode($table_id, $code)->first();
         //dump($column);
         if (is_null($column)) {
             $table = $this->getTableInfo($table_id);
