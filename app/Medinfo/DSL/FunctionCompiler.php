@@ -25,7 +25,6 @@ class FunctionCompiler
             $translator->prepareIteration();
             $compiled_cache['ptree'] = base64_encode(serialize($translator->parser->root));
             $compiled_cache['properties'] = $translator->getProperties();
-
         } catch (\Exception $e) {
             $compiled_cache['compile_error'] = "Ошибка при компилляции функции: " . $e->getMessage();
         }
@@ -68,7 +67,8 @@ class FunctionCompiler
             $units = array_intersect($units, $limitationunits);
         }
 
-        return \App\Unit::whereIn('id', $units)->get(['id', 'unit_code', 'unit_name'])->sortBy('unit_code');
+        //return \App\Unit::whereIn('id', $units)->get(['id', 'unit_code', 'unit_name'])->sortBy('unit_code');
+        return $units;
     }
 
     public static function getUnitsFromLists(array $lists)

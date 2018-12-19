@@ -203,7 +203,8 @@ Route::group(['middleware' => ['medinfo']], function () {
 
     // Расчет консолидированных документов
     Route::get('admin/consolidate/{document}', 'Admin\DocumentConsolidationController@consolidateDocument' );
-    Route::get('admin/consolidate_table/{document}/{table}', 'Admin\DocumentConsolidationController@consolidatePivotTable' );
+    Route::get('admin/consolidate_table/{document}/{table}', 'Admin\DocumentConsolidationController@consolidatePivotTableByRule' );
+    Route::get('admin/cons_by_rule_list/{document}/{table}', 'Admin\DocumentConsolidationController@consolidatePivoteTableByRuleAndUnitlist' );
 
     // Менеджер списков МО для формирования сводов/рассчета консолидированных таблиц
     Route::resource('admin/units/lists', 'Admin\ListMOAdminController');
@@ -353,7 +354,9 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('tests/ast_w_bool', 'Tests\LexerParserController@test_making_AST_w_bool');
     Route::get('tests/parser', 'Tests\LexerParserController@func_parser');
     Route::get('tests/batchRename', 'Tests\LexerParserController@batchRename');
-    Route::get('tests/calculation', 'Tests\LexerParserController@testCalculation');
+    Route::get('tests/calculation', 'Tests\LexerParserController@testCalculation'); // "Старый" вариант рассчета
+    Route::get('tests/calc_mocount', 'Tests\CalculationFunctionTestController@mocount'); // "Новый" вариант рассчета для консолидации
+    Route::get('tests/calc_value', 'Tests\CalculationFunctionTestController@calculation'); // "Новый" вариант рассчета для консолидации
     Route::get('tests/vector', 'Tests\VectorTestController@index');
     // тестирование функций контроля
     Route::get('tests/sectioncheck', 'Tests\SectionCheckTestController@SectionCheckTest');

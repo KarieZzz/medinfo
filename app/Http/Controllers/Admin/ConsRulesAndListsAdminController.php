@@ -68,23 +68,21 @@ class ConsRulesAndListsAdminController extends Controller
         $lists = array_unique(array_filter(explode(' ', $trimed)));
         array_multisort($lists, SORT_NATURAL);
         $glued = implode(', ', $lists);
-
-        $hashed  =  sprintf("%u", crc32(implode('', $lists)));
-
+        //$hashed  =  sprintf("%u", crc32(implode('', $lists)));
         //dd($hashed);
-        $list = \App\ConsolidationList::firstOrNew(['hash' => $hashed]);
         //if ($list->script !== $glued) {
-
-
         //dd($lists);
-
             try {
                 $units = \App\Medinfo\DSL\FunctionCompiler::compileUnitList($lists);
-                dd($units);
-
-                $list->script = implode(', ', $lists);
+                asort($units);
+                $prop = '[' . implode(',', $units) . ']';
+                $hashed  =  crc32($prop);
+                $list = \App\ConsolidationList::firstOrNew(['hash' => $hashed]);
+                $list->script = $glued;
+                //$list->properties = $units->toJson();
+                $list->properties = $prop;
                 $list->hash = $hashed;
-                $list->properties = $units->toJson();
+                //$list->properties = json_encode([ 'units' => [1,5,2,3] ]);
                 //dd($list->properties);
                 $list->save();
                 $i = 0;

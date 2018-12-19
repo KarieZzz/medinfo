@@ -30,7 +30,7 @@ class DocumentConsolidationController extends Controller
         return ['consolidated' => true, 'cell_affected' => $cell_affected];
     }
 
-    public function consolidatePivotTable(Document $document, Table $table)
+    public function consolidatePivotTableByRule(Document $document, Table $table)
     {
         set_time_limit(240);
         $rules = ConsolidationRuleHelper::getTableRules($table);
@@ -57,4 +57,10 @@ class DocumentConsolidationController extends Controller
         }
         return ['consolidated' => true, 'cell_affected' => $cell_affected, 'cell_truncated' => $cell_truncated ];
     }
+
+    public function consolidatePivoteTableByRuleAndUnitlist()
+    {
+
+    }
+
 }

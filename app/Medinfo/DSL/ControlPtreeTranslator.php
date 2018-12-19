@@ -69,6 +69,19 @@ class ControlPtreeTranslator
         $this->section = $section;
     }
 
+    public function setUnits(array $units, $merge = true)
+    {
+        if ($merge) {
+            $this->units = array_merge($this->units, $units);
+        } else {
+            $this->units = $units;
+        }
+
+        if (count($this->units) > 0) {
+            $this->scopeOfUnits = true;
+        }
+    }
+
     public function makeReadable() {  }
 
     public function setParentNodesFromRoot()
