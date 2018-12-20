@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\ConsolidationCalcrule;
+use App\Medinfo\UnitTree;
+use App\Unit;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -10,6 +13,8 @@ use App\Document;
 use App\Table;
 use App\Cell;
 use App\Medinfo\Consolidation\ConsolidationRuleHelper;
+use App\ConsUseRule;
+use App\ConsUseList;
 
 class DocumentConsolidationController extends Controller
 {
@@ -37,7 +42,7 @@ class DocumentConsolidationController extends Controller
         //dd($rules);
         $cell_affected = 0;
         // очищаем таблицу перед заполнением
-        $cell_truncated = Cell::Where('doc_id', $document->id)->Where('table_id', $table->id)->delete();
+        $cell_truncated = Cell::where('doc_id', $document->id)->Where('table_id', $table->id)->delete();
         foreach ($rules as $rule) {
             //dd($rule);
             $value = ConsolidationRuleHelper::evaluateRule($rule, $document, $table);
@@ -61,28 +66,63 @@ class DocumentConsolidationController extends Controller
     public function consolidatePivoteTableByRuleAndUnitlist(Document $document, Table $table)
     {
         set_time_limit(240);
-        $rules = ConsolidationRuleHelper::getTableRules($table);
-        $cell_affected = 0;
         // очищаем таблицу перед заполнением
-        $cell_truncated = Cell::Where('doc_id', $document->id)->Where('table_id', $table->id)->delete();
-        foreach ($rules as $rule) {
-            //dd($rule);
-            $value = ConsolidationRuleHelper::evaluateRule($rule, $document, $table);
-            if (is_numeric($value)) {
-                if ($value == 0) {
-                    //echo "Полученное значение 0, в БД записано null";
-                    $value = null;
-                }
-                //dd($value);
-                $cell = Cell::firstOrCreate(['doc_id' => $document->id, 'table_id' => $table->id, 'row_id' => $rule->row_id,
-                    'col_id' => $rule->col_id, 'value' => $value]);
-                //dd($cell);
-                if ($cell) {
-                    $cell_affected++;
+        $cell_truncated = Cell::where('doc_id', $document->id)->where('table_id', $table->id)->delete();
+        $rows = $table->rows->sortBy('row_index');
+        $cols = $table->columns->sortBy('column_index');
+        $scripts = [];
+        $lists = [];
+        $cell_affected = 0;
+        $unitlist_empty = 0;
+        foreach ($rows as $r) {
+            foreach($cols as $col) {
+                $units = [];
+                if ($col->content_type == \App\Column::DATA) {
+                    $list_using = ConsUseList::OfRC($r->id, $col->id)->first();
+                    if (!is_null($list_using)) {
+                        if (array_key_exists($list_using->list, $lists)) {
+                            $units = $lists[$list_using->list];
+                        } else {
+                            $units = json_decode($list_using->listscript->properties, true);
+                            $lists[$list_using->list] = $units;
+                        }
+                    }
+                    $rule_using = ConsUseRule::OfRC($r->id, $col->id)->first();
+                    if (!is_null($rule_using)) {
+                        //$script = ConsolidationCalcrule::find($rule_using->script);
+                        //dd($rule_using->rulescript);
+                        if (array_key_exists($rule_using->script, $scripts)) {
+                            $ptree = $scripts[$rule_using->script]['ptree'];
+                            $props = $scripts[$rule_using->script]['props'];
+                        } else {
+                            $ptree = unserialize(base64_decode($rule_using->rulescript->ptree));
+                            $props = json_decode($rule_using->rulescript->properties, true);
+                            $scripts[$rule_using->script]['ptree'] = $ptree;
+                            $scripts[$rule_using->script]['props'] = $props;
+                        }
+                        if (count($units) > 0) {
+                            $props['units'] = $units;
+                        } else {
+                            $unitlist_empty++;
+                            //$units = Unit::getPrimaryDescendants($document->ou_id);
+                            //$units = UnitTree::getIds($document->ou_id);
+                            $units = UnitTree::getIds(120);
+                            dd($units);
+                        }
+
+                        $evaluator = \App\Medinfo\DSL\Evaluator::invoke($ptree, $props, $document);
+                        $evaluator->makeConsolidation();
+                        $value = $evaluator->evaluate();
+                        if ($value) {
+                            Cell::firstOrCreate(['doc_id' => $document->id, 'table_id' => $table->id, 'row_id' => $r->id, 'col_id' => $col->id, 'value' => $value]);
+                            $cell_affected++;
+                        }
+                    }
                 }
             }
         }
-        return ['consolidated' => true, 'cell_affected' => $cell_affected, 'cell_truncated' => $cell_truncated ];
+        //return ['consolidated' => true, 'cell_affected' => $cell_affected, 'cell_truncated' => $cell_truncated ];
+        dd( ['consolidated' => true, 'cell_affected' => $cell_affected, 'cell_truncated' => $cell_truncated ]);
     }
 
 }

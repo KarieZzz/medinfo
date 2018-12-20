@@ -8,9 +8,9 @@
 
 namespace App\Medinfo;
 
-
 use App\Unit;
 use App\WorkerScope;
+use Illuminate\Support\Collection;
 
 class UnitTree
 {
@@ -25,6 +25,25 @@ class UnitTree
             throw new \Exception("Не определен Id организации/территории/группы верхнего уровня");
         }
         $this->top_level_id = $top_level_id;
+    }
+
+    public static function getIds($parent = 0)
+    {
+        $units = self::getChildIds($parent);
+        $this_one = Unit::find($parent);
+        $units = $units->push($this_one);
+        return $units;
+    }
+
+    public static function getChildIds($parent)
+    {
+        $units = Unit::Childs($parent)->get(['id']);
+        if (count($units) > 0 ) {
+            foreach ($units as $unit) {
+                $units = $units->merge(self::getChildIds($unit->id));
+            }
+        }
+        return $units;
     }
 
     public static function getSimpleTree($parent = 0, bool $get_only_legal = false)

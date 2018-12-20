@@ -99,6 +99,12 @@ class Unit extends Model
             ->where('countryside', true);
     }
 
+    public function scopeChilds($query, $parent)
+    {
+        return $query
+            ->where('parent_id', $parent);
+    }
+
     public static function getDescendants($parent) {
         $units[] = (int)$parent;
         $lev_query = "select id from mo_hierarchy where parent_id = $parent";

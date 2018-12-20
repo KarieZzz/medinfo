@@ -34,8 +34,6 @@ class ConsolidationRuleHelper
         return $evaluator->evaluate();
     }
 
-
-
     public static function logConsolidation(array $calculationLog, int $doc_id, int $row_id, int $col_id)
     {
         foreach ($calculationLog as &$el) {
