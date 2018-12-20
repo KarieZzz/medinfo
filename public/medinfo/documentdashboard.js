@@ -1092,7 +1092,6 @@ initdocumentstabs = function() {
                         let wtel = 'н/д';
                         let ctel = 'н/д';
                         if (val.worker !== null) {
-                            description = val.worker.description;
                             let pr = val.worker.profiles;
                             for (let i = 0; i < pr.length; i++) {
                                 switch (true) {
@@ -1102,8 +1101,18 @@ initdocumentstabs = function() {
                                     case (pr[i].tag === 'tel' && pr[i].attribute === 'cell') :
                                         ctel = pr[i].value;
                                         break;
+                                    case (pr[i].tag === 'firstname') :
+                                        fn = pr[i].value;
+                                        break;
+                                    case (pr[i].tag === 'patronym') :
+                                        pn = pr[i].value;
+                                        break;
+                                    case (pr[i].tag === 'lastname') :
+                                        ln = pr[i].value;
+                                        break;
                                 }
                             }
+                            description = val.worker.description === '' ? ln + ' ' + fn + ' ' + pn : val.worker.description;
                         }
                         let mark_as_unread = val.is_read_count === 1 ? "" : "info";
                         //let m = "<tr class='"+ mark_as_unread + "'>";
