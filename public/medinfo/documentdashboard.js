@@ -1088,9 +1088,12 @@ initdocumentstabs = function() {
                     let items = [];
                     $.each( data, function( key, val ) {
                         let worker = 'н/д';
-                        let description;
+                        let description = '';
                         let wtel = 'н/д';
                         let ctel = 'н/д';
+                        let fn = '';
+                        let pn = '';
+                        let ln = '';
                         if (val.worker !== null) {
                             let pr = val.worker.profiles;
                             for (let i = 0; i < pr.length; i++) {

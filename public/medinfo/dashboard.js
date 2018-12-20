@@ -252,11 +252,38 @@ function getLatestMessages() {
             let badge_count = 0;
             let m =  data.messages;
             for(let i=0; i < m.length; i++) {
+                let description = '';
+                let fn = '';
+                let pn = '';
+                let ln = '';
+                if (m[i].worker !== null) {
+                    let pr = m[i].worker.profiles;
+                    for (let i = 0; i < pr.length; i++) {
+                        switch (true) {
+                            case (pr[i].tag === 'tel' && pr[i].attribute === 'working') :
+                                wtel = pr[i].value;
+                                break;
+                            case (pr[i].tag === 'tel' && pr[i].attribute === 'cell') :
+                                ctel = pr[i].value;
+                                break;
+                            case (pr[i].tag === 'firstname') :
+                                fn = pr[i].value;
+                                break;
+                            case (pr[i].tag === 'patronym') :
+                                pn = pr[i].value;
+                                break;
+                            case (pr[i].tag === 'lastname') :
+                                ln = pr[i].value;
+                                break;
+                        }
+                    }
+                    description = m[i].worker.description === '' ? ln + ' ' + fn + ' ' + pn : m[i].worker.description;
+                }
                 //let mark = 'bg-info';
                 let mark = m[i].is_read_count === 1 ? "" : "bg-info";
                 let mpanel = $('<div class="row '+ mark +'" style="margin:0"></div>');
                 let mcontent = '<div class="col-md-1"><p class="text text-center"><i class="fa fa-comment-o fa-lg"></i></p></div>' +
-                    '<div class="col-md-11"><p class="text text-info small" style="margin: 0"><strong>' + m[i].worker.description + ': </strong>' + m[i].message +'</p></div>';
+                    '<div class="col-md-11"><p class="text text-info small" style="margin: 0"><strong>' + description + ': </strong>' + m[i].message +'</p></div>';
                 let dpanel = $('<div class="row '+ mark + '" style="margin:0; border-bottom-color:#00a7d0; border-bottom-style:dotted; border-bottom-width: 1px"></div>');
                 let dcontent = '<div class="col-md-1"></div>' +
                     '<div class="col-md-7"><p class="text small"><i class="fa fa-map-o"></i> ' +

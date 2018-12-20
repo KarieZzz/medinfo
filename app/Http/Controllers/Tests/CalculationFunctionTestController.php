@@ -69,8 +69,28 @@ class CalculationFunctionTestController extends Controller
         //$evaluator = \App\Medinfo\DSL\Evaluator::invoke($translator->parser->root, $translator->getProperties(), $document);
         $evaluator = \App\Medinfo\DSL\Evaluator::invoke($translator->parser->root, $props, $document);
         $evaluator->makeConsolidation();
-        dd($evaluator->calculationLog);
-        echo $evaluator->evaluate();
+        //dd($evaluator->calculationLog);
+        //echo $evaluator->evaluate();
+        foreach ($evaluator->calculationLog as &$el) {
+            $unit = \App\Unit::find($el['unit_id']);
+            $el['unit_name'] = $unit->unit_name;
+            $el['unit_code'] = $unit->unit_code;
+        }
+
+        $log_initial = collect($evaluator->calculationLog);
+        //$log_sorted = $log_initial->sortBy('unit_code');
+        $log_c_sorted = $log_initial->sortBy('unit_code');
+        //dd($log);
+        $log_sorted = [];
+        foreach ($log_c_sorted as $el ) {
+            $log_sorted[] = $el;
+        }
+        //dd($log_sorted);
+
+        //echo(json_encode($log->toArray()));
+        $log = json_encode($log_sorted);
+        echo $log;
+
     }
 
 }
