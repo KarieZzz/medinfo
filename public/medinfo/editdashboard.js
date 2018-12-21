@@ -1323,7 +1323,6 @@ let inittoolbarbuttons = function () {
         $("#ExcelUploadComment").show();
         excelUploadWindow.jqxWindow('open');
     });
-
     fsdropdown.jqxDropDownButton({width: 170, height: 22, theme: theme});
     fsdropdown.jqxDropDownButton('setContent', '<div style="margin-top: 3px">Управление разделами</div>');
     $("#FormSections").show();
@@ -1391,6 +1390,19 @@ let inittoolbarbuttons = function () {
             splitter.jqxSplitter('collapse');
         }
     });
+};
+
+let initConsolidateButton = function () {
+    $("#Сonsolidate").click(function () {
+        $.get('/admin/cons_by_rule_list/'+ doc_id +'/' + current_table, function( data ) {
+            if (typeof data.error !== 'undefined') {
+                raiseError(data.error);
+                return false;
+            }
+            raiseInfo("Произведен рассчет текущей таблицы");
+        });
+    });
+
 };
 
 /*let firefullscreenevent = function() {

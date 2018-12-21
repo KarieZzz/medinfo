@@ -100,6 +100,9 @@ class FunctionCompiler
             case 'юрлица' :
                 $units = \App\Unit::Legal()->get()->pluck('id')->toArray();
                 break;
+            case 'село' :
+                $units = \App\Unit::Country()->get()->pluck('id')->toArray();
+                break;
             default :
                 throw new \Exception("Статический список/группа '$staticlist' не существует");
         }

@@ -37,7 +37,8 @@ class UnitTree
 
     public static function getChildIds($parent)
     {
-        $units = Unit::Childs($parent)->get(['id']);
+        //$units = Unit::Childs($parent)->get(['id']);
+        $units = Unit::Childs($parent)->get();
         if (count($units) > 0 ) {
             foreach ($units as $unit) {
                 $units = $units->merge(self::getChildIds($unit->id));

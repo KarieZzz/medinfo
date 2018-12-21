@@ -127,5 +127,6 @@ initdatagrid();
 init_fc_extarbuttons();
 initextarbuttons();
 initExcelUpload();
+@yield('initTableConsolidateAction')
 //firefullscreenevent();
 </script>

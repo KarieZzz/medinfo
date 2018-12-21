@@ -74,6 +74,10 @@ class DocumentConsolidationController extends Controller
         $lists = [];
         $cell_affected = 0;
         $unitlist_empty = 0;
+        // если "пустой" список - выбираем все МО с текущего уровня
+        $lists[0] = UnitTree::getIds($document->ou_id)->whereIn('node_type', [3,4])->pluck('id')->toArray();
+        asort($lists[0]);
+        //dd($lists[0]);
         foreach ($rows as $r) {
             foreach($cols as $col) {
                 $units = [];
@@ -102,14 +106,11 @@ class DocumentConsolidationController extends Controller
                         }
                         if (count($units) > 0) {
                             $props['units'] = $units;
+
                         } else {
                             $unitlist_empty++;
-                            //$units = Unit::getPrimaryDescendants($document->ou_id);
-                            //$units = UnitTree::getIds($document->ou_id);
-                            $units = UnitTree::getIds(120);
-                            dd($units);
+                            $props['units'] = $lists[0];
                         }
-
                         $evaluator = \App\Medinfo\DSL\Evaluator::invoke($ptree, $props, $document);
                         $evaluator->makeConsolidation();
                         $value = $evaluator->evaluate();
@@ -117,12 +118,14 @@ class DocumentConsolidationController extends Controller
                             Cell::firstOrCreate(['doc_id' => $document->id, 'table_id' => $table->id, 'row_id' => $r->id, 'col_id' => $col->id, 'value' => $value]);
                             $cell_affected++;
                         }
+                        //dd($evaluator->calculationLog);
+                        ConsolidationRuleHelper::logConsolidation($evaluator->calculationLog, $document->id, $r->id, $col->id);
                     }
                 }
             }
         }
         //return ['consolidated' => true, 'cell_affected' => $cell_affected, 'cell_truncated' => $cell_truncated ];
-        dd( ['consolidated' => true, 'cell_affected' => $cell_affected, 'cell_truncated' => $cell_truncated ]);
+        dd( ['consolidated' => true, 'cell_affected' => $cell_affected, 'cell_truncated' => $cell_truncated, 'unitlist_empty' => $unitlist_empty ]);
     }
 
 }

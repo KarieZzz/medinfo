@@ -36,10 +36,17 @@ class ConsolidationRuleHelper
 
     public static function logConsolidation(array $calculationLog, int $doc_id, int $row_id, int $col_id)
     {
-        foreach ($calculationLog as &$el) {
+        //dump($calculationLog);
+/*        foreach ($calculationLog as &$el) {
             $unit = \App\Unit::find($el['unit_id']);
             $el['unit_name'] = $unit->unit_name;
             $el['unit_code'] = $unit->unit_code;
+            dump($el);
+        }*/
+        for ($i = 0; $i < count($calculationLog); $i++ ) {
+            $unit = \App\Unit::find($calculationLog[$i]['unit_id']);
+            $calculationLog[$i]['unit_name'] = $unit->unit_name;
+            $calculationLog[$i]['unit_code'] = $unit->unit_code;
         }
         $log_initial = collect($calculationLog);
         $log_c_sorted = $log_initial->sortBy('unit_code');

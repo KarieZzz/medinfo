@@ -31,7 +31,7 @@ class Unit extends Model
     {
         return $this->hasMany('App\UnitListMember', 'ou_id', 'id');
     }
-
+    // Выбор уровня "Все организации"
     public function scopeRoot($query)
     {
         return $query->where('id', 0);
@@ -41,24 +41,27 @@ class Unit extends Model
     {
         return $query->where('node_type', 2);
     }
-
     // Выбор Юрлиц
     public function scopeLegal($query)
     {
         return $query->where('node_type', 3);
     }
-
     // Выбор Обособленных подразделений
     public function scopeSubLegal($query)
     {
         return $query->where('node_type', 4);
     }
-
+    // Выбор медицинских подразделений
+    public function scopeMedicalUnits($query)
+    {
+        return $query->where('node_type', 3)->orWhere('node_type', 4);
+    }
+    // Выбор выделенных подразделений
     public function scopeSubDivision($query)
     {
         return $query->where('node_type', 5);
     }
-
+    // Выбор обособленных и выделенных подразделений
     public function scopeSubUnits($query)
     {
         return $query->where('node_type', 4)->orWhere('node_type', 5);
@@ -69,8 +72,12 @@ class Unit extends Model
     {
         return $query->where('node_type', 6);
     }
-
-    // Все подразделения с первичными отчетами
+    // Выбор медицинских училищ
+    public function scopeColleges($query)
+    {
+        return $query->where('node_type', 7);
+    }
+    // Все подразделений с первичными отчетами за исключением медицинских училищ
     public function scopePrimary($query)
     {
         return $query->where('node_type', 3)->orWhere('node_type', 4)->orWhere('node_type', 6);

@@ -28,7 +28,6 @@
                         <button class="btn btn-default navbar-btn" id="tableExcelImport" title="Импорт данных таблицы из MS Excel" style="display: none">
                             <span class='fa fa-upload fa-lg' ></span>
                             <span class='fa fa-file-excel-o fa-lg' ></span>
-
                         </button>
                         <div class="btn-group" @if (count($formsections) === 0) style="display: none" @endif>
                             <div id="SectionsManager" class="btn btn-default">
@@ -73,6 +72,7 @@
                                 </div>
                             </div>
                         </div>
+                        @yield('tableConsolidateButton')
                         <form class="navbar-form navbar-right">
                             <div class="input-group">
                                 <input type="text" class="form-control" id="SearchField" placeholder="Поиск строки">
@@ -131,6 +131,5 @@
                     @yield('additionalTabDiv')
                 </div>
             </div>
-
     </div>
 </div>
