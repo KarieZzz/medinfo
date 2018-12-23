@@ -128,7 +128,7 @@ class TableEditing
         return $fortable;
     }
 
-    public static function tableRender(Table $table, $columntype = 'textbox')
+    public static function tableRender(Table $table, $columntype = 'textbox', $hiderowid = true)
     {
         if (!$table) {
             return [];
@@ -142,6 +142,7 @@ class TableEditing
             'dataField' => 'id',
             'width' => 50,
             'cellsalign' => 'left',
+            'hidden' => $hiderowid,
             'pinned' => true
         );
         $column_groups_arr = array();

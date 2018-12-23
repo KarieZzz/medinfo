@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row" style="margin:0;padding:0">
     <div class="col-md-2"><h4 class="text-right">Выберите форму и таблицу</h4></div>
     <div class="col-md-4">
         <form style="margin-top: 3px" class="form-inline">
@@ -14,5 +14,5 @@
             </div>
         </form>
     </div>
-    <div class="col-md-6 text-nowrap"><h5 id="tableProperties"></h5></div>
+    <div class="col-md-6"><h5 id="tableProperties" class="text small"></h5></div>
 </div>

@@ -4,8 +4,8 @@ function updateRelated() {
     listinput.val('');
     selectionlog.html('');
     grid.jqxGrid({
-        width: '98%',
-        height: 780,
+        width: '100%',
+        height: 700,
         editable: false,
         selectionmode: 'multiplecellsadvanced',
         localization: localize()
@@ -113,12 +113,12 @@ function fetchcells() {
     upper_left.colindex = grid.jqxGrid('getcolumnproperty', selected[0].colid, 'text');
     //console.log(selected);
     if (selected_count === 1) {
-        selectionlog.html('Выделена ячейка: строка ' + upper_left.rowcode + '. графа ' + upper_left.colindex);
+        selectionlog.html('<h5 class="text-info small">Выделена ячейка: строка ' + upper_left.rowcode + '. графа ' + upper_left.colindex + '</h5>');
     } else if (selected_count > 1) {
         down_right.value = grid.jqxGrid('getcellvaluebyid', selected[selected_count - 1].rowid, selected[selected_count - 1].colid);
         down_right.rowcode = grid.jqxGrid('getcellvaluebyid', selected[selected_count - 1].rowid, current_row_number_datafield);
         down_right.colindex = grid.jqxGrid('getcolumnproperty', selected[selected_count - 1].colid, 'text');
-        selectionlog.html('Выделен диапазон: С' + upper_left.rowcode + 'Г' + upper_left.colindex + ':С' + down_right.rowcode + 'Г' + down_right.colindex );
+        selectionlog.html('<h5 class="text-info small">Выделен диапазон: С' + upper_left.rowcode + 'Г' + upper_left.colindex + ':С' + down_right.rowcode + 'Г' + down_right.colindex + '</h5>');
     }
 
     $.get(getscripts_url + '/' + selected[0].rowid + '/' + selected[0].colid, function (data) {
@@ -162,7 +162,7 @@ let initactions = function() {
                 if (typeof data.error !== 'undefined') {
                     raiseError(data.message);
                 } else {
-                    raiseInfo(data.message);
+                    raiseInfo("Правило расчета сохранено. Затронуто ячеек " + data.affected_cells);
                 }
                 grid.jqxGrid('updatebounddata', 'data');
                 //grid.on("bindingcomplete", function (event) { });
