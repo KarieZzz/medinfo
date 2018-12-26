@@ -112,7 +112,9 @@ class DocumentConsolidationController extends Controller
                             $props['units'] = $lists[0];
                         }
                         $evaluator = \App\Medinfo\DSL\Evaluator::invoke($ptree, $props, $document);
+
                         $evaluator->makeConsolidation();
+                        dump($evaluator);
                         $value = $evaluator->evaluate();
                         if ($value) {
                             Cell::firstOrCreate(['doc_id' => $document->id, 'table_id' => $table->id, 'row_id' => $r->id, 'col_id' => $col->id, 'value' => $value]);

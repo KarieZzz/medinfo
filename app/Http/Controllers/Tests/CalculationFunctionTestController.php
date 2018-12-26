@@ -44,8 +44,8 @@ class CalculationFunctionTestController extends Controller
 
     public function calculation()
     {
-        $rule = "расчет(Ф30Т2100С1Г3-Ф30Т2100С86Г3-Ф30Т2100С87Г3-Ф30Т2100С89Г3-Ф30Т2100С90Г3)"; //
-        $list = "село, ~юл";
+        $rule = "расчет(Ф30Т1001С3Г4+Ф30Т1001С13Г4+Ф30Т1001С19Г4+Ф30Т1001С28Г4+Ф30Т1001С88Г4+Ф30Т1001С90Г4+Ф30Т1001С133Г4+Ф30Т1001С134Г4)"; //
+        $list = "юл, ~село";
         $table = 2; // форма 47 таблица 0100
         $document = \App\Document::find(19251);
         $trimed = preg_replace('/,+\s+/u', ' ', $list);

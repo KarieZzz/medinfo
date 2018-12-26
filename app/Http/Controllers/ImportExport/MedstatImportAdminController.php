@@ -53,7 +53,7 @@ class MedstatImportAdminController extends Controller
         echo "В загружено в систему ". $i . " записей <br>";
 
         $ucodes = \App\MedstatUpload::groupby(['id', 'A2'])->distinct()->get(['A2']);
-        echo "В выгрузке приведно три учреждения/территории: <br>";
+        echo "В выгрузке приведено три учреждения/территории: <br>";
         foreach ($ucodes as $ucode) {
             echo $ucode->A2 . '<br>';
         }
