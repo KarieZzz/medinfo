@@ -116,8 +116,7 @@ class DocumentConsolidationController extends Controller
                 }
             }
         }
-        //return ['consolidated' => true, 'cell_affected' => $cell_affected, 'cell_truncated' => $cell_truncated ];
-        dd( ['consolidated' => true, 'cell_affected' => $cell_affected, 'cell_truncated' => $cell_truncated, 'unitlist_empty' => $unitlist_empty ]);
+        return ['consolidated' => true, 'cell_affected' => $cell_affected, 'cell_truncated' => $cell_truncated ];
     }
 
 }

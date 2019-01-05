@@ -1394,12 +1394,15 @@ let inittoolbarbuttons = function () {
 
 let initConsolidateButton = function () {
     $("#Сonsolidate").click(function () {
+        $("#CalculationProgress").show();
         $.get('/admin/cons_by_rule_list/'+ doc_id +'/' + current_table, function( data ) {
             if (typeof data.error !== 'undefined') {
                 raiseError(data.error);
                 return false;
             }
             raiseInfo("Произведен рассчет текущей таблицы");
+            dgrid.jqxGrid('updatebounddata');
+            $("#CalculationProgress").hide();
         });
     });
 

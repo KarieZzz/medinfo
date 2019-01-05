@@ -41,10 +41,6 @@ class ValueCountEvaluator extends CalculationFunctionEvaluator
 
     public function evaluate()
     {
-        //dd($this->arguments[1]);
-        //$result = $this->evaluateSubtree($this->arguments[1]);
-        //dd($result);
-        //return count($this->properties['units']);
         return $this->calculatedValue;
     }
 

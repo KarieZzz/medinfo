@@ -32,6 +32,8 @@
 @section('tableConsolidateButton')
     {{-- Кнопка для запуска консолидации текущей таблицы --}}
     <button class="btn btn-default navbar-btn" id="Сonsolidate" title="Расчет таблицы">Расчет таблицы</button>
+    {{-- Плесхолдер отображения процесса рассчета --}}
+    <div id="CalculationProgress" class="btn-group" style="display: none">Производится рассчет таблицы ...</div>
 @endsection
 
 @section('initTableConsolidateAction')
@@ -59,7 +61,7 @@ initConsolidateButton();
 
 @push('loadjsscripts')
 @include('jqxdatainput.jsstack')
-    <script src="{{ asset('/medinfo/editdashboard.js?v=184') }}"></script>
+    <script src="{{ asset('/medinfo/editdashboard.js?v=186') }}"></script>
 @endpush('loadjsscripts')
 
 @section('inlinejs')
