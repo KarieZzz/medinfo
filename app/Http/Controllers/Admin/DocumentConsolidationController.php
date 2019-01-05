@@ -93,28 +93,18 @@ class DocumentConsolidationController extends Controller
                     }
                     $rule_using = ConsUseRule::OfRC($r->id, $col->id)->first();
                     if (!is_null($rule_using)) {
-                        //$script = ConsolidationCalcrule::find($rule_using->script);
-                        //dd($rule_using->rulescript);
                         if (array_key_exists($rule_using->script, $scripts)) {
-                            $ptree = $scripts[$rule_using->script]['ptree'];
-                            $props = $scripts[$rule_using->script]['props'];
+                            $evaluator = $scripts[$rule_using->script]['evaluator'];
+                            $evaluator->setUnitList([]);
                         } else {
                             $ptree = unserialize(base64_decode($rule_using->rulescript->ptree));
                             $props = json_decode($rule_using->rulescript->properties, true);
-                            $scripts[$rule_using->script]['ptree'] = $ptree;
-                            $scripts[$rule_using->script]['props'] = $props;
+                            $evaluator = \App\Medinfo\DSL\Evaluator::invoke($ptree, $props, $document);
+                            $scripts[$rule_using->script]['evaluator'] = $evaluator;
                         }
-                        if (count($units) > 0) {
-                            $props['units'] = $units;
-
-                        } else {
-                            $unitlist_empty++;
-                            $props['units'] = $lists[0];
-                        }
-                        $evaluator = \App\Medinfo\DSL\Evaluator::invoke($ptree, $props, $document);
-
+                        $evaluator->setUnitList($units);
+                        $evaluator->clearCalculationLog();
                         $evaluator->makeConsolidation();
-                        dump($evaluator);
                         $value = $evaluator->evaluate();
                         if ($value) {
                             Cell::firstOrCreate(['doc_id' => $document->id, 'table_id' => $table->id, 'row_id' => $r->id, 'col_id' => $col->id, 'value' => $value]);

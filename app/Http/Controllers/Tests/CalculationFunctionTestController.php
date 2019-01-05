@@ -90,7 +90,56 @@ class CalculationFunctionTestController extends Controller
         //echo(json_encode($log->toArray()));
         $log = json_encode($log_sorted);
         echo $log;
+    }
 
+    public function valuecount()
+    {
+        $rule = "счетзнач(Ф30Т1001С3Г4+Ф30Т1001С13Г4+Ф30Т1001С19Г4+Ф30Т1001С28Г4+Ф30Т1001С88Г4+Ф30Т1001С90Г4+Ф30Т1001С133Г4+Ф30Т1001С134Г4)"; //
+        $list = "областные_больницы";
+        $table = 2; // форма 47 таблица 0100
+        $document = \App\Document::find(19251);
+        $trimed = preg_replace('/,+\s+/u', ' ', $list);
+        $lists = array_unique(array_filter(explode(' ', $trimed)));
+        $units = \App\Medinfo\DSL\FunctionCompiler::compileUnitList($lists);
+        asort($units);
+        $prop = '[' . implode(',', $units) . ']';
+
+        $lexer = new \App\Medinfo\DSL\ControlFunctionLexer($rule);
+        $tockenstack = $lexer->getTokenStack();
+        $parser = new \App\Medinfo\DSL\ControlFunctionParser($tockenstack);
+        $parser->func();
+        $translator = \App\Medinfo\DSL\Translator::invoke($parser, Table::find($table));
+        //$translator->setUnits($units);
+        $translator->prepareIteration();
+        //dd($translator);
+        //dd($translator->getProperties());
+        $props = $translator->getProperties();
+        $props['units'] = $units;
+        //dd($props);
+        //$evaluator = \App\Medinfo\DSL\Evaluator::invoke($translator->parser->root, $translator->getProperties(), $document);
+        $evaluator = \App\Medinfo\DSL\Evaluator::invoke($translator->parser->root, $props, $document);
+        $evaluator->makeConsolidation();
+        //dd($evaluator->calculationLog);
+        //echo $evaluator->evaluate();
+        foreach ($evaluator->calculationLog as &$el) {
+            $unit = \App\Unit::find($el['unit_id']);
+            $el['unit_name'] = $unit->unit_name;
+            $el['unit_code'] = $unit->unit_code;
+        }
+
+        $log_initial = collect($evaluator->calculationLog);
+        //$log_sorted = $log_initial->sortBy('unit_code');
+        $log_c_sorted = $log_initial->sortBy('unit_code');
+        //dd($log);
+        $log_sorted = [];
+        foreach ($log_c_sorted as $el ) {
+            $log_sorted[] = $el;
+        }
+        //dd($log_sorted);
+
+        //echo(json_encode($log->toArray()));
+        $log = json_encode($log_sorted);
+        echo $log;
     }
 
 }

@@ -36,7 +36,19 @@ class CalculationFunctionEvaluator
         $this->iterations = $this->properties['iterations'];
     }
 
+    public function setUnitList(array $units)
+    {
+        $this->properties['units'] = $units;
+    }
+
+    public function clearCalculationLog()
+    {
+        $this->calculationLog = [];
+    }
+
     public function setArguments() { }
+
+    public function makeConsolidation() { }
 
     public function evaluate()
     {

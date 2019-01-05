@@ -1503,7 +1503,7 @@ initpopupwindows = function() {
         let rowdata = dgrid.jqxGrid('getrowdata', rowindex);
         let oldstate = rowdata.state;
         let row_id = dgrid.jqxGrid('getrowid', rowindex);
-        let message = $("#statusChangeMessage").val();
+        let message = encodeURIComponent($("#statusChangeMessage").val());
         let radiostates = $('.stateradio');
         let selected_state;
         radiostates.each(function() {
@@ -1561,7 +1561,7 @@ initpopupwindows = function() {
         let rowindex = dgrid.jqxGrid('getselectedrowindex');
         let rowdata = dgrid.jqxGrid('getrowdata', rowindex);
         let row_id = dgrid.jqxGrid('getrowid', rowindex);
-        let message = $("#message").val();
+        let message = encodeURIComponent($("#message").val());
         message = message.trim();
         if (message.length === 0) {
             return false;

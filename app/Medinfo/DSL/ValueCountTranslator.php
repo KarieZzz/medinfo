@@ -10,7 +10,7 @@ namespace App\Medinfo\DSL;
 
 use App\UnitList;
 
-class UnitCountTranslator extends ControlPtreeTranslator
+class ValueCountTranslator extends ControlPtreeTranslator
 {
 /*    public function parseGroupScopes()
     {

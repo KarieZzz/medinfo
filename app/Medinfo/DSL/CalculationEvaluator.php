@@ -18,6 +18,8 @@ class CalculationEvaluator extends CalculationFunctionEvaluator
 
     public function makeConsolidation()
     {
+        $this->calculatedValue = 0;
+        $this->clearCalculationLog();
         $period_id = $this->document->period_id;
         $this->prepareCAstack();
         foreach ($this->properties['units'] as $ou_id) {
@@ -32,9 +34,6 @@ class CalculationEvaluator extends CalculationFunctionEvaluator
             $this->logIteration($ou_id, $unitValue);
             $this->calculatedValue += $unitValue;
         }
-
-        //dd($this);
-
     }
 
     public function evaluate()

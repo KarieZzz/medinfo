@@ -360,6 +360,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('tests/calculation', 'Tests\LexerParserController@testCalculation'); // "Старый" вариант рассчета
     Route::get('tests/calc_mocount', 'Tests\CalculationFunctionTestController@mocount'); // "Новый" вариант рассчета для консолидации
     Route::get('tests/calc_value', 'Tests\CalculationFunctionTestController@calculation'); // "Новый" вариант рассчета для консолидации
+    Route::get('tests/calc_valuecount', 'Tests\CalculationFunctionTestController@valuecount'); // "Новый" вариант рассчета для консолидации
     Route::get('tests/vector', 'Tests\VectorTestController@index');
     // тестирование функций контроля
     Route::get('tests/sectioncheck', 'Tests\SectionCheckTestController@SectionCheckTest');

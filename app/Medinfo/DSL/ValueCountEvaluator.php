@@ -18,8 +18,11 @@ class ValueCountEvaluator extends CalculationFunctionEvaluator
 
     public function makeConsolidation()
     {
+        $this->calculatedValue = 0;
+        $this->clearCalculationLog();
         $period_id = $this->document->period_id;
         $this->prepareCAstack();
+        //dd($this->properties);
         foreach ($this->properties['units'] as $ou_id) {
             foreach ($this->iterations[0] as &$cell_adress) {
                 $document = \App\Document::Primary()->OfUPF($ou_id, $period_id, $cell_adress['ids']['f'])->first();
@@ -29,13 +32,11 @@ class ValueCountEvaluator extends CalculationFunctionEvaluator
             }
             $cells = $this->convertCANodes($this->iterations[0]);
             $calculated = $this->evaluateSubtree($this->arguments[1]);
+            $this->logIteration($ou_id, $calculated);
             if ($calculated > 0) {
                 $this->calculatedValue++;
             }
         }
-
-        //dd($this);
-
     }
 
     public function evaluate()

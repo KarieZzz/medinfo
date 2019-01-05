@@ -113,8 +113,8 @@ class FunctionDispatcher
         'кратность'     => ['subfunction|required|diapazon|iterator', 'factor|required'],
         //'счетмо'        => ['subfunction|required|unitlist', 'bool'],
         'счетмо'        => ['bool'],
-        'расчет'        => ['expression|required', 'subfunction|unitlist'],
-        'счетзнач'      => ['expression|required', 'subfunction|unitlist'],
+        'расчет'        => ['expression|required'],
+        'счетзнач'      => ['expression|required'],
         'мпдиапазон'    => ['subfunction|required|diapazon|iterator', 'boolean|required', 'subfunction|группы', 'factor'],
         'разрез'        => ['factor|required', 'factor|required','boolean|required'],
     ];

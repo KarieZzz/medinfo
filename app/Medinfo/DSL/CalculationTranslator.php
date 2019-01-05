@@ -12,7 +12,7 @@ namespace App\Medinfo\DSL;
 class CalculationTranslator extends ControlPtreeTranslator
 {
 
-    public function parseGroupScopes()
+/*    public function parseGroupScopes()
     {
         $includes = [];
         $includes_w_sub = [];
@@ -49,5 +49,5 @@ class CalculationTranslator extends ControlPtreeTranslator
             //$this->units = array_diff($includes, $excludes);
             $this->units = array_diff($includes_w_sub, $excludes_w_sub);
         }
-    }
+    }*/
 }
