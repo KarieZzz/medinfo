@@ -20,6 +20,16 @@
             <span class="text-right text-info pull-right" id="rp-open" title="Открыть боковую панель"><i style="font-size: 1.5em" class="fa fa-align-justify"></i></span>
         </a>
     </li>
+    <li class="dropdown pull-right">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" title="Дополнительные действия">
+            <i class="fa fa-ellipsis-v fa-lg text-info"></i> <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+            <li><a href="#" id="openSendMessageWindow"><span class="fa fa-commenting-o"></span> Сообщение</a></li>
+            <li><a href="#"><span class="fa fa-check-circle-o"></span> Смена статуса</a></li>
+            <li><a href="#"><span class="fa fa-info-circle"></span> Информация</a></li>
+        </ul>
+    </li>
 @endsection
 
 @section('headertitle', 'Просмотр/редактирование первичного отчетного документа')
@@ -27,6 +37,7 @@
 @section('content')
     @include('jqxdatainput.formeditsplitter')
     @include('jqxdatainput.excelimport')
+    @include('jqxdatainput.windows')
 @endsection
 
 @push('loadcss')
@@ -34,7 +45,7 @@
 @endpush('loadcss')
 
 @push('loadjsscripts')
-    <script src="{{ asset('/medinfo/editdashboard.js?v=181') }}"></script>
+    <script src="{{ asset('/medinfo/editdashboard.js?v=184') }}"></script>
 @endpush('loadjsscripts')
 
 @section('inlinejs')

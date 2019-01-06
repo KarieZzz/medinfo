@@ -33,7 +33,7 @@
     {{-- Кнопка для запуска консолидации текущей таблицы --}}
     <button class="btn btn-default navbar-btn" id="Сonsolidate" title="Расчет таблицы">Расчет таблицы</button>
     {{-- Плесхолдер отображения процесса рассчета --}}
-    <div id="CalculationProgress" class="btn-group" style="display: none">Производится рассчет таблицы ...</div>
+    <div id="CalculationProgress" class="btn-group" style="display: none">Производится рассчет таблицы <img src='/jqwidgets/styles/images/loader-small.gif' /></div>
 @endsection
 
 @section('initTableConsolidateAction')

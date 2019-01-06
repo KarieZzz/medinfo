@@ -7,7 +7,7 @@ let docmessages_url = 'datainput/fetchmessages?';
 let docinfo_url = 'datainput/fetchdocinfo/';
 let changestate_url = 'datainput/changestate';
 let changeaudition_url = 'datainput/changeaudition';
-let docmessagesend_url = 'datainput/sendmessage';
+//let docmessagesend_url = 'datainput/sendmessage';
 let docauditions_url = 'datainput/fetchauditions?';
 let aggrsource_url = 'datainput/fetchaggregates?';
 let edit_form_url = 'datainput/formdashboard';
@@ -37,6 +37,7 @@ let statusDropDown = $('#statusSelector');
 let dataPresenseDDown = $('#dataPresenceSelector');
 let stateWindow = $('#changeStateWindow');
 let docinfoWindow = $('#DocumentInfoWindow');
+let doc_id;
 let current_document_form_code;
 let current_document_form_name;
 let current_document_ou_name;
@@ -1057,6 +1058,7 @@ initdocumentstabs = function() {
             return false;
         }
         let murl = docmessages_url + 'document=' + row.id;
+        doc_id = row.id;
         current_document_form_code = row.form_code;
         current_document_form_name = row.form_name;
         current_document_ou_name = row.unit_name;
@@ -1460,8 +1462,8 @@ initauditionproperties = function() {
 initpopupwindows = function() {
     let clState = $("#CancelStateChanging");
     let svState = $("#SaveState");
-    let clMessage = $("#CancelMessage");
-    let sendMessage = $("#SendMessage");
+    //let clMessage = $("#CancelMessage");
+    //let sendMessage = $("#SendMessage");
     stateWindow.jqxWindow({
         width: 530,
         height: 480,
@@ -1553,7 +1555,7 @@ initpopupwindows = function() {
         });
     });
 
-// Комментирование документа/отправка сообщения к документу
+/*// Комментирование документа/отправка сообщения к документу
     $('#message').jqxTextArea({ placeHolder: 'Оставьте свой комментарий к выбранному документу', height: 150, width: 400, minLength: 1 });
     clMessage.jqxButton({ theme: theme });
     sendMessage.jqxButton({ theme: theme });
@@ -1591,7 +1593,7 @@ initpopupwindows = function() {
         autoOpen: false,
         cancelButton: clMessage,
         theme: theme
-    });
+    });*/
 };
 // Инициализация окна с информацией о документе (последние исправления, смены статуса, принятие разделов документа)
 initdocinfowindow = function() {
@@ -1806,4 +1808,10 @@ function getAncestors(id) {
     };
     traversAncestors(current.parent);
     return ancestors;
+}
+
+function postMessageSendActions(document) {
+    //let rowindex = agrid.jqxGrid('getselectedrowindex');
+    let rowindex = dgrid.jqxGrid('getrowboundindexbyid', document);
+    dgrid.jqxGrid('selectrow', rowindex);
 }
