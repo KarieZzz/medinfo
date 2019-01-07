@@ -329,60 +329,57 @@ function markAllAsRead() {
 }
 // Комментирование документа/отправка сообщения к документу
 function initSendMessage() {
-    let clMessage = $("#CancelMessage");
-    let sendMessage = $("#SendMessage");
-    let message_input = $("#openSendMessageWindow");
-    let docmessagesend_url = '/datainput/sendmessage';
-    $('#message').jqxTextArea({ placeHolder: 'Оставьте свой комментарий к выбранному документу', height: 150, width: 400, minLength: 1 });
-    clMessage.jqxButton({ theme: theme });
-    sendMessage.jqxButton({ theme: theme });
-    sendMessage.click(function () {
-        //let rowindex = dgrid.jqxGrid('getselectedrowindex');
-        //let rowdata = dgrid.jqxGrid('getrowdata', rowindex);
-        //let row_id = dgrid.jqxGrid('getrowid', rowindex);
-        let message = encodeURIComponent($("#message").val());
-        message = message.trim();
-        if (message.length === 0) {
-            return false;
-        }
-        let data = "&document=" + doc_id + "&message=" + message;
-        $.ajax({
-            dataType: 'json',
-            url: docmessagesend_url,
-            method: "POST",
-            data: data,
-            success: function (data, status, xhr) {
-                let m = '';
-                if (data.message_sent === true) {
-                    raiseInfo("Сообщение отправлено");
-                    if (typeof (postMessageSendActions) === 'function') {
-                        postMessageSendActions(doc_id);
+    let sm = $("#sendMessageWindow");
+    if (sm.length) {
+        let clMessage = $("#CancelMessage");
+        let sendMessage = $("#SendMessage");
+        let message_input = $("#openSendMessageWindow");
+        let docmessagesend_url = '/datainput/sendmessage';
+        $('#message').jqxTextArea({ placeHolder: 'Оставьте свой комментарий к выбранному документу', height: 150, width: 400, minLength: 1 });
+        clMessage.jqxButton({ theme: theme });
+        sendMessage.jqxButton({ theme: theme });
+        sendMessage.click(function () {
+            //let rowindex = dgrid.jqxGrid('getselectedrowindex');
+            //let rowdata = dgrid.jqxGrid('getrowdata', rowindex);
+            //let row_id = dgrid.jqxGrid('getrowid', rowindex);
+            let message = encodeURIComponent($("#message").val());
+            message = message.trim();
+            if (message.length === 0) {
+                return false;
+            }
+            let data = "&document=" + doc_id + "&message=" + message;
+            $.ajax({
+                dataType: 'json',
+                url: docmessagesend_url,
+                method: "POST",
+                data: data,
+                success: function (data, status, xhr) {
+                    let m = '';
+                    if (data.message_sent === true) {
+                        raiseInfo("Сообщение отправлено");
+                        if (typeof (postMessageSendActions) === 'function') {
+                            postMessageSendActions(doc_id);
+                        }
                     }
-                }
-            },
-            error: xhrErrorNotificationHandler
+                },
+                error: xhrErrorNotificationHandler
+            });
+            sm.jqxWindow('hide');
         });
-        $("#sendMessageWindow").jqxWindow('hide');
-    });
-    $("#sendMessageWindow").jqxWindow({
-        width: 430,
-        height: 260,
-        resizable: false,
-        isModal: true,
-        autoOpen: false,
-        cancelButton: clMessage,
-        theme: theme
-    });
-    message_input.click(function () {
-        let sm = $("#sendMessageWindow");
-        //let rowindex = dgrid.jqxGrid('getselectedrowindex');
-        //if (rowindex === -1) {
-          //  return false;
-        //}
-        $("#message").val("");
-        //let offset = dgrid.offset();
-        //sm.jqxWindow({ position: { x: parseInt(offset.left) + 100, y: parseInt(offset.top) + 100 } });
-        sm.jqxWindow('open');
-    });
+        sm.jqxWindow({
+            width: 430,
+            height: 260,
+            resizable: false,
+            isModal: true,
+            autoOpen: false,
+            cancelButton: clMessage,
+            theme: theme
+        });
+        message_input.click(function () {
+            $("#message").val("");
+            sm.jqxWindow('open');
+        });
+    }
+
 }
 
