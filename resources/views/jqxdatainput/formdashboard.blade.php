@@ -26,8 +26,8 @@
         </a>
         <ul class="dropdown-menu">
             <li><a href="#" id="openSendMessageWindow"><span class="fa fa-commenting-o"></span> Сообщение</a></li>
-            <li><a href="#"><span class="fa fa-check-circle-o"></span> Смена статуса</a></li>
-            <li><a href="#"><span class="fa fa-info-circle"></span> Информация</a></li>
+           {{-- <li><a href="#"><span class="fa fa-check-circle-o"></span> Смена статуса</a></li>
+            <li><a href="#"><span class="fa fa-info-circle"></span> Информация</a></li>--}}
         </ul>
     </li>
 @endsection
