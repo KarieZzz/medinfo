@@ -159,7 +159,7 @@ class DocumentTree
             $scopes = isset($this->scopes['u']) ? $this->scopes['u'] : '' ;
             $scopes .= isset($this->scopes['m']) ? $this->scopes['m'] : '' ;
             $scopes .= " {$this->scopes['t']} {$this->scopes['f']} {$this->scopes['p']} {$this->scopes['s']} ";
-            $doc_query = "SELECT d.id, d.ou_id, u.unit_code, u.unit_name, f.form_code,
+            $doc_query = "SELECT d.id, d.ou_id, d.state stateid, u.unit_code, u.unit_name, f.form_code,
               f.form_name, s.name state, m.name monitoring, p.name period, al.album_name album, t.name doctype, a.protected,
               CASE WHEN (SELECT sum(v.value) FROM statdata v where d.id = v.doc_id) > 0 THEN 1 ELSE 0 END filled
               FROM documents d
@@ -178,7 +178,7 @@ class DocumentTree
             //echo $doc_query;
             $this->documents = DB::select($doc_query);
             if ($this->filter_mode == 2 ) {
-                $group_doc_query = "SELECT d.id, d.ou_id, u.slug unit_code, u.name unit_name, f.form_code,
+                $group_doc_query = "SELECT d.id, d.ou_id, d.state stateid, u.slug unit_code, u.name unit_name, f.form_code,
                   f.form_name, s.name state, m.name monitoring, p.name period, al.album_name album, t.name doctype, a.protected,
                   CASE WHEN (SELECT sum(v.value) FROM statdata v where d.id = v.doc_id) > 0 THEN 1 ELSE 0 END filled
                   FROM documents d

@@ -50,6 +50,7 @@ class DashboardController extends Controller
             //$editpermission = $this->isEditPermission($worker->permission, $document->state);
             $editpermission = TableEditing::isEditPermission($worker->permission, $document->state);
         }
+        $disabled_states = config('medinfo.disabled_states.' . $worker->role);
         $editpermission ? $editmode = 'Редактирование' : $editmode = 'Только чтение';
         $period = Period::find($document->period_id);
         $editedtables = Table::editedTables($document->id, $album->id);
@@ -62,7 +63,7 @@ class DashboardController extends Controller
         return view($this->dashboardView(), compact(
             'current_unit', 'document', 'worker', 'album', 'statelabel', 'editpermission', 'editmode', 'monitoring',
             'form', 'period', 'editedtables', 'noteditablecells', 'forformtable', 'renderingtabledata',
-            'laststate', 'formsections'
+            'laststate', 'formsections', 'disabled_states'
         ));
     }
 

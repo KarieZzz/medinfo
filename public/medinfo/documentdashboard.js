@@ -35,14 +35,14 @@ let groups = $('#moSelectorByGroups');
 let periodDropDown = $('#periodSelector');
 let statusDropDown = $('#statusSelector');
 let dataPresenseDDown = $('#dataPresenceSelector');
-let stateWindow = $('#changeStateWindow');
 let docinfoWindow = $('#DocumentInfoWindow');
 let doc_id;
+let docstate_id;
 let current_document_form_code;
 let current_document_form_name;
 let current_document_ou_name;
-let current_document_state;
-let currentlet_document_audits = [];
+let doc_state;
+//let currentlet_document_audits = [];
 let statelabels =
     {
         performed: 'Выполняется',
@@ -52,7 +52,7 @@ let statelabels =
         declined: 'Возвращен на доработку',
         approved: 'Утвержден'
     };
-let stateIds =
+/*let stateIds =
     {
         'Выполняется' : 'performed',
         'Подготовлен к предварительной проверке' : 'inadvance',
@@ -60,14 +60,13 @@ let stateIds =
         'Принят' : 'accepted',
         'Возвращен на доработку' : 'declined',
         'Утвержден' : 'approved'
-    };
-
-let audit_state_ids =
+    };*/
+/*let audit_state_ids =
     {
         noaudit: 1,
         audit_correct: 2,
         audit_incorrect: 3
-    };
+    };*/
 // Установка разбивки окна на области
 initSplitters = function () {
     $("#mainSplitter").jqxSplitter(
@@ -358,7 +357,7 @@ renderdoctoolbar = function (toolbar) {
     let searchField = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='searchField' type='text' style='height: 27px; float: left; width: 150px;' />");
     let clearfilters = $("<input id='clearfilters' type='button' value='Очистить фильтр'/>");
     //let audit = $("<input id='ChangeAudutStatus' type='button' value='Проверка отчета' />");
-    let statewindow = $("#changeAuditStateWindow");
+    //let statewindow = $("#changeAuditStateWindow");
 /*    if (audit_permission) {
         audit.click(function () {
             let rowindex = dgrid.jqxGrid('getselectedrowindex');
@@ -401,7 +400,7 @@ renderdoctoolbar = function (toolbar) {
     let message_input = $("<i style='margin-left: 2px;height: 14px' class='fa fa-commenting-o fa-lg' title='Сообщение/комментарий к документу'></i>");
     let doc_info = $("<i style='margin-left: 2px;height: 14px' class='fa fa-info fa-lg' title='Информация о документе'></i>");
     let refresh_list = $("<i style='margin-left: 2px;height: 14px' class='fa fa-refresh fa-lg' title='Обновить список'></i>");
-    let changestatus = $("<input id='ChangeStatus' type='button' value='Статус отчета' />");
+    let changestatus = $("<input id='openChangeStateWindow' type='button' value='Статус отчета' />");
     let records = $('<span class="text-info pull-right" style="margin: 5px"> документов: <span id="totalrecords">'+ dgridDataAdapter.totalrecords +'</span></span>');
 
     toolbar.append(container);
@@ -460,14 +459,15 @@ renderdoctoolbar = function (toolbar) {
         }
     });
     changestatus.click(function () {
+        let stateWindow = $('#changeStateWindow');
         let rowindex = dgrid.jqxGrid('getselectedrowindex');
         //let alert_message;
         let this_document_state = '';
         if (rowindex === -1 && typeof rowindex !== 'undefined') {
             return false;
         }
-        let offset = dgrid.offset();
-        stateWindow.jqxWindow({ position: { x: parseInt(offset.left) + 100, y: parseInt(offset.top) + 100 } });
+        //let offset = dgrid.offset();
+        //stateWindow.jqxWindow({ position: { x: parseInt(offset.left) + 100, y: parseInt(offset.top) + 100 } });
         let data = dgrid.jqxGrid('getrowdata', rowindex);
         if (!data.filled && current_user_role === '1') {
             raiseError('Внимание! Документ не содержит данные. Необходимо, В ОБЯЗАТЕЛЬНОМ ПОРЯДКЕ, пояснить в сообщении по какой причине!');
@@ -486,8 +486,6 @@ renderdoctoolbar = function (toolbar) {
                 this_document_state = state;
             }
         });
-        //console.log(current_user_role === '1' && this_document_state === 'inadvance');
-        //console.log(data.state);
         $('#changeStateFormCode').html(data.form_code);
         $('#changeStateMOCode').html(data.unit_code);
         if (current_user_role === '1' && this_document_state !== 'performed' && this_document_state !== 'inadvance' && this_document_state !== 'declined') {
@@ -519,8 +517,6 @@ renderdoctoolbar = function (toolbar) {
             return false;
         }
         $("#message").val("");
-        let offset = dgrid.offset();
-        sm.jqxWindow({ position: { x: parseInt(offset.left) + 100, y: parseInt(offset.top) + 100 } });
         sm.jqxWindow('open');
     });
     word_export.click(function () {
@@ -1059,10 +1055,11 @@ initdocumentstabs = function() {
         }
         let murl = docmessages_url + 'document=' + row.id;
         doc_id = row.id;
+        docstate_id = row.stateid;
         current_document_form_code = row.form_code;
         current_document_form_name = row.form_name;
         current_document_ou_name = row.unit_name;
-        current_document_state = row.state;
+        doc_state = row.state;
         bc = makeMOBreadcrumb(row.ou_id);
         primary_mo_bc.html(bc);
         $.ajax({
@@ -1460,140 +1457,7 @@ initauditionproperties = function() {
 
 // инициализация всплывающих окон с формами ввода сообщения и т.д.
 initpopupwindows = function() {
-    let clState = $("#CancelStateChanging");
-    let svState = $("#SaveState");
-    //let clMessage = $("#CancelMessage");
-    //let sendMessage = $("#SendMessage");
-    stateWindow.jqxWindow({
-        width: 530,
-        height: 480,
-        resizable: false,
-        isModal: true,
-        autoOpen: false,
-        cancelButton: clState,
-        theme: theme
-    });
-    stateWindow.on('close', function (event) { $('#changeStateAlertMessage').html('').hide(); });
-    $("#performed").jqxRadioButton({ width: 450, height: 25, theme: theme });
-    //$("#inadvance").jqxRadioButton({ width: 450, height: 25, theme: theme });
-    $("#prepared").jqxRadioButton({ width: 450, height: 25, theme: theme });
-    $("#accepted").jqxRadioButton({ width: 450, height: 25, theme: theme });
-    $("#declined").jqxRadioButton({ width: 450, height: 25, theme: theme });
-    $("#approved").jqxRadioButton({ width: 450, height: 25, theme: theme });
-    $('#statusChangeMessage').jqxTextArea({ placeHolder: 'Оставьте свой комментарий к смене статуса документа', height: 90, width: 450, minLength: 1 });
-    clState.jqxButton({ theme: theme });
-    svState.jqxButton({ theme: theme });
-    $(".stateradio").on('checked', function (event) {
-        let alert_message = '';
-        if (current_user_role === '1') {
-            if ($(this).attr('id') === 'prepared') {
-                alert_message = '<div class="alert alert-danger"><strong>Внимание!</strong> Выбор статуса документа "Подготовлен к проверке" допускается только в то случае если ВСЕ правки документа выполнены! <br />';
-                alert_message += 'Если Вы не уверены, что закончили редактирование - отмените действие!</div>';
-                $('#changeStateAlertMessage').html(alert_message).show();
-            } else if ($(this).attr('id') === 'inadvance') {
-                alert_message = '<div class="alert alert-info"><strong>Внимание!</strong> Данный статус предназначен для проверки некоторых данных в сроки до ОФИЦИАЛЬНОЙ сдачи отчетной формы! <br />';
-                alert_message += 'Если имеется необходимость внесения/коррекции данных, измените статус на "Выполняется"';
-                $('#changeStateAlertMessage').html(alert_message).show();
-            } else {
-                $('#changeStateAlertMessage').html('').hide();
-            }
-        }
 
-    });
-    svState.click(function () {
-        let rowindex = dgrid.jqxGrid('getselectedrowindex');
-        let rowdata = dgrid.jqxGrid('getrowdata', rowindex);
-        let oldstate = rowdata.state;
-        let row_id = dgrid.jqxGrid('getrowid', rowindex);
-        let message = encodeURIComponent($("#statusChangeMessage").val());
-        let radiostates = $('.stateradio');
-        let selected_state;
-        radiostates.each(function() {
-            if ($(this).jqxRadioButton('checked')) {
-                selected_state = $(this).attr('id');
-            }
-        });
-        if (statelabels[selected_state] === current_document_state ) {
-            return false;
-        }
-        let data = "&document=" + row_id + "&state=" + selected_state + "&oldstate=" + stateIds[oldstate] + "&message=" + message;
-        $.ajax({
-            dataType: 'json',
-            url: changestate_url,
-            method: "POST",
-            beforeSend: function (xhr) {
-                if (selected_state === 'prepared') {
-                    $("#changeStateAlertMessage").html('<div class="alert alert-warning"><h5>Выполнение проверки документа перед сменой статуса <img src="/jqwidgets/styles/images/loader-small.gif" /></h5></div>')
-                    $("#SaveState").jqxButton({disabled: true });
-                    $("#CancelStateChanging").jqxButton({disabled: true });
-                }
-            },
-            data: data,
-            success: function (data, status, xhr) {
-                if (data.status_changed === 1) {
-                    raiseInfo("Статус документа изменен. Новый статус: < " + statelabels[data.new_status] + " >");
-                    rowdata.state = statelabels[data.new_status];
-                    dgrid.jqxGrid('updaterow', row_id, rowdata);
-                    dgrid.jqxGrid('selectrow', rowindex);
-                }
-                else if(data.status_changed === 0) {
-                    raiseError("Статус не изменен! " + data.comment);
-                }
-                $("#changeStateAlertMessage").html('');
-                $("#SaveState").jqxButton({disabled: false });
-                $("#CancelStateChanging").jqxButton({disabled: false });
-                stateWindow.jqxWindow('hide');
-            },
-            error: function (xhr, status, errorThrown) {
-                xhrErrorNotificationHandler(xhr, status, errorThrown);
-                //raiseError('Ошибка сохранения данных на сервере', xhr);
-                $("#changeStateAlertMessage").html('');
-                $("#SaveState").jqxButton({disabled: false });
-                $("#CancelStateChanging").jqxButton({disabled: false });
-                stateWindow.jqxWindow('hide');
-            }
-        });
-    });
-
-/*// Комментирование документа/отправка сообщения к документу
-    $('#message').jqxTextArea({ placeHolder: 'Оставьте свой комментарий к выбранному документу', height: 150, width: 400, minLength: 1 });
-    clMessage.jqxButton({ theme: theme });
-    sendMessage.jqxButton({ theme: theme });
-    sendMessage.click(function () {
-        let rowindex = dgrid.jqxGrid('getselectedrowindex');
-        let rowdata = dgrid.jqxGrid('getrowdata', rowindex);
-        let row_id = dgrid.jqxGrid('getrowid', rowindex);
-        let message = encodeURIComponent($("#message").val());
-        message = message.trim();
-        if (message.length === 0) {
-            return false;
-        }
-        let data = "&document=" + row_id + "&message=" + message;
-        $.ajax({
-            dataType: 'json',
-            url: docmessagesend_url,
-            method: "POST",
-            data: data,
-            success: function (data, status, xhr) {
-                let m = '';
-                if (data.message_sent === true) {
-                    raiseInfo("Сообщение отправлено");
-                    dgrid.jqxGrid('selectrow', rowindex);
-                }
-            },
-            error: xhrErrorNotificationHandler
-        });
-        $("#sendMessageWindow").jqxWindow('hide');
-    });
-    $("#sendMessageWindow").jqxWindow({
-        width: 430,
-        height: 260,
-        resizable: false,
-        isModal: true,
-        autoOpen: false,
-        cancelButton: clMessage,
-        theme: theme
-    });*/
 };
 // Инициализация окна с информацией о документе (последние исправления, смены статуса, принятие разделов документа)
 initdocinfowindow = function() {
@@ -1708,6 +1572,7 @@ initDocumentSource = function () {
                 { name: 'monitoring', type: 'string' },
                 { name: 'period', type: 'string' },
                 { name: 'state', type: 'string' },
+                { name: 'stateid', type: 'int' },
                 { name: 'filled', type: 'bool' }
             ],
             id: 'id',
@@ -1814,4 +1679,12 @@ function postMessageSendActions(document) {
     //let rowindex = agrid.jqxGrid('getselectedrowindex');
     let rowindex = dgrid.jqxGrid('getrowboundindexbyid', document);
     dgrid.jqxGrid('selectrow', rowindex);
+}
+
+function postChangeStateActions(selected_state) {
+    let rowdata = dgrid.jqxGrid('getrowdatabyid', doc_id);
+    rowdata.state = selected_state;
+    //console.log(rowdata);
+    dgrid.jqxGrid('updaterow', rowdata.id, rowdata);
+    dgrid.jqxGrid('selectrow', rowdata.boundindex);
 }

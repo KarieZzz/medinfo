@@ -3,6 +3,8 @@ let ou_name = "{{ preg_replace('/[\r\n\t]/', '', $current_unit->unit_name) }}";
 let ou_code = "{{ $current_unit->unit_code }}";
 let doc_id = '{{ $document->id }}';
 let doc_type = '{{ $document->dtype }}';
+let docstate_id = '{{ $document->state }}';
+let doc_statelabel = '{{ $statelabel }}';
 let form_name = '{{ $form->form_name }}';
 let form_code = '{{ $form->form_code }}';
 let default_album = '{{ $album->id }}';
@@ -108,6 +110,7 @@ let formlabels =
         ipdiapazon: 19,
         section: 20
     };
+let disabled_states = [{!! $disabled_states or '' !!}];
 let initialViewport = $(window).height();
 let topOffset1 = 155;
 let topOffset2 = 105;

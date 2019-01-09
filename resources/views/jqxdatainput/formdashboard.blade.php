@@ -9,7 +9,7 @@
         </span>
         <i class="fa fa-map-o fa-lg"></i> <span class="text-info">{{ $monitoring->name }} </span>
         <i class="fa fa-calendar-o fa-lg"></i> <span class="text-info">{{ $period->name }} </span>
-        <i class="fa fa-star fa-lg"></i> <span class="text-info">{{ $statelabel }} </span>
+        <i class="fa fa-star fa-lg"></i> <span class="text-info" id="StateInfo">{{ $statelabel }} </span>
         <i class="fa fa-edit fa-lg"></i> <span class="text-info">{{ $editmode }} </span>
     </p>
 @endsection
@@ -26,8 +26,8 @@
         </a>
         <ul class="dropdown-menu">
             <li><a href="#" id="openSendMessageWindow"><span class="fa fa-commenting-o"></span> Сообщение</a></li>
-           {{-- <li><a href="#"><span class="fa fa-check-circle-o"></span> Смена статуса</a></li>
-            <li><a href="#"><span class="fa fa-info-circle"></span> Информация</a></li>--}}
+           <li><a href="#" id="openChangeStateWindow"><span class="fa fa-check-circle-o"></span> Смена статуса</a></li>
+            {{-- <li><a href="#"><span class="fa fa-info-circle"></span> Информация</a></li>--}}
         </ul>
     </li>
 @endsection

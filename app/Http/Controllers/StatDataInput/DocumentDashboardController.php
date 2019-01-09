@@ -86,7 +86,6 @@ class DocumentDashboardController extends Controller
         $worker = Auth::guard('datainput')->user();
         $worker_scope = WorkerScope::where('worker_id', $worker->id)->first()->ou_id;
         $top_node = $request->ou === 0 ? $worker_scope : $request->ou;
-
         $filter_mode = $request->filter_mode;
         $dtypes[] = 1;
         $states = explode(",", $request->states);

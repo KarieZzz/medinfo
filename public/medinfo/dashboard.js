@@ -380,6 +380,160 @@ function initSendMessage() {
             sm.jqxWindow('open');
         });
     }
+}
+// инициализация всплывающего окна с формой смены статуса документа
+function initChangeState() {
+    let changestate_url = '/datainput/changestate';
+    let changestate_input = $('#openChangeStateWindow');
+    let stateWindow = $('#changeStateWindow');
+    let clState = $("#CancelStateChanging");
+    let svState = $("#SaveState");
+    let stateCodeIds =
+        {
+            2:  'performed',
+            3:  'inadvance',
+            4:  'prepared',
+            8:  'accepted',
+            16: 'declined',
+            32: 'approved'
+        };
+    let stateIdCodes =
+        {
+            performed : 2,
+            inadvance : 3,
+            prepared  : 4,
+            accepted  : 8,
+            declined  : 16,
+            approved  : 32
+        };
+    let stateIdLabels =
+        {
+            performed: 'Выполняется',
+            inadvance: 'Подготовлен к предварительной проверке',
+            prepared: 'Подготовлен к проверке',
+            accepted: 'Принят',
+            declined: 'Возвращен на доработку',
+            approved: 'Утвержден'
+        };
+    stateWindow.jqxWindow({
+        width: 530,
+        height: 480,
+        resizable: false,
+        isModal: true,
+        autoOpen: false,
+        cancelButton: clState,
+        theme: theme
+    });
+    stateWindow.on('close', function (event) { $('#changeStateAlertMessage').html('').hide(); });
+    $("#performed").jqxRadioButton({ width: 450, height: 25, theme: theme });
+    //$("#inadvance").jqxRadioButton({ width: 450, height: 25, theme: theme });
+    $("#prepared").jqxRadioButton({ width: 450, height: 25, theme: theme });
+    $("#accepted").jqxRadioButton({ width: 450, height: 25, theme: theme });
+    $("#declined").jqxRadioButton({ width: 450, height: 25, theme: theme });
+    $("#approved").jqxRadioButton({ width: 450, height: 25, theme: theme });
+    $('#statusChangeMessage').jqxTextArea({ placeHolder: 'Оставьте свой комментарий к смене статуса документа', height: 90, width: 450, minLength: 1 });
+    clState.jqxButton({ theme: theme });
+    svState.jqxButton({ theme: theme });
+    $(".stateradio").on('checked', function (event) {
+        let alert_message = '';
+        if (current_user_role === '1') {
+            if ($(this).attr('id') === 'prepared') {
+                alert_message = '<div class="alert alert-danger"><strong>Внимание!</strong> Выбор статуса документа "Подготовлен к проверке" допускается только в то случае если ВСЕ правки документа выполнены! <br />';
+                alert_message += 'Если Вы не уверены, что закончили редактирование - отмените действие!</div>';
+                $('#changeStateAlertMessage').html(alert_message).show();
+            } else if ($(this).attr('id') === 'inadvance') {
+                alert_message = '<div class="alert alert-info"><strong>Внимание!</strong> Данный статус предназначен для проверки некоторых данных в сроки до ОФИЦИАЛЬНОЙ сдачи отчетной формы! <br />';
+                alert_message += 'Если имеется необходимость внесения/коррекции данных, измените статус на "Выполняется"';
+                $('#changeStateAlertMessage').html(alert_message).show();
+            } else {
+                $('#changeStateAlertMessage').html('').hide();
+            }
+        }
 
+    });
+    svState.click(function () {
+        let oldstate = stateCodeIds[docstate_id];
+        let message = encodeURIComponent($("#statusChangeMessage").val());
+        let radiostates = $('.stateradio');
+        let selected_state;
+        radiostates.each(function() {
+            if ($(this).jqxRadioButton('checked')) {
+                selected_state = $(this).attr('id');
+            }
+        });
+        if (selected_state === stateCodeIds[docstate_id] ) {
+            return false;
+        }
+        let data = "&document=" + doc_id + "&state=" + selected_state + "&oldstate=" + oldstate + "&message=" + message;
+        $.ajax({
+            dataType: 'json',
+            url: changestate_url,
+            method: "POST",
+            beforeSend: function (xhr) {
+                if (selected_state === 'prepared') {
+                    $("#changeStateAlertMessage").html('<div class="alert alert-warning"><h5>Выполнение проверки документа перед сменой статуса <img src="/jqwidgets/styles/images/loader-small.gif" /></h5></div>')
+                    $("#SaveState").jqxButton({disabled: true });
+                    $("#CancelStateChanging").jqxButton({disabled: true });
+                }
+            },
+            data: data,
+            success: function (data, status, xhr) {
+                if (data.status_changed === 1) {
+                    raiseInfo("Статус документа изменен. Новый статус: < " + stateIdLabels[data.new_status] + " >");
+                    if (typeof (postChangeStateActions) === 'function') {
+                        postChangeStateActions(stateIdLabels[data.new_status]);
+                    }
+                    if ($("#StateInfo").length) {
+                        $("#StateInfo").html(stateIdLabels[data.new_status]);
+                    }
+                    docstate_id = stateIdCodes[data.new_status];
+                }
+                else if(data.status_changed === 0) {
+                    raiseError("Статус не изменен! " + data.comment);
+                }
+                $("#changeStateAlertMessage").html('');
+                $("#SaveState").jqxButton({disabled: false });
+                $("#CancelStateChanging").jqxButton({disabled: false });
+                stateWindow.jqxWindow('hide');
+            },
+            error: xhrErrorNotificationHandler
+        });
+    });
+    changestate_input.click(function () {
+        let radiostates = $('.stateradio');
+        radiostates.each(function() {
+            let state = $(this).attr('id');
+            if ($.inArray(state, disabled_states) !== -1) {
+                $(this).jqxRadioButton('disable');
+            }
+            if (state === stateCodeIds[docstate_id]) {
+                $(this).jqxRadioButton('check');
+            }
+        });
+        let doc_state = stateCodeIds[docstate_id];
+        $('#changeStateFormCode').html(form_code);
+        $('#changeStateMOCode').html(ou_code);
+        if (current_user_role === '1' && doc_state !== 'performed' && doc_state !== 'inadvance' && doc_state !== 'declined') {
+            //$('#inadvance').jqxRadioButton('disable');
+            $('#prepared').jqxRadioButton('disable');
+        } else if (current_user_role === '1' && doc_state === 'performed') {
+            //$('#inadvance').jqxRadioButton('enable');
+            $('#prepared').jqxRadioButton('enable');
+        } else if (current_user_role === '1' && doc_state === 'declined') {
+            //$('#inadvance').jqxRadioButton('enable');
+            $('#prepared').jqxRadioButton('enable');
+        } else if (current_user_role === '1' && doc_state === 'inadvance') {
+            //console.log("Переход с предварительной проверки");
+            //$('#inadvance').jqxRadioButton('disable');
+            $('#prepared').jqxRadioButton('enable');
+            $('#performed').jqxRadioButton('enable');
+        }
+        if ((current_user_role === '3' || current_user_role === '4') && doc_state === 'performed') {
+            $('#declined').jqxRadioButton('disable');
+        } else if ((current_user_role === '3' || current_user_role === '4') && doc_state !== 'performed') {
+            $('#declined').jqxRadioButton('enable');
+        }
+        stateWindow.jqxWindow('open');
+    })
 }
 
