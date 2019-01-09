@@ -63,7 +63,10 @@ class TableAdminController extends Controller
             ]
         );
         $tcount = Table::OfForm($request->form_id)->count();
-        $index_exists = Table::OfFormTableIndex($request->form_id, $request->table_index)->exists();
+        $index_exists = false;
+        if (!empty($request->table_index)) {
+            $index_exists = Table::OfFormTableIndex($request->form_id, $request->table_index)->exists();
+        }
         if ($index_exists) {
             $reindexed = Table::OfForm($request->form_id)->where('table_index','>=', $request->table_index)->orderBy('table_index', 'desc')->get();
             foreach ($reindexed as $item) {
