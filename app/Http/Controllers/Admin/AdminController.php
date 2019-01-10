@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Carbon\Carbon;
+use Carbon\Carbon;//библиотека 
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+/**
+ *Контроллер AdminController, отвечающий за обработку времени последнего входа в систему администратором(???), 
+ *а также проверка уровня доступа(middleware)
+ *@return view 
+ */
 
 class AdminController extends Controller
 {
@@ -15,7 +20,7 @@ class AdminController extends Controller
     {
         $this->middleware('admins');
     }
-
+    
     public function index()
     {
         $now = Carbon::now();
