@@ -48,9 +48,10 @@ class DataCheckController extends Controller
         if ($forcereload) {
             $form_protocol['forcereloaded'] = true;
         }
-        $form_id = $document->form_id;
+        $form = Form::find($document->form_id);
+
         $album_id = $document->album_id;
-        $tables = Table::OfForm($form_id)->whereDoesntHave('excluded', function ($query) use($album_id) {
+        $tables = Table::OfForm($this->getRealForm($form)->id)->whereDoesntHave('excluded', function ($query) use($album_id) {
             $query->where('album_id', $album_id);
         })->orderBy('table_index')->get();
         foreach ($tables as $table) {
@@ -65,6 +66,15 @@ class DataCheckController extends Controller
             }
         }
         return $form_protocol;
+    }
+
+    public function getRealForm(Form $form)
+    {
+        if ($form->relation) {
+            return Form::find($form->relation);
+        } else {
+            return $form;
+        }
     }
 
     public function selectedControl(Request $request)

@@ -111,11 +111,11 @@ class DataCheck
 
     public static function tableControl(Document $document, Table $table, $cfunctions = null, $forcereload = 0, $only_errors = false)
     {
-
         set_time_limit(240);
         if (!$cfunctions) {
             $cfunctions = CFunction::OfTable($table->id)->Active()->get();
         }
+        //dd($table);
         $table_protocol = [];
         //if (ControlHelper::CashedProtocolActual($document->id, $table->id) && !$forcereload) {
         if (config('medinfo.use_cashed_protocol')) {
